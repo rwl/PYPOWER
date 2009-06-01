@@ -15,6 +15,12 @@
 
 """ Defines constants for named column indices to branch matrix.
 
+    Ported from:
+        D. Zimmerman, "idx_brch.m", MATPOWER, version 3.2,
+        Power System Engineering Research Center (PSERC), 2007
+
+    See http://www.pserc.cornell.edu/matpower/ for more info.
+
     Some examples of usage, after defining the constants using the line above,
     are:
 

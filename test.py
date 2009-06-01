@@ -13,22 +13,18 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-""" Defines constants for named column indices to areas matrix.
-
-    Ported from:
-        D. Zimmerman, "idx_area.m", MATPOWER, version 3.2,
-        Power System Engineering Research Center (PSERC), 2007
-
-    See http://www.pserc.cornell.edu/matpower/ for more info.
-
-    The index, name and meaning of each column of the areas matrix is given
-    below:
-
-    columns 1-2
-     1  AREA_I           area number
-     2  PRICE_REF_BUS    price reference bus for this area
+""" Defines a test case for PYPOWER.
 """
 
-# define the indices
-AREA_I          = 1    # area number
-PRICE_REF_BUS   = 2    # price reference bus for this area
+import unittest
+
+class PYPOWERTestCase(unititest.TestCase):
+    """ Test case comparing results from MATPOWER.
+    """
+
+    def test_loadcase(self):
+        """ Testing case file loading.
+        """ 
+
+if __name__ == "__main__":
+    unittest.main()

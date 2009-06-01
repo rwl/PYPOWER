@@ -13,6 +13,16 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+""" Loads a MATPOWER case file and returns a dictionary containing data
+    matrices.
+
+    Ported from:
+        D. Zimmerman, "loadcase.m", MATPOWER, version 3.2,
+        Power System Engineering Research Center (PSERC), 2007
+
+    See http://www.pserc.cornell.edu/matpower/ for more info.
+"""
+
 import logging
 
 from os.path import basename, splitext, isfile

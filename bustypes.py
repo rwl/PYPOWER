@@ -13,6 +13,16 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+""" Builds lists of each type of bus (ref, pv, pq).
+
+    Ported from:
+      D. Zimmerman, "bustypes.m", MATPOWER, version 3.2,
+      Power System Engineering Research Center (PSERC), 2004
+
+    Enforcing of generator Q limits inspired by contributions from
+    Mu Lin, Lincoln University, New Zealand.
+"""
+
 from cvxopt import spmatrix
 
 from idx_bus import BUS_TYPE, REF, PV, PQ

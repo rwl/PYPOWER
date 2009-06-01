@@ -13,6 +13,15 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+""" Converts external to internal bus numbering.
+
+    Ported from:
+        D. Zimmerman, "ext2int.m", MATPOWER, version 3.2,
+        Power System Engineering Research Center (PSERC), 2007
+
+    See http://www.pserc.cornell.edu/matpower/ for more info.
+"""
+
 from cvxopt import matrix
 
 from idx_bus import BUS_I

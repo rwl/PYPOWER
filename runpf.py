@@ -13,6 +13,18 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+""" Runs a power flow.
+
+    Ported from:
+      D. Zimmerman, "runpf.m", MATPOWER, version 3.2,
+      Power System Engineering Research Center (PSERC), 2004
+
+    Enforcing of generator Q limits inspired by contributions from
+    Mu Lin, Lincoln University, New Zealand.
+
+    See http://www.pserc.cornell.edu/matpower/ for more info.
+"""
+
 def runpf(casename='case9', ppopt=ppoption, fname='', solvedcase=''):
     """ Runs a power flow.
 
