@@ -1,27 +1,17 @@
-# Copyright (C) 2009 Richard W. Lincoln
+# Copyright (C) 1996-2010 Power System Engineering Research Center
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; version 2 dated June, 1991.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This software is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANDABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation,
-# Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-""" Loads a MATPOWER case file and returns a dictionary containing data
-    matrices.
-
-    Ported from:
-        D. Zimmerman, "loadcase.m", MATPOWER, version 3.2,
-        Power System Engineering Research Center (PSERC), 2007
-
-    See http://www.pserc.cornell.edu/matpower/ for more info.
-"""
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import logging
 
@@ -34,36 +24,36 @@ logger = logging.getLogger(__name__)
 
 def loadcase(casefile, return_as_struct=False):
     """ Returns the individual data matrices or a struct containing them as
-        fields.
+    fields.
 
-        Here casefile is either a struct containing the fields baseMVA, bus,
-        gen, branch, areas, gencost, or a string containing the name of the
-        file. If casefile contains the extension '.mat' or '.m', then the
-        explicit file is searched. If casefile containts no extension, then
-        LOADCASE looks for a '.mat' file first, then for a '.m' file.  If the
-        file does not exist or doesn't define all matrices, the routine aborts
-        with an appropriate error message.  Alternatively, it can be called
-        with the syntax:
+    Here casefile is either a struct containing the fields baseMVA, bus,
+    gen, branch, areas, gencost, or a string containing the name of the
+    file. If casefile contains the extension '.mat' or '.m', then the
+    explicit file is searched. If casefile containts no extension, then
+    LOADCASE looks for a '.mat' file first, then for a '.m' file.  If the
+    file does not exist or doesn't define all matrices, the routine aborts
+    with an appropriate error message.  Alternatively, it can be called
+    with the syntax:
 
-        [baseMVA, bus, gen, branch, areas, gencost, info] = loadcase(casefile)
-        [baseMVA, bus, gen, branch, info] = loadcase(casefile)
-        [mpc, info] = loadcase(casefile)
+    [baseMVA, bus, gen, branch, areas, gencost, info] = loadcase(casefile)
+    [baseMVA, bus, gen, branch, info] = loadcase(casefile)
+    [mpc, info] = loadcase(casefile)
 
-        In this case, the function will not abort, but info will contain an
-        exit code as follows:
+    In this case, the function will not abort, but info will contain an
+    exit code as follows:
 
-            0:  all variables successfully defined
-            1:  input argument is not a string or struct
-            2:  specified extension-less file name does not exist in search
-                path
-            3:  specified .MAT file does not exist in search path
-            4:  specified .M file does not exist in search path
-            5:  specified file fails to define all matrices or contains syntax
-                error
+        0:  all variables successfully defined
+        1:  input argument is not a string or struct
+        2:  specified extension-less file name does not exist in search
+            path
+        3:  specified .MAT file does not exist in search path
+        4:  specified .M file does not exist in search path
+        5:  specified file fails to define all matrices or contains syntax
+            error
 
-        If the input data is not a struct containing a 'version' field, it is
-        assumed to be a MATPOWER case file in version 1 format, and will be
-        converted to version 2 format.
+    If the input data is not a struct containing a 'version' field, it is
+    assumed to be a MATPOWER case file in version 1 format, and will be
+    converted to version 2 format.
     """
     info = 0
 

@@ -1,3 +1,4 @@
+# Copyright (C) 1996-2010 Power System Engineering Research Center
 # Copyright (C) 2009 Richard W. Lincoln
 #
 # This program is free software, you can redistribute it and/or modify
@@ -13,11 +14,7 @@
 # along with this program, if not, write to the Free Software Foundation,
 # Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-""" PYPOWER options dictionary.
-
-Ported from:
-    D. Zimmerman, "mpoption.m", MATPOWER, version 3.2,
-    Power System Engineering Research Center (PSERC), 2007
+"""PYPOWER options dictionary.
 
 See http://www.pserc.cornell.edu/matpower/ for more info.
 
