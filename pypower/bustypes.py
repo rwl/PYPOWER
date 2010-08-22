@@ -32,6 +32,7 @@ def bustypes(bus, gen):
     @param gen: Generator data.
     @rtype: tuple
     @return: Index lists of each type of bus.
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     # get generator status
     nb = bus.shape[0]

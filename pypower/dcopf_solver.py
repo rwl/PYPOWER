@@ -63,6 +63,7 @@ def dcopf_solver(om, mpopt, out_opt=None):
         .output solver specific output information
 
     @see: L{opf}, L{qps_pypower}
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if out_opt is None:
         out_opt = {}
