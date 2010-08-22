@@ -27,7 +27,7 @@ from qps_pypower import qps_pypower
 
 logger = logging.getLogger(__name__)
 
-def dcopf_solver(om, mpopt, out_opt=None):
+def dcopf_solver(om, ppopt, out_opt=None):
     """Solves a DC optimal power flow.
 
     Inputs are an OPF model object, a MATPOWER options vector and
@@ -69,8 +69,8 @@ def dcopf_solver(om, mpopt, out_opt=None):
         out_opt = {}
 
     ## options
-    verbose = mpopt[31]    ## VERBOSE
-    alg     = mpopt[26]    ## OPF_ALG_DC
+    verbose = ppopt[31]    ## VERBOSE
+    alg     = ppopt[26]    ## OPF_ALG_DC
 
     if alg == 0:
         alg = 200
@@ -179,14 +179,14 @@ def dcopf_solver(om, mpopt, out_opt=None):
             x0[vv["i1"]["y"]:vv["iN"]["y"]] = max(c) + 0.1 * abs(max(c))
 
         ## set up options
-        feastol = mpopt[81]    ## PDIPM_FEASTOL
-        gradtol = mpopt[82]    ## PDIPM_GRADTOL
-        comptol = mpopt[83]    ## PDIPM_COMPTOL
-        costtol = mpopt[84]    ## PDIPM_COSTTOL
-        max_it  = mpopt[85]    ## PDIPM_MAX_IT
-        max_red = mpopt[86]    ## SCPDIPM_RED_IT
+        feastol = ppopt[81]    ## PDIPM_FEASTOL
+        gradtol = ppopt[82]    ## PDIPM_GRADTOL
+        comptol = ppopt[83]    ## PDIPM_COMPTOL
+        costtol = ppopt[84]    ## PDIPM_COSTTOL
+        max_it  = ppopt[85]    ## PDIPM_MAX_IT
+        max_red = ppopt[86]    ## SCPDIPM_RED_IT
         if feastol == 0:
-            feastol = mpopt[16]    ## = OPF_VIOLATION by default
+            feastol = ppopt[16]    ## = OPF_VIOLATION by default
         opt["mips_opt"] = {  'feastol': feastol,
                              'gradtol': gradtol,
                              'comptol': comptol,

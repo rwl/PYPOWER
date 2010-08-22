@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from opf_args import opf_args
-from mpoption import mpoption
+from ppoption import ppoption
 from opf import opf
 
 def dcopf(*args, **kw_args):
@@ -27,7 +27,7 @@ def dcopf(*args, **kw_args):
     @see: L{rundcopf}.
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    mpc, mpopt = opf_args(*args, **kw_args);
-    mpopt = mpoption(mpopt, "PF_DC", 1)
+    mpc, ppopt = opf_args(*args, **kw_args);
+    ppopt = ppoption(ppopt, "PF_DC", 1)
 
-    return opf(mpc, mpopt)
+    return opf(mpc, ppopt)

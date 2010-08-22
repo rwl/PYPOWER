@@ -21,7 +21,7 @@ def runpf(casename='case9', ppopt=None, fname='', solvedcase=''):
     """ Runs a power flow.
 
     [baseMVA, bus, gen, branch, success, et] = ...
-            runpf(casename, mpopt, fname, solvedcase)
+            runpf(casename, ppopt, fname, solvedcase)
 
     Runs a power flow (full AC Newton's method by default) and optionally
     returns the solved values in the data matrices, a flag which is true if
