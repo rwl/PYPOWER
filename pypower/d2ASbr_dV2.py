@@ -28,9 +28,9 @@ def d2ASbr_dV2(dSbr_dVa, dSbr_dVm, Sbr, Cbr, Ybr, V, lam):
     voltage vector V and nl x 1 vector of multipliers LAM. Output matrices
     are sparse.
 
+    @return: The 2nd derivatives of |complex power flow|**2 w.r.t. V.
     @see: L{dSbr_dV}
     @see: U{http://www.pserc.cornell.edu/matpower/}
-    @return: The 2nd derivatives of |complex power flow|**2 w.r.t. V.
     """
     il = range(len(lam))
 

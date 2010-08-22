@@ -25,8 +25,8 @@ def d2Ibr_dV2(Ybr, V, lam):
     voltage vector V and nl x 1 vector of multipliers LAM. Output matrices
     are sparse.
 
-    @see: http://www.pserc.cornell.edu/matpower/
     @return: The 2nd derivatives of complex branch current w.r.t. voltage.
+    @see: http://www.pserc.cornell.edu/matpower/
     """
     nb = len(V)
     ib = range(nb)

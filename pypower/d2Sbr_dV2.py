@@ -25,8 +25,8 @@ def d2Sbr_dV2(Cbr, Ybr, V, lam):
     matrix CBR, sparse branch admittance matrix YBR, voltage vector V and
     nl x 1 vector of multipliers LAM. Output matrices are sparse.
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     @return: The 2nd derivatives of complex power flow w.r.t. voltage.
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     nb = len(V)
     nl = len(lam)

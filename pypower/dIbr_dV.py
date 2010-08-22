@@ -39,9 +39,9 @@ def dIbr_dV(branch, Yf, Yt, V):
 
     Derivations for "to" bus are similar.
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     @return: The partial derivatives of branch currents w.r.t. voltage
              magnitude and voltage angle.
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     i = range(len(V))
 

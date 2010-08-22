@@ -9,6 +9,7 @@ def case4gs():
 
     @rtype: dict
     @return: Power flow data for 4 bus, 2 gen case from Grainger & Stevenson.
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     mpc = {"version": '2'}
 

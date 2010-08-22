@@ -25,8 +25,8 @@ def d2Sbus_dV2(Ybus, V, lam):
     admittance matrix C{Ybus}, voltage vector C{V} and C{nb} x 1 vector of
     multipliers C{lam}. Output matrices are sparse.
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     @return: The 2nd derivatives of power injection w.r.t. voltage.
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     nb = len(V)
     ib = range(nb)

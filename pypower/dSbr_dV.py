@@ -59,9 +59,9 @@ def dSbr_dV(branch, Yf, Yt, V):
 
     Derivations for "to" bus are similar.
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     @return: The branch power flow vectors and the partial derivatives of
              branch power flow w.r.t voltage magnitude and voltage angle.
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## define
     f = branch[:, F_BUS]       ## list of "from" buses

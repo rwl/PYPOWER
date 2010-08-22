@@ -27,9 +27,9 @@ def d2AIbr_dV2(dIbr_dVa, dIbr_dVm, Ibr, Ybr, V, lam):
     vector, sparse branch admittance matrix YBR, voltage vector V and
     nl x 1 vector of multipliers LAM. Output matrices are sparse.
 
+    @return: The 2nd derivatives of |complex current|**2 w.r.t. V.
     @see: L{dIbr_dV}.
     @see: U{http://www.pserc.cornell.edu/matpower/}
-    @return: The 2nd derivatives of |complex current|**2 w.r.t. V.
     """
     # define
     il = range(len(lam))

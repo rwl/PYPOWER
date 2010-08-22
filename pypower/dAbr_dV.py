@@ -46,12 +46,12 @@ def dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St):
 
     Derivations for "to" bus are similar.
 
-    @see: L{dIbr_dV}, L{dSbr_dV}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     @return: The partial derivatives of the squared flow magnitudes w.r.t
              voltage magnitude and voltage angle given the flows and flow
              sensitivities. Flows could be complex current or complex or
              real power.
+    @see: L{dIbr_dV}, L{dSbr_dV}
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     il = range(len(Sf))
 
