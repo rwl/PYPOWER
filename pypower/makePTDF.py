@@ -36,6 +36,7 @@ def makePTDF(baseMVA, bus, branch, slack):
     at that bus.
 
     @see: L{makeLODF}
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## use reference bus for slack by default
     if slack is None:
