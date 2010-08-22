@@ -17,12 +17,10 @@ import logging
 
 from os.path import basename, splitext, isfile
 
-from matfile import read as read_matfile
-from mfile import read as read_mfile
-
 logger = logging.getLogger(__name__)
 
-def loadcase(casefile, return_as_struct=False):
+def loadcase(casefile, return_as_struct=True, expect_gencost=True,
+             expect_areas=False):
     """ Returns the individual data matrices or a struct containing them as
     fields.
 
@@ -54,6 +52,8 @@ def loadcase(casefile, return_as_struct=False):
     If the input data is not a struct containing a 'version' field, it is
     assumed to be a MATPOWER case file in version 1 format, and will be
     converted to version 2 format.
+
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     info = 0
 
