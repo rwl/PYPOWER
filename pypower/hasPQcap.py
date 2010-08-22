@@ -1,0 +1,71 @@
+# Copyright (C) 2005-2010 Power System Engineering Research Center
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import logging
+
+from numpy import any, zeros, nonzero
+
+from idx_gen import QMAX, QMIN, PMAX, PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX
+
+logger = logging.getLogger(__name__)
+
+def hasPQcap(gen, hilo='B'):
+    """Checks for P-Q capability curve constraints.
+    Returns a column vector of 1's and 0's. The 1's
+    correspond to rows of the GEN matrix which correspond to generators which
+    have defined a capability curve (with sloped upper and/or lower bound on
+    Q) and require that additional linear constraints be added to the OPF.
+
+    The GEN matrix in version 2 of the MATPOWER case format includes columns
+    for specifying a P-Q capability curve for a generator defined as the
+    intersection of two half-planes and the box constraints on P and Q. The
+    two half planes are defined respectively as the area below the line
+    connecting (Pc1, Qc1max) and (Pc2, Qc2max) and the area above the line
+    connecting (Pc1, Qc1min) and (Pc2, Qc2min).
+
+    If the optional 2nd argument is 'U' this function returns true only for
+    rows corresponding to generators that require the upper constraint on Q.
+    If it is 'L', only for those requiring the lower constraint. If the 2nd
+    argument is not specified or has any other value it returns true for rows
+    corresponding to gens that require either or both of the constraints.
+
+    It is smart enough to return true only if the corresponding linear
+    constraint is not redundant w.r.t the box constraints.
+
+    @see: U{http://www.pserc.cornell.edu/matpower/}
+    """
+    ## check for errors capability curve data
+    if any( gen[:, PC1] > gen[:, PC2] ):
+        logger.error('hasPQcap: Pc1 > Pc2')
+    if any( gen[:, QC2MAX] > gen[:, QC1MAX] ):
+        logger.error('hasPQcap: Qc2max > Qc1max')
+    if any( gen[:, QC2MIN] < gen[:, QC1MIN] ):
+        logger.error('hasPQcap: Qc2min < Qc1min')
+
+    L = zeros(gen.shape[0])
+    U = zeros(gen.shape[0])
+    k = nonzero( gen[:, PC1] != gen[:, PC2] )
+
+    if hilo != 'U':       ## include lower constraint
+        Qmin_at_Pmax = gen[k, QC1MIN] + (gen[k, PMAX] - gen[k, PC1]) * \
+            (gen[k, QC2MIN] - gen[k, QC1MIN]) / (gen[k, PC2] - gen[k, PC1])
+        L[k] = Qmin_at_Pmax > gen[k, QMIN]
+
+    if hilo != 'L':       ## include upper constraint
+        Qmax_at_Pmax = gen[k, QC1MAX] + (gen[k, PMAX] - gen[k, PC1]) * \
+            (gen[k, QC2MAX] - gen[k, QC1MAX]) / (gen[k, PC2] - gen[k, PC1])
+        U[k] = Qmax_at_Pmax < gen[k, QMAX]
+
+    return L | U

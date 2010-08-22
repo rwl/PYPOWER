@@ -24,6 +24,7 @@ from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, RATE_A, RATE_B, RATE_C, TAP
 from idx_area import AREA_I, PRICE_REF_BUS
 
 from get_reorder import get_reorder
+from run_userfcn import run_userfcn
 
 logger = logging.getLogger(__name__)
 
