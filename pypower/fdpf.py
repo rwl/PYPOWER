@@ -1,5 +1,5 @@
 # Copyright (C) 1996-2010 Power System Engineering Research Center
-# Copyright (C) 2009-2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
 
     ## evaluate initial mismatch
     mis = (multiply(V, conj(Ybus * V)) - Sbus) / Vm
-    P = mis[r_[pv, pq]].real
+    P = mis[pvpq].real
     Q = mis[pq].imag
 
     ## check tolerance
