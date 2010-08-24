@@ -23,7 +23,8 @@ from idx_gen import *
 from idx_brch import *
 from idx_cost import *
 
-from qps_pypower import qps_pypower
+from qps_pips import qps_pips
+from util import sub2ind
 
 logger = logging.getLogger(__name__)
 
@@ -197,7 +198,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
 
     ##-----  run opf  -----
     x, f, info, output, lmbda = \
-        qps_pypower(HH, CC, A, l, u, xmin, xmax, x0, opt)
+        qps_pips(HH, CC, A, l, u, xmin, xmax, x0, opt)
     success = (info == 1)
 
     ## update solution data
@@ -258,11 +259,3 @@ def dcopf_solver(om, ppopt, out_opt=None):
     raw = {'xr': x, 'pimul': pimul, 'info': info, 'output': output}
 
     return results, success, raw
-
-
-def sub2ind(shape, I, J, row_major=True):
-    if row_major:
-        ind = (I % shape[0]) * shape[1] + (J % shape[1])
-    else:
-        ind = (J % shape[1]) * shape[0] + (I % shape[0])
-    return ind
