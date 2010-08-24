@@ -116,7 +116,7 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
                - C{output} - output dictionary with keys:
                    - C{iterations} - number of iterations performed
                    - C{hist} - dictionary of arrays with trajectories of the
-                     following: feascond, gradcond, compcond, costcond, gamma,
+                     following: feascond, gradcond, coppcond, costcond, gamma,
                      stepsize, obj, alphap, alphad
                    - C{message} - exit message
                - C{lmbda} - dictionary containing the Langrange and Kuhn-Tucker

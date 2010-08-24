@@ -157,7 +157,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
                - C{output} - output dictionary with keys:
                    - C{iterations} - number of iterations performed
                    - C{hist} - dictionary of arrays with trajectories of the
-                     following: feascond, gradcond, compcond, costcond, gamma,
+                     following: feascond, gradcond, coppcond, costcond, gamma,
                      stepsize, obj, alphap, alphad
                    - C{message} - exit message
                - C{lmbda} - dictionary containing the Langrange and Kuhn-Tucker
@@ -317,12 +317,12 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
         max([gnorm, max(h)]) / (1 + max([norm(x, Inf), norm(z, Inf)]))
     gradcond = \
         norm(Lx, Inf) / (1 + max([lam_norm, mu_norm]))
-    compcond = dot(z, mu) / (1 + norm(x, Inf))
+    coppcond = dot(z, mu) / (1 + norm(x, Inf))
     costcond = absolute(f - f0) / (1 + absolute(f0))
 
     # save history
     hist[i] = {'feascond': feascond, 'gradcond': gradcond,
-        'compcond': compcond, 'costcond': costcond, 'gamma': gamma,
+        'coppcond': coppcond, 'costcond': costcond, 'gamma': gamma,
         'stepsize': 0, 'obj': f / opt["cost_mult"], 'alphap': 0, 'alphad': 0}
 
     if opt["verbose"]:
@@ -331,15 +331,15 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 #        print 'Python Interior Point Solver - PIPS%s, Version %s, %s' % \
 #                    (s, version, date)
         print " it    objective   step size   feascond     gradcond     " \
-              "compcond     costcond  "
+              "coppcond     costcond  "
         print "----  ------------ --------- ------------ ------------ " \
               "------------ ------------"
         print "%3d  %12.8g %10s %12g %12g %12g %12g" % \
             (i, (f / opt["cost_mult"]), "",
-             feascond, gradcond, compcond, costcond)
+             feascond, gradcond, coppcond, costcond)
 
     if feascond < opt["feastol"] and gradcond < opt["gradtol"] and \
-        compcond < opt["comptol"] and costcond < opt["costtol"]:
+        coppcond < opt["comptol"] and costcond < opt["costtol"]:
         converged = True
         if opt["verbose"]:
             print "Converged!"
@@ -486,21 +486,21 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
             max([gnorm, max(h)]) / (1+max([norm(x, Inf), norm(z, Inf)]))
         gradcond = \
             norm(Lx, Inf) / (1 + max([lam_norm, mu_norm]))
-        compcond = dot(z, mu) / (1 + norm(x, Inf))
+        coppcond = dot(z, mu) / (1 + norm(x, Inf))
         costcond = float(absolute(f - f0) / (1 + absolute(f0)))
 
         hist[i] = {'feascond': feascond, 'gradcond': gradcond,
-            'compcond': compcond, 'costcond': costcond, 'gamma': gamma,
+            'coppcond': coppcond, 'costcond': costcond, 'gamma': gamma,
             'stepsize': norm(dx), 'obj': f / opt["cost_mult"],
             'alphap': alphap, 'alphad': alphad}
 
         if opt["verbose"]:
             print "%3d  %12.8g %10.5g %12g %12g %12g %12g" % \
                 (i, (f / opt["cost_mult"]), norm(dx), feascond, gradcond,
-                 compcond, costcond)
+                 coppcond, costcond)
 
         if feascond < opt["feastol"] and gradcond < opt["gradtol"] and \
-            compcond < opt["comptol"] and costcond < opt["costtol"]:
+            coppcond < opt["comptol"] and costcond < opt["costtol"]:
             converged = True
             if opt["verbose"]:
                 print "Converged!"

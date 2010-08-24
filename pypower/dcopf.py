@@ -27,7 +27,7 @@ def dcopf(*args, **kw_args):
     @see: L{rundcopf}.
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    mpc, ppopt = opf_args(*args, **kw_args);
+    ppc, ppopt = opf_args(*args, **kw_args);
     ppopt = ppoption(ppopt, "PF_DC", 1)
 
-    return opf(mpc, ppopt)
+    return opf(ppc, ppopt)

@@ -36,7 +36,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
 
     Outputs are a RESULTS struct, SUCCESS flag and RAW output struct.
 
-    RESULTS is a MATPOWER case struct (mpc) with the usual baseMVA, bus
+    RESULTS is a MATPOWER case struct (ppc) with the usual baseMVA, bus
     branch, gen, gencost fields, along with the following additional
     fields:
         - C{order}      see 'help ext2int' for details of this field
@@ -94,9 +94,9 @@ def pipsopf_solver(om, ppopt, out_opt=None):
              'verbose': verbose  }
 
     ## unpack data
-    mpc = om.get_mpc()
+    ppc = om.get_ppc()
     baseMVA, bus, gen, branch, gencost = \
-        mpc["baseMVA"], mpc["bus"], mpc["gen"], mpc["branch"], mpc["gencost"]
+        ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"], ppc["gencost"]
     vv, ll, nn = om.get_idx()
 
     ## problem dimensions
@@ -204,7 +204,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
       'nln': {'l': nl_mu_l, 'u': nl_mu_u},
       'lin': {'l': Lmbda["mu_l"], 'u': Lmbda["mu_u"]} }
 
-    results = mpc
+    results = ppc
     results["bus"], results["branch"], results["gen"], \
         results["om"], results["x"], results["mu"], results["f"] = \
             bus, branch, gen, om, x, mu, f

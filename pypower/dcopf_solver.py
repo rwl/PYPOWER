@@ -37,7 +37,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
 
     Outputs are a RESULTS struct, SUCCESS flag and RAW output struct.
 
-    RESULTS is a MATPOWER case struct (mpc) with the usual baseMVA, bus
+    RESULTS is a MATPOWER case struct (ppc) with the usual baseMVA, bus
     branch, gen, gencost fields, along with the following additional
     fields:
         .order      see 'help ext2int' for details of this field
@@ -77,9 +77,9 @@ def dcopf_solver(om, ppopt, out_opt=None):
         alg = 200
 
     ## unpack data
-    mpc = om.get_mpc()
+    ppc = om.get_ppc()
     baseMVA, bus, gen, branch, gencost = \
-        mpc["baseMVA"], mpc["bus"], mpc["gen"], mpc["branch"], mpc["gencost"]
+        ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"], ppc["gencost"]
     cp = om.get_cost_params()
     N, H, Cw = cp["N"], cp["H"], cp["Cw"]
     fparm = array([cp["dd"], cp["rh"], cp["kk"], cp["mm"]])
@@ -237,7 +237,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
     mu = { 'var': {'l': muLB, 'u': muUB},
            'lin': {'l': mu_l, 'u': mu_u} }
 
-    results = mpc # FIXME: copy
+    results = ppc # FIXME: copy
     results["bus"], results["branch"], results["gen"], \
         results["om"], results["x"], results["mu"], results["f"] = \
             bus, branch, gen, om, x, mu, f

@@ -35,7 +35,7 @@ def loadcase(casefile, return_as_struct=True, expect_gencost=True,
 
     [baseMVA, bus, gen, branch, areas, gencost, info] = loadcase(casefile)
     [baseMVA, bus, gen, branch, info] = loadcase(casefile)
-    [mpc, info] = loadcase(casefile)
+    [ppc, info] = loadcase(casefile)
 
     In this case, the function will not abort, but info will contain an
     exit code as follows:
@@ -76,8 +76,8 @@ def loadcase(casefile, return_as_struct=True, expect_gencost=True,
             if extension == '.mat': # from MAT file
                 try:
                     s = read_matfile(rootname + extension)
-                    if s.has_key('mpc'):
-                        s = s['mpc']
+                    if s.has_key('ppc'):
+                        s = s['ppc']
                 except:
                     info = 3
 

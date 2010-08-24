@@ -43,7 +43,7 @@ def int2ext(i2e, bus, gen, branch, areas):
         [bus, gen, branch, areas] = int2ext(i2e, bus, gen, branch, areas)
         [bus, gen, branch] = int2ext(i2e, bus, gen, branch)
 
-    2.  MPC = INT2EXT(MPC)
+    2.  ppc = INT2EXT(ppc)
 
     If the input is a single MATPOWER case struct, then it restores all
     buses, generators and branches that were removed because of being
@@ -52,12 +52,12 @@ def int2ext(i2e, bus, gen, branch, areas):
     created by EXT2INT be in place.
 
     Example:
-        mpc = int2ext(mpc)
+        ppc = int2ext(ppc)
 
-    3.  VAL = INT2EXT(MPC, VAL, OLDVAL, ORDERING)
-        VAL = INT2EXT(MPC, VAL, OLDVAL, ORDERING, DIM)
-        MPC = INT2EXT(MPC, FIELD, ORDERING)
-        MPC = INT2EXT(MPC, FIELD, ORDERING, DIM)
+    3.  VAL = INT2EXT(ppc, VAL, OLDVAL, ORDERING)
+        VAL = INT2EXT(ppc, VAL, OLDVAL, ORDERING, DIM)
+        ppc = INT2EXT(ppc, FIELD, ORDERING)
+        ppc = INT2EXT(ppc, FIELD, ORDERING, DIM)
 
     For a case struct using internal indexing, this function can be
     used to convert other data structures as well by passing in 2 to 4
@@ -77,7 +77,7 @@ def int2ext(i2e, bus, gen, branch, areas):
     specifies a field in the case struct whose value should be
     converted as described above. In this case, the corresponding
     OLDVAL is taken from where it was stored by EXT2INT in
-    MPC["order"].EXT and the updated case struct is returned.
+    ppc["order"].EXT and the updated case struct is returned.
     If FIELD is a cell array of strings, they specify nested fields.
 
     The ORDERING argument is used to indicate whether the data
@@ -94,76 +94,76 @@ def int2ext(i2e, bus, gen, branch, areas):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if isinstance(i2e, dict):
-        mpc = i2e
+        ppc = i2e
         if bus is None:#nargin == 1
-            if not mpc.has_key('order'):
-                logger.error('int2ext: mpc does not have the "order" field '
+            if not ppc.has_key('order'):
+                logger.error('int2ext: ppc does not have the "order" field '
                     'require for conversion back to external numbering.')
-            o = mpc["order"]
+            o = ppc["order"]
 
             if o["state"] == 'i':
                 ## execute userfcn callbacks for 'int2ext' stage
-                if mpc.has_key('userfcn'):
-                    mpc = run_userfcn(mpc["userfcn"], 'int2ext', mpc)
+                if ppc.has_key('userfcn'):
+                    ppc = run_userfcn(ppc["userfcn"], 'int2ext', ppc)
 
                 ## save data matrices with internal ordering & restore originals
-                o["int"]["bus"]    = mpc["bus"]
-                o["int"]["branch"] = mpc["branch"]
-                o["int"]["gen"]    = mpc["gen"]
-                mpc["bus"]     = o["ext"]["bus"]
-                mpc["branch"]  = o["ext"]["branch"]
-                mpc["gen"]     = o["ext"]["gen"]
-                if mpc.has_key('gencost'):
-                    o["int"]["gencost"] = mpc["gencost"]
-                    mpc["gencost"] = o["ext"]["gencost"]
-                if mpc.has_key('areas'):
-                    o["int"]["areas"] = mpc["areas"]
-                    mpc["areas"] = o["ext"]["areas"]
-                if mpc.has_key('A'):
-                    o["int"]["A"] = mpc["A"]
-                    mpc["A"] = o["ext"]["A"]
-                if mpc.has_key('N'):
-                    o["int"]["N"] = mpc["N"]
-                    mpc["N"] = o["ext"]["N"]
+                o["int"]["bus"]    = ppc["bus"]
+                o["int"]["branch"] = ppc["branch"]
+                o["int"]["gen"]    = ppc["gen"]
+                ppc["bus"]     = o["ext"]["bus"]
+                ppc["branch"]  = o["ext"]["branch"]
+                ppc["gen"]     = o["ext"]["gen"]
+                if ppc.has_key('gencost'):
+                    o["int"]["gencost"] = ppc["gencost"]
+                    ppc["gencost"] = o["ext"]["gencost"]
+                if ppc.has_key('areas'):
+                    o["int"]["areas"] = ppc["areas"]
+                    ppc["areas"] = o["ext"]["areas"]
+                if ppc.has_key('A'):
+                    o["int"]["A"] = ppc["A"]
+                    ppc["A"] = o["ext"]["A"]
+                if ppc.has_key('N'):
+                    o["int"]["N"] = ppc["N"]
+                    ppc["N"] = o["ext"]["N"]
 
                 ## update data (in bus, branch and gen only)
-                mpc["bus"][o["bus"]["status"]["on"], :] = \
+                ppc["bus"][o["bus"]["status"]["on"], :] = \
                     o["int"]["bus"]
-                mpc["branch"][o["branch"]["status"]["on"], :] = \
+                ppc["branch"][o["branch"]["status"]["on"], :] = \
                     o["int"]["branch"]
-                mpc["gen"][o["gen"]["status"]["on"], :] = \
+                ppc["gen"][o["gen"]["status"]["on"], :] = \
                     o["int"]["gen"][o["gen"]["i2e"], :]
-                if mpc.has_key('areas'):
-                    mpc["areas"][o["areas"]["status"]["on"], :] = \
+                if ppc.has_key('areas'):
+                    ppc["areas"][o["areas"]["status"]["on"], :] = \
                         o["int"]["areas"]
 
                 ## revert to original bus numbers
-                mpc["bus"][o["bus"]["status"]["on"], BUS_I] = \
+                ppc["bus"][o["bus"]["status"]["on"], BUS_I] = \
                     o["bus"]["i2e"] \
-                        [ mpc["bus"][o["bus"]["status"]["on"], BUS_I] ]
-                mpc["branch"][o["branch"]["status"]["on"], F_BUS] = \
+                        [ ppc["bus"][o["bus"]["status"]["on"], BUS_I] ]
+                ppc["branch"][o["branch"]["status"]["on"], F_BUS] = \
                     o["bus"]["i2e"] \
-                        [ mpc["branch"][o["branch"]["status"]["on"], F_BUS] ]
-                mpc["branch"][o["branch"]["status"]["on"], T_BUS] = \
+                        [ ppc["branch"][o["branch"]["status"]["on"], F_BUS] ]
+                ppc["branch"][o["branch"]["status"]["on"], T_BUS] = \
                     o["bus"]["i2e"] \
-                        [ mpc["branch"][o["branch"]["status"]["on"], T_BUS] ]
-                mpc["gen"][o["gen"]["status"]["on"], GEN_BUS] = \
+                        [ ppc["branch"][o["branch"]["status"]["on"], T_BUS] ]
+                ppc["gen"][o["gen"]["status"]["on"], GEN_BUS] = \
                     o["bus"]["i2e"] \
-                        [ mpc["gen"][o["gen"]["status"]["on"], GEN_BUS] ]
-                if mpc.has_key('areas'):
-                    mpc["areas"][o["areas"]["status"]["on"], PRICE_REF_BUS] = \
-                        o["bus"]["i2e"][ mpc["areas"] \
+                        [ ppc["gen"][o["gen"]["status"]["on"], GEN_BUS] ]
+                if ppc.has_key('areas'):
+                    ppc["areas"][o["areas"]["status"]["on"], PRICE_REF_BUS] = \
+                        o["bus"]["i2e"][ ppc["areas"] \
                          [o["areas"]["status"]["on"], PRICE_REF_BUS] ]
 
                 if o.has_key('ext'):
                     del o['ext']
                 o["state"] = 'e'
-                mpc["order"] = o
+                ppc["order"] = o
             else:
-                logger.error('int2ext: mpc claims it is already using '
+                logger.error('int2ext: ppc claims it is already using '
                              'external numbering.')
 
-            bus = mpc
+            bus = ppc
         else:                    ## convert extra data
             if isinstance(bus, str) or isinstance(bus, list):   ## field
                 field = bus
@@ -173,25 +173,25 @@ def int2ext(i2e, bus, gen, branch, areas):
                 else:
                     dim = 1
                 if isinstance(field, str):
-                    mpc["order"]["int"]["field"] = mpc["field"]
-                    mpc["field"] = int2ext(mpc, mpc["field"],
-                                    mpc["order"].ext["field"], ordering, dim)
+                    ppc["order"]["int"]["field"] = ppc["field"]
+                    ppc["field"] = int2ext(ppc, ppc["field"],
+                                    ppc["order"].ext["field"], ordering, dim)
                 else:
                     for k in range(len(field)):
                         s[k].type = '.'
                         s[k].subs = field[k]
-                    if not mpc["order"].has_key('int'):
-                        mpc["order"]["int"] = array([])
-                    mpc["order"]["int"] = \
-                        subsasgn(mpc["order"]["int"], s, subsref(mpc, s))
-                    mpc = subsasgn(mpc, s, int2ext(mpc, subsref(mpc, s),
-                        subsref(mpc["order"].ext, s), ordering, dim))
-                bus = mpc
+                    if not ppc["order"].has_key('int'):
+                        ppc["order"]["int"] = array([])
+                    ppc["order"]["int"] = \
+                        subsasgn(ppc["order"]["int"], s, subsref(ppc, s))
+                    ppc = subsasgn(ppc, s, int2ext(ppc, subsref(ppc, s),
+                        subsref(ppc["order"].ext, s), ordering, dim))
+                bus = ppc
             else:                            ## value
                 val = bus
                 oldval = gen
                 ordering = branch
-                o = mpc["order"]
+                o = ppc["order"]
                 if areas is not None:
                     dim = areas
                 else:
@@ -208,10 +208,10 @@ def int2ext(i2e, bus, gen, branch, areas):
                     bi = 0  ## base, internal indexing
                     for k in range(len(ordering)):
                         ne = o["ext"]["ordering"][k].shape[0]
-                        ni = mpc["ordering"][k].shape[0]
+                        ni = ppc["ordering"][k].shape[0]
                         v = get_reorder(val, bi + range(ni), dim)
                         oldv = get_reorder(oldval, be + range(ne), dim)
-                        new_v[k] = int2ext(mpc, v, oldv, ordering[k], dim)
+                        new_v[k] = int2ext(ppc, v, oldv, ordering[k], dim)
                         be = be + ne
                         bi = bi + ni
                     ni = size(val, dim)
