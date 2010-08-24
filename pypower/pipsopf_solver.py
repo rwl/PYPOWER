@@ -126,7 +126,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
 #         PQ = r_[gen[:, PMAX], gen[:, QMAX]]
 #         c = totcost(gencost[ipwl, :], PQ[ipwl])
         c = gencost(sub2ind(gencost.shape, ipwl, NCOST+2*gencost[ipwl, NCOST]))    ## largest y-value in CCV data
-        x[vv["i1"]["y"]:vv["iN"]["y"]] = max(c) + 0.1 * abs(max(c))
+        x0[vv["i1"]["y"]:vv["iN"]["y"]] = max(c) + 0.1 * abs(max(c))
 #        x0[vv["i1"]["y"]:vv["iN"]["y"]] = c + 0.1 * abs(c)
 
     ## find branches with flow limits
