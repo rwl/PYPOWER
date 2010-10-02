@@ -146,7 +146,7 @@ def rundyn(casefile_pf, casefile_dyn, casefile_ev, pdopt=None):
     xd_tr[genmodel == 2] = Pgen0[genmodel == 2, 7] # 4th order model: xd_tr column 7
     xd_tr[genmodel == 1] = Pgen0[genmodel == 1, 6] # classical model: xd_tr column 6
 
-    Ybus_lu = AugYbus(baseMVA, bus, branch, xd_tr, gbus, Pl, Ql, U0)
+    invYbus = AugYbus(baseMVA, bus, branch, xd_tr, gbus, Pl, Ql, U0)
 
     ## Calculate Initial machine state
     if output:
@@ -238,19 +238,19 @@ def rundyn(casefile_pf, casefile_dyn, casefile_ev, pdopt=None):
         ## Numerical Method
         if method == 1:
             Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, t, newstepsize = \
-                ModifiedEuler(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, Ybus_lu, gbus, genmodel, excmodel, govmodel, stepsize)
+                ModifiedEuler(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, invYbus, gbus, genmodel, excmodel, govmodel, stepsize)
         elif method == 2:
             Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, t, newstepsize = \
-                RungeKutta(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, Ybus_lu, gbus, genmodel, excmodel, govmodel, stepsize)
+                RungeKutta(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, invYbus, gbus, genmodel, excmodel, govmodel, stepsize)
         elif method == 3:
             Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, errest, failed, t, newstepsize = \
-                RungeKuttaFehlberg(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, Ybus_lu, gbus, genmodel, excmodel, govmodel, tol, maxstepsize, stepsize)
+                RungeKuttaFehlberg(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, invYbus, gbus, genmodel, excmodel, govmodel, tol, maxstepsize, stepsize)
         elif method == 4:
             Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, errest, failed, t, newstepsize = \
-                RungeKuttaHighamHall(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, Ybus_lu, gbus, genmodel, excmodel, govmodel, tol, maxstepsize, stepsize)
+                RungeKuttaHighamHall(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, invYbus, gbus, genmodel, excmodel, govmodel, tol, maxstepsize, stepsize)
         elif method == 5:
             Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, U0, t, eulerfailed, newstepsize = \
-                ModifiedEuler2(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, Ybus_lu, gbus, genmodel, excmodel, govmodel, stepsize)
+                ModifiedEuler2(t, Xgen0, Pgen0, Vgen0, Xexc0, Pexc0, Vexc0, Xgov0, Pgov0, Vgov0, invYbus, gbus, genmodel, excmodel, govmodel, stepsize)
 
         if eulerfailed:
             print '\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b> Error: No solution found. Try lowering tolerance or increasing maximum number of iterations in ModifiedEuler2. Exiting... \n'
@@ -321,8 +321,8 @@ def rundyn(casefile_pf, casefile_dyn, casefile_ev, pdopt=None):
 
             if eventhappened:
                 # Refactorise
-                Ybus_lu = AugYbus(baseMVA, bus, branch, xd_tr, gbus, bus[:, PD] / baseMVA, bus[:, QD] / baseMVA, U00)
-                U0 = SolveNetwork(Xgen0, Pgen0, Ybus_lu, gbus, genmodel)
+                invYbus = AugYbus(baseMVA, bus, branch, xd_tr, gbus, bus[:, PD] / baseMVA, bus[:, QD] / baseMVA, U00)
+                U0 = SolveNetwork(Xgen0, Pgen0, invYbus, gbus, genmodel)
 
                 Id0, Iq0, Pe0 = MachineCurrents(Xgen0, Pgen0, U0(gbus), genmodel)
                 Vgen0 = Id0,Iq0,Pe0
