@@ -17,40 +17,32 @@ import logging
 
 from os.path import basename, splitext, isfile
 
+from numpy import array
+
 logger = logging.getLogger(__name__)
 
-def loadcase(casefile, return_as_struct=True, expect_gencost=True,
-             expect_areas=False):
-    """ Returns the individual data matrices or a struct containing them as
-    fields.
+def loadcase(casefile):
+    """ Returns a dict containing case data matrices as values.
 
-    Here casefile is either a struct containing the fields baseMVA, bus,
+    Here casefile is either a dict containing the keys baseMVA, bus,
     gen, branch, areas, gencost, or a string containing the name of the
-    file. If casefile contains the extension '.mat' or '.m', then the
+    file. If casefile contains the extension '.pkl' or '.py', then the
     explicit file is searched. If casefile containts no extension, then
-    LOADCASE looks for a '.mat' file first, then for a '.m' file.  If the
-    file does not exist or doesn't define all matrices, the routine aborts
-    with an appropriate error message.  Alternatively, it can be called
-    with the syntax:
-
-    [baseMVA, bus, gen, branch, areas, gencost, info] = loadcase(casefile)
-    [baseMVA, bus, gen, branch, info] = loadcase(casefile)
-    [ppc, info] = loadcase(casefile)
-
-    In this case, the function will not abort, but info will contain an
-    exit code as follows:
+    C{loadcase} looks for a '.pkl' file first, then for a '.py' file.  If the
+    file does not exist or doesn't define all matrices, the function returns
+    an exit code as follows:
 
         0:  all variables successfully defined
         1:  input argument is not a string or struct
         2:  specified extension-less file name does not exist in search
             path
-        3:  specified .MAT file does not exist in search path
-        4:  specified .M file does not exist in search path
+        3:  specified .pkl file does not exist in search path
+        4:  specified .py file does not exist in search path
         5:  specified file fails to define all matrices or contains syntax
             error
 
-    If the input data is not a struct containing a 'version' field, it is
-    assumed to be a MATPOWER case file in version 1 format, and will be
+    If the input data is not a dict containing a 'version' key, it is
+    assumed to be a PYPOWER case file in version 1 format, and will be
     converted to version 2 format.
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
@@ -59,76 +51,69 @@ def loadcase(casefile, return_as_struct=True, expect_gencost=True,
 
     # read data into dict
     if isinstance(casefile, basestring):
-        base_name = basename(casefile)
+#        base_name = casefile#basename(casefile)
         # check for explicit extension
-        if base_name.endswith('.m', '.mat'):
-            rootname, extension = splitext(base_name)
+        if casefile.endswith(('.py', '.pkl')):
+            rootname, extension = splitext(casefile)
         else:
-            rootname = base_name
-            if isfile(base_name + '.mat'):
-                extension = '.mat'
-            elif isfile(base_name + '.m'):
-                extension = '.m'
+            rootname = casefile
+            if isfile(casefile + '.pkl'):
+                extension = '.pkl'
+            elif isfile(casefile + '.py'):
+                extension = '.py'
             else:
                 info = 2
 
         if info == 0:
-            if extension == '.mat': # from MAT file
-                try:
-                    s = read_matfile(rootname + extension)
-                    if s.has_key('ppc'):
-                        s = s['ppc']
-                except:
-                    info = 3
+            globals = {}
+            locals = {}
+            try:
+                execfile(rootname + extension)
+            except IOError:
+                info = 3 if extension == ".pkl" else 4
 
-            elif extension == '.m': # from M file
-                try: # assume it returns a dict
-                    s = read_mfile
-
-                except:
-                    info = 4
-
-            if info == 4 and isfile(rootname + '.m'):
+            if info == 4 and isfile(rootname + '.py'):
                 info = 5
+            else:
+                func = basename(rootname)
+                ppc = eval(func + "()")
+#                if func in locals:
+#                    ppc = eval(func + "()")
+#                else:
+#                    info = 5
 
     elif isinstance(casefile, dict):
-        s = casefile
+        ppc = casefile
     else:
         info = 1
 
     # check contents of dict
     if info == 0:
         # check for required keys
-        if not (s.has_key('baseMVA') and s.has_key('bus') \
-            and s.has_key('gen') and s.has_key('branch')):
+        if not (ppc.has_key('baseMVA') and ppc.has_key('bus') \
+            and ppc.has_key('gen') and ppc.has_key('branch')):
             info = 5
-        elif not (s.has_key('areas') and s.has_key('gencost')):
-            info = 5
+#        elif not (ppc.has_key('areas') and ppc.has_key('gencost')):
+#            info = 5
         else:
-            ppc = s
+            ppc = ppc
 
-    if info == 0: # no errors
-        baseMVA = ppc['baseMVA']
-        bus = ppc['bus']
-        gen = ppc['gen']
-        branch = ppc['branch']
-        if ppc.has_key('gencost'):
-            areas = ppc['areas']
-            gencost = ppc['gencost']
-    else:
+    if info != 0: # error encountered
         if info == 1:
-            logger.error('loadcase: input arg should be a dict or a string '
-                'containing a filename')
+            logger.error('Input arg should be a dict or a string '
+                         'containing a filename')
         elif info == 2:
-            logger.error('loadcase: specified case not a valid file')
+            logger.error('Specified case not a valid file')
         elif info == 3:
-            logger.error('loadcase: specified MAT file does not exist')
+            logger.error('Specified MAT file does not exist')
         elif info == 4:
-            logger.error('loadcase: specified M file does not exist')
+            logger.error('Specified M file does not exist')
         elif info == 5:
-            logger.error('loadcase: syntax error or undefined data '
-                'matrix(ices) in the file')
+            logger.error('Syntax error or undefined data '
+                         'matrix(ices) in the file')
         else:
-            logger.error('loadcase: unknown error')
+            logger.error('Unknown error encountered loading case.')
 
-    return baseMVA, bus, gen, branch, areas, gencost, info
+        return info
+
+    return ppc

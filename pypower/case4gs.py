@@ -45,8 +45,8 @@ def case4gs():
     # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
     # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
     ppc["gen"] = array([
-        [4, 318, 0, 100, -100, 1.02, 100, 1, 318, 0],
-        [1, 0,   0, 100, -100, 1,    100, 1, 0,   0]
+        [4, 318, 0, 100, -100, 1.02, 100, 1, 318, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0,   0, 100, -100, 1,    100, 1, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ])
 
     ## branch data

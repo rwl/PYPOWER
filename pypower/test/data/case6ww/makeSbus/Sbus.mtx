@@ -1,0 +1,9 @@
+%%MatrixMarket matrix array complex general
+%case6ww Sbus
+6 1
+ 0  0
+ 0.5  0
+ 0.6  0
+-0.7 -0.7
+-0.7 -0.7
+-0.7 -0.7

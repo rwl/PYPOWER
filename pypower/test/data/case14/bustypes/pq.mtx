@@ -1,0 +1,12 @@
+%%MatrixMarket matrix array real general
+%case14 PQ bus indices
+9 1
+ 4
+ 5
+ 7
+ 9
+ 10
+ 11
+ 12
+ 13
+ 14
