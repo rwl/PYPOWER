@@ -1,5 +1,5 @@
-# Copyright [C] 1996-2010 Power System Engineering Research Center
-# Copyright [C] 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 1996-2010 Power System Engineering Research Center
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 [the "License"]
 # you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 from numpy import zeros
 from numpy import flatnonzero as find
 
-from pypower.polycost import polycost
-from pypower.idx_cost import *
+from polycost import polycost
+from idx_cost import *
 
 def totcost(gencost, Pg):
     """ Computes total cost for generators at given output level.

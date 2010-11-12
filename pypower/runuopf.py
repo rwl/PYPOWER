@@ -1,5 +1,5 @@
-# Copyright [C] 1996-2010 Power System Engineering Research Center
-# Copyright [C] 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 1996-2010 Power System Engineering Research Center
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 [the "License"]
 # you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
 
 import logging
 
-from pypower.ppoption import ppoption
-from pypower.uopf import uopf
-from pypower.printpf import printpf
-from pypower.savecase import savecase
+from ppoption import ppoption
+from uopf import uopf
+from printpf import printpf
+from savecase import savecase
 
 logger = logging.getLogger(__name__)
 

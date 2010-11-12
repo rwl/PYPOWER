@@ -20,12 +20,12 @@ from scipy.sparse import \
 
 from scipy.sparse.linalg import spsolve
 
-from pypower.dSbus_dV import dSbus_dV
-from pypower.dSbr_dV import dSbr_dV
+from dSbus_dV import dSbus_dV
+from dSbr_dV import dSbr_dV
 
-from pypower.idx_bus import *
-from pypower.idx_brch import *
-from pypower.idx_gen import *
+from idx_bus import *
+from idx_brch import *
+from idx_gen import *
 
 
 def doSE(baseMVA, bus, gen, branch, Ybus, Yf, Yt, V0, ref, pv, pq, measure, idx, sigma):

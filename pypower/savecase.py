@@ -1,5 +1,5 @@
-# Copyright [C] 1996-2010 Power System Engineering Research Center
-# Copyright [C] 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 1996-2010 Power System Engineering Research Center
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 [the "License"]
 # you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ import logging
 from numpy import array, c_, r_
 from scipy.io import savemat
 
-from pypower.run_userfcn import run_userfcn
+from run_userfcn import run_userfcn
 
-from pypower.idx_bus import *
-from pypower.idx_gen import *
-from pypower.idx_brch import *
-from pypower.idx_area import *
-from pypower.idx_cost import *
+from idx_bus import *
+from idx_gen import *
+from idx_brch import *
+from idx_area import *
+from idx_cost import *
 
 logger = logging.getLogger(__name__)
 

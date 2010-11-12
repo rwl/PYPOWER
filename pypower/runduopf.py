@@ -1,5 +1,5 @@
-# Copyright [C] 1996-2010 Power System Engineering Research Center
-# Copyright [C] 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 1996-2010 Power System Engineering Research Center
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 [the "License"]
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pypower.ppoption import ppoption
-from pypower.runuopf import runuopf
+from ppoption import ppoption
+from runuopf import runuopf
 
 def runduopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     """ Runs a DC optimal power flow with unit-decommitment heuristic.

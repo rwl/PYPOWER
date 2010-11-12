@@ -18,15 +18,15 @@ from time import time
 from numpy import copy
 from numpy import flatnonzero as find
 
-from pypower.opf_args import opf_args
-from pypower.ppoption import ppoption
-from pypower.isload import isload
-from pypower.totcost import totcost
-from pypower.fairmax import fairmax
-from pypower.opf import opf
+from opf_args import opf_args
+from ppoption import ppoption
+from isload import isload
+from totcost import totcost
+from fairmax import fairmax
+from opf import opf
 
-from pypower.idx_bus import *
-from pypower.idx_gen import *
+from idx_bus import *
+from idx_gen import *
 
 def uopf(*args, **kw_args):
     """ Solves combined unit decommitment / optimal power flow.

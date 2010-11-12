@@ -1,5 +1,5 @@
-# Copyright [C] 1996-2010 Power System Engineering Research Center
-# Copyright [C] 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 1996-2010 Power System Engineering Research Center
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 [the "License"]
 # you may not use this file except in compliance with the License.
@@ -19,27 +19,27 @@ from time import time
 from numpy import r_, c_, zeros, pi, ones, exp, argmax
 from numpy import flatnonzero as find
 
-from pypower.bustypes import bustypes
-from pypower.ext2int import ext2int
-from pypower.loadcase import loadcase
-from pypower.ppoption import ppoption
-from pypower.ppver import ppver
-from pypower.makeBdc import makeBdc
-from pypower.makeSbus import makeSbus
-from pypower.dcpf import dcpf
-from pypower.makeYbus import makeYbus
-from pypower.newtonpf import newtonpf
-from pypower.fdpf import fdpf
-from pypower.gausspf import gausspf
-from pypower.makeB import makeB
-from pypower.pfsoln import pfsoln
-from pypower.printpf import printpf
-from pypower.savecase import savecase
-from pypower.int2ext import int2ext
+from bustypes import bustypes
+from ext2int import ext2int
+from loadcase import loadcase
+from ppoption import ppoption
+from ppver import ppver
+from makeBdc import makeBdc
+from makeSbus import makeSbus
+from dcpf import dcpf
+from makeYbus import makeYbus
+from newtonpf import newtonpf
+from fdpf import fdpf
+from gausspf import gausspf
+from makeB import makeB
+from pfsoln import pfsoln
+from printpf import printpf
+from savecase import savecase
+from int2ext import int2ext
 
-from pypower.idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PQ
-from pypower.idx_brch import PF, PT, QF, QT
-from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
+from idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PQ
+from idx_brch import PF, PT, QF, QT
+from idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 
 logger = logging.getLogger(__name__)
 

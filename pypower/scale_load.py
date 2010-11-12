@@ -1,5 +1,5 @@
-# Copyright [C] 1996-2010 Power System Engineering Research Center
-# Copyright [C] 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 1996-2010 Power System Engineering Research Center
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 [the "License"]
 # you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix
 
-from pypower.isload import isload
+from isload import isload
 
-from pypower.idx_bus import PD, QD, BUS_AREA
-from pypower.idx_gen import PG, QG, QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
+from idx_bus import PD, QD, BUS_AREA
+from idx_gen import PG, QG, QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
 
 logger = logging.getLogger(__name__)
 
