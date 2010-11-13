@@ -1,17 +1,19 @@
-# Copyright (C) 2009-2010 Power System Engineering Research Center
-# Copyright (C) 2010 Richard Lincoln
+# Copyright (C) 2009-2010 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
 
 from numpy import array, flatnonzero, Inf, any, isnan, ones, r_, finfo, \
     zeros, dot, absolute
@@ -79,7 +81,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 
     Ported by Richard Lincoln from the MATLAB Interior Point Solver (MIPS)
     (v1.9) by Ray Zimmerman.  MIPS is distributed as part of the MATPOWER
-    project, developed at the Power System Engineering Research Center (PSERC),
+    project, developed at the Power System Engineering Research Center (PSERC) (PSERC),
     Cornell. See U{http://www.pserc.cornell.edu/matpower/} for more info.
     MIPS was ported by Ray Zimmerman from C code written by H. Wang for his
     PhD dissertation:
@@ -170,7 +172,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
                    - C{upper} - upper bound on optimization variables
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
-    @license: Apache License version 2.0
+    @license: LGPL version 2.1
     """
     nx = x0.shape[0]                        # number of variables
     nA = A.shape[0] if A is not None else 0 # number of original linear constr
