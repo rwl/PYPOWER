@@ -17,8 +17,8 @@
 
 import logging
 
-from numpy import ones, nonzero, r_, pi
-from scipy.sparse import csr_matrix
+from numpy import ones, r_, pi, flatnonzero as find
+from scipy.sparse import csr_matrix as sparse
 
 from idx_bus import BUS_I
 from idx_brch import F_BUS, T_BUS, BR_X, TAP, SHIFT, BR_STATUS
@@ -59,7 +59,7 @@ def makeBdc(baseMVA, bus, branch):
     stat = branch[:, BR_STATUS]               ## ones at in-service branches
     b = stat / branch[:, BR_X]                ## series susceptance
     tap = ones(nl)                            ## default tap ratio = 1
-    i = nonzero(branch[:, TAP])               ## indices of non-zero tap ratios
+    i = find(branch[:, TAP])               ## indices of non-zero tap ratios
     tap[i] = branch[i, TAP]                   ## assign non-zero tap ratios
     b = b / tap
 
@@ -68,11 +68,11 @@ def makeBdc(baseMVA, bus, branch):
     t = branch[:, T_BUS]                           ## list of "to" buses
     i = r_[range(nl), range(nl)]                   ## double set of row indices
     ## connection matrix
-    Cft = csr_matrix((r_[ones(nl, 1), -ones(nl, 1)], (i, r_[f, t])), (nl, nb))
+    Cft = sparse((r_[ones(nl), -ones(nl)], (i, r_[f, t])), (nl, nb))
 
     ## build Bf such that Bf * Va is the vector of real branch powers injected
     ## at each branch's "from" bus
-    Bf = csr_matrix((r_[b, -b], (i, r_[f, t])))## = spdiags(b, 0, nl, nl) * Cft
+    Bf = sparse((r_[b, -b], (i, r_[f, t])))## = spdiags(b, 0, nl, nl) * Cft
 
     ## build Bbus
     Bbus = Cft.T * Bf

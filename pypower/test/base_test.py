@@ -22,7 +22,8 @@ from scipy.io.mmio import mmread
 
 from numpy import allclose
 
-from pypower import idx_bus, idx_gen, idx_brch, loadcase, ext2int, bustypes
+from pypower import \
+    idx_bus, idx_gen, idx_brch, loadcase, ext2int, bustypes, makeBdc
 
 DATA_DIR = join(dirname(__file__), "data")
 
@@ -49,13 +50,19 @@ class _BaseTestCase(unittest.TestCase):
         self.case = None
         self.opf = None
 
+        self.path = ""
+
+
+    def setUp(self):
+        """ The test runner will execute this method prior to each test.
+        """
+        self.case_path = join(dirname(loadcase.__file__), self.case_name)
+
 
     def test_loadcase(self):
         """Test loading a case.
         """
-        path = join(dirname(loadcase.__file__), self.case_name)
-
-        ppc = loadcase.loadcase(path)
+        ppc = loadcase.loadcase(self.case_path)
 
         self.compare_case(ppc, "loadcase")
 
@@ -63,8 +70,7 @@ class _BaseTestCase(unittest.TestCase):
     def test_ext2int(self):
         """Test conversion from external to internal indexing.
         """
-        path = join(dirname(loadcase.__file__), self.case_name)
-        ppc = loadcase.loadcase(path)
+        ppc = loadcase.loadcase(self.case_path)
         ppc = ext2int.ext2int(ppc)
 
         self.compare_case(ppc, "ext2int")
@@ -73,9 +79,7 @@ class _BaseTestCase(unittest.TestCase):
     def test_bustypes(self):
         """Test bus index lists.
         """
-        path = join(dirname(loadcase.__file__), self.case_name)
-
-        ppc = loadcase.loadcase(path)
+        ppc = loadcase.loadcase(self.case_path)
         ppc = ext2int.ext2int(ppc)
         ref, pv, pq = bustypes.bustypes(ppc["bus"], ppc["gen"])
 
@@ -92,6 +96,30 @@ class _BaseTestCase(unittest.TestCase):
         self.assertTrue(self.equal(ref, ref_mp.T))
         self.assertTrue(self.equal(pv, pv_mp.T))
         self.assertTrue(self.equal(pq, pq_mp.T))
+
+
+    def test_makeBdc(self):
+        """Test B matrices and phase shift injections.
+        """
+        ppc = loadcase.loadcase(self.case_path)
+        ppc = ext2int.ext2int(ppc)
+
+        Bbus, Bf, Pbusinj, Pfinj = makeBdc.makeBdc(ppc["baseMVA"], ppc["bus"],
+                                                   ppc["branch"])
+
+        path = join(DATA_DIR, self.case_name, "makeBdc")
+
+        Bbus_mp = mmread(join(path, "Bbus.mtx"))
+        self.assertTrue(self.equal(Bbus.todense(), Bbus_mp.todense()))
+
+        Bf_mp = mmread(join(path, "Bf.mtx"))
+        self.assertTrue(self.equal(Bf.todense(), Bf_mp.todense()))
+
+        Pbusinj_mp = mmread(join(path, "Pbusinj.mtx"))
+        self.assertTrue(self.equal(Pbusinj, Pbusinj_mp))
+
+        Pfinj_mp = mmread(join(path, "Pfinj.mtx"))
+        self.assertTrue(self.equal(Pfinj, Pfinj_mp))
 
 
     def compare_case(self, ppc, dir):
