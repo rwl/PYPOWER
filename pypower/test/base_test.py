@@ -20,7 +20,7 @@ from scipy.io.mmio import mmread
 
 from numpy import allclose
 
-from pypower import loadcase
+from pypower import loadcase, ext2int
 
 DATA_DIR = join(dirname(__file__), "data")
 
@@ -52,7 +52,24 @@ class _BaseTestCase(unittest.TestCase):
 
         ppc = loadcase.loadcase(path)
 
-        dir = join(DATA_DIR, self.case_name, "loadcase")
+        self.compare_case(ppc, "loadcase")
+
+
+    def test_ext2int(self):
+        """Test conversion from external to internal indexing.
+        """
+        path = join(dirname(loadcase.__file__), self.case_name)
+        ppc = loadcase.loadcase(path)
+        ppc = ext2int.ext2int(ppc)
+
+        self.compare_case(ppc, "ext2int")
+
+
+    def compare_case(self, ppc, dir):
+        """Compares the given case against MATPOWER data in the given directory.
+        """
+
+        dir = join(DATA_DIR, self.case_name, dir)
 
         baseMVA_mp = mmread(join(dir, "baseMVA.mtx"))
         self.assertAlmostEqual(ppc["baseMVA"], baseMVA_mp, self.atol)
