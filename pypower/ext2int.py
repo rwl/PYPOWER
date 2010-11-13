@@ -15,7 +15,7 @@
 
 import logging
 
-from numpy import array, copy, zeros, sort, flatnonzero as find
+from numpy import array, copy, zeros, argsort, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
 from idx_bus import PQ, PV, REF, NONE, BUS_I, BUS_TYPE
@@ -179,8 +179,9 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
                     o["bus"]["e2i"][ppc["areas"][:, PRICE_REF_BUS].astype(int)]
 
             ## reorder gens in order of increasing bus number
-            _, o["gen"]["e2i"] = sort(ppc["gen"][:, GEN_BUS])
-            _, o.gen.i2e = sort(o["gen"]["e2i"])
+            o["gen"]["e2i"] = argsort(ppc["gen"][:, GEN_BUS])
+            o["gen"]["i2e"] = argsort(o["gen"]["e2i"])
+
             ppc["gen"] = ppc["gen"][o["gen"]["e2i"].astype(int), :]
 
             if o.has_key('int'):
