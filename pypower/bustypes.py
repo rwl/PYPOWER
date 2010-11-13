@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from numpy import ones, nonzero
-from scipy.sparse import csr_matrix
+from numpy import ones, flatnonzero as find
+from scipy.sparse import csr_matrix as sparse
 
 from idx_bus import BUS_TYPE, REF, PV, PQ
 from idx_gen import GEN_BUS, GEN_STATUS
@@ -38,19 +38,19 @@ def bustypes(bus, gen):
     nb = bus.shape[0]
     ng = gen.shape[0]
     # gen connection matrix, element i, j is 1 if, generator j at bus i is ON
-    Cg = csr_matrix((gen[:, GEN_BUS],
-                     (range(ng), nonzero(gen[:, GEN_STATUS] > 0))), (nb, ng))
+    Cg = sparse((gen[:, GEN_STATUS] > 0,
+                 (gen[:, GEN_BUS], range(ng))), (nb, ng))
     # number of generators at each bus that are ON
-    bus_gen_status = Cg * ones(ng)
+    bus_gen_status = (Cg * ones(ng, int)).astype(bool)
 
     # form index lists for slack, PV, and PQ buses
-    ref = nonzero(bus[:, BUS_TYPE] == REF & bus_gen_status) # ref bus index
-    pv  = nonzero(bus[:, BUS_TYPE] == PV  & bus_gen_status) # PV bus indices
-    pq  = nonzero(bus[:, BUS_TYPE] == PQ | ~bus_gen_status) # PQ bus indices
+    ref = find((bus[:, BUS_TYPE] == REF) & bus_gen_status) # ref bus index
+    pv  = find((bus[:, BUS_TYPE] == PV)  & bus_gen_status) # PV bus indices
+    pq  = find((bus[:, BUS_TYPE] == PQ) | ~bus_gen_status) # PQ bus indices
 
     # pick a new reference bus if for some reason there is none (may have been
     # shut down)
-    if not ref.any():
+    if len(ref) == 0:
         ref = pv[0]      # use the first PV bus
         pv = pv[1:]      # take it off PV list
 

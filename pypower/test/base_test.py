@@ -20,7 +20,7 @@ from scipy.io.mmio import mmread
 
 from numpy import allclose
 
-from pypower import loadcase, ext2int
+from pypower import idx_bus, idx_gen, idx_brch, loadcase, ext2int, bustypes
 
 DATA_DIR = join(dirname(__file__), "data")
 
@@ -40,6 +40,9 @@ class _BaseTestCase(unittest.TestCase):
 
         #: Absolute tolerance for equality (see allclose notes).
         self.atol = 1e-08
+
+        #: Number of decimal places to round to for float equality.
+        self.places = 7
 
         self.case = None
         self.opf = None
@@ -65,36 +68,64 @@ class _BaseTestCase(unittest.TestCase):
         self.compare_case(ppc, "ext2int")
 
 
+    def test_bustypes(self):
+        """Test bus index lists.
+        """
+        path = join(dirname(loadcase.__file__), self.case_name)
+
+        ppc = loadcase.loadcase(path)
+        ppc = ext2int.ext2int(ppc)
+        ref, pv, pq = bustypes.bustypes(ppc["bus"], ppc["gen"])
+
+        path = join(DATA_DIR, self.case_name, "bustypes")
+        ref_mp = mmread(join(path, "ref.mtx"))
+        pv_mp = mmread(join(path, "pv.mtx"))
+        pq_mp = mmread(join(path, "pq.mtx"))
+
+        # Adjust for MATLAB 1 (one) based indexing.
+        ref += 1
+        pv += 1
+        pq += 1
+
+        self.assertTrue(self.equal(ref, ref_mp.T))
+        self.assertTrue(self.equal(pv, pv_mp.T))
+        self.assertTrue(self.equal(pq, pq_mp.T))
+
+
     def compare_case(self, ppc, dir):
         """Compares the given case against MATPOWER data in the given directory.
         """
+        # Adjust for MATLAB 1 (one) based indexing.
+        ppc["bus"][:, idx_bus.BUS_I] += 1
+        ppc["gen"][:, idx_gen.GEN_BUS] += 1
+        ppc["branch"][:, idx_brch.F_BUS] += 1
+        ppc["branch"][:, idx_brch.T_BUS] += 1
 
-        dir = join(DATA_DIR, self.case_name, dir)
+        path = join(DATA_DIR, self.case_name, dir)
 
-        baseMVA_mp = mmread(join(dir, "baseMVA.mtx"))
-        self.assertAlmostEqual(ppc["baseMVA"], baseMVA_mp, self.atol)
+        baseMVA_mp = mmread(join(path, "baseMVA.mtx"))
+        self.assertAlmostEqual(ppc["baseMVA"], baseMVA_mp[0][0], self.places)
 
         if "version" in ppc:
-            version_mp = mmread(join(dir, "version.mtx"))
+            version_mp = mmread(join(path, "version.mtx"))
             self.assertEqual(ppc["version"], str(int(version_mp[0][0])))
 
-        bus_mp = mmread(join(dir, "bus.mtx"))
-        self.assertTrue(self.equal(ppc["bus"], bus_mp))
+        bus_mp = mmread(join(path, "bus.mtx"))
+        self.assertTrue(self.equal(ppc["bus"], bus_mp), dir)
 
-        gen_mp = mmread(join(dir, "gen.mtx"))
+        gen_mp = mmread(join(path, "gen.mtx"))
+        self.assertTrue(self.equal(ppc["gen"], gen_mp), dir)
 
-        self.assertTrue(self.equal(ppc["gen"], gen_mp))
-
-        branch_mp = mmread(join(dir, "branch.mtx"))
-        self.assertTrue(self.equal(ppc["branch"], branch_mp))
+        branch_mp = mmread(join(path, "branch.mtx"))
+        self.assertTrue(self.equal(ppc["branch"], branch_mp), dir)
 
         if "areas" in ppc:
-            areas_mp = mmread(join(dir, "gencost.mtx"))
-            self.assertTrue(self.equal(ppc["areas"], areas_mp))
+            areas_mp = mmread(join(path, "gencost.mtx"))
+            self.assertTrue(self.equal(ppc["areas"], areas_mp), dir)
 
         if "gencost" in ppc:
-            gencost_mp = mmread(join(dir, "gencost.mtx"))
-            self.assertTrue(self.equal(ppc["gencost"], gencost_mp))
+            gencost_mp = mmread(join(path, "gencost.mtx"))
+            self.assertTrue(self.equal(ppc["gencost"], gencost_mp), dir)
 
 
     def equal(self, a, b):
