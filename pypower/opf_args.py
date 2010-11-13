@@ -23,7 +23,7 @@ from scipy.sparse import spmatrix
 from ppoption import ppoption
 from loadcase import loadcase
 
-logger = logging.gerLogger(__name__)
+logger = logging.getLogger(__name__)
 
 def opf_args(*args):
     """Parses and initializes OPF input arguments.

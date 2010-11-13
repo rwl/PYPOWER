@@ -2,3 +2,7 @@
 .project
 .pydevproject
 *~
+build/
+dist/
+PYPOWER.egg-info/
+api/
