@@ -1,0 +1,4 @@
+include LICENSE
+include README
+include pydyn/test/data/*.mtx
+include pypower/test/data/*.mtx
