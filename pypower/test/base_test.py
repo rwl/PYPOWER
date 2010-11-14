@@ -20,10 +20,11 @@ from os.path import join, dirname
 
 from scipy.io.mmio import mmread
 
-from numpy import allclose
+from numpy import allclose, pi
 
 from pypower import \
-    idx_bus, idx_gen, idx_brch, loadcase, ext2int, bustypes, makeBdc, makeSbus
+    idx_bus, idx_gen, idx_brch, loadcase, ext2int, bustypes, makeBdc, \
+    makeSbus, dcpf
 
 DATA_DIR = join(dirname(__file__), "data")
 
@@ -134,6 +135,27 @@ class _BaseTestCase(unittest.TestCase):
 
         Sbus_mp = mmread(join(path, "Sbus.mtx"))
         self.assertTrue(self.equal(Sbus, Sbus_mp.T))
+
+
+    def test_dcpf(self):
+        """Test DC power flow.
+        """
+        ppc = loadcase.loadcase(self.case_path)
+        ppc = ext2int.ext2int(ppc)
+        ref, pv, pq = bustypes.bustypes(ppc["bus"], ppc["gen"])
+
+        Bbus, _, _, _ = makeBdc.makeBdc(ppc["baseMVA"], ppc["bus"],
+                                        ppc["branch"])
+
+        Sbus = makeSbus.makeSbus(ppc["baseMVA"], ppc["bus"], ppc["gen"])
+
+        Va0 = ppc["bus"][:, idx_bus.VA] * (pi / 180)
+        Va = dcpf.dcpf(Bbus, Sbus.real, Va0, ref, pv, pq)
+
+        path = join(DATA_DIR, self.case_name, "dcpf")
+
+        Va_mp = mmread(join(path, "Va.mtx"))
+        self.assertTrue(self.equal(Va, Va_mp.T))
 
 
     def compare_case(self, ppc, dir):

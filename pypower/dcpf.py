@@ -15,7 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
 
-from numpy import r_
+from numpy import copy, r_, matrix
 from scipy.sparse.linalg import spsolve
 
 def dcpf(B, Pbus, Va0, ref, pv, pq):
@@ -30,11 +30,12 @@ def dcpf(B, Pbus, Va0, ref, pv, pq):
     @see: L{rundcpf}, L{runpf}
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
+    pvpq = matrix(r_[pv, pq])
+
     ## initialize result vector
-    Va = Va0
+    Va = copy(Va0)
 
     ## update angles for non-reference buses
-    Va[r_[pv, pq]] = spsolve(B[r_[pv, pq], r_[pv, pq]],
-                             Pbus[r_[pv, pq]] - B[r_[pv, pq], ref] * Va0[ref])
+    Va[pvpq] = spsolve(B[pvpq.T, pvpq], Pbus[pvpq] - B[pvpq.T, ref] * Va0[ref])
 
     return Va
