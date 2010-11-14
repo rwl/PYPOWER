@@ -1,0 +1,62 @@
+============
+Introduction
+============
+
+PYPOWER is a Python port of MATPOWER_. Current features include:
+
+* DC and AC (Newton's method & Fast Decoupled) power flow,
+* DC and AC optimal power flow (OPF), and
+* State estimation.
+
+Installation
+------------
+
+PYPOWER depends upon:
+
+* Python_ 2.5 or later and
+* SciPy_ 0.7 or later.
+
+It can be easy_installed using setuptools_::
+
+  $ easy_install PYPOWER
+
+Alternatively, download and unpack the tarball and install::
+
+  $ tar zxf pypower-0.1.tar.gz
+  $ python setup.py install
+
+On UNIX systems, use sudo for the latter command if you need to install the
+scripts to a directory that requires root privileges::
+
+  $ sudo python setup.py install
+
+The development Git_ repository can be cloned from GitHub_::
+
+  $ git clone https://github.com/rwl/PYPOWER.git
+
+Using PYPOWER
+-------------
+
+Please refer to the `API documentation`_.
+
+License
+-------
+
+PYPOWER is licensed under the `GNU Lesser General Public License`_ version 2.1.
+
+Credits
+-------
+
+PYPOWER was translated from MATPOWER_ by Richard Lincoln
+(r.w.lincoln@gmail.com).  MATPOWER_ is maintained an principally developed by
+Ray Zimmerman at PSERC (Cornell).
+
+.. _Python: http://www.python.org
+.. _Setuptools: http://peak.telecommunity.com/DevCenter/setuptools
+.. _SciPy: http://www.scipy.org
+.. _MATPOWER: http://www.pserc.cornell.edu/matpower/
+.. _Git: http://git-scm.com/
+.. _GitHub: http://github.com/rwl/PYPOWER
+.. _iPython: http://ipython.scipy.org
+.. _`GNU Lesser General Public License`: http://www.gnu.org/licenses/lgpl-2.1.html
+.. _`API documentation`: http://packages.python.org/PYPOWER
