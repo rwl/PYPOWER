@@ -1,0 +1,55 @@
+This package was debianized by Richard Lincoln on
+ Mon, 21 Jun 2010 10:52:13 +0100.
+
+It was downloaded from http://www.github.com/rwl/PYPOWER
+
+Upstream Author:
+
+    Richard Lincoln
+
+Files: *
+Copyright:
+	1996-2010 Power System Engineering Research Center (PSERC)
+    2009-2010, Richard Lincoln
+License: GNU Lesser General Public License 2.1
+
+Files: debian/*
+Copyright:
+    2010, Richard Lincoln
+License:  GNU Lesser General Public License 2.1
+
+License:  GNU Lesser General Public License 2.1
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
+
+License: MATPOWER v4.0b2 or earlier
+- MATPOWER is free of charge. Anyone may use it.
+- We make no warranties, express or implied. Specifically, we make no
+  guarantees regarding the correctness MATPOWER's code or its fitness for any
+  particular purpose.
+- Any publications derived from the use of MATPOWER must acknowledge MATPOWER
+  and cite [1].
+- Anyone may modify MATPOWER for their own use as long as the original
+  copyright notices remain in place.
+- MATPOWER may not be redistributed without written permission.
+- Modified versions of MATPOWER, or works derived from MATPOWER, may not be
+  distributed without written permission.
+
+[1]  R. D. Zimmerman, C. E. Murillo-S‡nchez, and R. J. Thomas,
+     "MATPOWER's Extensible Optimal Power Flow Architecture," Power
+     and Energy Society General Meeting, 2009 IEEE, pp. 1Ð7,
+     July 26Ð30 2009.
+
+On Debian systems, the complete text of the GNU Lesser General Public
+License 2.1 can be found in `/usr/share/common-licenses/LGPL-2.1'.

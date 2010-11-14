@@ -1,0 +1,17 @@
+Source: pypower
+Maintainer: Richard Lincoln <r.w.lincoln@gmail.com>
+Section: python
+Priority: optional
+Build-Depends: python-setuptools (>= 0.6b3), debhelper (>=7.0.50~), python-support (>= 0.6)
+XS-Python-Version: current
+Standards-Version: 3.7.2
+Vcs-Git: git://github.com/rwl/PYPOWER.git
+Vcs-browser: http://github.com/rwl/PYPOWER.git
+Homepage: http://rwl.github.com/PYPOWER
+
+Package: python-pypower
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, python-scipy (>=0.7.2)
+XB-Python-Version: ${python:Versions}
+Provides: ${python:Provides}
+Description: Power flow and optimal power flow.
