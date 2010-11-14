@@ -23,7 +23,7 @@ from scipy.io.mmio import mmread
 from numpy import allclose
 
 from pypower import \
-    idx_bus, idx_gen, idx_brch, loadcase, ext2int, bustypes, makeBdc
+    idx_bus, idx_gen, idx_brch, loadcase, ext2int, bustypes, makeBdc, makeSbus
 
 DATA_DIR = join(dirname(__file__), "data")
 
@@ -120,6 +120,20 @@ class _BaseTestCase(unittest.TestCase):
 
         Pfinj_mp = mmread(join(path, "Pfinj.mtx"))
         self.assertTrue(self.equal(Pfinj, Pfinj_mp))
+
+
+    def test_makeSbus(self):
+        """Test vector of complex bus power injections.
+        """
+        ppc = loadcase.loadcase(self.case_path)
+        ppc = ext2int.ext2int(ppc)
+
+        Sbus = makeSbus.makeSbus(ppc["baseMVA"], ppc["bus"], ppc["gen"])
+
+        path = join(DATA_DIR, self.case_name, "makeSbus")
+
+        Sbus_mp = mmread(join(path, "Sbus.mtx"))
+        self.assertTrue(self.equal(Sbus, Sbus_mp.T))
 
 
     def compare_case(self, ppc, dir):

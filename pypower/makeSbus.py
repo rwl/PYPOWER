@@ -15,8 +15,8 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
 
-from numpy import ones, nonzero
-from scipy.sparse import csr_matrix
+from numpy import ones, flatnonzero as find
+from scipy.sparse import csr_matrix as sparse
 
 from idx_bus import PD, QD
 from idx_gen import GEN_BUS, PG, QG, GEN_STATUS
@@ -32,14 +32,14 @@ def makeSbus(baseMVA, bus, gen):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## generator info
-    on = nonzero(gen[:, GEN_STATUS] > 0)      ## which generators are on?
+    on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?
     gbus = gen[on, GEN_BUS]                   ## what buses are they at?
 
     ## form net complex bus power injection vector
     nb = bus.shape[0]
     ngon = on.shape[0]
     ## connection matrix, element i, j is 1 if gen on(j) at bus i is ON
-    Cg = csr_matrix((ones(ngon), (gbus, range(ngon))), (nb, ngon))
+    Cg = sparse((ones(ngon), (gbus, range(ngon))), (nb, ngon))
 
     ## power injected by gens plus power injected by loads converted to p.u.
     Sbus = ( Cg * (gen[on, PG] + 1j * gen[on, QG]) -
