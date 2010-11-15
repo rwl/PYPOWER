@@ -16,10 +16,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
 
 import logging
+
 from time import time
 
-from numpy import r_, c_, zeros, pi, ones, exp, argmax
-from numpy import flatnonzero as find
+from numpy import r_, c_, zeros, pi, ones, exp, argmax, flatnonzero as find
 
 from bustypes import bustypes
 from ext2int import ext2int
@@ -60,7 +60,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     options among other things. If the 3rd argument is given the pretty
     printed output will be apped to the file whose name is given in
     fname. If solvedcase is specified the solved case will be written to a
-    case file in MATPOWER format with the specified name. If solvedcase
+    case file in PYPOWER format with the specified name. If solvedcase
     s with '.mat' it saves the case as a MAT-file otherwise it saves it
     as an M-file.
 
@@ -89,11 +89,14 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
 
     ## add zero columns to branch for flows if needed
     if ppc["branch"].shape[1] < QT:
-        ppc["branch"] = c_[ppc["branch"], zeros[ppc["branch"].shape[0], QT-ppc["branch"].shape[1]]]
+        ppc["branch"] = c_[ppc["branch"],
+                           zeros((ppc["branch"].shape[0],
+                                  QT - ppc["branch"].shape[1] + 1))]
 
     ## convert to internal indexing
     ppc = ext2int(ppc)
-    baseMVA, bus, gen, branch = ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"]
+    baseMVA, bus, gen, branch = \
+        ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"]
 
     ## get bus index lists of each type of bus
     ref, pv, pq = bustypes(bus, gen)
@@ -126,7 +129,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         Va = dcpf(B, Pbus, Va0, ref, pv, pq)
 
         ## update data matrices with solution
-        branch[:, [QF, QT]] = zeros(branch.shape[0], 2)
+        branch[:, [QF, QT]] = zeros((branch.shape[0], 2))
         branch[:, PF] = (Bf * Va + Pfinj) * baseMVA
         branch[:, PT] = -branch[:, PF]
         bus[:, VM] = ones(bus.shape[0])
@@ -135,7 +138,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         ##      Pg = Pinj + Pload + Gs
         ##      newPg = oldPg + newPinj - oldPinj
         refgen = find(gbus == ref)             ## which is[are] the reference gen[s]?
-        gen[on[refgen[1]], PG] = gen[on[refgen[1]], PG] + (B[ref, :] * Va - Pbus[ref]) * baseMVA
+        gen[on[refgen[0]], PG] = gen[on[refgen[0]], PG] + (B[ref, :] * Va - Pbus[ref]) * baseMVA
 
         success = 1
     else:                                ## AC formulation

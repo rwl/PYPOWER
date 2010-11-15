@@ -69,7 +69,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             ppopt = ppoption   ## use default options
         else:
             ppopt = gen
-        if ppopt[32] == 0 & ppopt[43] == 0:     ## OUT_ALL or OUT_RAW
+        if ppopt['OUT_ALL'] == 0 and ppopt['OUT_RAW'] == 0:
             return     ## nothin' to see here, bail out now
         if bus is None:
             fd = 1         ## print to stdio by default

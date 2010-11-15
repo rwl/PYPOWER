@@ -24,7 +24,7 @@ from numpy import allclose, pi
 
 from pypower import \
     idx_bus, idx_gen, idx_brch, loadcase, ext2int, bustypes, makeBdc, \
-    makeSbus, dcpf
+    makeSbus, dcpf, int2ext, ppoption, rundcpf
 
 DATA_DIR = join(dirname(__file__), "data")
 
@@ -158,6 +158,27 @@ class _BaseTestCase(unittest.TestCase):
         self.assertTrue(self.equal(Va, Va_mp.T))
 
 
+    def test_int2ext(self):
+        """Test conversion from internal to external indexing.
+        """
+        ppc = loadcase.loadcase(self.case_path)
+        ppc = ext2int.ext2int(ppc)
+        ppc = int2ext.int2ext(ppc)
+
+        self.compare_case(ppc, "int2ext")
+
+
+    def test_rundcpf(self):
+        """ Test running a DC power flow.
+        """
+        ppopt = ppoption.ppoption
+        ppopt['OUT_ALL'] = ppopt['VERBOSE'] = 0
+
+        results, _ = rundcpf.rundcpf(self.case_path, ppopt)
+
+        self.compare_case(results, "rundcpf")
+
+
     def compare_case(self, ppc, dir):
         """Compares the given case against MATPOWER data in the given directory.
         """
@@ -199,9 +220,9 @@ class _BaseTestCase(unittest.TestCase):
         """
         # If the following equation is element-wise True, then allclose returns
         # True.
-
+        #
         # absolute(`a` - `b`) <= (`atol` + `rtol` * absolute(`b`))
-
+        #
         # The above equation is not symmetric in `a` and `b`, so that
         # `allclose(a, b)` might be different from `allclose(b, a)` in
         # some rare cases.
