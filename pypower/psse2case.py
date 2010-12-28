@@ -14,18 +14,17 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
 
+import os
 import logging
-
-from os.path import basename, splitext, isfile
-
 import csv
 
-from numpy import array
+from numpy import zeros, r_
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_VERSION = 31
-SUPPORTED_VERSIONS = [29, 30 , 31]
+SUPPORTED_VERSIONS = [29, 30 , 31, 32]
+
 
 def psse2case(casefile, version=None, delimiter=None):
     """ Returns a dict containing case data matrices as values.
@@ -33,7 +32,7 @@ def psse2case(casefile, version=None, delimiter=None):
     if isinstance(casefile, dict):
         ppc = casefile
     elif isinstance(casefile, basestring):
-        fname = basename(casefile)
+        fname = os.path.basename(casefile)
         logger.info("Loading PSS/E Raw file [%s]." % fname)
 
         fd = None
@@ -44,21 +43,95 @@ def psse2case(casefile, version=None, delimiter=None):
             return None
         finally:
             if file is not None:
-                ppc = _parse_file(file, version, delimiter)
+                ppc = _parse_file(fd, version, delimiter)
                 fd.close()
     else:
         ppc = _parse_file(casefile, version, delimiter)
 
     return ppc
 
+
 def _parse_file(fd, version, delimiter):
     sep = _delimiter(fd) if delimiter is None else delimiter
     ver = _version(fd, sep) if version is None else version
 
-    ppc = {}
+    fd.seek(0)
+    reader = csv.reader(fd, delimiter=sep, skipinitialspace=True)
 
+    baseMVA = _parse_header(reader)
+    busdata, busmap = _parse_buses(reader, ver)
+#    _parse_branches(reader, ver, busmap)
+
+    ppc = {
+        "baseMVA": baseMVA,
+#        "bus": busdata
+    }
 
     return ppc
+
+
+def _parse_header(reader):
+    """Reads the first three lines of the file and returns the system base MVA.
+    """
+    h0 = reader.next()
+    _ = reader.next()
+    _ = reader.next()
+
+    assert (h0[0] == "0") or (h0[0] == "1")
+
+    # v29-30: IC, SBASE
+    # v31-32: IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ
+    baseMVA = float(h0[1])
+
+    return baseMVA
+
+
+def _parse_buses(reader, version):
+    # v29-30: I, 'NAME', BASKV, IDE, GL, BL, AREA, ZONE, VM, VA, OWNER
+    # v31-32: I, 'NAME', BASKV, IDE, AREA, ZONE, OWNER, VM, VA
+    # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin
+
+    buses = zeros((0, 13))
+    busmap = {}
+    c = 0
+
+    busdata = reader.next()
+    # 0 / END OF BUS DATA, BEGIN LOAD DATA
+    while busdata[0].split("/")[0].strip() != "0":
+        bus = zeros((1, 13))
+
+        i = int(busdata[0])
+        busmap[i] = c
+
+        bus[0, 0] = i
+        bus[0, 1] = float(busdata[3]) # type
+        bus[0, 2] = 0.0 # Pd (see _parse_loads)
+        bus[0, 3] = 0.0 # Qd (see _parse_loads)
+        if version in [29, 30]:
+            bus[0, 4] = float(busdata[4])  # Gs
+            bus[0, 5] = float(busdata[5])  # Bs
+            bus[0, 6] = int(busdata[6])    # area
+            bus[0, 7] = float(busdata[8])  # Vm
+            bus[0, 8] = float(busdata[9])  # Va
+            bus[0, 10] = float(busdata[7]) # zone
+        elif version in [31, 32]:
+            bus[0, 6] = int(busdata[4])    # area
+            bus[0, 7] = float(busdata[7])  # Vm
+            bus[0, 8] = float(busdata[8])  # Va
+            bus[0, 10] = float(busdata[5]) # zone
+        bus[0, 9] = float(busdata[2]) # baseKV
+        bus[0, 11] = 1.1 # Vmax
+        bus[0, 12] = 0.9 # Vmin
+
+        buses = r_[buses, bus]
+        busdata = reader.next()
+        c += 1
+
+    return buses, busmap
+
+
+def _parse_branches(reader, ver, busmap):
+    pass
 
 
 def _delimiter(fd):
@@ -69,13 +142,13 @@ def _delimiter(fd):
     @return: Either ',' or ' '.
     """
     fd.seek(0)
-    header0 = file.next().split("/")[0]
+    header0 = fd.next().split("/")[0]
 
     if "," in header0:
-        logger.info("Assuming comma delimited data items.")
+        logger.info("Found comma delimited data items.")
         delimiter = ","
     else:
-        logger.info("Assuming data items are separated by whitespace.")
+        logger.info("Found data items separated by whitespace.")
         delimiter = " "
 
     return delimiter
@@ -108,3 +181,10 @@ def _version(fd, delimiter):
             version = DEFAULT_VERSION
 
     return version
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    ppc = psse2case("/tmp/bench.raw")
+
+#    import savecase
+#    savecase.savecase("/tmp/bench.m", ppc["doc"], ppc)
