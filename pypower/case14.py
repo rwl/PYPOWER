@@ -25,7 +25,7 @@ def case14():
     (ieee14cdf.txt) on 20-Sep-2004 by cdf2matp, rev. 1.11
 
     Converted from IEEE CDF file from:
-        http://www.ee.washington.edu/research/pstca/
+        U{http://www.ee.washington.edu/research/pstca/}
 
     08/19/93 UW ARCHIVE           100.0  1962 W IEEE 14 Bus Test Case
 
