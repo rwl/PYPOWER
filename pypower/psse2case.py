@@ -14,15 +14,19 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
 
+import sys
 import os
 import logging
+import optparse
 import csv
 
 from numpy import zeros, r_
 
+from scipy.io import savemat
+
 logger = logging.getLogger(__name__)
 
-DEFAULT_VERSION = 31
+DEFAULT_VERSION = 30
 SUPPORTED_VERSIONS = [29, 30 , 31, 32]
 
 
@@ -64,7 +68,7 @@ def _parse_file(fd, version, delimiter):
 
     ppc = {
         "baseMVA": baseMVA,
-#        "bus": busdata
+        "bus": busdata
     }
 
     return ppc
@@ -182,9 +186,80 @@ def _version(fd, delimiter):
 
     return version
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    ppc = psse2case("/tmp/bench.raw")
 
-#    import savecase
-#    savecase.savecase("/tmp/bench.m", ppc["doc"], ppc)
+def main():
+    parser = optparse.OptionParser(
+        usage="usage: psse2case [options] input_file")
+
+    parser.add_option("-o", "--output", dest="output", metavar="FILE",
+        help="Write the case to FILE.")
+
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
+        default=False, help="Print more information.")
+
+    parser.add_option("-d", "--debug", action="store_true", dest="debug",
+        default=False, help="Print debug information.")
+
+    parser.add_option("-r", "--revision",
+        metavar="REV", dest="revision",
+        help="Indicates the PSS/E raw file format version. The "
+        "versions which are currently supported are: %s  If no version "
+        "is specified then an attempt to determine the value from the "
+        "file header is made. If unsuccessful the default version [%s] is "
+        "used." % (SUPPORTED_VERSIONS, DEFAULT_VERSION))
+
+    parser.add_option("-s", "--separator",
+        metavar="SEP", dest="delimiter",
+        help="Indicates how data items are separated in the case file. The "
+        "types which are supported are: 'comma' and 'space'  If no separator "
+        "is specified then it is determined from the file header.")
+
+    (options, args) = parser.parse_args()
+
+    # Logging level.
+    level = logging.INFO if options.verbose else logging.WARNING
+    if options.debug:
+        level = logging.DEBUG
+    logging.basicConfig(level=level)
+
+    # PSS/E revision for Raw file format.
+    if options.revision:
+        revision = int(options.revision)
+    else:
+        revision = None
+
+    # PSS/E Raw file delimiter.
+    if options.delimiter:
+        if options.delimiter == "comma":
+            delimiter = ","
+        elif options.delimiter == "space":
+            delimiter = " "
+        else:
+            logger.warning("Invalid delimiter [%s]." % options.delimiter)
+            delimiter = None
+    else:
+        delimiter = None
+
+    # Input PSS/E Raw file.
+    if len(args) != 1:
+        parser.print_help()
+        sys.exit(1)
+    else:
+        infile = args[0]
+
+    # Output Matlab/GNU Octave file.
+    if options.output:
+        outfile = options.output
+    else:
+        root, _ = os.path.splitext(infile)
+        outfile = root + ".mat"
+
+    # Parse the file.
+    ppc = psse2case(infile, revision, delimiter)
+
+    # Save the PYPOWER case as a Matlab struct.
+    savemat(outfile, {"mpc": ppc}, oned_as="row")
+
+
+if __name__ == "__main__":
+    main()
