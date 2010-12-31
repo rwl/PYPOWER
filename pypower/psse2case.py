@@ -31,7 +31,7 @@ SUPPORTED_VERSIONS = [29, 30 , 31, 32]
 
 
 def psse2case(casefile, version=None, delimiter=None):
-    """ Returns a dict containing case data matrices as values.
+    """Returns a dict containing case data matrices as values.
     """
     if isinstance(casefile, dict):
         ppc = casefile
@@ -64,7 +64,7 @@ def _parse_file(fd, version, delimiter):
 
     baseMVA = _parse_header(reader)
     busdata, busmap = _parse_buses(reader, ver)
-#    _parse_branches(reader, ver, busmap)
+    busdata = _parse_loads(reader, busdata, busmap, ver)
 
     ppc = {
         "baseMVA": baseMVA,
@@ -83,8 +83,8 @@ def _parse_header(reader):
 
     assert (h0[0] == "0") or (h0[0] == "1")
 
-    # v29-30: IC, SBASE
-    # v31-32: IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ
+    # v29-30: IC, SBASE, REV / COMMENT
+    # v31-32: IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ / COMMENT
     baseMVA = float(h0[1])
 
     return baseMVA
@@ -104,10 +104,13 @@ def _parse_buses(reader, version):
     while busdata[0].split("/")[0].strip() != "0":
         bus = zeros((1, 13))
 
-        i = int(busdata[0])
+        # Map bus number and name to bus data index.
+        i = busdata[0]
+        name = busdata[1].strip("'")
         busmap[i] = c
+        busmap[name] = c
 
-        bus[0, 0] = i
+        bus[0, 0] = int(i)
         bus[0, 1] = float(busdata[3]) # type
         bus[0, 2] = 0.0 # Pd (see _parse_loads)
         bus[0, 3] = 0.0 # Qd (see _parse_loads)
@@ -131,11 +134,70 @@ def _parse_buses(reader, version):
         busdata = reader.next()
         c += 1
 
+    logger.info("%d buses found." % c)
+
     return buses, busmap
+
+
+def _parse_loads(reader, bus, busmap, version):
+    # v29-31: I, ID, STATUS, AREA, ZONE, PL, QL, IP, IQ, YP, YQ, OWNER
+    # v32:    I, ID, STATUS, AREA, ZONE, PL, QL, IP, IQ, YP, YQ, OWNER, SCALE
+    c = 0
+    loaddata = reader.next()
+    # 0 / END OF LOAD DATA, BEGIN GENERATOR DATA
+    while loaddata[0].split("/")[0].strip() != "0":
+        status = bool(loaddata[2])
+
+        if status == True:
+            i = loaddata[0]
+            idx = _busidx(i, busmap)
+
+            if idx == None:
+                loaddata = reader.next()
+                continue
+
+            # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin
+            bus[idx, 2] = float(loaddata[5]) # Pd PL
+            bus[idx, 3] = float(loaddata[6]) # Qd QL
+
+            Ip = float(loaddata[7])
+            Iq = float(loaddata[8])
+            if Ip or Iq:
+                logger.warning("Constant current load of %.2fMW (%.2fMVAr) at "
+                               "bus %s (%d) ignored." % (Ip, Iq, i, idx))
+            Yp = float(loaddata[9])
+            Yq = float(loaddata[10])
+            if Yp or Yq:
+                logger.warning("Constant admittance load of %.2fMW (%.2fMVAr) "
+                               "at bus %s (%d) ignored." % (Yp, Yq, i, idx))
+
+            if version == 32:
+                scale = float(loaddata[12])
+                if (scale != 0.0) or (scale != 1.0):
+                    logger.warning("Load at bus %s (%d) not scaled by %.2f." %
+                                   (i, idx, scale))
+
+        loaddata = reader.next()
+        c += 1
+
+    logger.info("%d loads found." % c)
+
+    return bus
 
 
 def _parse_branches(reader, ver, busmap):
     pass
+
+
+def _busidx(i, busmap):
+    i = i.strip("'")
+
+    if i in busmap:
+        return busmap[i]
+    else:
+        logger.error("Bus [%s] not found" % i)
+
+    return None
 
 
 def _delimiter(fd):
@@ -146,6 +208,8 @@ def _delimiter(fd):
     @return: Either ',' or ' '.
     """
     fd.seek(0)
+    # v29-30: IC, SBASE, REV / COMMENT
+    # v31-32: IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ / COMMENT
     header0 = fd.next().split("/")[0]
 
     if "," in header0:
@@ -174,9 +238,13 @@ def _version(fd, delimiter):
         version = DEFAULT_VERSION
         logger.info("No version info found, assuming version %d." % version)
     else:
-        # IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ
-        version = int(h0[2])
-        logger.info("Found version %d data." % version)
+        # v29-30: IC, SBASE, REV / COMMENT
+        # v31-32: IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ / COMMENT
+        if "/" in h0[2]:
+            version = int( h0[2].split("/")[0].strip() )
+        else:
+            version = int(h0[2])
+        logger.info("Version %d data found." % version)
         if version not in SUPPORTED_VERSIONS:
             logger.warning("Version %d data not currently supported. "
                 "Supported versions are: %s "
@@ -263,3 +331,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#    logging.basicConfig(level=logging.INFO)
+#    casefile = "/tmp/bench29.raw"
+#    casefile = "/tmp/bench30.raw"
+#    casefile = "/tmp/bench.raw"
+#    psse2case(casefile)
