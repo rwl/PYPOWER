@@ -57,18 +57,32 @@ def psse2case(casefile, version=None, delimiter=None):
 
 def _parse_file(fd, version, delimiter):
     sep = _delimiter(fd) if delimiter is None else delimiter
-    ver = _version(fd, sep) if version is None else version
+    rev = _version(fd, sep) if version is None else version
 
     fd.seek(0)
     reader = csv.reader(fd, delimiter=sep, skipinitialspace=True)
 
     baseMVA = _parse_header(reader)
-    busdata, busmap = _parse_buses(reader, ver)
-    busdata = _parse_loads(reader, busdata, busmap, ver)
+
+    busdata, busmap = _parse_buses(reader, rev)
+    _parse_loads(reader, busdata, busmap, rev)
+
+    if rev in [31, 32]:
+        _parse_shunt(reader)
+
+    gendata = _parse_generators(reader)
+
+    branchdata = _parse_nontransformer_branches(reader, busdata, busmap)
+    _parse_transformers(reader, branchdata, version, busmap)
+
+    if rev in [29, 30]:
+        _parse_shunt(reader, busdata)
 
     ppc = {
         "baseMVA": baseMVA,
-        "bus": busdata
+        "bus": busdata,
+        "gen": gendata,
+        "branch": branchdata
     }
 
     return ppc
@@ -95,14 +109,15 @@ def _parse_buses(reader, version):
     # v31-32: I, 'NAME', BASKV, IDE, AREA, ZONE, OWNER, VM, VA
     # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin
 
-    buses = zeros((0, 13))
+    buscol = 13
+    buses = zeros((0, buscol))
     busmap = {}
     c = 0
 
     busdata = reader.next()
     # 0 / END OF BUS DATA, BEGIN LOAD DATA
     while busdata[0].split("/")[0].strip() != "0":
-        bus = zeros((1, 13))
+        bus = zeros((1, buscol))
 
         # Map bus number and name to bus data index.
         i = busdata[0]
@@ -147,14 +162,10 @@ def _parse_loads(reader, bus, busmap, version):
     # 0 / END OF LOAD DATA, BEGIN GENERATOR DATA
     while loaddata[0].split("/")[0].strip() != "0":
         status = bool(loaddata[2])
+        i = loaddata[0]
+        idx = _busidx(i, busmap)
 
-        if status == True:
-            i = loaddata[0]
-            idx = _busidx(i, busmap)
-
-            if idx == None:
-                loaddata = reader.next()
-                continue
+        if (status == True) and (idx != None):
 
             # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin
             bus[idx, 2] = float(loaddata[5]) # Pd PL
@@ -185,7 +196,91 @@ def _parse_loads(reader, bus, busmap, version):
     return bus
 
 
-def _parse_branches(reader, ver, busmap):
+def _parse_generators(reader, busmap):
+    # v29-30: I,ID,PG,QG,QT,QB,VS,IREG,MBASE,ZR,ZX,RT,XT,GTAP,STAT,RMPCT,PT,PB,
+    #         O1,F1,....O4,F4
+    # v31-32: I,ID,PG,QG,QT,QB,VS,IREG,MBASE,ZR,ZX,RT,XT,GTAP,STAT,RMPCT,PT,PB,
+    #         O1,F1,...,O4,F4,WMOD,WPF
+    # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
+    # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
+    c = 0
+    gencol = 21
+    generators = zeros((0, gencol))
+
+    gendata = reader.next()
+    # 0 / END OF GENERATOR DATA, BEGIN NON-TRANSFORMER BRANCH DATA
+    while gendata[0].split("/")[0].strip() != "0":
+        i = gendata[0]
+        idx = _busidx(i, busmap)
+
+        if idx != None:
+            gen = zeros((1, gencol))
+
+            gen[0, 1] = float(gendata[2]) # Pg
+            gen[0, 2] = float(gendata[3]) # Qg
+            gen[0, 3] = float(gendata[4]) # Qmax
+            gen[0, 4] = float(gendata[5]) # Qmin
+            gen[0, 5] = float(gendata[6]) # Vg
+            gen[0, 6] = float(gendata[8]) # mBase
+            gen[0, 7] = float(gendata[14]) # status
+            gen[0, 8] = float(gendata[16]) # Pmax
+            gen[0, 9] = float(gendata[17]) # Pmin
+
+            generators = r_[generators, gen]
+
+        gendata = reader.next()
+        c += 1
+
+    logger.info("%d generators found." % c)
+
+    return generators
+
+
+def _parse_nontransformer_branches(reader, bus, busmap):
+    # v29-30: I,J,CKT,R,X,B,RATEA,RATEB,RATEC,GI,BI,GJ,BJ,ST,
+    #         LEN,O1,F1,...,O4,F4
+    # v31-32: I,J,CKT,R,X,B,RATEA,RATEB,RATEC,GI,BI,GJ,BJ,ST,
+    #         MET,LEN,O1,F1,...,O4,F4
+    # fbus,tbus,r,x,b,rateA,rateB,rateC,ratio,angle,status,angmin,angmax
+    c = 0
+    brchcol = 13
+    branches = zeros((0, brchcol))
+
+    brchdata = reader.next()
+    while brchdata[0].split("/")[0].strip() != "0":
+        fbus = _busidx(brchdata[0], busmap)
+        tbus = _busidx(brchdata[1], busmap)
+
+        if (fbus != None) and (tbus != None):
+            brch = zeros((1, brchcol))
+
+            brch[0, 0] = bus[fbus, 0] # fbus
+            brch[0, 1] = bus[tbus, 1] # tbus
+            brch[0, 2] = float(brchdata[3]) # r
+            brch[0, 3] = float(brchdata[4]) # x
+            brch[0, 4] = float(brchdata[5]) # b
+            brch[0, 5] = float(brchdata[6]) # rateA
+            brch[0, 6] = float(brchdata[7]) # rateB
+            brch[0, 7] = float(brchdata[8]) # rateC
+            brch[0, 10] = float(brchdata[13]) # status
+            brch[0, 11] = -360.0 # angmin
+            brch[0, 12] =  360.0 # angmax
+
+            branches = r_[branches, brch]
+
+        brchdata = reader.next()
+        c += 1
+
+    logger.info("%d branches found." % c)
+
+    return branches
+
+
+def _parse_transformers(reader, branch, version, busmap):
+    pass
+
+
+def _parse_shunt(reader):
     pass
 
 
