@@ -47,36 +47,55 @@ def psse2case(casefile, version=None, delimiter=None):
             return None
         finally:
             if file is not None:
-                ppc = _parse_file(fd, version, delimiter)
+                ppc = _parse_pf_file(fd, version, delimiter)
                 fd.close()
     else:
-        ppc = _parse_file(casefile, version, delimiter)
+        ppc = _parse_pf_file(casefile, version, delimiter)
 
     return ppc
 
+## Power Flow Raw Data File ##
 
-def _parse_file(fd, version, delimiter):
+def _parse_pf_file(fd, version, delimiter):
     sep = _delimiter(fd) if delimiter is None else delimiter
     rev = _version(fd, sep) if version is None else version
 
     fd.seek(0)
     reader = csv.reader(fd, delimiter=sep, skipinitialspace=True)
 
-    baseMVA = _parse_header(reader)
+    baseMVA = _case_identification(reader)
 
-    busdata, busmap = _parse_buses(reader, rev)
-    _parse_loads(reader, busdata, busmap, rev)
+    busdata, busmap = _bus_data(reader, rev)
+    _load_data(reader, busdata, busmap, rev)
 
     if rev in [31, 32]:
-        _parse_shunt(reader)
+        _fixed_shunt_data(reader)
 
-    gendata = _parse_generators(reader)
+    gendata = _generator_data(reader, busmap)
 
-    branchdata = _parse_nontransformer_branches(reader, busdata, busmap)
-    _parse_transformers(reader, branchdata, version, busmap)
+    branchdata = _nontransformer_branch_data(reader, busdata, busmap)
+    _transformer_data(reader, branchdata, version, busmap)
+
+    _area_interchange_data(reader)
+    _two_terminal_dc_line_data(reader)
+    _vsc_dc_lines()
 
     if rev in [29, 30]:
-        _parse_shunt(reader, busdata)
+        _switched_shunt_data(reader, busdata)
+
+    _transformer_impedance_correction_tables()
+    _multi_terminal_dc_transmission_line_data()
+    _multi_section_line_grouping_data()
+    _zone_data()
+    _interarea_transfer_data()
+    _owner_data()
+    _facts_device_data()
+
+    if rev in [31, 32]:
+        _switched_shunt_data()
+
+    if rev == 32:
+        _q_record()
 
     ppc = {
         "baseMVA": baseMVA,
@@ -88,7 +107,7 @@ def _parse_file(fd, version, delimiter):
     return ppc
 
 
-def _parse_header(reader):
+def _case_identification(reader):
     """Reads the first three lines of the file and returns the system base MVA.
     """
     h0 = reader.next()
@@ -104,7 +123,7 @@ def _parse_header(reader):
     return baseMVA
 
 
-def _parse_buses(reader, version):
+def _bus_data(reader, version):
     # v29-30: I, 'NAME', BASKV, IDE, GL, BL, AREA, ZONE, VM, VA, OWNER
     # v31-32: I, 'NAME', BASKV, IDE, AREA, ZONE, OWNER, VM, VA
     # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin
@@ -149,12 +168,12 @@ def _parse_buses(reader, version):
         busdata = reader.next()
         c += 1
 
-    logger.info("%d buses found." % c)
+    logger.info("%d bus data records." % c)
 
     return buses, busmap
 
 
-def _parse_loads(reader, bus, busmap, version):
+def _load_data(reader, bus, busmap, version):
     # v29-31: I, ID, STATUS, AREA, ZONE, PL, QL, IP, IQ, YP, YQ, OWNER
     # v32:    I, ID, STATUS, AREA, ZONE, PL, QL, IP, IQ, YP, YQ, OWNER, SCALE
     c = 0
@@ -191,19 +210,18 @@ def _parse_loads(reader, bus, busmap, version):
         loaddata = reader.next()
         c += 1
 
-    logger.info("%d loads found." % c)
+    logger.info("%d load data records." % c)
 
     return bus
 
 
-def _parse_generators(reader, busmap):
+def _generator_data(reader, busmap):
     # v29-30: I,ID,PG,QG,QT,QB,VS,IREG,MBASE,ZR,ZX,RT,XT,GTAP,STAT,RMPCT,PT,PB,
     #         O1,F1,....O4,F4
     # v31-32: I,ID,PG,QG,QT,QB,VS,IREG,MBASE,ZR,ZX,RT,XT,GTAP,STAT,RMPCT,PT,PB,
     #         O1,F1,...,O4,F4,WMOD,WPF
     # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
     # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
-    c = 0
     gencol = 21
     generators = zeros((0, gencol))
 
@@ -229,20 +247,18 @@ def _parse_generators(reader, busmap):
             generators = r_[generators, gen]
 
         gendata = reader.next()
-        c += 1
 
-    logger.info("%d generators found." % c)
+    logger.info("%d generator records." % generators.shape[0])
 
     return generators
 
 
-def _parse_nontransformer_branches(reader, bus, busmap):
+def _nontransformer_branch_data(reader, bus, busmap):
     # v29-30: I,J,CKT,R,X,B,RATEA,RATEB,RATEC,GI,BI,GJ,BJ,ST,
     #         LEN,O1,F1,...,O4,F4
     # v31-32: I,J,CKT,R,X,B,RATEA,RATEB,RATEC,GI,BI,GJ,BJ,ST,
     #         MET,LEN,O1,F1,...,O4,F4
     # fbus,tbus,r,x,b,rateA,rateB,rateC,ratio,angle,status,angmin,angmax
-    c = 0
     brchcol = 13
     branches = zeros((0, brchcol))
 
@@ -269,20 +285,116 @@ def _parse_nontransformer_branches(reader, bus, busmap):
             branches = r_[branches, brch]
 
         brchdata = reader.next()
-        c += 1
 
-    logger.info("%d branches found." % c)
+    logger.info("%d non-transformer branch records." % branches.shape[0])
 
     return branches
 
 
-def _parse_transformers(reader, branch, version, busmap):
+def _transformer_data(reader, branch, version, busmap):
     pass
 
 
-def _parse_shunt(reader):
+def _switched_shunt_data(reader, bus, version, busmap):
+    # v29-30: I,MODSW,VSWHI,VSWLO,SWREM,RMPCT,'RMIDNT',BINIT,
+    #         N1,B1,N2,B2,...N8,B8
+    # v31:    I,MODSW,VSWHI,VSWLO,SWREM,RMPCT,'RMIDNT',BINIT,
+    #         N1,B1,N2,B2,...N8,B8
+    # v32:    I,MODSW,ADJM,STAT,VSWHI,VSWLO,SWREM,RMPCT,'RMIDNT',BINIT,
+    #         N1,B1,N2,B2,...N8,B8
+    c = 0
+    shuntdata = reader.next()
+
+    while shuntdata[0].split("/")[0].strip() != "0":
+        if version == 32:
+            status = bool(shuntdata[2])
+        else:
+            status = True
+
+        idx = _busidx(shuntdata[0], busmap)
+
+        if (status == True) and (idx != None):
+            # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin
+            if version == 32:
+                bs = float(shuntdata[9])
+            else:
+                bs = float(shuntdata[7])
+            bus[idx, 5] += bs
+
+        shuntdata = reader.next()
+        c += 1
+
+    logger.info("%d switched shunt data records." % c)
+
+    return bus
+
+
+def _fixed_shunt_data(reader):
+    pass
+def _area_interchange_data(reader):
+    pass
+def _two_terminal_dc_line_data(reader):
+    pass
+def _vsc_dc_lines(reader):
+    pass
+def _transformer_impedance_correction_tables(reader):
+    pass
+def _multi_terminal_dc_transmission_line_data(reader):
+    pass
+def _multi_section_line_grouping_data(reader):
+    pass
+def _zone_data(reader):
+    pass
+def _interarea_transfer_data(reader):
+    pass
+def _owner_data(reader):
+    pass
+def _facts_device_data(reader):
+    pass
+def _q_record(reader):
     pass
 
+## OPF Raw Data File ##
+
+def _parse_opf_file():
+    pass
+
+def _data_modification_code():
+    pass
+def _bus_voltage_attribute_data():
+    pass
+def _adjustable_bus_shunt_data():
+    pass
+def _bus_load_data():
+    pass
+def _adjustable_bus_load_table_data():
+    pass
+def _generator_dispatch_data():
+    pass
+def _active_power_dispatch_table_data():
+    pass
+def _generation_reserve_data():
+    pass
+def _generation_reactive_capability_data():
+    pass
+def _adjustable_branch_reactance_data():
+    pass
+def _piecewise_linear_cost_tables():
+    pass
+def _piecewise_quadratic_cost_tables():
+    pass
+def _polynomial_and_exponential_cost_tables():
+    pass
+def _period_reserve_constraint_data():
+    pass
+def _branch_flow_constraint_data():
+    pass
+def _interface_flow_constraint_data():
+    pass
+def _linear_constraint_dependency_data():
+    pass
+
+## Utilities ##
 
 def _busidx(i, busmap):
     i = i.strip("'")
