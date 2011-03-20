@@ -1,19 +1,18 @@
-# Copyright (C) 2009-2010 Power System Engineering Research Center (PSERC)
-# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 2009-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
+# PYPOWER is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation, either version 3 of the License,
+# or (at your option) any later version.
 #
-# This library is distributed in the hope that it will be useful,
+# PYPOWER is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# Lesser General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
+# You should have received a copy of the GNU General Public License
+# along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
 from numpy import array, flatnonzero, Inf, any, isnan, ones, r_, finfo, \
     zeros, dot, absolute
@@ -172,7 +171,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
                    - C{upper} - upper bound on optimization variables
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
-    @license: LGPL version 2.1
+    @license: GNU GPL version 3
     """
     nx = x0.shape[0]                        # number of variables
     nA = A.shape[0] if A is not None else 0 # number of original linear constr

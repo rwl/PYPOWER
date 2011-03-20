@@ -1,18 +1,17 @@
-# Copyright (C) 2010 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
+# PYPOWER is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation, either version 3 of the License,
+# or (at your option) any later version.
 #
-# This library is distributed in the hope that it will be useful,
+# PYPOWER is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# Lesser General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA, USA
+# You should have received a copy of the GNU General Public License
+# along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
 from numpy import array, zeros, r_, copy, argsort, Inf, flatnonzero as find
 
@@ -43,7 +42,7 @@ def busorder(bus, branch, scheme=0):
         while len(idx) < bus.shape[0]:
             # Eliminate branches connected from or to buses already ordered.
             il = zeros(brch.shape[0], bool)
-            for i in bus[:, 0][elim]:
+            for i in bus[elim, 0]:
                 il |= (brch[:, 0] == i) | (brch[:, 1] == i)
             brch = brch[find(il == False), :]
 

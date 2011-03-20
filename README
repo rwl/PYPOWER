@@ -42,13 +42,13 @@ Please refer to the `API documentation`_.
 License
 -------
 
-PYPOWER is licensed under the `GNU Lesser General Public License`_ version 2.1.
+PYPOWER is licensed under the `GNU General Public License`_ version 3.
 
 Credits
 -------
 
 PYPOWER was translated from MATPOWER_ by Richard Lincoln
-(r.w.lincoln@gmail.com).  MATPOWER_ is maintained an principally developed by
+(r.w.lincoln@gmail.com).  MATPOWER_ is maintained by
 Ray Zimmerman at PSERC (Cornell).
 
 .. _Python: http://www.python.org
@@ -58,5 +58,5 @@ Ray Zimmerman at PSERC (Cornell).
 .. _Git: http://git-scm.com/
 .. _GitHub: http://github.com/rwl/PYPOWER
 .. _iPython: http://ipython.scipy.org
-.. _`GNU Lesser General Public License`: http://www.gnu.org/licenses/lgpl-2.1.html
+.. _`GNU General Public License`: http://www.gnu.org/licenses/gpl.txt
 .. _`API documentation`: http://packages.python.org/PYPOWER
