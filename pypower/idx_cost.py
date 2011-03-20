@@ -37,8 +37,8 @@ columns 1-5
  5  COST        1st column of cost parameters
                 cost data defining total cost function
                 For polynomial cost (highest order coeff first):
-                        e.g. c2, c1, c0
-                where the polynomial is c0 + c1*P + c2*P^2
+                        e.g. cn, ..., c1, c0
+                where the polynomial is c0 + c1*P + ... + cn*P^n
                 For piecewise linear cost:
                         x0, y0, x1, y1, x2, y2, ...
                 where x0 < x1 < x2 < ... and the points (x0,y0), (x1,y1),
@@ -63,7 +63,7 @@ COST        = 5    # beginning of cost parameters,
                    # piecewise linear data as:
                    #      x0, y0, x1, y1, x2, y2, ...
                    # and polynomial data as:
-                   #      c2, c1, c0
-                   # where the polynomial is c2*P^2 + c1*P + c0
+                   #      cn, ..., c1, c0
+                   # where the polynomial is cn*P^n + c1*P + c0
                    # note: polynomials can be of any degree, highest
                    # order coefficient always goes first

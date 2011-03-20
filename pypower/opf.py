@@ -116,8 +116,8 @@ def opf(*args, **kw_args):
                 C{l}  lower bounds on variables
                 C{u}  upper bounds on variables
             C{nln}
-                C{l}  lower bounds on non-linear constraints
-                C{u}  upper bounds on non-linear constraints
+                C{l}  lower bounds on nonlinear constraints
+                C{u}  upper bounds on nonlinear constraints
             C{lin}
                 C{l}  lower bounds on linear constraints
                 C{u}  upper bounds on linear constraints
@@ -145,7 +145,7 @@ def opf(*args, **kw_args):
                 C{u}  upper bound shadow prices
                     C{Va}, C{Vm}, C{Pg}, C{Qg}, C{y}, (other)
         C{nln}    (AC only)
-            C{mu}     shadow prices on non-linear constraints, by named block
+            C{mu}     shadow prices on nonlinear constraints, by named block
                 C{l}  lower bounds
                     C{Pmis}   real power mismatch equations
                     C{Qmis}   reactive power mismatch equations
@@ -261,6 +261,8 @@ def opf(*args, **kw_args):
 
     ## convert to internal numbering, remove out-of-service stuff
     ppc = ext2int(ppc)
+
+    # TODO: Translate opf_setup and opf_execute
 
     ## update dimensions
     nb   = ppc["bus"].shape[0]    ## number of buses
@@ -378,10 +380,10 @@ def opf(*args, **kw_args):
         om = om.add_vars('Vm', nb, Vm, bus[:, VMIN], bus[:, VMAX])
         om = om.add_vars('Pg', ng, Pg, Pmin, Pmax)
         om = om.add_vars('Qg', ng, Qg, Qmin, Qmax)
-        om = om.add_constraints('Pmis', nb, 'non-linear')
-        om = om.add_constraints('Qmis', nb, 'non-linear')
-        om = om.add_constraints('Sf', nl, 'non-linear')
-        om = om.add_constraints('St', nl, 'non-linear')
+        om = om.add_constraints('Pmis', nb, 'nonlinear')
+        om = om.add_constraints('Qmis', nb, 'nonlinear')
+        om = om.add_constraints('Sf', nl, 'nonlinear')
+        om = om.add_constraints('St', nl, 'nonlinear')
         om = om.add_constraints('PQh', Apqh, [], ubpqh, ['Pg', 'Qg']) ## npqh
         om = om.add_constraints('PQl', Apql, [], ubpql, ['Pg', 'Qg']) ## npql
         om = om.add_constraints('vl',  Avl, lvl, uvl, ['Pg', 'Qg'])   ## nvl
@@ -512,7 +514,7 @@ def opf(*args, **kw_args):
             results["lin"]["mu"]["l"][name] = results["mu"]["lin"]["l"][idx]
             results["lin"]["mu"]["u"][name] = results["mu"]["lin"]["u"][idx]
 
-    ## assign shadow prices for non-linear constraints
+    ## assign shadow prices for nonlinear constraints
     if not dc:
         om_nln_order = om.get('nln', 'order')
         for k in range(len(om_nln_order)):

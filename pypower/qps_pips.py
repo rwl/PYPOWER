@@ -63,7 +63,7 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
         >>> solution["output"]["iterations"]
         10
 
-    All parameters are optional except C{H}, C{C}, C{A} and C{L}.
+    All parameters are optional except C{H}, C{c}, C{A} and C{l} or C{u}.
     @param H: Quadratic cost coefficients.
     @type H: csr_matrix
     @param c: vector of linear cost coefficients
@@ -122,8 +122,8 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
                    - C{message} - exit message
                - C{lmbda} - dictionary containing the Langrange and Kuhn-Tucker
                  multipliers on the constraints, with keys:
-                   - C{eqnonlin} - non-linear equality constraints
-                   - C{ineqnonlin} - non-linear inequality constraints
+                   - C{eqnonlin} - nonlinear equality constraints
+                   - C{ineqnonlin} - nonlinear inequality constraints
                    - C{mu_l} - lower (left-hand) limit on linear constraints
                    - C{mu_u} - upper (right-hand) limit on linear constraints
                    - C{lower} - lower bound on optimization variables

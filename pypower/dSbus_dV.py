@@ -48,6 +48,14 @@ def dSbus_dV(Ybus, V):
                                         + conj(diag(Ibus)) * j * diag(V)
                = j * diag(V) * conj(diag(Ibus) - Ybus * diag(V))
 
+    For more details on the derivations behind the derivative code used
+    in PYPOWER information, see:
+
+    [TN2]  R. D. Zimmerman, "AC Power Flows, Generalized OPF Costs and
+           their Derivatives using Complex Matrix Notation", MATPOWER
+           Technical Note 2, February 2010.
+              http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf
+
     @see: U{http://www.pserc.cornell.edu/matpower/}
     @return: The partial derivatives of power injection w.r.t. voltage
              magnitude and voltage angle.

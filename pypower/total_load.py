@@ -23,7 +23,7 @@ from scipy.sparse import csr_matrix
 
 from isload import isload
 
-from idx_bus import PD, QD, BUS_AREA
+from idx_bus import PD, QD, BUS_AREA, BUS_I
 from idx_gen import QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
 
 logger = logging.getLogger(__name__)
@@ -50,8 +50,6 @@ def total_load(bus, gen, load_zone, which_type='BOTH'):
         'FIXED'        : sum only fixed loads
         'DISPATCHABLE' : sum only dispatchable loads
         'BOTH'         : sum both fixed and dispatchable loads
-
-    Assumes consecutive bus numbering when dealing with dispatchable loads.
 
     @see: L{scale_load}
     @see: U{http://www.pserc.cornell.edu/matpower/}
@@ -95,7 +93,13 @@ def total_load(bus, gen, load_zone, which_type='BOTH'):
         ng = gen.shape[0]
         is_ld = isload(gen) & gen[:, GEN_STATUS] > 0
         ld = find(is_ld)
-        Cld = csr_matrix((is_ld, (gen[: GEN_BUS], range(ng))), (nb, ng))
+
+        ## create map of external bus numbers to bus indices
+        i2e = bus[:, BUS_I]
+        e2i = csr_matrix((max(i2e), 1))
+        e2i[i2e] = range(nb)
+
+        Cld = csr_matrix((is_ld, (e2i[gen[: GEN_BUS]], range(ng))), (nb, ng))
         Pdd = -Cld * gen[:, PMIN]      ## real power
         if want_Q:
             Q = zeros(ng)

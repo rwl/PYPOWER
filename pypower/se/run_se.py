@@ -1,4 +1,4 @@
-# Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2009-2011 Rui Bo <eeborui@hotmail.com>
 # Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # PYPOWER is free software: you can redistribute it and/or modify

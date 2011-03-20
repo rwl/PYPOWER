@@ -127,7 +127,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     OUT_RAW         = ppopt[43]
     ptol = 1e-6        ## tolerance for displaying shadow prices
 
-    ## internal bus number
+    ## create map of external bus numbers to bus indices
     i2e = bus[:, BUS_I]
     e2i = csr_matrix((max(i2e), 1))
     e2i[i2e] = range(bus.shape[0])

@@ -147,14 +147,15 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
     neg_Cg = csr_matrix((-1, (gen[:, GEN_BUS], range(ng))), (nb, ng))
 
     ## construct Jacobian of equality constraints (power flow) and transpose it
-    dg = lil_matrix((nxyz, 2 * nb))
+    dg = lil_matrix((2 * nb, nxyz))
     blank = csr_matrix((nb, ng))
-    dg[iVaVmPgQg, :] = vstack([
+    dg[:, iVaVmPgQg] = vstack([
             ## P mismatch w.r.t Va, Vm, Pg, Qg
             hstack([dSbus_dVa.real, dSbus_dVm.real, neg_Cg, blank]),
             ## Q mismatch w.r.t Va, Vm, Pg, Qg
             hstack([dSbus_dVa.imag, dSbus_dVm.imag, blank, neg_Cg])
-        ], "csr").T
+        ], "csr")
+    dg = dg.T
 
     if nl2 > 0:
         ## compute partials of Flows w.r.t. V
@@ -177,12 +178,13 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
                 dAbr_dV(dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft)
 
         ## construct Jacobian of inequality constraints (branch limits)
-        ## and transpose it so fmincon likes it
-        dh = lil_matrix((nxyz, 2 * nl))
-        dh[r_[iVa, iVm].T, :] = vstack([
+        ## and transpose it.
+        dh = lil_matrix((2 * nl, nxyz))
+        dh[:, r_[iVa, iVm].T] = vstack([
                 hstack([df_dVa, df_dVm]),    ## "from" flow limit
                 hstack([dt_dVa, dt_dVm])     ## "to" flow limit
-            ], "csr").T
+            ], "csr")
+        dh = dh.T
     else:
         dh = csr_matrix(nxyz, 0)
 

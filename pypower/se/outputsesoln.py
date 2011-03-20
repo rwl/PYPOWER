@@ -1,4 +1,4 @@
-# Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2009-2011 Rui Bo <eeborui@hotmail.com>
 # Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
 #
 # PYPOWER is free software: you can redistribute it and/or modify
@@ -73,4 +73,4 @@ def outputsesoln(idx, sigma, z, z_est, error_sqrsum):
     for i in range(l):
         fd.write('\n      Vm        %3d      %10.4f     %10.4f' % (idx["idx_zVm"][i], z[i+cnt], z_est[i+cnt]))
 
-    fd.write('\n\n[Weighted sum of error squares]:\t%f\n' % error_sqrsum)
+    fd.write('\n\n[Weighted sum of squared errors]:\t%f\n' % error_sqrsum)

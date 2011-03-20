@@ -26,6 +26,14 @@ def d2Sbus_dV2(Ybus, V, lam):
     admittance matrix C{Ybus}, voltage vector C{V} and C{nb} x 1 vector of
     multipliers C{lam}. Output matrices are sparse.
 
+    For more details on the derivations behind the derivative code used
+    in PYPOWER information, see:
+
+    [TN2]  R. D. Zimmerman, "AC Power Flows, Generalized OPF Costs and
+           their Derivatives using Complex Matrix Notation", MATPOWER
+           Technical Note 2, February 2010.
+              http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf
+
     @return: The 2nd derivatives of power injection w.r.t. voltage.
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """

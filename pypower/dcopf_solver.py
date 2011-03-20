@@ -16,7 +16,7 @@
 
 import logging
 
-from numpy import array, zeros, ones, nonzero, any, diag, r_, pi, Inf
+from numpy import array, zeros, ones, nonzero, any, diag, r_, pi, Inf, isnan
 from scipy.sparse import csr_matrix, vstack, hstack
 
 from idx_bus import *
@@ -75,7 +75,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
     alg     = ppopt[26]    ## OPF_ALG_DC
 
     if alg == 0:
-        alg = 200
+        alg = 200  # Use PIPS
 
     ## unpack data
     ppc = om.get_ppc()
@@ -110,7 +110,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
     any_pwl = ny > 0
     if any_pwl:
         # Sum of y vars.
-        Npwl = csr_matrix((ones(ny), (zeros(ny), array(ipwl) + vv["i1"]["y"])))
+        Npwl = csr_matrix((ones(ny), (zeros(ny), range(vv["i1"]["y"], vv["iN"]["y"]))))
         Hpwl = csr_matrix((1, 1))
         Cpwl = array([1])
         fparm_pwl = array([[1, 0, 0, 1]])
@@ -196,26 +196,30 @@ def dcopf_solver(om, ppopt, out_opt=None):
                              'max_it':  max_it,
                              'max_red': max_red,
                              'cost_mult': 1  }
+    else:
+        raise ValueError, "Unrecognised solver [%d]." % alg
 
     ##-----  run opf  -----
     x, f, info, output, lmbda = \
         qps_pips(HH, CC, A, l, u, xmin, xmax, x0, opt)
     success = (info == 1)
 
-    ## update solution data
-    Va = x[vv["i1"]["Va"]:vv["iN"]["Va"]]
-    Pg = x[vv["i1"]["Pg"]:vv["iN"]["Pg"]]
-    f = f + C0
 
     ##-----  calculate return values  -----
-    ## update voltages & generator outputs
-    bus[:, VA] = Va * 180 / pi
-    gen[:, PG] = Pg * baseMVA
+    if not any(isnan(x)):
+        ## update solution data
+        Va = x[vv["i1"]["Va"]:vv["iN"]["Va"]]
+        Pg = x[vv["i1"]["Pg"]:vv["iN"]["Pg"]]
+        f = f + C0
 
-    ## compute branch flows
-    branch[:, [QF, QT]] = zeros(nl, 2)
-    branch[:, PF] = (Bf * Va + Pfinj) * baseMVA
-    branch[:, PT] = -branch[:, PF]
+        ## update voltages & generator outputs
+        bus[:, VA] = Va * 180 / pi
+        gen[:, PG] = Pg * baseMVA
+
+        ## compute branch flows
+        branch[:, [QF, QT]] = zeros(nl, 2)
+        branch[:, PF] = (Bf * Va + Pfinj) * baseMVA
+        branch[:, PT] = -branch[:, PF]
 
     ## package up results
     mu_l = lmbda["mu_l"]
@@ -235,6 +239,12 @@ def dcopf_solver(om, ppopt, out_opt=None):
     gen[:, MU_PMIN]     = muLB[vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
     gen[:, MU_PMAX]     = muUB[vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
 
+    pimul = r_[ # FIXME: column stack
+      mu_l - mu_u,
+     -ones(ny>0, 1), ## dummy entry corresponding to linear cost row in A
+      muLB - muUB
+    ]
+
     mu = { 'var': {'l': muLB, 'u': muUB},
            'lin': {'l': mu_l, 'u': mu_u} }
 
@@ -243,20 +253,6 @@ def dcopf_solver(om, ppopt, out_opt=None):
         results["om"], results["x"], results["mu"], results["f"] = \
             bus, branch, gen, om, x, mu, f
 
-    ## optional fields
-    ## 1st one is always computed anyway, just include it
-    if out_opt.has_key('g'):
-        results["g"] = A * x
-    results["dg"] = A
-    if out_opt.has_key('df'):
-        results["df"] = array([])
-    if out_opt.has_key('d2f'):
-        results.d2f = array([])
-    pimul = r_[ # FIXME: column stack
-      mu_l - mu_u,
-     -ones(ny>0, 1), ## dummy entry corresponding to linear cost row in A
-      muLB - muUB
-    ]
     raw = {'xr': x, 'pimul': pimul, 'info': info, 'output': output}
 
     return results, success, raw

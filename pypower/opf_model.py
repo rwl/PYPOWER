@@ -55,23 +55,23 @@ class opf_model(object):
         U are empty, they are assumed to be appropriately sized vectors
         of -Inf and Inf, respectively.
 
-        For non-linear constraints, the 3rd argument, N, is the number
+        For nonlinear constraints, the 3rd argument, N, is the number
         of constraints in the set. Currently, this is used internally
         by PYPOWER, but there is no way for the user to specify
-        additional non-linear constraints.
+        additional nonlinear constraints.
         """
         if u is None:
-        ## non-linear
+        ## nonlinear
             ## prevent duplicate named constraint sets
             if name in self.nln["idx"]["N"]:
-                logger.error("opf_model.add_constraints: non-linear constraint set named '%s' already exists" % name)
+                logger.error("opf_model.add_constraints: nonlinear constraint set named '%s' already exists" % name)
 
-            ## add info about this non-linear constraint set
+            ## add info about this nonlinear constraint set
             self.nln["idx"]["i1"][name] = self.nln["N"] + 1    ## starting index
             self.nln["idx"]["iN"][name] = self.nln["N"] + AorN ## ing index
             self.nln["idx"]["N"][name]  = AorN            ## number of constraints
 
-            ## update number of non-linear constraints and constraint sets
+            ## update number of nonlinear constraints and constraint sets
             self.nln["N"]  = self.nln["idx"]["iN"][name]
             self.nln["NS"] = self.nln["NS"] + 1
 
@@ -437,7 +437,7 @@ class opf_model(object):
             print '%s  :  <none>\n' % 'VARIABLES'
 
         if self.nln["NS"]:
-            print '\n%-22s %5s %8s %8s %8s\n' % ('NON-LINEAR CONSTRAINTS', 'name', 'i1', 'iN', 'N')
+            print '\n%-22s %5s %8s %8s %8s\n' % ('nonlinear CONSTRAINTS', 'name', 'i1', 'iN', 'N')
             print '%-22s %5s %8s %8s %8s\n' % ('======================', '------', '-----', '-----', '------')
             for k in range(self.nln["NS"]):
                 name = self.nln["order"][k]
@@ -447,7 +447,7 @@ class opf_model(object):
             print '%15s%31s\n' % ('nln["NS"] = %d' % self.nln["NS"], 'nln["N"] = %d' % self.nln["N"])
             print '\n'
         else:
-            print '%s  :  <none>\n' % 'NON-LINEAR CONSTRAINTS'
+            print '%s  :  <none>\n' % 'nonlinear CONSTRAINTS'
 
         if self.lin["NS"]:
             print '\n%-22s %5s %8s %8s %8s\n' % ('LINEAR CONSTRAINTS', 'name', 'i1', 'iN', 'N')
@@ -550,7 +550,7 @@ class opf_model(object):
                 mu_l_foo = mu_l(ll.i1.foo:ll.iN.foo)
                 mu_u_foo = mu_u(ll.i1.foo:ll.iN.foo)
 
-            The number of non-linear constraints in a set named 'bar':
+            The number of nonlinear constraints in a set named 'bar':
                 nbar = nn["N"].bar
               (note: the following is preferable ...
                 nbar = getN(om, 'nln', 'bar')
@@ -579,11 +579,11 @@ class opf_model(object):
         Examples:
             N = getN(om, 'var')         : total number of variables
             N = getN(om, 'lin')         : total number of linear constraints
-            N = getN(om, 'nln')         : total number of non-linear constraints
+            N = getN(om, 'nln')         : total number of nonlinear constraints
             N = getN(om, 'cost')        : total number of cost rows (in N)
             N = getN(om, 'var', name)   : number of variables in named set
             N = getN(om, 'lin', name)   : number of linear constraints in named set
-            N = getN(om, 'nln', name)   : number of non-linear cons. in named set
+            N = getN(om, 'nln', name)   : number of nonlinear cons. in named set
             N = getN(om, 'cost', name)  : number of cost rows (in N) in named set
         """
         if name is not None:
@@ -680,4 +680,7 @@ class opf_model(object):
         if val is not None:
             self.userdata[name] = val
         else:
-            return self.userdata[name]
+            if name in self.userdata:
+                return self.userdata[name]
+            else:
+                return None

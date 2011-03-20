@@ -60,6 +60,14 @@ def dSbr_dV(branch, Yf, Yt, V):
 
     Derivations for "to" bus are similar.
 
+    For more details on the derivations behind the derivative code used
+    in PYPOWER information, see:
+
+    [TN2]  R. D. Zimmerman, "AC Power Flows, Generalized OPF Costs and
+           their Derivatives using Complex Matrix Notation", MATPOWER
+           Technical Note 2, February 2010.
+              http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf
+
     @return: The branch power flow vectors and the partial derivatives of
              branch power flow w.r.t voltage magnitude and voltage angle.
     @see: U{http://www.pserc.cornell.edu/matpower/}

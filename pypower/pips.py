@@ -26,17 +26,17 @@ EPS = finfo(float).eps
 
 def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
          gh_fcn=None, hess_fcn=None, opt=None):
-    """Primal-dual interior point method for NLP (non-linear programming).
+    """Primal-dual interior point method for NLP (nonlinear programming).
     Minimize a function F(X) beginning from a starting point M{x0}, subject to
-    optional linear and non-linear constraints and variable bounds::
+    optional linear and nonlinear constraints and variable bounds::
 
             min f(x)
              x
 
     subject to::
 
-            g(x) = 0            (non-linear equalities)
-            h(x) <= 0           (non-linear inequalities)
+            g(x) = 0            (nonlinear equalities)
+            h(x) <= 0           (nonlinear inequalities)
             l <= A*x <= u       (linear constraints)
             xmin <= x <= xmax   (variable bounds)
 
@@ -64,11 +64,11 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
         ...     g = array([])
         ...     dg = None
         ...     return h, g, dh, dg
-        >>> def hess2(x, lam):
+        >>> def hess2(x, lam, cost_mult=1):
         ...     mu = lam["ineqnonlin"]
         ...     a = r_[dot(2 * array([1, 1]), mu), -1, 0]
-        ...     b = r_[-1, dot(2 * array([-1, 1]),mu),-1]
-        ...     c = r_[0, -1, dot(2 * array([1, 1]),mu)]
+        ...     b = r_[-1, dot(2 * array([-1, 1]), mu),-1]
+        ...     c = r_[0, -1, dot(2 * array([1, 1]), mu)]
         ...     Lxx = csr_matrix(array([a, b, c]))
         ...     return Lxx
         >>> x0 = array([1, 1, 0], float64)
@@ -97,7 +97,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
     All parameters are optional except C{f_fcn} and C{x0}.
     @param f_fcn: Function that evaluates the objective function, its gradients
                   and Hessian for a given value of M{x}. If there are
-                  non-linear constraints, the Hessian information is provided
+                  nonlinear constraints, the Hessian information is provided
                   by the 'hess_fcn' argument and is not required here.
     @type f_fcn: callable
     @param x0: Starting value of optimization vector M{x}.
@@ -114,7 +114,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
     @param xmax: Optional upper bounds on the M{x} variables, defaults are
                  M{Inf}.
     @type xmax: array
-    @param gh_fcn: Function that evaluates the optional non-linear constraints
+    @param gh_fcn: Function that evaluates the optional nonlinear constraints
                    and their gradients for a given value of M{x}.
     @type gh_fcn: callable
     @param hess_fcn: Handle to function that computes the Hessian of the
@@ -141,10 +141,10 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
                   - C{max_red} (20) - maximum number of step-size reductions if
                     step-control is on
                   - C{cost_mult} (1.0) - cost multiplier used to scale the
-                    objective function for improved conditioning. Note: The
-                    same value must also be passed to the Hessian evaluation
-                    function so that it can appropriately scale the objective
-                    function term in the Hessian of the Lagrangian.
+                    objective function for improved conditioning. Note: This
+                    value is also passed as the 3rd argument to the Hessian
+                    evaluation function so that it can appropriately scale the
+                    objective function term in the Hessian of the Lagrangian.
     @type opt: dict
 
     @rtype: dict
@@ -163,8 +163,8 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
                    - C{message} - exit message
                - C{lmbda} - dictionary containing the Langrange and Kuhn-Tucker
                  multipliers on the constraints, with keys:
-                   - C{eqnonlin} - non-linear equality constraints
-                   - C{ineqnonlin} - non-linear inequality constraints
+                   - C{eqnonlin} - nonlinear equality constraints
+                   - C{ineqnonlin} - nonlinear inequality constraints
                    - C{mu_l} - lower (left-hand) limit on linear constraints
                    - C{mu_u} - upper (right-hand) limit on linear constraints
                    - C{lower} - lower bound on optimization variables
@@ -255,7 +255,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
     f = f * opt["cost_mult"]
     df = df * opt["cost_mult"]
     if nonlinear:
-        hn, gn, dhn, dgn = gh_fcn(x)        # non-linear constraints
+        hn, gn, dhn, dgn = gh_fcn(x)        # nonlinear constraints
         h = hn if Ai is None else r_[hn, Ai * x - bi] # inequality constraints
         g = gn if Ae is None else r_[gn, Ae * x - be] # equality constraints
 
@@ -285,8 +285,8 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
     # some dimensions
     neq = g.shape[0]           # number of equality constraints
     niq = h.shape[0]           # number of inequality constraints
-    neqnln = gn.shape[0]       # number of non-linear equality constraints
-    niqnln = hn.shape[0]       # number of non-linear inequality constraints
+    neqnln = gn.shape[0]       # number of nonlinear equality constraints
+    niqnln = hn.shape[0]       # number of nonlinear inequality constraints
     nlt = len(ilt)             # number of upper bounded linear inequalities
     ngt = len(igt)             # number of lower bounded linear inequalities
     nbx = len(ibx)             # number of doubly bounded linear inequalities
@@ -311,11 +311,16 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
     Lx = Lx + dg * lam if dg is not None else Lx
     Lx = Lx + dh * mu  if dh is not None else Lx
 
+    if len(h) == 0:  # TODO: Check isempty translation
+        maxh = zeros(1)
+    else:
+        maxh = max(h)
+
     gnorm = norm(g, Inf) if len(g) else 0.0
     lam_norm = norm(lam, Inf) if len(lam) else 0.0
     mu_norm = norm(mu, Inf) if len(mu) else 0.0
     feascond = \
-        max([gnorm, max(h)]) / (1 + max([norm(x, Inf), norm(z, Inf)]))
+        max([gnorm, maxh]) / (1 + max([norm(x, Inf), norm(z, Inf)]))
     gradcond = \
         norm(Lx, Inf) / (1 + max([lam_norm, mu_norm]))
     coppcond = dot(z, mu) / (1 + norm(x, Inf))
@@ -358,7 +363,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
                 print "pips: Hessian evaluation via finite differences " \
                       "not yet implemented.\nPlease provide " \
                       "your own hessian evaluation function."
-            Lxx = hess_fcn(x, lmbda)
+            Lxx = hess_fcn(x, lmbda, opt["cost_mult"])
         else:
             _, _, d2f = f_fcn(x)      # cost
             Lxx = d2f * opt["cost_mult"]
@@ -378,6 +383,12 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 
         dxdlam = spsolve(Ab.tocsr(), bb)
 
+        if any(isnan(dxdlam)):
+            if opt["verbose"]:
+                print '\nNumerically Failed\n'
+            eflag = -1
+            break
+
         dx = dxdlam[:nx]
         dlam = dxdlam[nx:nx + neq]
         dz = -h - z if dh is None else -h - z - dh.T * dx
@@ -393,7 +404,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 #            f1, df1 = ipm_f(x1)          # cost
 #            f1 = f1 * opt["cost_mult"]
 #            df1 = df1 * opt["cost_mult"]
-#            gn1, hn1, dgn1, dhn1 = ipm_gh(x1) # non-linear constraints
+#            gn1, hn1, dgn1, dhn1 = ipm_gh(x1) # nonlinear constraints
 #            g1 = gn1 if Ai is None else r_[gn1, Ai * x1 - bi] # ieq constraints
 #            h1 = hn1 if Ae is None else r_[hn1, Ae * x1 - be] # eq constraints
 #            dg1 = dgn1 if Ai is None else r_[dgn1, Ai.T]      # 1st der of ieq
@@ -401,7 +412,13 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 #
 #            # check tolerance
 #            Lx1 = df1 + dh1 * lam + dg1 * mu
-#            feascond1 = max([ norm(h1, Inf), max(g1) ]) / \
+#
+#            if len(h1) == 0:  # isempty
+#                maxh1 = zeros(1)
+#            else:
+#                maxh1 = max(h1)
+#
+#            feascond1 = max([ norm(g1, Inf), maxh1 ]) / \
 #                (1 + max([ norm(x1, Inf), norm(z, Inf) ]))
 #            gradcond1 = norm(Lx1, Inf) / \
 #                (1 + max([ norm(lam, Inf), norm(mu, Inf) ]))
@@ -415,7 +432,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 #                x1 = x + dx1
 #                f1 = ipm_f(x1)             # cost
 #                f1 = f1 * opt["cost_mult"]
-#                gn1, hn1 = ipm_gh(x1)              # non-linear constraints
+#                gn1, hn1 = ipm_gh(x1)              # nonlinear constraints
 #                g1 = r_[gn1, Ai * x1 - bi]         # inequality constraints
 #                h1 = r_[hn1, Ae * x1 - be]         # equality constraints
 #                L1 = f1 + lam.H * h1 + mu.H * (g1 + z) - gamma * sum(log(z))
@@ -480,11 +497,16 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
         Lx = Lx + dg * lam if dg is not None else Lx
         Lx = Lx + dh * mu  if dh is not None else Lx
 
+        if len(h) == 0:
+            maxh = zeros(1)
+        else:
+            maxh = max(h)
+
         gnorm = norm(g, Inf) if len(g) else 0.0
         lam_norm = norm(lam, Inf) if len(lam) else 0.0
         mu_norm = norm(mu, Inf) if len(mu) else 0.0
         feascond = \
-            max([gnorm, max(h)]) / (1+max([norm(x, Inf), norm(z, Inf)]))
+            max([gnorm, maxh]) / (1+max([norm(x, Inf), norm(z, Inf)]))
         gradcond = \
             norm(Lx, Inf) / (1 + max([lam_norm, mu_norm]))
         coppcond = dot(z, mu) / (1 + norm(x, Inf))

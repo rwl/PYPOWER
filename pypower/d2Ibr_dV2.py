@@ -26,6 +26,14 @@ def d2Ibr_dV2(Ybr, V, lam):
     voltage vector V and nl x 1 vector of multipliers LAM. Output matrices
     are sparse.
 
+    For more details on the derivations behind the derivative code used
+    in PYPOWER information, see:
+
+    [TN2]  R. D. Zimmerman, "AC Power Flows, Generalized OPF Costs and
+           their Derivatives using Complex Matrix Notation", MATPOWER
+           Technical Note 2, February 2010.
+              http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf
+
     @return: The 2nd derivatives of complex branch current w.r.t. voltage.
     @see: http://www.pserc.cornell.edu/matpower/
     """

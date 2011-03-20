@@ -48,15 +48,11 @@ def pipsopf_solver(om, ppopt, out_opt=None):
                 - C{l}  lower bounds on variables
                 - C{u}  upper bounds on variables
             - C{nln}
-                - C{l}  lower bounds on non-linear constraints
-                - C{u}  upper bounds on non-linear constraints
+                - C{l}  lower bounds on nonlinear constraints
+                - C{u}  upper bounds on nonlinear constraints
             - C{lin}
                 - C{l}  lower bounds on linear constraints
                 - C{u}  upper bounds on linear constraints
-        - C{g}          (optional) constraint values
-        - C{dg}         (optional) constraint 1st derivatives
-        - C{df}         (optional) obj fun 1st derivatives(not yet implemented)
-        - C{d2f}        (optional) obj fun 2nd derivatives(not yet implemented)
 
     SUCCESS     1 if solver converged successfully, 0 otherwise
 
@@ -192,7 +188,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     ## package up results
     nlnN = om.getN('nln')
 
-    ## extract multipliers for non-linear constraints
+    ## extract multipliers for nonlinear constraints
     kl = nonzero(Lmbda["eqnonlin"] < 0)
     ku = nonzero(Lmbda["eqnonlin"] > 0)
     nl_mu_l = zeros(nlnN)
@@ -210,18 +206,6 @@ def pipsopf_solver(om, ppopt, out_opt=None):
         results["om"], results["x"], results["mu"], results["f"] = \
             bus, branch, gen, om, x, mu, f
 
-    ## optional fields
-    if out_opt.has_key('dg'):
-        g, geq, dg, dgeq = opf_consfcn(x, om, Ybus, Yf, Yt, ppopt)
-        results["g"]  = r_[ geq, g] ## include this since we computed it anyway
-        results["dg"] = r_[ dgeq.T, dg.T] ## true Jacobian organization
-    if out_opt.has_key('g') and not g.any():
-        g, geq = opf_consfcn(x, om, Ybus, Yf, Yt, ppopt)
-        results["g"] = r_[ geq, g]
-    if out_opt.has_key('df'):
-        results.df = array([])
-    if out_opt.has_key('d2f'):
-        results.d2f = array([])
     pimul = r_[
         results["mu"]["nln"]["l"] - results["mu"]["nln"]["u"],
         results["mu"]["lin"]["l"] - results["mu"]["lin"]["u"],
