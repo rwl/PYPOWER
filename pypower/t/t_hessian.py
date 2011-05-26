@@ -1,0 +1,316 @@
+# Copyright (C) 2004-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
+#
+# PYPOWER is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation, either version 3 of the License,
+# or (at your option) any later version.
+#
+# PYPOWER is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY], without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
+
+from numpy import pi, random, ones, zeros, real
+from scipy.sparse import csr_matrix as sparse
+
+from pypower.runpf import runpf
+
+def t_hessian(quiet=False):
+    """Numerical tests of 2nd derivative code.
+
+    @see: U{http://www.pserc.cornell.edu/matpower/}
+    """
+    t_begin(44, quiet)
+
+    casefile = 'case30'
+
+    ## run powerflow to get solved case
+    opt = mpoption()
+    opt['VERBOSE'] = 0
+    opt['OUT_ALL'] = 0
+    baseMVA, bus, gen, branch, success, et = runpf(casefile, opt)
+
+    ## switch to internal bus numbering and build admittance matrices
+    i2e, bus, gen, branch = ext2int(bus, gen, branch)
+    Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
+    Vm = bus.Vm.copy()
+    Va = bus.Va * pi/180
+    V = Vm * exp(1j * Va)
+    f = branch.f_bus.copy()       ## list of "from" buses
+    t = branch.t_bus.copy()       ## list of "to" buses
+    nl = len(f)
+    nb = len(V)
+    Cf = sparse((ones(nl), (range(nl), f)), (nl, nb))  ## connection matrix for line & from buses
+    Ct = sparse((ones(nl), (range(nl), t)), (nl, nb))  ## connection matrix for line & to buses
+    pert = 1e-8
+
+    ##-----  check d2Sbus_dV2 code  -----
+    t = ' - d2Sbus_dV2 (complex power injections)'
+    lam = 10 * random(nb)
+    num_Haa = zeros((nb, nb))
+    num_Hav = zeros((nb, nb))
+    num_Hva = zeros((nb, nb))
+    num_Hvv = zeros((nb, nb))
+    dSbus_dVm, dSbus_dVa = dSbus_dV(Ybus, V)
+    Haa, Hav, Hva, Hvv = d2Sbus_dV2(Ybus, V, lam)
+    for i in range(nb):
+        Vap = V.copy()
+        Vap[i] = Vm[i] * exp(1j * (Va[i] + pert))
+        dSbus_dVm_ap, dSbus_dVa_ap = dSbus_dV(Ybus, Vap)
+        num_Haa[:, i] = (dSbus_dVa_ap - dSbus_dVa).T * lam / pert
+        num_Hva[:, i] = (dSbus_dVm_ap - dSbus_dVm).T * lam / pert
+
+        Vmp = V.copy()
+        Vmp[i] = (Vm[i] + pert) * exp(1j * Va[i])
+        dSbus_dVm_mp, dSbus_dVa_mp = dSbus_dV(Ybus, Vmp)
+        num_Hav[:, i] = (dSbus_dVa_mp - dSbus_dVa).T * lam / pert
+        num_Hvv[:, i] = (dSbus_dVm_mp - dSbus_dVm).T * lam / pert
+
+    t_is(Haa.todense(), num_Haa, 4, ['Haa', t])
+    t_is(Hav.todense(), num_Hav, 4, ['Hav', t])
+    t_is(Hva.todense(), num_Hva, 4, ['Hva', t])
+    t_is(Hvv.todense(), num_Hvv, 4, ['Hvv', t])
+
+    ##-----  check d2Sbr_dV2 code  -----
+    t = ' - d2Sbr_dV2 (complex power flows)'
+    lam = 10 * random(nl)
+    # lam = [1 zeros(nl-1, 1)]
+    num_Gfaa = zeros((nb, nb))
+    num_Gfav = zeros((nb, nb))
+    num_Gfva = zeros((nb, nb))
+    num_Gfvv = zeros((nb, nb))
+    num_Gtaa = zeros((nb, nb))
+    num_Gtav = zeros((nb, nb))
+    num_Gtva = zeros((nb, nb))
+    num_Gtvv = zeros((nb, nb))
+    dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St = dSbr_dV(branch, Yf, Yt, V)
+    Gfaa, Gfav, Gfva, Gfvv = d2Sbr_dV2(Cf, Yf, V, lam)
+    Gtaa, Gtav, Gtva, Gtvv = d2Sbr_dV2(Ct, Yt, V, lam)
+    for i in range(nb):
+        Vap = V.copy()
+        Vap[i] = Vm[i] * exp(1j * (Va[i] + pert))
+        dSf_dVa_ap, dSf_dVm_ap, dSt_dVa_ap, dSt_dVm_ap, Sf_ap, St_ap = \
+            dSbr_dV(branch, Yf, Yt, Vap)
+        num_Gfaa[:, i] = (dSf_dVa_ap - dSf_dVa).T * lam / pert
+        num_Gfva[:, i] = (dSf_dVm_ap - dSf_dVm).T * lam / pert
+        num_Gtaa[:, i] = (dSt_dVa_ap - dSt_dVa).T * lam / pert
+        num_Gtva[:, i] = (dSt_dVm_ap - dSt_dVm).T * lam / pert
+
+        Vmp = V.copy()
+        Vmp[i] = (Vm[i] + pert) * exp(1j * Va[i])
+        dSf_dVa_mp, dSf_dVm_mp, dSt_dVa_mp, dSt_dVm_mp, Sf_mp, St_mp = \
+            dSbr_dV(branch, Yf, Yt, Vmp)
+        num_Gfav[:, i] = (dSf_dVa_mp - dSf_dVa).T * lam / pert
+        num_Gfvv[:, i] = (dSf_dVm_mp - dSf_dVm).T * lam / pert
+        num_Gtav[:, i] = (dSt_dVa_mp - dSt_dVa).T * lam / pert
+        num_Gtvv[:, i] = (dSt_dVm_mp - dSt_dVm).T * lam / pert
+
+    t_is(Gfaa.todense(), num_Gfaa, 4, ['Gfaa', t])
+    t_is(Gfav.todense(), num_Gfav, 4, ['Gfav', t])
+    t_is(Gfva.todense(), num_Gfva, 4, ['Gfva', t])
+    t_is(Gfvv.todense(), num_Gfvv, 4, ['Gfvv', t])
+
+    t_is(Gtaa.todense(), num_Gtaa, 4, ['Gtaa', t])
+    t_is(Gtav.todense(), num_Gtav, 4, ['Gtav', t])
+    t_is(Gtva.todense(), num_Gtva, 4, ['Gtva', t])
+    t_is(Gtvv.todense(), num_Gtvv, 4, ['Gtvv', t])
+
+    ##-----  check d2Ibr_dV2 code  -----
+    t = ' - d2Ibr_dV2 (complex currents)'
+    lam = 10 * random(nl)
+    # lam = [1, zeros(nl-1)]
+    num_Gfaa = zeros((nb, nb))
+    num_Gfav = zeros((nb, nb))
+    num_Gfva = zeros((nb, nb))
+    num_Gfvv = zeros((nb, nb))
+    num_Gtaa = zeros((nb, nb))
+    num_Gtav = zeros((nb, nb))
+    num_Gtva = zeros((nb, nb))
+    num_Gtvv = zeros((nb, nb))
+    dIf_dVa, dIf_dVm, dIt_dVa, dIt_dVm, If, It = dIbr_dV(branch, Yf, Yt, V)
+    Gfaa, Gfav, Gfva, Gfvv = d2Ibr_dV2(Yf, V, lam)
+    Gtaa, Gtav, Gtva, Gtvv = d2Ibr_dV2(Yt, V, lam)
+    for i in range(nb):
+        Vap = V.copy()
+        Vap[i] = Vm[i] * exp(1j * (Va[i] + pert))
+        dIf_dVa_ap, dIf_dVm_ap, dIt_dVa_ap, dIt_dVm_ap, If_ap, It_ap = \
+            dIbr_dV(branch, Yf, Yt, Vap)
+        num_Gfaa[:, i] = (dIf_dVa_ap - dIf_dVa).T * lam / pert
+        num_Gfva[:, i] = (dIf_dVm_ap - dIf_dVm).T * lam / pert
+        num_Gtaa[:, i] = (dIt_dVa_ap - dIt_dVa).T * lam / pert
+        num_Gtva[:, i] = (dIt_dVm_ap - dIt_dVm).T * lam / pert
+
+        Vmp = V.copy()
+        Vmp[i] = (Vm[i] + pert) * exp(1j * Va[i])
+        dIf_dVa_mp, dIf_dVm_mp, dIt_dVa_mp, dIt_dVm_mp, If_mp, It_mp = \
+            dIbr_dV(branch, Yf, Yt, Vmp)
+        num_Gfav[:, i] = (dIf_dVa_mp - dIf_dVa).T * lam / pert
+        num_Gfvv[:, i] = (dIf_dVm_mp - dIf_dVm).T * lam / pert
+        num_Gtav[:, i] = (dIt_dVa_mp - dIt_dVa).T * lam / pert
+        num_Gtvv[:, i] = (dIt_dVm_mp - dIt_dVm).T * lam / pert
+
+    t_is(Gfaa.todense(), num_Gfaa, 4, ['Gfaa', t])
+    t_is(Gfav.todense(), num_Gfav, 4, ['Gfav', t])
+    t_is(Gfva.todense(), num_Gfva, 4, ['Gfva', t])
+    t_is(Gfvv.todense(), num_Gfvv, 4, ['Gfvv', t])
+
+    t_is(Gtaa.todense(), num_Gtaa, 4, ['Gtaa', t])
+    t_is(Gtav.todense(), num_Gtav, 4, ['Gtav', t])
+    t_is(Gtva.todense(), num_Gtva, 4, ['Gtva', t])
+    t_is(Gtvv.todense(), num_Gtvv, 4, ['Gtvv', t])
+
+    ##-----  check d2ASbr_dV2 code  -----
+    t = ' - d2ASbr_dV2 (squared apparent power flows)'
+    lam = 10 * random(nl)
+    # lam = [1 zeros(nl-1, 1)]
+    num_Gfaa = zeros((nb, nb))
+    num_Gfav = zeros((nb, nb))
+    num_Gfva = zeros((nb, nb))
+    num_Gfvv = zeros((nb, nb))
+    num_Gtaa = zeros((nb, nb))
+    num_Gtav = zeros((nb, nb))
+    num_Gtva = zeros((nb, nb))
+    num_Gtvv = zeros((nb, nb))
+    dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St = dSbr_dV(branch, Yf, Yt, V)
+    dAf_dVa, dAf_dVm, dAt_dVa, dAt_dVm = \
+                            dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St)
+    Gfaa, Gfav, Gfva, Gfvv = d2ASbr_dV2(dSf_dVa, dSf_dVm, Sf, Cf, Yf, V, lam)
+    Gtaa, Gtav, Gtva, Gtvv = d2ASbr_dV2(dSt_dVa, dSt_dVm, St, Ct, Yt, V, lam)
+    for i in range(nb):
+        Vap = V.copy()
+        Vap[i] = Vm[i] * exp(1j * (Va[i] + pert))
+        dSf_dVa_ap, dSf_dVm_ap, dSt_dVa_ap, dSt_dVm_ap, Sf_ap, St_ap = \
+            dSbr_dV(branch, Yf, Yt, Vap)
+        dAf_dVa_ap, dAf_dVm_ap, dAt_dVa_ap, dAt_dVm_ap = \
+            dAbr_dV(dSf_dVa_ap, dSf_dVm_ap, dSt_dVa_ap, dSt_dVm_ap, Sf_ap, St_ap)
+        num_Gfaa[:, i] = (dAf_dVa_ap - dAf_dVa).T * lam / pert
+        num_Gfva[:, i] = (dAf_dVm_ap - dAf_dVm).T * lam / pert
+        num_Gtaa[:, i] = (dAt_dVa_ap - dAt_dVa).T * lam / pert
+        num_Gtva[:, i] = (dAt_dVm_ap - dAt_dVm).T * lam / pert
+
+        Vmp = V.copy()
+        Vmp[i] = (Vm[i] + pert) * exp(1j * Va[i])
+        dSf_dVa_mp, dSf_dVm_mp, dSt_dVa_mp, dSt_dVm_mp, Sf_mp, St_mp = \
+            dSbr_dV(branch, Yf, Yt, Vmp)
+        dAf_dVa_mp, dAf_dVm_mp, dAt_dVa_mp, dAt_dVm_mp = \
+            dAbr_dV(dSf_dVa_mp, dSf_dVm_mp, dSt_dVa_mp, dSt_dVm_mp, Sf_mp, St_mp)
+        num_Gfav[:, i] = (dAf_dVa_mp - dAf_dVa).T * lam / pert
+        num_Gfvv[:, i] = (dAf_dVm_mp - dAf_dVm).T * lam / pert
+        num_Gtav[:, i] = (dAt_dVa_mp - dAt_dVa).T * lam / pert
+        num_Gtvv[:, i] = (dAt_dVm_mp - dAt_dVm).T * lam / pert
+
+    t_is(Gfaa.todense(), num_Gfaa, 2, ['Gfaa', t])
+    t_is(Gfav.todense(), num_Gfav, 2, ['Gfav', t])
+    t_is(Gfva.todense(), num_Gfva, 2, ['Gfva', t])
+    t_is(Gfvv.todense(), num_Gfvv, 2, ['Gfvv', t])
+
+    t_is(Gtaa.todense(), num_Gtaa, 2, ['Gtaa', t])
+    t_is(Gtav.todense(), num_Gtav, 2, ['Gtav', t])
+    t_is(Gtva.todense(), num_Gtva, 2, ['Gtva', t])
+    t_is(Gtvv.todense(), num_Gtvv, 2, ['Gtvv', t])
+
+    ##-----  check d2ASbr_dV2 code  -----
+    t = ' - d2ASbr_dV2 (squared real power flows)'
+    lam = 10 * random(nl)
+    # lam = [1 zeros(nl-1, 1)]
+    num_Gfaa = zeros((nb, nb))
+    num_Gfav = zeros((nb, nb))
+    num_Gfva = zeros((nb, nb))
+    num_Gfvv = zeros((nb, nb))
+    num_Gtaa = zeros((nb, nb))
+    num_Gtav = zeros((nb, nb))
+    num_Gtva = zeros((nb, nb))
+    num_Gtvv = zeros((nb, nb))
+    dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St = dSbr_dV(branch, Yf, Yt, V)
+    dAf_dVa, dAf_dVm, dAt_dVa, dAt_dVm = \
+           dAbr_dV(real(dSf_dVa), real(dSf_dVm), real(dSt_dVa), real(dSt_dVm), real(Sf), real(St))
+    Gfaa, Gfav, Gfva, Gfvv = d2ASbr_dV2(real(dSf_dVa), real(dSf_dVm), real(Sf), Cf, Yf, V, lam)
+    Gtaa, Gtav, Gtva, Gtvv = d2ASbr_dV2(real(dSt_dVa), real(dSt_dVm), real(St), Ct, Yt, V, lam)
+    for i in range(nb):
+        Vap = V.copy()
+        Vap[i] = Vm[i] * exp(1j * (Va[i] + pert))
+        dSf_dVa_ap, dSf_dVm_ap, dSt_dVa_ap, dSt_dVm_ap, Sf_ap, St_ap = \
+            dSbr_dV(branch, Yf, Yt, Vap)
+        dAf_dVa_ap, dAf_dVm_ap, dAt_dVa_ap, dAt_dVm_ap = \
+            dAbr_dV(real(dSf_dVa_ap), real(dSf_dVm_ap), real(dSt_dVa_ap), real(dSt_dVm_ap), real(Sf_ap), real(St_ap))
+        num_Gfaa[:, i] = (dAf_dVa_ap - dAf_dVa).T * lam / pert
+        num_Gfva[:, i] = (dAf_dVm_ap - dAf_dVm).T * lam / pert
+        num_Gtaa[:, i] = (dAt_dVa_ap - dAt_dVa).T * lam / pert
+        num_Gtva[:, i] = (dAt_dVm_ap - dAt_dVm).T * lam / pert
+
+        Vmp = V.copy()
+        Vmp[i] = (Vm[i] + pert) * exp(1j * Va[i])
+        dSf_dVa_mp, dSf_dVm_mp, dSt_dVa_mp, dSt_dVm_mp, Sf_mp, St_mp = \
+            dSbr_dV(branch, Yf, Yt, Vmp)
+        dAf_dVa_mp, dAf_dVm_mp, dAt_dVa_mp, dAt_dVm_mp = \
+            dAbr_dV(real(dSf_dVa_mp), real(dSf_dVm_mp), real(dSt_dVa_mp), real(dSt_dVm_mp), real(Sf_mp), real(St_mp))
+        num_Gfav[:, i] = (dAf_dVa_mp - dAf_dVa).T * lam / pert
+        num_Gfvv[:, i] = (dAf_dVm_mp - dAf_dVm).T * lam / pert
+        num_Gtav[:, i] = (dAt_dVa_mp - dAt_dVa).T * lam / pert
+        num_Gtvv[:, i] = (dAt_dVm_mp - dAt_dVm).T * lam / pert
+
+    t_is(Gfaa.todense(), num_Gfaa, 2, ['Gfaa', t])
+    t_is(Gfav.todense(), num_Gfav, 2, ['Gfav', t])
+    t_is(Gfva.todense(), num_Gfva, 2, ['Gfva', t])
+    t_is(Gfvv.todense(), num_Gfvv, 2, ['Gfvv', t])
+
+    t_is(Gtaa.todense(), num_Gtaa, 2, ['Gtaa', t])
+    t_is(Gtav.todense(), num_Gtav, 2, ['Gtav', t])
+    t_is(Gtva.todense(), num_Gtva, 2, ['Gtva', t])
+    t_is(Gtvv.todense(), num_Gtvv, 2, ['Gtvv', t])
+
+    ##-----  check d2AIbr_dV2 code  -----
+    t = ' - d2AIbr_dV2 (squared current magnitudes)'
+    lam = 10 * random(nl, 1)
+    # lam = [1 zeros(nl-1, 1)]
+    num_Gfaa = zeros((nb, nb))
+    num_Gfav = zeros((nb, nb))
+    num_Gfva = zeros((nb, nb))
+    num_Gfvv = zeros((nb, nb))
+    num_Gtaa = zeros((nb, nb))
+    num_Gtav = zeros((nb, nb))
+    num_Gtva = zeros((nb, nb))
+    num_Gtvv = zeros((nb, nb))
+    dIf_dVa, dIf_dVm, dIt_dVa, dIt_dVm, If, It = dIbr_dV(branch, Yf, Yt, V)
+    dAf_dVa, dAf_dVm, dAt_dVa, dAt_dVm = \
+                            dAbr_dV(dIf_dVa, dIf_dVm, dIt_dVa, dIt_dVm, If, It)
+    Gfaa, Gfav, Gfva, Gfvv = d2AIbr_dV2(dIf_dVa, dIf_dVm, If, Yf, V, lam)
+    Gtaa, Gtav, Gtva, Gtvv = d2AIbr_dV2(dIt_dVa, dIt_dVm, It, Yt, V, lam)
+    for i in range(nb):
+        Vap = V.copy()
+        Vap[i] = Vm[i] * exp(1j * (Va[i] + pert))
+        dIf_dVa_ap, dIf_dVm_ap, dIt_dVa_ap, dIt_dVm_ap, If_ap, It_ap = \
+            dIbr_dV(branch, Yf, Yt, Vap)
+        dAf_dVa_ap, dAf_dVm_ap, dAt_dVa_ap, dAt_dVm_ap = \
+            dAbr_dV(dIf_dVa_ap, dIf_dVm_ap, dIt_dVa_ap, dIt_dVm_ap, If_ap, It_ap)
+        num_Gfaa[:, i] = (dAf_dVa_ap - dAf_dVa).T * lam / pert
+        num_Gfva[:, i] = (dAf_dVm_ap - dAf_dVm).T * lam / pert
+        num_Gtaa[:, i] = (dAt_dVa_ap - dAt_dVa).T * lam / pert
+        num_Gtva[:, i] = (dAt_dVm_ap - dAt_dVm).T * lam / pert
+
+        Vmp = V.copy()
+        Vmp[i] = (Vm[i] + pert) * exp(1j * Va[i])
+        dIf_dVa_mp, dIf_dVm_mp, dIt_dVa_mp, dIt_dVm_mp, If_mp, It_mp = \
+            dIbr_dV(branch, Yf, Yt, Vmp)
+        dAf_dVa_mp, dAf_dVm_mp, dAt_dVa_mp, dAt_dVm_mp = \
+            dAbr_dV(dIf_dVa_mp, dIf_dVm_mp, dIt_dVa_mp, dIt_dVm_mp, If_mp, It_mp)
+        num_Gfav[:, i] = (dAf_dVa_mp - dAf_dVa).T * lam / pert
+        num_Gfvv[:, i] = (dAf_dVm_mp - dAf_dVm).T * lam / pert
+        num_Gtav[:, i] = (dAt_dVa_mp - dAt_dVa).T * lam / pert
+        num_Gtvv[:, i] = (dAt_dVm_mp - dAt_dVm).T * lam / pert
+
+    t_is(Gfaa.todense(), num_Gfaa, 3, ['Gfaa', t])
+    t_is(Gfav.todense(), num_Gfav, 3, ['Gfav', t])
+    t_is(Gfva.todense(), num_Gfva, 3, ['Gfva', t])
+    t_is(Gfvv.todense(), num_Gfvv, 2, ['Gfvv', t])
+
+    t_is(Gtaa.todense(), num_Gtaa, 3, ['Gtaa', t])
+    t_is(Gtav.todense(), num_Gtav, 3, ['Gtav', t])
+    t_is(Gtva.todense(), num_Gtva, 3, ['Gtva', t])
+    t_is(Gtvv.todense(), num_Gtvv, 2, ['Gtvv', t])
+
+    t_end
