@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -47,7 +47,7 @@ class bus_data(namedtuple('bus_data'), [attr for attr, _ in bus_attr]):
         return 0 if self.bus_i is None else self.bus_i.shape[0]
 
 
-    def get(self):
+    def to_array(self):
         """Returns the bus data as array of floats.
         """
         data = zeros((self.size, len(self)), float)
@@ -55,7 +55,7 @@ class bus_data(namedtuple('bus_data'), [attr for attr, _ in bus_attr]):
             data[:, i] = getattr(self, attr)
 
 
-    def set(self, data):
+    def from_array(self, data):
         """Set the bus data from an array of floats.
         """
         for i, (attr, typ) in bus_attr:
@@ -77,6 +77,15 @@ class bus_data(namedtuple('bus_data'), [attr for attr, _ in bus_attr]):
         """
         for i, val in enumerate(other):
             self[i] = copy(val[idx])
+
+
+    def __getitem__(self, key):
+        print "KEY:", key
+
+        if not isinstance(key, int):
+            raise TypeError
+        if key > self.size():
+            raise IndexError
 
 
 #class BusData(object):

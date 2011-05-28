@@ -1,5 +1,5 @@
 # Copyright (C) 2009-2011 Rui Bo <eeborui@hotmail.com>
-# Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 2010-2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published

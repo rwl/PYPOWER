@@ -1,5 +1,5 @@
-# Copyright (C) 2009-2011 Power System Engineering Research Center (PSERC)
-# Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 2009-2011 Power System Engineering Research Center
+# Copyright (C) 2010-2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -80,7 +80,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 
     Ported by Richard Lincoln from the MATLAB Interior Point Solver (MIPS)
     (v1.9) by Ray Zimmerman.  MIPS is distributed as part of the MATPOWER
-    project, developed at the Power System Engineering Research Center (PSERC) (PSERC),
+    project, developed at the Power System Engineering Research Center (PSERC),
     Cornell. See U{http://www.pserc.cornell.edu/matpower/} for more info.
     MIPS was ported by Ray Zimmerman from C code written by H. Wang for his
     PhD dissertation:
