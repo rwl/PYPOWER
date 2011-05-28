@@ -1,0 +1,230 @@
+# Copyright (C) 2008-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
+#
+# PYPOWER is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published
+# by the Free Software Foundation, either version 3 of the License,
+# or (at your option) any later version.
+#
+# PYPOWER is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY], without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
+
+from numpy import array, zeros, r_, in1d, flatnonzero as find
+
+from pypower.loadcase import loadcase
+from pypower.isload import isload
+from pypower.total_load import total_load
+
+from pypower.idx_bus import PD, QD, BUS_AREA
+from pypower.idx_gen import GEN_BUS, QG, PMIN, QMIN, QMAX
+
+from pypower.t.t_begin import t_begin
+from pypower.t.t_is import t_is
+from pypower.t.t_end import t_end
+
+def t_total_load(quiet=False):
+    """Tests for code in C{total_load}.
+
+    @see: U{http://www.pserc.cornell.edu/matpower/}
+    """
+    n_tests = 48
+
+    t_begin(n_tests, quiet)
+
+    ppc = loadcase('t_auction_case')
+    ppc.gen[7, GEN_BUS] = 2    ## multiple d. loads per area, same bus as gen
+    ppc.gen[7, [QG, QMIN, QMAX]] = array([3, 0, 3])
+    ## put it load before gen in matrix
+    ppc.gen = r_[ppc.gen[7, :], ppc.gen[:7, :], ppc.gen[8, :]]
+    ld = find(isload(ppc.gen))
+    a = [None] * 3
+    lda = [None] * 3
+    for k in range(3):
+        a[k] = find(ppc.bus[:, BUS_AREA] == k)  ## buses in area k
+        tmp = find( in1d(ppc.gen[ld, GEN_BUS], a[k]) )
+        lda[k] = ld[tmp]                       ## disp loads in area k
+
+    area = []
+    for k in range(3):
+        area[k] = {'fixed': {}, 'disp': {}, 'both': {}}
+        area[k]['fixed']['p'] = sum(ppc.bus[a[k], PD])
+        area[k]['fixed']['q'] = sum(ppc.bus[a[k], QD])
+        area[k]['disp']['p'] = -sum(ppc.gen[lda[k], PMIN])
+        area[k]['disp']['qmin'] = -sum(ppc.gen[lda[k], QMIN])
+        area[k]['disp']['qmax'] = -sum(ppc.gen[lda[k], QMAX])
+        area[k]['disp']['q'] = area[k]['disp']['qmin'] + area[k]['disp']['qmax']
+        area[k]['both']['p'] = area[k]['fixed']['p'] + area[k]['disp']['p']
+        area[k]['both']['q'] = area[k]['fixed']['q'] + area[k]['disp']['q']
+
+    total = {'fixed': {}, 'disp': {}, 'both': {}}
+    total['fixed']['p'] = sum(ppc.bus[:, PD])
+    total['fixed']['q'] = sum(ppc.bus[:, QD])
+    total['disp']['p'] = -sum(ppc.gen[ld, PMIN])
+    total['disp']['qmin'] = -sum(ppc.gen[ld, QMIN])
+    total['disp']['qmax'] = -sum(ppc.gen[ld, QMAX])
+    total['disp']['q'] = total['disp']['qmin'] + total['disp']['qmax']
+    total['both']['p'] = total['fixed']['p'] + total['disp']['p']
+    total['both']['q'] = total['fixed']['q'] + total['disp']['q']
+
+    ##-----  all load  -----
+    t = '      Pd = total_load(bus) : '
+    Pd = total_load(ppc.bus)
+    t_is(Pd, [area[0]['fixed']['p'], area[1]['fixed']['p'], area[2]['fixed']['p']], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus) : '
+    [Pd, Qd] = total_load(ppc.bus)
+    t_is(Pd, [area[0]['fixed']['p'], area[1]['fixed']['p'], area[2]['fixed']['p']], 12, [t, 'Pd'])
+    t_is(Qd, [area[0]['fixed']['q'], area[1]['fixed']['q'], area[2]['fixed']['q']], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen) : '
+    Pd = total_load(ppc.bus, ppc.gen)
+    t_is(Pd, [area[0]['both']['p'], area[1]['both']['p'], area[2]['both']['p']], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen) : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen)
+    t_is(Pd, [area[0]['both']['p'], area[1]['both']['p'], area[2]['both']['p']], 12, [t, 'Pd'])
+    t_is(Qd, [area[0]['both']['q'], area[1]['both']['q'], area[2]['both']['q']], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, [], ''all'') : '
+    Pd = total_load(ppc.bus, [], 'all')
+    t_is(Pd, total['fixed']['p'], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, [], ''all'') : '
+    [Pd, Qd] = total_load(ppc.bus, [], 'all')
+    t_is(Pd, total['fixed']['p'], 12, [t, 'Pd'])
+    t_is(Qd, total['fixed']['q'], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, ''all'') : '
+    Pd = total_load(ppc.bus, ppc.gen, 'all')
+    t_is(Pd, total['both']['p'], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, ''all'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, 'all')
+    t_is(Pd, total['both']['p'], 12, [t, 'Pd'])
+    t_is(Qd, total['both']['q'], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, ''all'', ''BOTH'') : '
+    Pd = total_load(ppc.bus, ppc.gen, 'all', 'BOTH')
+    t_is(Pd, total['both']['p'], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, ''all'', ''BOTH'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, 'all', 'BOTH')
+    t_is(Pd, total['both']['p'], 12, [t, 'Pd'])
+    t_is(Qd, total['both']['q'], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, ''all'', ''FIXED'') : '
+    Pd = total_load(ppc.bus, ppc.gen, 'all', 'FIXED')
+    t_is(Pd, total['fixed']['p'], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, ''all'', ''FIXED'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, 'all', 'FIXED')
+    t_is(Pd, total['fixed']['p'], 12, [t, 'Pd'])
+    t_is(Qd, total['fixed']['q'], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, ''all'', ''DISPATCHABLE'') : '
+    Pd = total_load(ppc.bus, ppc.gen, 'all', 'DISPATCHABLE')
+    t_is(Pd, total['disp']['p'], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, ''all'', ''DISPATCHABLE'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, 'all', 'DISPATCHABLE')
+    t_is(Pd, total['disp']['p'], 12, [t, 'Pd'])
+    t_is(Qd, total['disp']['q'], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, [], ''BOTH'') : '
+    Pd = total_load(ppc.bus, ppc.gen, [], 'BOTH')
+    t_is(Pd, [area[0]['both']['p'], area[1]['both']['p'], area[2]['both']['p']], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, [], ''BOTH'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, [], 'BOTH')
+    t_is(Pd, [area[0]['both']['p'], area[1]['both']['p'], area[2]['both']['p']], 12, [t, 'Pd'])
+    t_is(Qd, [area[0]['both']['q'], area[1]['both']['q'], area[2]['both']['q']], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, [], ''FIXED'') : '
+    Pd = total_load(ppc.bus, ppc.gen, [], 'FIXED')
+    t_is(Pd, [area[0]['fixed']['p'], area[1]['fixed']['p'], area[2]['fixed']['p']], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, [], ''FIXED'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, [], 'FIXED')
+    t_is(Pd, [area[0]['fixed']['p'], area[1]['fixed']['p'], area[2]['fixed']['p']], 12, [t, 'Pd'])
+    t_is(Qd, [area[0]['fixed']['q'], area[1]['fixed']['q'], area[2]['fixed']['q']], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, [], ''DISPATCHABLE'') : '
+    Pd = total_load(ppc.bus, ppc.gen, [], 'DISPATCHABLE')
+    t_is(Pd, [area[0]['disp']['p'], area[1]['disp']['p'], area[2]['disp']['p']], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, [], ''DISPATCHABLE'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, [], 'DISPATCHABLE')
+    t_is(Pd, [area[0]['disp']['p'], area[1]['disp']['p'], area[2]['disp']['p']], 12, [t, 'Pd'])
+    t_is(Qd, [area[0]['disp']['q'], area[1]['disp']['q'], area[2]['disp']['q']], 12, [t, 'Qd'])
+
+    ##-----  explicit single load zone  -----
+    nb = ppc.bus.size
+    load_zone = zeros(nb)
+    k = find(ppc.bus[:, BUS_AREA] == 2)    ## area 2
+    load_zone[k] = 1
+    t = '      Pd = total_load(bus, gen, load_zone1, ''BOTH'') : '
+    Pd = total_load(ppc.bus, ppc.gen, load_zone, 'BOTH')
+    t_is(Pd, area[1]['both']['p'], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, load_zone1, ''BOTH'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, load_zone, 'BOTH')
+    t_is(Pd, area[1]['both']['p'], 12, [t, 'Pd'])
+    t_is(Qd, area[1]['both']['q'], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, load_zone1, ''FIXED'') : '
+    Pd = total_load(ppc.bus, ppc.gen, load_zone, 'FIXED')
+    t_is(Pd, area[1]['fixed']['p'], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, load_zone1, ''FIXED'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, load_zone, 'FIXED')
+    t_is(Pd, area[1]['fixed']['p'], 12, [t, 'Pd'])
+    t_is(Qd, area[1]['fixed']['q'], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, load_zone1, ''DISPATCHABLE'') : '
+    Pd = total_load(ppc.bus, ppc.gen, load_zone, 'DISPATCHABLE')
+    t_is(Pd, area[1]['disp']['p'], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, load_zone1, ''DISPATCHABLE'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, load_zone, 'DISPATCHABLE')
+    t_is(Pd, area[1]['disp']['p'], 12, [t, 'Pd'])
+    t_is(Qd, area[1]['disp']['q'], 12, [t, 'Qd'])
+
+    ##-----  explicit multiple load zone  -----
+    load_zone = zeros(nb)
+    k = find(ppc.bus[:, BUS_AREA] == 3)    ## area 3
+    load_zone[k] = 1
+    k = find(ppc.bus[:, BUS_AREA] == 1)    ## area 1
+    load_zone[k] = 2
+    t = '      Pd = total_load(bus, gen, load_zone2, ''BOTH'') : '
+    Pd = total_load(ppc.bus, ppc.gen, load_zone, 'BOTH')
+    t_is(Pd, [area[2]['both']['p'], area[0]['both']['p']], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, load_zone2, ''BOTH'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, load_zone, 'BOTH')
+    t_is(Pd, [area[2]['both']['p'], area[0]['both']['p']], 12, [t, 'Pd'])
+    t_is(Qd, [area[2]['both']['q'], area[0]['both']['q']], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, load_zone2, ''FIXED'') : '
+    Pd = total_load(ppc.bus, ppc.gen, load_zone, 'FIXED')
+    t_is(Pd, [area[2]['fixed']['p'], area[0]['fixed']['p']], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, load_zone2, ''FIXED'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, load_zone, 'FIXED')
+    t_is(Pd, [area[2]['fixed']['p'], area[0]['fixed']['p']], 12, [t, 'Pd'])
+    t_is(Qd, [area[2]['fixed']['q'], area[0]['fixed']['q']], 12, [t, 'Qd'])
+
+    t = '      Pd = total_load(bus, gen, load_zone2, ''DISPATCHABLE'') : '
+    Pd = total_load(ppc.bus, ppc.gen, load_zone, 'DISPATCHABLE')
+    t_is(Pd, [area[2]['disp']['p'], area[0]['disp']['p']], 12, [t, 'Pd'])
+
+    t = '[Pd, Qd] = total_load(bus, gen, load_zone2, ''DISPATCHABLE'') : '
+    [Pd, Qd] = total_load(ppc.bus, ppc.gen, load_zone, 'DISPATCHABLE')
+    t_is(Pd, [area[2]['disp']['p'], area[0]['disp']['p']], 12, [t, 'Pd'])
+    t_is(Qd, [area[2]['disp']['q'], area[0]['disp']['q']], 12, [t, 'Qd'])
+
+    t_end
