@@ -51,7 +51,7 @@ def t_opf_dc_pips_sc(quiet=False):
 
     t0 = 'DC OPF (PIPS-sc): '
     opt = ppoption
-    opt['VERBOSE'] = 0
+    opt['VERBOSE'] = verbose
     opt['OUT_ALL'] = 0
     opt['OPF_ALG_DC'] = 250
 
