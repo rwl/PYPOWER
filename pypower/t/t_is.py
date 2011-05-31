@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import max, abs, flatnonzero as find
+from numpy import ndarray, array, max, abs, nonzero, argmax
 
 from pypower.t.t_ok import t_ok
 
@@ -30,8 +30,15 @@ def t_is(got, expected, prec=5, msg=''):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    m, n = expected.shape
-    if (got.shape == (m, n)) or ((m, n) == (0, 0)):
+    global t_quiet
+
+    if not isinstance(got, ndarray):
+        got = array([got])
+    if not isinstance(expected, ndarray):
+        expected = array([expected])
+
+#    m, n = expected.shape
+    if (got.shape == expected.shape) or (expected.shape == (0,)):
         got_minus_expected = got - expected
         max_diff = max(max(abs(got_minus_expected)))
         condition = ( max_diff < 10**(-prec) )
@@ -43,9 +50,9 @@ def t_is(got, expected, prec=5, msg=''):
     if (not condition and not t_quiet):
         s = ''
         if max_diff != 0:
-            i, j, v = find(abs(got_minus_expected) >= 10**(-prec)) # FIXME
-            k = i + (j - 1) * m
-            vv, kk = max(abs(got_minus_expected(k)))
+            i, j = nonzero(abs(got_minus_expected) >= 10**(-prec)) # FIXME
+            k = i + (j - 1) * expected.shape[0]
+            kk = argmax(abs(got_minus_expected[k]))
             s += '  row     col          got             expected          got - exp\n'
             s += '-------  ------  ----------------  ----------------  ----------------'
             for u in range(len(i)):

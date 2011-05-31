@@ -7,37 +7,45 @@
 # or (at your option) any later version.
 #
 # PYPOWER is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# but WITHOUT ANY WARRANTY without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 import logging
 
-from os.path import basename, splitext, isfile
+from os.path import basename, splitext, exists
 
-from numpy import array
+from numpy import array, zeros, ones, c_
 
-logger = logging.getLogger(__name__)
+from scipy.io import loadmat
 
-def loadcase(casefile):
-    """ Returns a dict containing case data matrices as values.
+from pypower.case import case
+
+from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, APF
+
+from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
+
+def loadcase(casefile,
+        return_as_obj=False, expect_gencost=True, expect_areas=True):
+    """ Returns the individual data matrices or an object containing them
+    as members.
 
     Here casefile is either a dict containing the keys baseMVA, bus,
     gen, branch, areas, gencost, or a string containing the name of the
-    file. If casefile contains the extension '.pkl' or '.py', then the
+    file. If casefile contains the extension '.mat' or '.py', then the
     explicit file is searched. If casefile containts no extension, then
-    C{loadcase} looks for a '.pkl' file first, then for a '.py' file.  If the
+    C{loadcase} looks for a '.mat' file first, then for a '.py' file.  If the
     file does not exist or doesn't define all matrices, the function returns
     an exit code as follows:
 
         0:  all variables successfully defined
         1:  input argument is not a string or struct
-        2:  specified extension-less file name does not exist in search
-            path
-        3:  specified .pkl file does not exist in search path
+        2:  specified extension-less file name does not exist in search path
+        3:  specified .mat file does not exist in search path
         4:  specified .py file does not exist in search path
         5:  specified file fails to define all matrices or contains syntax
             error
@@ -50,71 +58,182 @@ def loadcase(casefile):
     """
     info = 0
 
-    # read data into dict
+    # read data into case object
     if isinstance(casefile, basestring):
-#        base_name = casefile#basename(casefile)
         # check for explicit extension
-        if casefile.endswith(('.py', '.pkl')):
+        if casefile.endswith(('.py', '.mat')):
             rootname, extension = splitext(casefile)
         else:
+            # set extension if not specified explicitly
             rootname = casefile
-            if isfile(casefile + '.pkl'):
-                extension = '.pkl'
-            elif isfile(casefile + '.py'):
+            if exists(casefile + '.mat'):
+                extension = '.mat'
+            elif exists(casefile + '.py'):
                 extension = '.py'
             else:
                 info = 2
 
+        lasterr = ''
+
+        ## attempt to read file
         if info == 0:
-            globals = {}
-            locals = {}
-            try:
-                execfile(rootname + extension)
-            except IOError:
-                info = 3 if extension == ".pkl" else 4
+            if extension == '.mat':       ## from MAT file
+                try:
+                    s = loadmat(rootname, oned_as='row')
+                    if 'ppc' in s:        ## it's a PYPOWER dict
+                        s = s['ppc']
+                    elif 'ppc' in s:      ## it's a MATPOWER dict
+                        s = s['ppc']
+                    else:                        ## individual data matrices
+                        s['version'] = '1'
+                except IOError, e:
+                    info = 3
+                    lasterr = e.message
+            elif extension == '.py':      ## from Python file
+                try:
+                    __import__(rootname)
+                    mod = sys.modules[rootname]  #@PydevCodeAnalysisIgnore
 
-            if info == 4 and isfile(rootname + '.py'):
-                info = 5
-            else:
-                func = basename(rootname)
-                ppc = eval(func + "()")
-#                if func in locals:
-#                    ppc = eval(func + "()")
-#                else:
-#                    info = 5
+                    try:                      ## assume it returns an object
+                        s = eval('mod.%s()' % rootname)
+                    except ValueError, e:
+                        info = 4
+                        lasterr = e.message
+                    ## if not try individual data matrices
+                    if info == 0 and not isinstance(s, case):
+                        s = case()
+                        s.version = '1'
+                        if expect_gencost:
+                            try:
+                                s.baseMVA, s.bus, s.gen, s.branch, s.areas, \
+                                    s.gencost = eval('mod.%s()' % rootname)
+                            except IOError, e:
+                                info = 4
+                                lasterr = e.message
+                        else:
+                            if return_as_obj:
+                                try:
+                                    s.baseMVA, s.bus, s.gen, s.branch, \
+                                        s.areas, s.gencost = \
+                                            eval('mod.%s' % rootname)
+                                except ValueError, e:
+                                    try:
+                                        s.baseMVA, s.bus, s.gen, s.branch = \
+                                            eval('mod.%s()' % rootname)
+                                    except ValueError, e:
+                                        info = 4
+                                        lasterr = e.message
+                            else:
+                                try:
+                                    s.baseMVA, s.bus, s.gen, s.branch = \
+                                        eval('mod.%s' % rootname)
+                                except ValueError, e:
+                                    info = 4
+                                    lasterr = e.message
 
-    elif isinstance(casefile, dict):
-        ppc = casefile
+                except ImportError, e:
+                    info = 4
+                    lasterr = e.message
+
+                if info == 4 and exists(rootname + '.py'):
+                    info = 5
+                    err5 = lasterr
+
+    elif isinstance(casefile, case):
+        s = casefile
     else:
         info = 1
 
     # check contents of dict
     if info == 0:
         # check for required keys
-        if not (ppc.has_key('baseMVA') and ppc.has_key('bus') \
-            and ppc.has_key('gen') and ppc.has_key('branch')):
-            info = 5
-#        elif not (ppc.has_key('areas') and ppc.has_key('gencost')):
-#            info = 5
+        if (s.baseMVA == None or s.bus == None \
+            or s.gen == None or s.branch == None) or \
+            (expect_gencost and s.gencost == None) or \
+            (expect_areas and s.areas == None):
+            info = 5  ## missing some expected fields
+            err5 = 'missing data'
         else:
-            ppc = ppc
+            ## remove empty areas if not needed
+            if hasattr(s, 'areas') and (len(s.areas) == 0) and (not expect_areas):
+                del s.areas
 
-    if info != 0: # error encountered
-        if info == 1:
-            logger.error('Input arg should be a dict or a string '
-                         'containing a filename')
-        elif info == 2:
-            logger.error('Specified case not a valid file')
-        elif info == 3:
-            logger.error('Specified MAT file does not exist')
-        elif info == 4:
-            logger.error('Specified M file does not exist')
-        elif info == 5:
-            logger.error('Syntax error or undefined data '
-                         'matrix(ices) in the file')
+            ## all fields present, copy to ppc
+            ppc = s
+            if not hasattr(ppc, 'version'):  ## hmm, struct with no 'version' field
+                if ppc.gen.shape[1] < 21:    ## version 2 has 21 or 25 cols
+                    ppc.version = '1'
+                else:
+                    ppc.version = '2'
+
+            if (ppc.version == '1'):
+                # convert from version 1 to version 2
+                ppc.gen, ppc.branch = ppc_1to2(ppc.gen, ppc.branch);
+                ppc.version = '2'
+
+    if info == 0:  # no errors
+        if return_as_obj:
+            return ppc
         else:
-            logger.error('Unknown error encountered loading case.')
+            result = [ppc.baseMVA, ppc.bus, ppc.gen, ppc.branch]
+            if expect_gencost:
+                if expect_areas:
+                    result.extend([ppc.areas, ppc.gencost])
+                else:
+                    result.extend([ppc.gencost])
+            return result
+    else:  # error encountered
+        if info == 1:
+            sys.stderr.write('Input arg should be a case or a string '
+                             'containing a filename')
+        elif info == 2:
+            sys.stderr.write('Specified case not a valid file')
+        elif info == 3:
+            sys.stderr.write('Specified MAT file does not exist')
+        elif info == 4:
+            sys.stderr.write('Specified M file does not exist')
+        elif info == 5:
+            sys.stderr.write('Syntax error or undefined data '
+                             'matrix(ices) in the file')
+        else:
+            sys.stderr.write('Unknown error encountered loading case.')
 
         return info
 
-    return ppc
+
+def ppc_1to2(gen, branch):
+    ##-----  gen  -----
+    ## use the version 1 values for column names
+    if gen.shape[1] >= APF:
+        sys.stderr.write('ppc_1to2: gen matrix appears to already be in '
+                         'version 2 format')
+        return gen, branch
+
+    shift = MU_PMAX - PMIN - 1
+    tmp = array([MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN]) - shift
+    mu_Pmax, mu_Pmin, mu_Qmax, mu_Qmin = tmp
+
+    ## add extra columns to gen
+    tmp = zeros((gen.shape[0], shift))
+    if gen.shape[1] >= mu_Qmin:
+        gen = c_[ gen[:, 0:PMIN + 1], tmp, gen[:, mu_Pmax:mu_Qmin] ]
+    else:
+        gen = c_[ gen[:, 0:PMIN + 1], tmp ]
+
+    ##-----  branch  -----
+    ## use the version 1 values for column names
+    shift = PF - BR_STATUS - 1
+    tmp = array([PF, QF, PT, QT, MU_SF, MU_ST]) - shift
+    Pf, Qf, Pt, Qt, mu_Sf, mu_St = tmp
+
+    ## add extra columns to branch
+    tmp = ones((branch.shape[0], 1)) * array([-360, 360])
+    tmp2 = zeros((branch.shape[0], 2))
+    if branch.shape[1] >= mu_St - 1:
+        branch = c_[ branch[:, 0:BR_STATUS + 1], tmp, branch[:, PF - 1:MU_ST + 1], tmp2 ]
+    elif branch.shape[1] >= QT - 1:
+        branch = c_[ branch[:, 0:BR_STATUS + 1], tmp, branch[:, PF - 1:QT + 1] ]
+    else:
+        branch = c_[ branch[:, 0:BR_STATUS + 1], tmp ]
+
+    return gen, branch

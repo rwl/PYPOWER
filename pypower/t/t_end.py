@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from time import time
+
+from t_begin import t_quiet, t_num_of_tests, t_counter, t_ok_cnt, t_not_ok_cnt, t_skip_cnt, t_clock
+
 def t_end():
     """Finish running tests and print statistics.
 
@@ -22,13 +26,7 @@ def t_end():
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    global t_quiet
-    global t_num_of_tests
-    global t_counter
-    global t_ok_cnt
-    global t_not_ok_cnt
-    global t_skip_cnt
-    global t_clock
+    global t_quiet, t_num_of_tests, t_counter, t_ok_cnt, t_not_ok_cnt, t_skip_cnt, t_clock
 
     t_counter = t_counter - 1
 

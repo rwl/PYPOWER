@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from t_begin import t_quiet, t_counter, t_ok_cnt, t_not_ok_cnt
+
 def t_ok(cond, msg=''):
     """Tests if a condition is true.
 
@@ -25,12 +27,11 @@ def t_ok(cond, msg=''):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    global t_quiet
-    global t_counter
-    global t_ok_cnt
-    global t_not_ok_cnt
+    global t_quiet, t_counter, t_ok_cnt, t_not_ok_cnt
 
     if msg:
+        if isinstance(msg, list):
+            msg = "".join(msg)
         msg = ' - ' + msg
 
     s = ''

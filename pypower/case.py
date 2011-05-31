@@ -26,6 +26,18 @@ from pypower.idx_gen import \
     QC1MIN, QC1MAX, QC2MIN, QC2MAX, RAMP_AGC, RAMP_10, RAMP_30, RAMP_Q, APF, \
     MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
 
+class case(object):
+
+    def __init__(self):
+        self.baseMVA = 100.0
+
+        self.bus = None
+        self.gen = None
+        self.branch = None
+#        self.areas = None
+#        self.gencost = None
+
+
 class Case(object):
 
     def __init__(self, bus_data, gen_data, branch_data, areas_data=None,
@@ -224,53 +236,55 @@ class GenData(_BaseData):
         # Minimum real power output (MW)
         self.Pmin = gen_data[:, PMIN]
 
+        ncol = gen_data.shape[1]
+
         # Lower real power output of PQ capability curve (MW)
-        self.Pc1 = gen_data[:, PC1]
+        self.Pc1 = None if ncol > PC1 else gen_data[:, PC1]
 
         # Upper real power output of PQ capability curve (MW)
-        self.Pc2 = gen_data[:, PC2]
+        self.Pc2 = None if ncol > PC1 else gen_data[:, PC2]
 
         # Minimum reactive power output at Pc1 (MVAr)
-        self.Qc1min = gen_data[:, QC1MIN]
+        self.Qc1min = None if ncol > PC1 else gen_data[:, QC1MIN]
 
         # Maximum reactive power output at Pc1 (MVAr)
-        self.Qc1max = gen_data[:, QC1MAX]
+        self.Qc1max = None if ncol > PC1 else gen_data[:, QC1MAX]
 
         # Minimum reactive power output at Pc2 (MVAr)
-        self.Qc2min = gen_data[:, QC2MIN]
+        self.Qc2min = None if ncol > PC1 else gen_data[:, QC2MIN]
 
         # Maximum reactive power output at Pc2 (MVAr)
-        self.Qc2max = gen_data[:, QC2MAX]
+        self.Qc2max = None if ncol > PC1 else gen_data[:, QC2MAX]
 
         # Ramp rate for load following/AGC (MW/min)
-        self.ramp_acg = gen_data[:, RAMP_AGC]
+        self.ramp_acg = None if ncol > PC1 else gen_data[:, RAMP_AGC]
 
         # Ramp rate for 10 minute reserves (MW)
-        self.ramp_10 = gen_data[:, RAMP_10]
+        self.ramp_10 = None if ncol > PC1 else gen_data[:, RAMP_10]
 
         # Ramp rate for 30 minute reserves (MW)
-        self.ramp_30 = gen_data[:, RAMP_30]
+        self.ramp_30 = None if ncol > PC1 else gen_data[:, RAMP_30]
 
         # Ramp rate for reactive power (2 sec timescale) (MVAr/min)
-        self.ramp_q = gen_data[:, RAMP_Q]
+        self.ramp_q = None if ncol > PC1 else gen_data[:, RAMP_Q]
 
         # Area participation factor
-        self.apf = gen_data[:, APF]
+        self.apf = None if ncol > PC1 else gen_data[:, APF]
 
         # Included in opf solution, not necessarily in input
         # assume objective function has units, u
 
         # Kuhn-Tucker multiplier on upper Pg limit (u/MW)
-        self.mu_Pmax = gen_data[:, MU_PMAX]
+        self.mu_Pmax = None if ncol > MU_PMAX else gen_data[:, MU_PMAX]
 
         # Kuhn-Tucker multiplier on lower Pg limit (u/MW)
-        self.mu_Pmin = gen_data[:, MU_PMIN]
+        self.mu_Pmin = None if ncol > MU_PMAX else gen_data[:, MU_PMIN]
 
         # Kuhn-Tucker multiplier on upper Qg limit (u/MVAr)
-        self.mu_Qmax = gen_data[:, MU_QMAX]
+        self.mu_Qmax = None if ncol > MU_PMAX else gen_data[:, MU_QMAX]
 
         # Kuhn-Tucker multiplier on lower Qg limit (u/MVAr)
-        self.mu_Qmin = gen_data[:, MU_QMIN]
+        self.mu_Qmin = None if ncol > MU_PMAX else gen_data[:, MU_QMIN]
 
 
 class BranchData(object):

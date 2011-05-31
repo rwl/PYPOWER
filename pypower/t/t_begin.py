@@ -7,12 +7,22 @@
 # or (at your option) any later version.
 #
 # PYPOWER is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# but WITHOUT ANY WARRANTY without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
+
+from time import time
+
+t_quiet = False
+t_num_of_tests = 0
+t_counter = 0
+t_ok_cnt = 0
+t_not_ok_cnt = 0
+t_skip_cnt = 0
+t_clock = 0.0
 
 def t_begin(num_of_tests, quiet=False):
     """Initializes the global test counters, setting everything up to
@@ -22,21 +32,15 @@ def t_begin(num_of_tests, quiet=False):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    global t_quiet;
-    global t_num_of_tests;
-    global t_counter;
-    global t_ok_cnt;
-    global t_not_ok_cnt;
-    global t_skip_cnt;
-    global t_clock;
+    global t_quiet, t_num_of_tests, t_counter, t_ok_cnt, t_not_ok_cnt, t_skip_cnt, t_clock
 
-    t_quiet = quiet;
-    t_num_of_tests = num_of_tests;
-    t_counter = 1;
-    t_ok_cnt = 0;
-    t_not_ok_cnt = 0;
-    t_skip_cnt = 0;
-    t_clock = clock;
+    t_quiet = quiet
+    t_num_of_tests = num_of_tests
+    t_counter = 1
+    t_ok_cnt = 0
+    t_not_ok_cnt = 0
+    t_skip_cnt = 0
+    t_clock = time()
 
     if not t_quiet:
-        print '1..%d\n' % num_of_tests;
+        print '1..%d\n' % num_of_tests
