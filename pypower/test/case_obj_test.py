@@ -15,11 +15,11 @@
 
 import unittest
 
-from numpy import array
+from numpy import array, ones
 
 from pypower.case import Case, BusData
 
-from pypower.idx_bus import BUS_I, LAM_P, PD, QD
+from pypower.idx_bus import BUS_I, LAM_P, PD, QD, VMIN
 
 
 class CaseObjTest(unittest.TestCase):
@@ -99,7 +99,28 @@ class CaseObjTest(unittest.TestCase):
         self.assertTrue(isinstance(bus.bus_area[0], int))
 
 
-    def test_bus_data_getitem_index(self):
+#    def test_bus_data_getitem_index_int(self):
+#        """Test indexing bus data with single integer.
+#        """
+#        bus = BusData(self.bus_array)
+#
+#        bus0 = bus[0]
+#
+#        self.assertTrue(isinstance(bus0[0], float))
+#        self.assertEqual(bus0.shape, (self.bus_array.shape[1], ))
+#        self.assertEqual(bus0[VMIN], self.bus_array[0, VMIN])
+#
+#        try:
+#            bus[self.bus_array_size + 10]
+#        except IndexError:
+#            pass
+#        except Exception, e:
+#            self.fail(e.message)
+
+
+
+
+    def test_bus_data_getitem_index_col(self):
         bus = BusData(self.bus_array)
 
         bus_i = bus[:, BUS_I]
@@ -109,7 +130,7 @@ class CaseObjTest(unittest.TestCase):
         self.assertEqual(bus_i[2], self.bus_array[2, BUS_I])
 
 
-    def test_bus_data_getitem_list_index(self):
+    def test_bus_data_getitem_list_index_col(self):
         bus = BusData(self.bus_array)
 
         idx = [4, 6, 8]
@@ -131,11 +152,73 @@ class CaseObjTest(unittest.TestCase):
             self.fail(e.message)
 
 
-    def test_bus_data_getitem_col_slice(self):
+    def test_bus_data_setitem_element(self):
+        """Test setting the value of a single bus data element.
+        """
         bus = BusData(self.bus_array)
 
-        Sd = bus[:, PD:QD + 1]
+        idx = 4
+        new_val = 110.0
+        bus[idx, PD] = new_val
 
+        self.assertTrue(isinstance(bus.Pd[idx], float))
+        self.assertEqual(bus.Pd.shape, (self.bus_array_size, ))
+        self.assertEqual(bus.Pd[idx], new_val)
+
+
+    def test_bus_data_setitem_col(self):
+        """Test setting the value of a bus data column.
+        """
+        bus = BusData(self.bus_array)
+
+        new_col = -1 * ones(self.bus_array_size, int)  # check type conversion
+        bus[:, QD] = new_col
+
+        test_idx = 0
+        self.assertTrue(isinstance(bus.Qd[test_idx], float))
+        self.assertEqual(bus.Qd.shape, (self.bus_array_size, ))
+        self.assertEqual(bus.Qd[test_idx], -1)
+
+
+    def test_bus_data_setitem_list_index_col(self):
+        """Test setting values of bus data column elements.
+        """
+        bus = BusData(self.bus_array)
+
+        idx = [4, 6]
+        new_val = -1 * ones(len(idx))
+        bus[idx, PD] = new_val
+
+        self.assertTrue(isinstance(bus.Pd[0], float))
+        self.assertEqual(bus.Pd.shape, (self.bus_array_size, ))
+        for i in idx:
+            self.assertEqual(bus.Pd[i], -1)
+        self.assertEqual(bus.Pd[8], 125)
+
+
+    def test_bus_data_setitem_col_slice(self):
+        """Test setting multiple columns of bus data.
+        """
+        bus = BusData(self.bus_array)
+
+        new_val = -1 * ones((self.bus_array_size, 2), int)
+
+        bus[:, PD:QD + 1] = new_val
+
+        test_idx = 0
+        self.assertTrue(isinstance(bus.Pd[test_idx], float))
+        self.assertTrue(isinstance(bus.Qd[test_idx], float))
+        self.assertEqual(bus.Pd.shape, (self.bus_array_size, ))
+        self.assertEqual(bus.Qd.shape, (self.bus_array_size, ))
+        self.assertEqual(bus.Pd[test_idx], -1)
+        self.assertEqual(bus.Qd[test_idx], -1)
+
+
+#    def test_bus_data_setitem_col_slice(self):
+#        bus = BusData(self.bus_array)
+#
+#        Sd = bus[:, PD:QD + 1]
+#
 #        self.assertTrue(isinstance(Sd[0, 0], float))
 #        self.assertEqual(Sd.shape, (self.bus_array_size, 2))
 #        self.assertEqual(Sd[4, 0], self.bus_array[4, PD])

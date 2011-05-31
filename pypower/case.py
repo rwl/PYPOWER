@@ -15,11 +15,16 @@
 
 from collections import namedtuple
 
-from numpy import ndarray, array
+from numpy import ndarray, array, r_
 
 from pypower.idx_bus import \
     BUS_I, BUS_TYPE, PD, QD, GS, BS, BUS_AREA, VM, VA, BASE_KV, ZONE, \
     VMAX, VMIN, LAM_P, LAM_Q, MU_VMAX, MU_VMIN
+
+from pypower.idx_gen import \
+    GEN_BUS, PG, QG, QMAX, QMIN, VG, MBASE, GEN_STATUS, PMAX, PMIN, PC1, PC2, \
+    QC1MIN, QC1MAX, QC2MIN, QC2MAX, RAMP_AGC, RAMP_10, RAMP_30, RAMP_Q, APF, \
+    MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
 
 class Case(object):
 
@@ -54,14 +59,64 @@ class Case(object):
             self.gencost = gencost_data
 
 
-class BusData(object):
+class _BaseData(object):
 
-    attrs = [('bus_i', int), ('bus_type', int), ('Pd', float), ('Qd', float),
-                ('Gs', float), ('Bs', float), ('bus_area', int),
-                ('Vm', float), ('Va', float), ('baseKV', float), ('zone', int),
-                ('Vmax', float), ('Vmin', float),
-                ('lam_P', float), ('lam_Q', float),
-                ('mu_Vmax', float), ('mu_Vmin', float)]
+    def __getitem__(self, key):
+        if isinstance(key, tuple):
+            row, col = key
+            attr = self._attrs[col]
+            val = getattr(self, attr)
+            if val is not None:
+                return val[row]
+            else:
+                raise IndexError, 'index out of bounds'
+#        elif isinstance(key, int):
+#            a = array([])
+#            for attr in self._attrs:
+#                val = getattr(self, attr)
+#                if val is not None:
+#                    a = r_[a, val[key]]
+#            return a
+        else:
+            raise TypeError, 'key is of an inappropriate type'
+
+
+    def __setitem__(self, key, value):
+        if isinstance(key, tuple):
+            row, col = key
+            if isinstance(col, int):
+                attr = self._attrs[col]
+                val = getattr(self, attr)
+                if val is not None:
+                    val[row] = value
+                else:
+                    raise IndexError, 'index out of bounds'
+            elif isinstance(col, slice):
+                attrs = self._attrs[col]
+                for i, attr in enumerate(attrs):
+                    val = getattr(self, attr)
+                    if val is not None:
+                        val[row] = value[row, i]
+                    else:
+                        raise IndexError, 'index out of bounds'
+            else:
+                raise TypeError, 'key is of an inappropriate type'
+        else:
+            raise TypeError, 'key is of an inappropriate type'
+
+
+class BusData(_BaseData):
+
+#    attrs = [('bus_i', int), ('bus_type', int), ('Pd', float), ('Qd', float),
+#                ('Gs', float), ('Bs', float), ('bus_area', int),
+#                ('Vm', float), ('Va', float), ('baseKV', float), ('zone', int),
+#                ('Vmax', float), ('Vmin', float),
+#                ('lam_P', float), ('lam_Q', float),
+#                ('mu_Vmax', float), ('mu_Vmin', float)]
+
+    _attrs = ['bus_i', 'bus_type', 'Pd', 'Qd', 'Gs', 'Bs', 'bus_area',
+             'Vm', 'Va', 'baseKV', 'zone', 'Vmax', 'Vmin',
+             'lam_P', 'lam_Q', 'mu_Vmax', 'mu_Vmin']
 
     def __init__(self, bus_data):
         assert isinstance(bus_data, ndarray)
@@ -72,41 +127,42 @@ class BusData(object):
         # bus type
         self.bus_type = bus_data[:, BUS_TYPE].astype(int)
 
-        # Pd, real power demand (MW)
+        # Real power demand (MW)
         self.Pd = bus_data[:, PD]
 
-        # Qd, reactive power demand (MVAr)
+        # Reactive power demand (MVAr)
         self.Qd = bus_data[:, QD]
 
-        # Gs, shunt conductance (MW at V = 1.0 p.u.)
+        # Shunt conductance (MW at V = 1.0 p.u.)
         self.Gs = bus_data[:, GS]
 
-        # Bs, shunt susceptance (MVAr at V = 1.0 p.u.)
+        # Shunt susceptance (MVAr at V = 1.0 p.u.)
         self.Bs = bus_data[:, BS]
 
-        # area number, 1-100
+        # Area number, 1-100
         self.bus_area = bus_data[:, BUS_AREA].astype(int)
 
-        # Vm, voltage magnitude (p.u.)
+        # Voltage magnitude (p.u.)
         self.Vm = bus_data[:, VM]
 
-        # Va, voltage angle (degrees)
+        # Voltage angle (degrees)
         self.Va = bus_data[:, VA]
 
-        # baseKV, base voltage (kV)
+        # Base voltage (kV)
         self.baseKV = bus_data[:, BASE_KV]
 
-        # zone, loss zone (1-999)
+        # Loss zone (1-999)
         self.zone = bus_data[:, ZONE].astype(int)
 
-        # maxVm, maximum voltage magnitude (p.u.)
+        # Maximum voltage magnitude (p.u.)
         self.Vmax = bus_data[:, VMAX]
 
-        # minVm, minimum voltage magnitude (p.u.)
+        # Minimum voltage magnitude (p.u.)
         self.Vmin = bus_data[:, VMIN]
 
         # included in opf solution, not necessarily in input
         # assume objective function has units, u
+
         ncol = bus_data.shape[1]
 
         # Lagrange multiplier on real power mismatch (u/MW)
@@ -122,21 +178,6 @@ class BusData(object):
         self.mu_Vmin = bus_data[:, MU_VMIN] if ncol > LAM_P else None
 
 
-    def __getitem__(self, key):
-        print "KEY:", key
-
-        if isinstance(key, tuple):
-            if isinstance(key[1], int):
-                val = getattr(self, self.attrs[key[1]][0])
-                if val is not None:
-                    return val[key[0]]
-                else:
-                    raise IndexError, 'index out of bounds'
-            else:
-                attrs = self.attrs[key[1]]
-                print "ATTRS:", attrs
-
-
     @property
     def size(self):
         """Returns the number of buses.
@@ -144,12 +185,92 @@ class BusData(object):
         return 0 if self.bus_i is None else self.bus_i.shape[0]
 
 
+class GenData(_BaseData):
 
-
-class GenData(object):
+    attrs = ['bus', 'Pg', 'Qg', 'Qmax', 'Qmin', 'Vg', 'mBase', 'status',
+        'Pmax', 'Pmin', 'Pc1', 'Pc2', 'Qc1min', 'Qc1max', 'Qc2min', 'Qc2max',
+        'ramp_acg', 'ramp_10', 'ramp_30', 'ramp_q', 'apf', 'mu_Pmax', 'mu_Pmin',
+        'mu_Qmax', 'mu_Qmin']
 
     def __init__(self, gen_data):
-        pass
+
+        # Bus number
+        self.bus = gen_data[:, GEN_BUS].astype(int)
+
+        # Real power output (MW)
+        self.Pg = gen_data[:, PG]
+
+        # Reactive power output (MVAr)
+        self.Qg = gen_data[:, QG]
+
+        # Maximum reactive power output at Pmin (MVAr)
+        self.Qmax = gen_data[:, QMAX]
+
+        # Minimum reactive power output at Pmin (MVAr)
+        self.Qmin = gen_data[:, QMIN]
+
+        # Voltage magnitude setpoint (p.u.)
+        self.Vg = gen_data[:, VG]
+
+        # Total MVA base of this machine, defaults to baseMVA
+        self.mBase = gen_data[:, MBASE]
+
+        # 1 - machine in service, 0 - machine out of service
+        self.status = gen_data[:, GEN_STATUS].astype(int)
+
+        # Maximum real power output (MW)
+        self.Pmax = gen_data[:, PMAX]
+
+        # Minimum real power output (MW)
+        self.Pmin = gen_data[:, PMIN]
+
+        # Lower real power output of PQ capability curve (MW)
+        self.Pc1 = gen_data[:, PC1]
+
+        # Upper real power output of PQ capability curve (MW)
+        self.Pc2 = gen_data[:, PC2]
+
+        # Minimum reactive power output at Pc1 (MVAr)
+        self.Qc1min = gen_data[:, QC1MIN]
+
+        # Maximum reactive power output at Pc1 (MVAr)
+        self.Qc1max = gen_data[:, QC1MAX]
+
+        # Minimum reactive power output at Pc2 (MVAr)
+        self.Qc2min = gen_data[:, QC2MIN]
+
+        # Maximum reactive power output at Pc2 (MVAr)
+        self.Qc2max = gen_data[:, QC2MAX]
+
+        # Ramp rate for load following/AGC (MW/min)
+        self.ramp_acg = gen_data[:, RAMP_AGC]
+
+        # Ramp rate for 10 minute reserves (MW)
+        self.ramp_10 = gen_data[:, RAMP_10]
+
+        # Ramp rate for 30 minute reserves (MW)
+        self.ramp_30 = gen_data[:, RAMP_30]
+
+        # Ramp rate for reactive power (2 sec timescale) (MVAr/min)
+        self.ramp_q = gen_data[:, RAMP_Q]
+
+        # Area participation factor
+        self.apf = gen_data[:, APF]
+
+        # Included in opf solution, not necessarily in input
+        # assume objective function has units, u
+
+        # Kuhn-Tucker multiplier on upper Pg limit (u/MW)
+        self.mu_Pmax = gen_data[:, MU_PMAX]
+
+        # Kuhn-Tucker multiplier on lower Pg limit (u/MW)
+        self.mu_Pmin = gen_data[:, MU_PMIN]
+
+        # Kuhn-Tucker multiplier on upper Qg limit (u/MVAr)
+        self.mu_Qmax = gen_data[:, MU_QMAX]
+
+        # Kuhn-Tucker multiplier on lower Qg limit (u/MVAr)
+        self.mu_Qmin = gen_data[:, MU_QMIN]
 
 
 class BranchData(object):
