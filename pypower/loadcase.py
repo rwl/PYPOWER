@@ -79,13 +79,26 @@ def loadcase(casefile,
         if info == 0:
             if extension == '.mat':       ## from MAT file
                 try:
-                    s = loadmat(rootname, oned_as='row')
-                    if 'ppc' in s:        ## it's a PYPOWER dict
-                        s = s['ppc']
-                    elif 'ppc' in s:      ## it's a MATPOWER dict
-                        s = s['ppc']
-                    else:                        ## individual data matrices
-                        s['version'] = '1'
+                    d = loadmat(rootname, struct_as_record=True)
+                    if 'ppc' in d or 'mpc' in d:    ## it's a MAT/PYPOWER dict
+                        if 'ppc' in d:
+                            struct = d['ppc']
+                        else:
+                            struct = d['mpc']
+                        val = struct[0, 0]
+
+                        s = case()
+                        for a in val.dtype.names:
+                            setattr(s, a, val[a])
+                    else:                 ## individual data matrices
+                        d['version'] = '1'
+
+                        s = case()
+                        for k, v in d.iteritems():
+                            setattr(s, k, v)
+
+                    s.baseMVA = s.baseMVA[0]  # convert array to float
+
                 except IOError, e:
                     info = 3
                     lasterr = e.message

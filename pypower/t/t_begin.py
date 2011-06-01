@@ -16,13 +16,7 @@
 
 from time import time
 
-t_quiet = False
-t_num_of_tests = 0
-t_counter = 0
-t_ok_cnt = 0
-t_not_ok_cnt = 0
-t_skip_cnt = 0
-t_clock = 0.0
+from pypower.t.test_pypower import TestGlobals
 
 def t_begin(num_of_tests, quiet=False):
     """Initializes the global test counters, setting everything up to
@@ -32,15 +26,14 @@ def t_begin(num_of_tests, quiet=False):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    global t_quiet, t_num_of_tests, t_counter, t_ok_cnt, t_not_ok_cnt, t_skip_cnt, t_clock
 
-    t_quiet = quiet
-    t_num_of_tests = num_of_tests
-    t_counter = 1
-    t_ok_cnt = 0
-    t_not_ok_cnt = 0
-    t_skip_cnt = 0
-    t_clock = time()
+    TestGlobals.t_quiet = quiet
+    TestGlobals.t_num_of_tests = num_of_tests
+    TestGlobals.t_counter = 1
+    TestGlobals.t_ok_cnt = 0
+    TestGlobals.t_not_ok_cnt = 0
+    TestGlobals.t_skip_cnt = 0
+    TestGlobals.t_clock = time()
 
-    if not t_quiet:
+    if not TestGlobals.t_quiet:
         print '1..%d\n' % num_of_tests

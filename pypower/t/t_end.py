@@ -16,7 +16,7 @@
 
 from time import time
 
-from t_begin import t_quiet, t_num_of_tests, t_counter, t_ok_cnt, t_not_ok_cnt, t_skip_cnt, t_clock
+from pypower.t.test_pypower import TestGlobals
 
 def t_end():
     """Finish running tests and print statistics.
@@ -26,37 +26,45 @@ def t_end():
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    global t_quiet, t_num_of_tests, t_counter, t_ok_cnt, t_not_ok_cnt, t_skip_cnt, t_clock
+    TestGlobals.t_counter -= 1
 
-    t_counter = t_counter - 1
-
-    if (t_counter == t_num_of_tests) and (t_counter == t_ok_cnt + t_skip_cnt) and (t_not_ok_cnt == 0):
+    if (TestGlobals.t_counter == TestGlobals.t_num_of_tests) and \
+        (TestGlobals.t_counter == TestGlobals.t_ok_cnt + TestGlobals.t_skip_cnt) and \
+        (TestGlobals.t_not_ok_cnt == 0):
         all_ok = True
     else:
         all_ok = False
 
     s = ''
-    if t_quiet:
+    if TestGlobals.t_quiet:
         if all_ok:
             s += 'ok'
-            if t_skip_cnt:
-                s += ' (%d of %d skipped)' % (t_skip_cnt, t_num_of_tests)
+            if TestGlobals.t_skip_cnt:
+                s += ' (%d of %d skipped)' % \
+                    (TestGlobals.t_skip_cnt, TestGlobals.t_num_of_tests)
         else:
             s += 'not ok\n'
-            s += '\t#####  Ran %d of %d tests: %d passed, %d failed' % (t_counter, t_num_of_tests, t_ok_cnt, t_not_ok_cnt)
-            if t_skip_cnt:
-                s += ', %d skipped' % t_skip_cnt
+            s += '\t#####  Ran %d of %d tests: %d passed, %d failed' % \
+                (TestGlobals.t_counter, TestGlobals.t_num_of_tests,
+                 TestGlobals.t_ok_cnt, TestGlobals.t_not_ok_cnt)
+            if TestGlobals.t_skip_cnt:
+                s += ', %d skipped' % TestGlobals.t_skip_cnt
         s += '\n'
     else:
         if all_ok:
-            if t_skip_cnt:
-                s += 'All tests successful (%d passed, %d skipped of %d)' % (t_ok_cnt, t_skip_cnt, t_num_of_tests)
+            if TestGlobals.t_skip_cnt:
+                s += 'All tests successful (%d passed, %d skipped of %d)' % \
+                    (TestGlobals.t_ok_cnt, TestGlobals.t_skip_cnt,
+                     TestGlobals.t_num_of_tests)
             else:
-                s += 'All tests successful (%d of %d)' % (t_ok_cnt, t_num_of_tests)
+                s += 'All tests successful (%d of %d)' % \
+                    (TestGlobals.t_ok_cnt, TestGlobals.t_num_of_tests)
         else:
-            s += 'Ran %d of %d tests: %d passed, %d failed' % (t_counter, t_num_of_tests, t_ok_cnt, t_not_ok_cnt)
-            if t_skip_cnt:
-                s += ', %d skipped' % t_skip_cnt
-        s += '\nElapsed time %.2f seconds.\n' % (time() - t_clock)
+            s += 'Ran %d of %d tests: %d passed, %d failed' % \
+                (TestGlobals.t_counter, TestGlobals.t_num_of_tests,
+                 TestGlobals.t_ok_cnt, TestGlobals.t_not_ok_cnt)
+            if TestGlobals.t_skip_cnt:
+                s += ', %d skipped' % TestGlobals.t_skip_cnt
+        s += '\nElapsed time %.2f seconds.\n' % (time() - TestGlobals.t_clock)
 
     print s

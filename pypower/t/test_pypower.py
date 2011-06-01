@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from pypower.t.t_run_tests import t_run_tests
+
 def test_pypower(verbose=False):
     """Run all PYPOWER tests.
 
@@ -69,3 +71,13 @@ def test_pypower(verbose=False):
     tests.append('t_runmarket')
 
     t_run_tests( tests, verbose )
+
+
+class TestGlobals(object):
+    t_quiet = False
+    t_num_of_tests = 0
+    t_counter = 0
+    t_ok_cnt = 0
+    t_not_ok_cnt = 0
+    t_skip_cnt = 0
+    t_clock = 0.0
