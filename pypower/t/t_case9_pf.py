@@ -16,7 +16,7 @@
 
 from numpy import array
 
-def t_case9_opf():
+def t_case9_pf():
     """Power flow data for 9 bus, 3 generator case.
     Please see L{caseformat} for details on the case file format.
 

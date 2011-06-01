@@ -19,6 +19,8 @@ import logging
 
 from os.path import basename, splitext, exists
 
+from copy import deepcopy
+
 from numpy import array, zeros, ones, c_
 
 from scipy.io import loadmat
@@ -30,7 +32,7 @@ from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, APF
 from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
 
 def loadcase(casefile,
-        return_as_obj=False, expect_gencost=True, expect_areas=True):
+        return_as_obj=True, expect_gencost=True, expect_areas=True):
     """ Returns the individual data matrices or an object containing them
     as members.
 
@@ -56,6 +58,10 @@ def loadcase(casefile,
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
+    if return_as_obj == True:
+        expect_gencost = False
+        expect_areas = False
+
     info = 0
 
     # read data into case object
@@ -79,7 +85,7 @@ def loadcase(casefile,
         if info == 0:
             if extension == '.mat':       ## from MAT file
                 try:
-                    d = loadmat(rootname, struct_as_record=True)
+                    d = loadmat(rootname + extension, struct_as_record=True)
                     if 'ppc' in d or 'mpc' in d:    ## it's a MAT/PYPOWER dict
                         if 'ppc' in d:
                             struct = d['ppc']
@@ -128,7 +134,7 @@ def loadcase(casefile,
                                 try:
                                     s.baseMVA, s.bus, s.gen, s.branch, \
                                         s.areas, s.gencost = \
-                                            eval('mod.%s' % rootname)
+                                            eval('mod.%s()' % rootname)
                                 except ValueError, e:
                                     try:
                                         s.baseMVA, s.bus, s.gen, s.branch = \
@@ -139,7 +145,7 @@ def loadcase(casefile,
                             else:
                                 try:
                                     s.baseMVA, s.bus, s.gen, s.branch = \
-                                        eval('mod.%s' % rootname)
+                                        eval('mod.%s()' % rootname)
                                 except ValueError, e:
                                     info = 4
                                     lasterr = e.message
@@ -153,7 +159,7 @@ def loadcase(casefile,
                     err5 = lasterr
 
     elif isinstance(casefile, case):
-        s = casefile
+        s = deepcopy(casefile)
     else:
         info = 1
 
@@ -172,7 +178,7 @@ def loadcase(casefile,
                 del s.areas
 
             ## all fields present, copy to ppc
-            ppc = s
+            ppc = deepcopy(s)
             if not hasattr(ppc, 'version'):  ## hmm, struct with no 'version' field
                 if ppc.gen.shape[1] < 21:    ## version 2 has 21 or 25 cols
                     ppc.version = '1'
@@ -198,18 +204,18 @@ def loadcase(casefile,
     else:  # error encountered
         if info == 1:
             sys.stderr.write('Input arg should be a case or a string '
-                             'containing a filename')
+                             'containing a filename\n')
         elif info == 2:
-            sys.stderr.write('Specified case not a valid file')
+            sys.stderr.write('Specified case not a valid file\n')
         elif info == 3:
-            sys.stderr.write('Specified MAT file does not exist')
+            sys.stderr.write('Specified MAT file does not exist\n')
         elif info == 4:
-            sys.stderr.write('Specified M file does not exist')
+            sys.stderr.write('Specified M file does not exist\n')
         elif info == 5:
             sys.stderr.write('Syntax error or undefined data '
-                             'matrix(ices) in the file')
+                             'matrix(ices) in the file\n')
         else:
-            sys.stderr.write('Unknown error encountered loading case.')
+            sys.stderr.write('Unknown error encountered loading case.\n')
 
         return info
 
@@ -219,7 +225,7 @@ def ppc_1to2(gen, branch):
     ## use the version 1 values for column names
     if gen.shape[1] >= APF:
         sys.stderr.write('ppc_1to2: gen matrix appears to already be in '
-                         'version 2 format')
+                         'version 2 format\n')
         return gen, branch
 
     shift = MU_PMAX - PMIN - 1

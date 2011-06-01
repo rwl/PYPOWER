@@ -14,9 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import ndarray, array, max, abs, nonzero, argmax
+from numpy import ndarray, array, max, abs, nonzero, argmax, zeros
 
 from pypower.t.t_ok import t_ok
+from pypower.t.test_pypower import TestGlobals
 
 def t_is(got, expected, prec=5, msg=''):
     """Tests if two matrices are identical to some tolerance.
@@ -30,14 +31,9 @@ def t_is(got, expected, prec=5, msg=''):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    global t_quiet
+    if not isinstance(got, ndarray): got = array([got])
+    if not isinstance(expected, ndarray): expected = array([expected])
 
-    if not isinstance(got, ndarray):
-        got = array([got])
-    if not isinstance(expected, ndarray):
-        expected = array([expected])
-
-#    m, n = expected.shape
     if (got.shape == expected.shape) or (expected.shape == (0,)):
         got_minus_expected = got - expected
         max_diff = max(max(abs(got_minus_expected)))
@@ -47,12 +43,22 @@ def t_is(got, expected, prec=5, msg=''):
         max_diff = 0
 
     t_ok(condition, msg)
-    if (not condition and not t_quiet):
+    if (not condition and not TestGlobals.t_quiet):
         s = ''
         if max_diff != 0:
-            i, j = nonzero(abs(got_minus_expected) >= 10**(-prec)) # FIXME
-            k = i + (j - 1) * expected.shape[0]
-            kk = argmax(abs(got_minus_expected[k]))
+            idx = nonzero(abs(got_minus_expected) >= 10**(-prec))
+            if len(idx) == 1:  # 1D array
+                idx = (idx[0], zeros( len(got_minus_expected) ))
+            i, j = idx
+
+            k = i + (j-1) * expected.shape[0]
+
+            got = got.flatten()
+            expected = expected.flatten()
+            got_minus_expected = got_minus_expected.flatten()
+
+            kk = argmax( abs(got_minus_expected[ k.astype(int) ]) )
+
             s += '  row     col          got             expected          got - exp\n'
             s += '-------  ------  ----------------  ----------------  ----------------'
             for u in range(len(i)):
@@ -64,7 +70,21 @@ def t_is(got, expected, prec=5, msg=''):
                 (i[kk], j[kk], max_diff, 10**(-prec))
         else:
             s += '    dimension mismatch:\n'
-            s += '             got: %d x %d\n' % got.shape
-            s += '        expected: %d x %d\n\n' % expected.shape
+
+            if len(got.shape) == 1:  # 1D array
+                s += '             got: %d\n' % got.shape
+            else:
+                s += '             got: %d x %d\n' % got.shape
+
+            if len(expected.shape) == 1:  # 1D array
+                s += '        expected: %d\n' % expected.shape
+            else:
+                s += '        expected: %d x %d\n' % expected.shape
 
         print s
+
+if __name__ == '__main__':
+    a = array([[1,2,3], [4,5,6]])
+    b = array([[2,3,4], [5,6,7]])
+    TestGlobals.t_quiet = False
+    t_is(a, b)
