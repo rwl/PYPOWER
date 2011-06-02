@@ -22,7 +22,6 @@ from numpy import zeros, ndarray
 
 from scipy.io import loadmat, savemat
 
-from pypower.case import case
 from pypower.loadcase import loadcase
 from pypower.ppoption import ppoption
 from pypower.runpf import runpf
@@ -70,10 +69,10 @@ def t_loadcase(quiet=False):
 
     ## prepare expected matrices for v1 load
     ## (missing gen cap curve & branch ang diff lims)
-    tmp1 = (ppc.baseMVA, ppc.bus.copy(), ppc.gen.copy(), ppc.branch.copy(),
-        ppc.areas.copy(), ppc.gencost.copy())
-    tmp2 = (ppc.baseMVA, ppc.bus.copy(), ppc.gen.copy(), ppc.branch.copy(),
-        ppc.areas.copy(), ppc.gencost.copy())
+    tmp1 = (ppc['baseMVA'], ppc['bus'].copy(), ppc['gen'].copy(), ppc['branch'].copy(),
+        ppc['areas'].copy(), ppc['gencost'].copy())
+    tmp2 = (ppc['baseMVA'], ppc['bus'].copy(), ppc['gen'].copy(), ppc['branch'].copy(),
+        ppc['areas'].copy(), ppc['gencost'].copy())
     ## remove capability curves, angle difference limits
     tmp1[2][1:3, [PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX]] = zeros((2,6))
     tmp1[3][0, ANGMAX] = 360
@@ -170,13 +169,13 @@ def t_loadcase(quiet=False):
 
     t = 'loadcase(opf_struct_v1) (no version): '
     baseMVA1, bus1, gen1, branch1, areas1, gencost1 = eval(casefile + '()')
-    c = case()
-    c.baseMVA   = baseMVA1
-    c.bus       = bus1.copy()
-    c.gen       = gen1.copy()
-    c.branch    = branch1.copy()
-    c.areas     = areas1.copy()
-    c.gencost   = gencost1.copy()
+    c = {}
+    c['baseMVA']   = baseMVA1
+    c['bus']       = bus1.copy()
+    c['gen']       = gen1.copy()
+    c['branch']    = branch1.copy()
+    c['areas']     = areas1.copy()
+    c['gencost']   = gencost1.copy()
     baseMVA2, bus2, gen2, branch2, areas2, gencost2 = loadcase(c, False)
     t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
     t_is(bus2,      bus,        12, [t, 'bus'])
@@ -186,7 +185,7 @@ def t_loadcase(quiet=False):
     t_is(gencost2,  gencost,    12, [t, 'gencost'])
 
     t = 'loadcase(opf_struct_v1) (version=\'1\'): '
-    c.version   = '1'
+    c['version']   = '1'
     baseMVA2, bus2, gen2, branch2, areas2, gencost2 = loadcase(c, False)
     t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
     t_is(bus2,      bus,        12, [t, 'bus'])
@@ -199,13 +198,13 @@ def t_loadcase(quiet=False):
     baseMVA, bus, gen, branch, areas, gencost = tmp2
 
     t = 'loadcase(opf_struct_v2) (no version): '
-    c = case()
-    c.baseMVA   = baseMVA
-    c.bus       = bus.copy()
-    c.gen       = gen.copy()
-    c.branch    = branch.copy()
-    c.areas     = areas.copy()
-    c.gencost   = gencost.copy()
+    c = {}
+    c['baseMVA']   = baseMVA
+    c['bus']       = bus.copy()
+    c['gen']       = gen.copy()
+    c['branch']    = branch.copy()
+    c['areas']     = areas.copy()
+    c['gencost']   = gencost.copy()
     baseMVA2, bus2, gen2, branch2, areas2, gencost2 = loadcase(c, False)
     t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
     t_is(bus2,      bus,        12, [t, 'bus'])
@@ -215,14 +214,14 @@ def t_loadcase(quiet=False):
     t_is(gencost2,  gencost,    12, [t, 'gencost'])
 
     t = 'loadcase(opf_struct_v2) (version=''2''): '
-    c = case()
-    c.baseMVA   = baseMVA
-    c.bus       = bus.copy()
-    c.gen       = gen.copy()
-    c.branch    = branch.copy()
-    c.areas     = areas.copy()
-    c.gencost   = gencost.copy()
-    c.version   = '2'
+    c = {}
+    c['baseMVA']   = baseMVA
+    c['bus']       = bus.copy()
+    c['gen']       = gen.copy()
+    c['branch']    = branch.copy()
+    c['areas']     = areas.copy()
+    c['gencost']   = gencost.copy()
+    c['version']   = '2'
     baseMVA2, bus2, gen2, branch2, areas2, gencost2 = loadcase(c, False)
     t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
     t_is(bus2,      bus,        12, [t, 'bus'])
@@ -237,145 +236,145 @@ def t_loadcase(quiet=False):
 
     t = 'ppc = loadcase(opf_PY_file_v1) without .py extension : '
     ppc1 = loadcase(casefile)
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc1.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc1.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
     t = 'ppc = loadcase(opf_PY_file_v1) with .py extension : '
     ppc1 = loadcase(casefile + '.py')
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc1.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc1.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
     t = 'ppc = loadcase(opf_MAT_file_v1) without .mat extension : '
     ppc1 = loadcase(matfile)
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc1.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc1.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
     t = 'ppc = loadcase(opf_MAT_file_v1) with .mat extension : '
     ppc1 = loadcase(matfile + '.mat')
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc1.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc1.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
     ## prepare expected matrices for v2 load
     baseMVA, bus, gen, branch, areas, gencost = tmp2
 
     t = 'ppc = loadcase(opf_PY_file_v2) without .m extension : '
     ppc1 = loadcase(casefilev2)
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc1.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc1.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
     t = 'ppc = loadcase(opf_PY_file_v2) with .py extension : '
     ppc1 = loadcase(casefilev2 + '.py')
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc1.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc1.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
     t = 'ppc = loadcase(opf_MAT_file_v2) without .mat extension : '
     ppc1 = loadcase(matfilev2)
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc1.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc1.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
     t = 'ppc = loadcase(opf_MAT_file_v2) with .mat extension : '
     ppc1 = loadcase(matfilev2 + '.mat')
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc1.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc1.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
     ## prepare expected matrices for v1 load
     baseMVA, bus, gen, branch, areas, gencost = tmp1
 
     t = 'ppc = loadcase(opf_struct_v1) (no version): '
     baseMVA1, bus1, gen1, branch1, areas1, gencost1 = eval(casefile + '()')
-    c = case()
-    c.baseMVA   = baseMVA1
-    c.bus       = bus1.copy()
-    c.gen       = gen1.copy()
-    c.branch    = branch1.copy()
-    c.areas     = areas1.copy()
-    c.gencost   = gencost1.copy()
+    c = {}
+    c['baseMVA']   = baseMVA1
+    c['bus']       = bus1.copy()
+    c['gen']       = gen1.copy()
+    c['branch']    = branch1.copy()
+    c['areas']     = areas1.copy()
+    c['gencost']   = gencost1.copy()
     ppc2 = loadcase(c)
-    t_is(ppc2.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc2.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc2.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc2.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc2.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc2.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc2['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc2['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
 
     t = 'ppc = loadcase(opf_struct_v1) (version=''1''): '
-    c.version   = '1'
+    c['version']   = '1'
     ppc2 = loadcase(c)
-    t_is(ppc2.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc2.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc2.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc2.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc2.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc2.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc2['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc2['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
 
     ## prepare expected matrices for v2 load
     baseMVA, bus, gen, branch, areas, gencost = tmp2
 
     t = 'ppc = loadcase(opf_struct_v2) (no version): '
-    c = case()
-    c.baseMVA   = baseMVA
-    c.bus       = bus.copy()
-    c.gen       = gen.copy()
-    c.branch    = branch.copy()
-    c.areas     = areas.copy()
-    c.gencost   = gencost.copy()
+    c = {}
+    c['baseMVA']   = baseMVA
+    c['bus']       = bus.copy()
+    c['gen']       = gen.copy()
+    c['branch']    = branch.copy()
+    c['areas']     = areas.copy()
+    c['gencost']   = gencost.copy()
     ppc2 = loadcase(c)
-    t_is(ppc2.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc2.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc2.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc2.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc2.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc2.gencost,  gencost,    12, [t, 'gencost'])
-    t_ok(ppc2.version == '2', [t, 'version'])
+    t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc2['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc2['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
+    t_ok(ppc2['version'] == '2', [t, 'version'])
 
     t = 'ppc = loadcase(opf_struct_v2) (version=''2''): '
-    c = case()
-    c.baseMVA   = baseMVA
-    c.bus       = bus.copy()
-    c.gen       = gen.copy()
-    c.branch    = branch.copy()
-    c.areas     = areas.copy()
-    c.gencost   = gencost.copy()
-    c.version   = '2'
+    c = {}
+    c['baseMVA']   = baseMVA
+    c['bus']       = bus.copy()
+    c['gen']       = gen.copy()
+    c['branch']    = branch.copy()
+    c['areas']     = areas.copy()
+    c['gencost']   = gencost.copy()
+    c['version']   = '2'
     ppc2 = loadcase(c)
-    t_is(ppc2.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc2.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc2.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc2.branch,   branch,     12, [t, 'branch'])
-    t_is(ppc2.areas,    areas,      12, [t, 'areas'])
-    t_is(ppc2.gencost,  gencost,    12, [t, 'gencost'])
+    t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc2['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc2['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
+    t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
+    t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
 
 
     ## read version 1 PF data matrices
@@ -386,7 +385,8 @@ def t_loadcase(quiet=False):
 
     ## read version 2 PF data matrices
     ppc = eval(pfcasefilev2 + '()')
-    tmp = (ppc.baseMVA, ppc.bus.copy(), ppc.gen.copy(), ppc.branch.copy())
+    tmp = (ppc['baseMVA'], ppc['bus'].copy(),
+           ppc['gen'].copy(), ppc['branch'].copy())
     baseMVA, bus, gen, branch = tmp
     ## save as .mat file
     savemat(pfmatfilev2 + '.mat', {'ppc': ppc}, oned_as='column')
@@ -458,11 +458,11 @@ def t_loadcase(quiet=False):
 
     t = 'loadcase(pf_struct_v1) (no version): '
     baseMVA1, bus1, gen1, branch1 = eval(pfcasefile + '()')
-    c = case()
-    c.baseMVA   = baseMVA1
-    c.bus       = bus1.copy()
-    c.gen       = gen1.copy()
-    c.branch    = branch1.copy()
+    c = {}
+    c['baseMVA']   = baseMVA1
+    c['bus']       = bus1.copy()
+    c['gen']       = gen1.copy()
+    c['branch']    = branch1.copy()
     baseMVA2, bus2, gen2, branch2 = loadcase(c, False, False, False)
     t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
     t_is(bus2,      bus,        12, [t, 'bus'])
@@ -470,7 +470,7 @@ def t_loadcase(quiet=False):
     t_is(branch2,   branch,     12, [t, 'branch'])
 
     t = 'loadcase(pf_struct_v1) (version=''1''): '
-    c.version   = '1'
+    c['version']   = '1'
     baseMVA2, bus2, gen2, branch2 = loadcase(c, False, False, False)
     t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
     t_is(bus2,      bus,        12, [t, 'bus'])
@@ -478,12 +478,12 @@ def t_loadcase(quiet=False):
     t_is(branch2,   branch,     12, [t, 'branch'])
 
     t = 'loadcase(pf_struct_v2) : '
-    c = case()
-    c.baseMVA   = baseMVA
-    c.bus       = bus.copy()
-    c.gen       = gen.copy()
-    c.branch    = branch.copy()
-    c.version   = '2'
+    c = {}
+    c['baseMVA']   = baseMVA
+    c['bus']       = bus.copy()
+    c['gen']       = gen.copy()
+    c['branch']    = branch.copy()
+    c['version']   = '2'
     baseMVA2, bus2, gen2, branch2 = loadcase(c, False, False, False)
     t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
     t_is(bus2,      bus,        12, [t, 'bus'])
@@ -498,93 +498,93 @@ def t_loadcase(quiet=False):
     ##-----  load PF data into struct  -----
     t = 'ppc = loadcase(pf_PY_file_v1) without .py extension : '
     ppc1 = loadcase(pfcasefile)
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_PY_file_v1) with .py extension : '
     ppc1 = loadcase(pfcasefile + '.py')
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_MAT_file_v1) without .mat extension : '
     ppc1 = loadcase(pfmatfile)
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_MAT_file_v1) with .mat extension : '
     ppc1 = loadcase(pfmatfile + '.mat')
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_PY_file_v2) without .py extension : '
     ppc1 = loadcase(pfcasefilev2)
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_PY_file_v2) with .py extension : '
     ppc1 = loadcase(pfcasefilev2 + '.py')
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_MAT_file_v2) without .mat extension : '
     ppc1 = loadcase(pfmatfilev2)
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_MAT_file_v2) with .mat extension : '
     ppc1 = loadcase(pfmatfilev2 + '.mat')
-    t_is(ppc1.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc1.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc1.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc1.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc1['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc1['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_struct_v1) (no version): '
     baseMVA1, bus1, gen1, branch1 = eval(pfcasefile + '()')
-    c = case()
-    c.baseMVA   = baseMVA1
-    c.bus       = bus1.copy()
-    c.gen       = gen1.copy()
-    c.branch    = branch1.copy()
+    c = {}
+    c['baseMVA']   = baseMVA1
+    c['bus']       = bus1.copy()
+    c['gen']       = gen1.copy()
+    c['branch']    = branch1.copy()
     ppc2 = loadcase(c)
-    t_is(ppc2.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc2.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc2.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc2.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc2['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc2['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_struct_v1) (version=''1''): '
-    c.version   = '1'
+    c['version']   = '1'
     ppc2 = loadcase(c)
-    t_is(ppc2.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc2.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc2.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc2.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc2['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc2['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_struct_v2) : '
-    c = case()
-    c.baseMVA   = baseMVA
-    c.bus       = bus.copy()
-    c.gen       = gen.copy()
-    c.branch    = branch.copy()
-    c.version   = '2'
+    c = {}
+    c['baseMVA']   = baseMVA
+    c['bus']       = bus.copy()
+    c['gen']       = gen.copy()
+    c['branch']    = branch.copy()
+    c['version']   = '2'
     ppc2 = loadcase(c)
-    t_is(ppc2.baseMVA,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc2.bus,      bus,        12, [t, 'bus'])
-    t_is(ppc2.gen,      gen,        12, [t, 'gen'])
-    t_is(ppc2.branch,   branch,     12, [t, 'branch'])
+    t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
+    t_is(ppc2['bus'],      bus,        12, [t, 'bus'])
+    t_is(ppc2['gen'],      gen,        12, [t, 'gen'])
+    t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
 
     ## cleanup
     os.remove(matfile + '.mat')
@@ -610,7 +610,7 @@ def t_loadcase(quiet=False):
     t_is(branch3,   branch4,    12, [t, 'branch'])
 
     t = 'runpf(modified_struct)'
-    c.gen[2, 1] = c.gen[2, 1] + 1            ## increase gen 3 output by 1
+    c['gen'][2, 1] = c['gen'][2, 1] + 1            ## increase gen 3 output by 1
     _, _, gen5, _, success, _ = runpf(c, opt)
     t_is(gen5[0, 1], gen4[0, 1] - 1, 1, t)   ## slack bus output should decrease by 1
 

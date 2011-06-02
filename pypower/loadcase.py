@@ -25,8 +25,6 @@ from numpy import array, zeros, ones, c_
 
 from scipy.io import loadmat
 
-from pypower.case import case
-
 from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, APF
 
 from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
@@ -93,17 +91,17 @@ def loadcase(casefile,
                             struct = d['mpc']
                         val = struct[0, 0]
 
-                        s = case()
+                        s = {}
                         for a in val.dtype.names:
-                            setattr(s, a, val[a])
+                            s[a] = val[a]
                     else:                 ## individual data matrices
                         d['version'] = '1'
 
-                        s = case()
+                        s = {}
                         for k, v in d.iteritems():
-                            setattr(s, k, v)
+                            s[k] = v
 
-                    s.baseMVA = s.baseMVA[0]  # convert array to float
+                    s['baseMVA'] = s['baseMVA'][0]  # convert array to float
 
                 except IOError, e:
                     info = 3
@@ -119,32 +117,32 @@ def loadcase(casefile,
                         info = 4
                         lasterr = e.message
                     ## if not try individual data matrices
-                    if info == 0 and not isinstance(s, case):
-                        s = case()
-                        s.version = '1'
+                    if info == 0 and not isinstance(s, dict):
+                        s = {}
+                        s['version'] = '1'
                         if expect_gencost:
                             try:
-                                s.baseMVA, s.bus, s.gen, s.branch, s.areas, \
-                                    s.gencost = eval('mod.%s()' % rootname)
+                                s['baseMVA'], s['bus'], s['gen'], s['branch'], s['areas'], \
+                                    s['gencost'] = eval('mod.%s()' % rootname)
                             except IOError, e:
                                 info = 4
                                 lasterr = e.message
                         else:
                             if return_as_obj:
                                 try:
-                                    s.baseMVA, s.bus, s.gen, s.branch, \
-                                        s.areas, s.gencost = \
+                                    s['baseMVA'], s['bus'], s['gen'], s['branch'], \
+                                        s['areas'], s['gencost'] = \
                                             eval('mod.%s()' % rootname)
                                 except ValueError, e:
                                     try:
-                                        s.baseMVA, s.bus, s.gen, s.branch = \
+                                        s['baseMVA'], s['bus'], s['gen'], s['branch'] = \
                                             eval('mod.%s()' % rootname)
                                     except ValueError, e:
                                         info = 4
                                         lasterr = e.message
                             else:
                                 try:
-                                    s.baseMVA, s.bus, s.gen, s.branch = \
+                                    s['baseMVA'], s['bus'], s['gen'], s['branch'] = \
                                         eval('mod.%s()' % rootname)
                                 except ValueError, e:
                                     info = 4
@@ -158,7 +156,7 @@ def loadcase(casefile,
                     info = 5
                     err5 = lasterr
 
-    elif isinstance(casefile, case):
+    elif isinstance(casefile, dict):
         s = deepcopy(casefile)
     else:
         info = 1
@@ -166,40 +164,40 @@ def loadcase(casefile,
     # check contents of dict
     if info == 0:
         # check for required keys
-        if (s.baseMVA == None or s.bus == None \
-            or s.gen == None or s.branch == None) or \
-            (expect_gencost and s.gencost == None) or \
-            (expect_areas and s.areas == None):
+        if (s['baseMVA'] == None or s['bus'] == None \
+            or s['gen'] == None or s['branch'] == None) or \
+            (expect_gencost and s['gencost'] == None) or \
+            (expect_areas and s['areas'] == None):
             info = 5  ## missing some expected fields
             err5 = 'missing data'
         else:
             ## remove empty areas if not needed
-            if hasattr(s, 'areas') and (len(s.areas) == 0) and (not expect_areas):
-                del s.areas
+            if hasattr(s, 'areas') and (len(s['areas']) == 0) and (not expect_areas):
+                del s['areas']
 
             ## all fields present, copy to ppc
             ppc = deepcopy(s)
             if not hasattr(ppc, 'version'):  ## hmm, struct with no 'version' field
-                if ppc.gen.shape[1] < 21:    ## version 2 has 21 or 25 cols
-                    ppc.version = '1'
+                if ppc['gen'].shape[1] < 21:    ## version 2 has 21 or 25 cols
+                    ppc['version'] = '1'
                 else:
-                    ppc.version = '2'
+                    ppc['version'] = '2'
 
-            if (ppc.version == '1'):
+            if (ppc['version'] == '1'):
                 # convert from version 1 to version 2
-                ppc.gen, ppc.branch = ppc_1to2(ppc.gen, ppc.branch);
-                ppc.version = '2'
+                ppc['gen'], ppc['branch'] = ppc_1to2(ppc['gen'], ppc['branch']);
+                ppc['version'] = '2'
 
     if info == 0:  # no errors
         if return_as_obj:
             return ppc
         else:
-            result = [ppc.baseMVA, ppc.bus, ppc.gen, ppc.branch]
+            result = [ppc['baseMVA'], ppc['bus'], ppc['gen'], ppc['branch']]
             if expect_gencost:
                 if expect_areas:
-                    result.extend([ppc.areas, ppc.gencost])
+                    result.extend([ppc['areas'], ppc['gencost']])
                 else:
-                    result.extend([ppc.gencost])
+                    result.extend([ppc['gencost']])
             return result
     else:  # error encountered
         if info == 1:
