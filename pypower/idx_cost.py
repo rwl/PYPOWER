@@ -54,16 +54,8 @@ PW_LINEAR   = 1
 POLYNOMIAL  = 2
 
 # define the indices
-MODEL       = 1    # cost model, 1 - piecewise linear, 2 - polynomial
-STARTUP     = 2    # startup cost in US dollars
-SHUTDOWN    = 3    # shutdown cost in US dollars
-NCOST       = 4    # number breakpoints in piecewise linear cost function,
-                   # or number of coefficients in polynomial cost function
-COST        = 5    # beginning of cost parameters,
-                   # piecewise linear data as:
-                   #      x0, y0, x1, y1, x2, y2, ...
-                   # and polynomial data as:
-                   #      cn, ..., c1, c0
-                   # where the polynomial is cn*P^n + c1*P + c0
-                   # note: polynomials can be of any degree, highest
-                   # order coefficient always goes first
+MODEL       = 0
+STARTUP     = 1
+SHUTDOWN    = 2
+NCOST       = 3
+COST        = 4
