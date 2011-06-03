@@ -245,7 +245,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
                     idx = o[ordering]["status"]["on"][o[ordering]["e2i"]]
                 else:
                     idx = o[ordering]["status"]["on"]
-                i2e = get_reorder(val, idx, dim)
+                val = get_reorder(val, idx, dim)
             else:                            ## multiple: sets
                 b = 0  ## base
                 new_v = []
@@ -258,9 +258,8 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
                 if n > b:                ## the rest
                     v = get_reorder(val, arange(b, n), dim)
                     new_v.append(v)
-                i2e = concatenate(new_v, dim)
-
-            return i2e
+                val = concatenate(new_v, dim)
+            return val
 
     return ppc
 
@@ -279,10 +278,10 @@ def ext2int1(bus, gen, branch, areas=None):
     e2i = sparse((max(i2e), 1))
     e2i[i2e] = range(bus.shape[0])
 
-    bus[:, BUS_I]               = e2i[ bus[:, BUS_I].astype(int)    ]
-    gen[:, GEN_BUS]             = e2i[ gen[:, GEN_BUS].astype(int)  ]
-    branch[:, F_BUS]            = e2i[ branch[:, F_BUS].astype(int) ]
-    branch[:, T_BUS]            = e2i[ branch[:, T_BUS].astype(int) ]
+    bus[:, BUS_I]    = e2i[ bus[:, BUS_I].astype(int)    ]
+    gen[:, GEN_BUS]  = e2i[ gen[:, GEN_BUS].astype(int)  ]
+    branch[:, F_BUS] = e2i[ branch[:, F_BUS].astype(int) ]
+    branch[:, T_BUS] = e2i[ branch[:, T_BUS].astype(int) ]
     if areas is not None and len(areas) > 0:
         areas[:, PRICE_REF_BUS] = e2i[ areas[:, PRICE_REF_BUS].astype(int) ]
 

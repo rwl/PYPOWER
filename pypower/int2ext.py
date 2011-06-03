@@ -16,19 +16,19 @@
 
 import sys
 
-from numpy import copy
+from numpy import arange, concatenate
 
 from idx_bus import BUS_I
 from idx_gen import GEN_BUS
 from idx_brch import F_BUS, T_BUS
 from idx_area import PRICE_REF_BUS
 
-from get_reorder import get_reorder
-from set_reorder import set_reorder
-from run_userfcn import run_userfcn
+from pypower.get_reorder import get_reorder
+from pypower.set_reorder import set_reorder
+from pypower.run_userfcn import run_userfcn
 
 
-def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
+def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
     """Converts internal to external bus numbering.
 
     This function performs several different tasks, depending on the
@@ -56,7 +56,7 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
     in the 2nd argument (VAL) is a column vector, it will be converted
     according to the ordering specified by the 4th argument (ORDERING,
     described below). If VAL is an n-dimensional matrix, then the
-    optional 5th argument (DIM, default = 1) can be used to specify
+    optional 5th argument (DIM, default = 0) can be used to specify
     which dimension to reorder. The 3rd argument (OLDVAL) is used to
     initialize the return value before converting VAL to external
     indexing. In particular, any data corresponding to off-line gens
@@ -97,24 +97,24 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
 
             ## save data matrices with internal ordering & restore originals
             o["int"] = {}
-            o["int"]["bus"]    = copy(ppc["bus"])
-            o["int"]["branch"] = copy(ppc["branch"])
-            o["int"]["gen"]    = copy(ppc["gen"])
-            ppc["bus"]     = copy(o["ext"]["bus"])
-            ppc["branch"]  = copy(o["ext"]["branch"])
-            ppc["gen"]     = copy(o["ext"]["gen"])
+            o["int"]["bus"]    = ppc["bus"].copy()
+            o["int"]["branch"] = ppc["branch"].copy()
+            o["int"]["gen"]    = ppc["gen"].copy()
+            ppc["bus"]     = o["ext"]["bus"].copy()
+            ppc["branch"]  = o["ext"]["branch"].copy()
+            ppc["gen"]     = o["ext"]["gen"].copy()
             if 'gencost' in ppc:
-                o["int"]["gencost"] = copy(ppc["gencost"])
-                ppc["gencost"] = copy(o["ext"]["gencost"])
+                o["int"]["gencost"] = ppc["gencost"].copy()
+                ppc["gencost"] = o["ext"]["gencost"].copy()
             if 'areas' in ppc:
-                o["int"]["areas"] = copy(ppc["areas"])
-                ppc["areas"] = copy(o["ext"]["areas"])
+                o["int"]["areas"] = ppc["areas"].copy()
+                ppc["areas"] = o["ext"]["areas"].copy()
             if 'A' in ppc:
-                o["int"]["A"] = copy(ppc["A"])
-                ppc["A"] = copy(o["ext"]["A"])
+                o["int"]["A"] = ppc["A"].copy()
+                ppc["A"] = o["ext"]["A"].copy()
             if 'N' in ppc:
-                o["int"]["N"] = copy(ppc["N"])
-                ppc["N"] = copy(o["ext"]["N"])
+                o["int"]["N"] = ppc["N"].copy()
+                ppc["N"] = o["ext"]["N"].copy()
 
             ## update data (in bus, branch and gen only)
             ppc["bus"][o["bus"]["status"]["on"], :] = \
@@ -123,7 +123,7 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
                 o["int"]["branch"]
             ppc["gen"][o["gen"]["status"]["on"], :] = \
                 o["int"]["gen"][o["gen"]["i2e"], :]
-            if ppc.has_key('areas'):
+            if 'areas' in ppc:
                 ppc["areas"][o["areas"]["status"]["on"], :] = \
                     o["int"]["areas"]
 
@@ -140,7 +140,7 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
             ppc["gen"][o["gen"]["status"]["on"], GEN_BUS] = \
                 o["bus"]["i2e"][ ppc["gen"] \
                     [o["gen"]["status"]["on"], GEN_BUS].astype(int) ]
-            if ppc.has_key('areas'):
+            if 'areas' in ppc:
                 ppc["areas"][o["areas"]["status"]["on"], PRICE_REF_BUS] = \
                     o["bus"]["i2e"][ ppc["areas"] \
                     [o["areas"]["status"]["on"], PRICE_REF_BUS].astype(int) ]
@@ -160,42 +160,57 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
                 ppc[field] = int2ext(ppc, ppc[field],
                                      ppc["order"]["ext"][field], ordering, dim)
             else:
-                pass
-#                for k in range(len(field)):
-#                    s[k].type = '.'
-#                    s[k].subs = field[k]
-#                if not ppc["order"].has_key('int'):
-#                    ppc["order"]["int"] = array([])
-#                ppc["order"]["int"] = \
-#                    subsasgn(ppc["order"]["int"], s, subsref(ppc, s))
-#                ppc = subsasgn(ppc, s, int2ext(ppc, subsref(ppc, s),
-#                    subsref(ppc["order"].ext, s), ordering, dim))
+                if 'int' not in ppc['order']:
+                    ppc['order']['int'] = {}
+                for fld in field:
+                    ppc["order"]["int"][fld] = ppc[fld]
+                    ppc[fld] = int2ext(ppc, ppc[fld], ordering, dim)
         else:
             ## value
             val = val_or_field
             o = ppc["order"]
             if isinstance(ordering, str):         ## single set
                 if ordering == 'gen':
-                    v = get_reorder(val, o["ordering"]["i2e"], dim)
+                    v = get_reorder(val, o[ordering]["i2e"], dim)
                 else:
                     v = val
-                ppc = set_reorder(oldval, v,
-                                  o["ordering"]["status"]["on"], dim)
+                val = set_reorder(oldval, v, o[ordering]["status"]["on"], dim)
             else:                            ## multiple sets
                 be = 0  ## base, external indexing
                 bi = 0  ## base, internal indexing
-                for k in range(len(ordering)):
-                    ne = o["ext"]["ordering"][k].shape[0]
-                    ni = ppc["ordering"][k].shape[0]
-                    v = get_reorder(val, bi + range(ni), dim)
-                    oldv = get_reorder(oldval, be + range(ne), dim)
-#                    new_v[k] = int2ext(ppc, v, oldv, ordering[k], dim)
+                new_v = []
+                for ord in ordering:
+                    ne = o["ext"][ord].shape[0]
+                    ni = ppc[ord].shape[0]
+                    v = get_reorder(val, bi + arange(ni), dim)
+                    oldv = get_reorder(oldval, be + arange(ne), dim)
+                    new_v.append( int2ext(ppc, v, oldv, ord, dim) )
                     be = be + ne
                     bi = bi + ni
                 ni = val.shape[dim]
                 if ni > bi:              ## the rest
-                    v = get_reorder(val, bi + range(ni), dim)
-#                    new_v[len(new_v) + 1] = v
-#                ppc = [dim] + new_v[:]
+                    v = get_reorder(val, arange(bi, ni), dim)
+                    new_v.append(v)
+                val = concatenate(new_v, dim)
+            return val
 
     return ppc
+
+
+def int2ext1(i2e, bus, gen, branch, areas):
+    """Converts from the consecutive internal bus numbers back to the originals
+    using the mapping provided by the I2E vector returned from C{ext2int}.
+
+    @see: L{ext2int}
+    @see: U{http://www.pserc.cornell.edu/matpower/}
+    """
+    bus[:, BUS_I]    = i2e[ bus[:, BUS_I].astype(int) ]
+    gen[:, GEN_BUS]  = i2e[ gen[:, GEN_BUS].astype(int) ]
+    branch[:, F_BUS] = i2e[ branch[:, F_BUS].astype(int) ]
+    branch[:, T_BUS] = i2e[ branch[:, T_BUS].astype(int) ]
+
+    if areas != None and len(areas) > 0:
+        areas[:, PRICE_REF_BUS] = i2e[ areas[:, PRICE_REF_BUS].astype(int) ]
+        return bus, gen, branch, areas
+
+    return bus, gen, branch
