@@ -215,6 +215,8 @@ def loadcase(casefile,
         else:
             sys.stderr.write('Unknown error encountered loading case.\n')
 
+        sys.stderr.write(lasterr + '\n')
+
         return info
 
 

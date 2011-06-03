@@ -14,21 +14,25 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from numpy import array, zeros, ones, arange, r_
+
 def t_case_ext():
     """Case data in external format used to test C{ext2int} and C{int2ext}.
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
+    ppc = {}
+
     ## PYPOWER Case Format : Version 2
-    version = '2'
+    ppc['version'] = '2'
 
     ##-----  Power Flow Data  -----##
     ## system MVA base
-    baseMVA = 100.0
+    ppc['baseMVA'] = 100.0
 
     ## bus data
     # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin
-    bus = array([
+    ppc['bus'] = array([
         [1,  3, 0,   0,  0, 0, 1, 1, 0, 345, 1, 1.1, 0.9],
         [2,  2, 0,   0,  0, 0, 1, 1, 0, 345, 1, 1.1, 0.9],
         [30, 2, 0,   0,  0, 0, 1, 1, 0, 345, 1, 1.1, 0.9],
@@ -44,7 +48,7 @@ def t_case_ext():
     ## generator data
     # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
     # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
-    gen = array([
+    ppc['gen'] = array([
         [30, 85,  0, 300, -300, 1, 100, 1, 270, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [2,  163, 0, 300, -300, 1, 100, 1, 300, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [20, 20,  0, 300, -300, 1, 100, 1, 200, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -53,7 +57,7 @@ def t_case_ext():
 
     ## branch data
     # fbus, tbus, r, x, b, rateA, rateB, rateC, ratio, angle, status, angmin, angmax
-    branch = array([
+    ppc['branch'] = array([
         [1,  4, 0,      0.0576, 0,     0,   250, 250, 0, 0, 1, -360, 360],
         [4,  5, 0.017,  0.092,  0.158, 0,   250, 250, 0, 0, 1, -360, 360],
         [5,  6, 0.039,  0.17,   0.358, 150, 150, 150, 0, 0, 1, -360, 360],
@@ -69,40 +73,36 @@ def t_case_ext():
     ##-----  OPF Data  -----##
     ## area data
     # area refbus
-    areas = array([
+    ppc['areas'] = array([
         [2, 20],
-        [1, 5]
-    ])
+        [1,  5]
+    ], float)
 
     ## generator cost data
     # 1 startup shutdown n x1 y1 ... xn yn
     # 2 startup shutdown n c(n-1) ... c0
-    gencost = array([
+    ppc['gencost'] = array([
         [2, 0, 0, 2, 15, 0, 0,   0,    0,   0,      0,   0],
         [1, 0, 0, 4, 0,  0, 100, 2500, 200, 5500,   250, 7250],
         [2, 0, 0, 2, 20, 0, 0,   0,    0,   0,      0,   0],
         [1, 0, 0, 4, 0,  0, 100, 2000, 200, 4403.5, 270, 6363.5]
     ])
 
-    A = array([
+    ppc['A'] = array([
         [1, 2, 3, 4, 5,  0, 7,  8,  9,  10, 11, 12, 13, 14, 15, 0, 17, 18, 19, 20, 21, 22, 0, 24, 25, 26, 0, 28, 29, 30],
         [2, 4, 6, 8, 10, 0, 14, 16, 18, 20, 22, 24, 26, 28, 30, 0, 34, 36, 38, 40, 42, 44, 0, 48, 50, 52, 0, 56, 58, 60]
-    ])
+    ], float)
 
-    N = array([
+    ppc['N'] = array([
         [30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9,  8,  7,  6,  5,  4, 3, 2, 1],
         [60, 58, 56, 54, 52, 50, 48, 46, 44, 42, 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2],
-    ])
+    ], float)
 
-    ppc = case(version, baseMVA, bus, gen, branch, areas, gencost, A, N)
-
-    ppc.xbus = zeros(10, 10)
-    mpc.xbus[:] = range(100)
-    ppc.xgen = zeros(4, 4)
-    ppc.xgen[:] = range(16)
-    ppc.xbranch = ppc.xbus.copy()
-    ppc.xrows = r_[mpc.xbranch[:, 0:4], ppc.xgen, ppc.xbus[:, 0:4], -ones((2, 4))]
-    ppc.xcols = mpc.xrows
-    ppc.x.more = mpc.xgen
+    ppc['xbus'] = arange(100, dtype=float).reshape((10, 10))
+    ppc['xgen'] = arange(16, dtype=float).reshape((4, 4))
+    ppc['xbranch'] = ppc['xbus'].copy()
+    ppc['xrows'] = r_[ppc['xbranch'][:, :4], ppc['xgen'], ppc['xbus'][:, :4], -ones((2, 4))]
+    ppc['xcols'] = ppc['xrows'].T
+    ppc['x'] = { 'more': ppc['xgen'] }
 
     return ppc

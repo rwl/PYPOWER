@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+import sys
 
 from numpy import copy
 
@@ -27,7 +27,6 @@ from get_reorder import get_reorder
 from set_reorder import set_reorder
 from run_userfcn import run_userfcn
 
-logger = logging.getLogger(__name__)
 
 def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
     """Converts internal to external bus numbering.
@@ -87,8 +86,8 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
     """
     if ordering is None: # nargin == 1
         if 'order' not in ppc:
-            logger.error('int2ext: ppc does not have the "order" field '
-                'require for conversion back to external numbering.')
+            sys.stderr.write('int2ext: ppc does not have the "order" field '
+                'require for conversion back to external numbering.\n')
         o = ppc["order"]
 
         if o["state"] == 'i':
@@ -150,8 +149,8 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=1):
             o["state"] = 'e'
             ppc["order"] = o
         else:
-            logger.error('int2ext: ppc claims it is already using '
-                         'external numbering.')
+            sys.stderr.write('int2ext: ppc claims it is already using '
+                         'external numbering.\n')
     else:                    ## convert extra data
         if isinstance(val_or_field, str) or isinstance(val_or_field, list):
             ## field (key)

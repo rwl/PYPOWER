@@ -16,7 +16,7 @@
 
 from numpy import ndim
 
-def get_reorder(A, idx, dim=1):
+def get_reorder(A, idx, dim=0):
     """Returns A with one of its dimensions indexed.
 
     B = get_reorder(A, idx, dim)
@@ -30,12 +30,12 @@ def get_reorder(A, idx, dim=1):
     if ndims == 1:
         B = A[idx]
     elif ndims == 2:
-        if dim == 1:
+        if dim == 0:
             B = A[idx, :]
-        elif dim == 2:
-            B = A[: idx]
+        elif dim == 1:
+            B = A[:, idx]
         else:
-            raise ValueError
+            raise ValueError, 'dimension (%d) may be 0 or 1' % dim
     else:
         raise ValueError
 

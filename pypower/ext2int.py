@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+import sys
 
-from numpy import array, copy, zeros, argsort, flatnonzero as find
+from numpy import array, copy, zeros, argsort, arange, concatenate
+from numpy import flatnonzero as find
+
 from scipy.sparse import csr_matrix as sparse
 
 from idx_bus import PQ, PV, REF, NONE, BUS_I, BUS_TYPE
@@ -27,9 +29,8 @@ from idx_area import AREA_I, PRICE_REF_BUS
 from get_reorder import get_reorder
 from run_userfcn import run_userfcn
 
-logger = logging.getLogger(__name__)
 
-def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
+def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
     """Converts external to internal indexing.
 
     This function performs several different tasks, depending on the
@@ -62,7 +63,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
     argument is a column vector, it will be converted according to the
     ORDERING specified by the 3rd argument (described below). If VAL
     is an n-dimensional matrix, then the optional 4th argument (DIM,
-    default = 1) can be used to specify which dimension to reorder.
+    default = 0) can be used to specify which dimension to reorder.
     The return value in this case is the value passed in, converted
     to internal indexing.
 
@@ -86,17 +87,25 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
     @see: L{int2ext}
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-#    if isinstance(bus, dict):
-#        ppc = bus # FIXME: copy
-    if ordering is None: # nargin == 1
-        first = not ppc.has_key('order')
+    if ordering is None:  # nargin == 1
+        first = 'order' not in ppc
         if first or ppc["order"]["state"] == 'e':
             ## initialize order
             if first:
-                o = {'ext': {},
-                     'bus': {'status': {}},
-                     'gen': {'status': {}},
-                     'branch': {'status': {}}}
+                o = {
+                        'ext':      {
+                                'bus':      None,
+                                'branch':   None,
+                                'gen':      None
+                            },
+                        'bus':      { 'e2i':      None,
+                                      'i2e':      None,
+                                      'status':   {} },
+                        'gen':      { 'e2i':      None,
+                                      'i2e':      None,
+                                      'status':   {} },
+                        'branch':   { 'status': {} }
+                    }
             else:
                 o = ppc["order"]
 
@@ -104,29 +113,29 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
             nb = ppc["bus"].shape[0]
             ng = ppc["gen"].shape[0]
             ng0 = ng
-            if ppc.has_key('A'):
+            if 'A' in ppc:
                 dc = True if ppc["A"].shape[1] < (2 * nb + 2 * ng) else False
-            elif ppc.has_key('N'):
+            elif 'N' in ppc:
                 dc = True if ppc["N"].shape[1] < (2 * nb + 2 * ng) else False
             else:
                 dc = False
 
             ## save data matrices with external ordering
-            o["ext"]["bus"]    = copy(ppc["bus"])
-            o["ext"]["branch"] = copy(ppc["branch"])
-            o["ext"]["gen"]    = copy(ppc["gen"])
-            if ppc.has_key('areas'):
+            if 'ext' not in o: o['ext'] = {}
+            o["ext"]["bus"]    = ppc["bus"].copy()
+            o["ext"]["branch"] = ppc["branch"].copy()
+            o["ext"]["gen"]    = ppc["gen"].copy()
+            if 'areas' in ppc:
                 if len(ppc["areas"]) == 0: ## if areas field is empty
                     del ppc['areas']       ## delete it (so it's ignored)
                 else:                      ## otherwise
-                    o["ext"]["areas"] = copy(ppc["areas"]) ## save it
+                    o["ext"]["areas"] = ppc["areas"].copy()  ## save it
 
             ## check that all buses have a valid BUS_TYPE
             bt = ppc["bus"][:, BUS_TYPE]
-            err = find(~((bt == PQ) | (bt == PV) | (bt == REF) |
-                            (bt == NONE)))
+            err = find(~((bt == PQ) | (bt == PV) | (bt == REF) | (bt == NONE)))
             if len(err) > 0:
-                logger.error('ext2int: bus %d has an invalid BUS_TYPE',err)
+                sys.stderr.write('ext2int: bus %d has an invalid BUS_TYPE\n' % err)
 
             ## determine which buses, branches, gens are connected and
             ## in-service
@@ -136,7 +145,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
             bs = (bt != NONE)                               ## bus status
             o["bus"]["status"]["on"]  = find(  bs )         ## connected
             o["bus"]["status"]["off"] = find( ~bs )         ## isolated
-            gs = ( ppc["gen"][:, GEN_STATUS] > 0 &          ## gen status
+            gs = ( (ppc["gen"][:, GEN_STATUS] > 0) &          ## gen status
                     bs[ n2i[ppc["gen"][:, GEN_BUS].astype(int)] ] )
             o["gen"]["status"]["on"]  = find(  gs )    ## on and connected
             o["gen"]["status"]["off"] = find( ~gs )    ## off or isolated
@@ -145,20 +154,25 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
                     bs[n2i[ppc["branch"][:, T_BUS].astype(int)]] ).astype(bool)
             o["branch"]["status"]["on"]  = find(  brs ) ## on and conn
             o["branch"]["status"]["off"] = find( ~brs )
-            if ppc.has_key('areas'):
-                ar = bs[n2i[ppc["areas"][:, PRICE_REF_BUS].astype(int)]]
-                o["areas"]["status"]["on"]   = find(  ar )
-                o["areas"]["status"]["off"]  = find( ~ar )
+            if 'areas' in ppc:
+                ar = bs[ n2i[ppc["areas"][:, PRICE_REF_BUS].astype(int)] ]
+                o["areas"] = {"status": {}}
+                o["areas"]["status"]["on"]  = find(  ar )
+                o["areas"]["status"]["off"] = find( ~ar )
 
             ## delete stuff that is "out"
             if len(o["bus"]["status"]["off"]) > 0:
-                ppc["bus"][o["bus"]["status"]["off"], :] = array([])
+#                ppc["bus"][o["bus"]["status"]["off"], :] = array([])
+                ppc["bus"] = ppc["bus"][o["bus"]["status"]["on"], :]
             if len(o["branch"]["status"]["off"]) > 0:
-                ppc["branch"][o["branch"]["status"]["off"], :] = array([])
+#                ppc["branch"][o["branch"]["status"]["off"], :] = array([])
+                ppc["branch"] = ppc["branch"][o["branch"]["status"]["on"], :]
             if len(o["gen"]["status"]["off"]) > 0:
-                ppc["gen"][o["gen"]["status"]["off"], :] = array([])
-            if ppc.has_key('areas') and (len(o["areas"]["status"]["off"]) > 0):
-                ppc["areas"][o["areas"]["status"]["off"], :] = array([])
+#                ppc["gen"][o["gen"]["status"]["off"], :] = array([])
+                ppc["gen"] = ppc["gen"][o["gen"]["status"]["on"], :]
+            if 'areas' in ppc and (len(o["areas"]["status"]["off"]) > 0):
+#                ppc["areas"][o["areas"]["status"]["off"], :] = array([])
+                ppc["areas"] = ppc["areas"][o["areas"]["status"]["on"], :]
 
             ## update size
             nb = ppc["bus"].shape[0]
@@ -175,9 +189,9 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
                 o["bus"]["e2i"][ ppc["branch"][:, F_BUS].astype(int) ]
             ppc["branch"][:, T_BUS] = \
                 o["bus"]["e2i"][ ppc["branch"][:, T_BUS].astype(int) ]
-            if ppc.has_key('areas'):
+            if 'areas' in ppc:
                 ppc["areas"][:, PRICE_REF_BUS] = \
-                    o["bus"]["e2i"][ppc["areas"][:, PRICE_REF_BUS].astype(int)]
+                  o["bus"]["e2i"][ ppc["areas"][:, PRICE_REF_BUS].astype(int) ]
 
             ## reorder gens in order of increasing bus number
             o["gen"]["e2i"] = argsort(ppc["gen"][:, GEN_BUS])
@@ -185,48 +199,46 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
 
             ppc["gen"] = ppc["gen"][o["gen"]["e2i"].astype(int), :]
 
-            if o.has_key('int'):
+            if 'int' in o:
                 del o['int']
             o["state"] = 'i'
             ppc["order"] = o
 
             ## update gencost, A and N
-            if ppc.has_key('gencost'):
+            if 'gencost' in ppc:
                 ordering = ['gen']            ## Pg cost only
                 if ppc["gencost"].shape[0] == (2 * ng0):
                     ordering.append('gen')    ## include Qg cost
                 ppc = ext2int(ppc, 'gencost', ordering)
-            if ppc.has_key('A') or ppc.has_key('N'):
+            if 'A' in ppc or 'N' in ppc:
                 if dc:
                     ordering = ['bus', 'gen']
                 else:
                     ordering = ['bus', 'bus', 'gen', 'gen']
-            if ppc.has_key('A'):
-                ppc = ext2int(ppc, 'A', ordering, 2)
-            if ppc.has_key('N'):
-                ppc = ext2int(ppc, 'N', ordering, 2)
+            if 'A' in ppc:
+                ppc = ext2int(ppc, 'A', ordering, 1)
+            if 'N' in ppc:
+                ppc = ext2int(ppc, 'N', ordering, 1)
 
             ## execute userfcn callbacks for 'ext2int' stage
-            if ppc.has_key('userfcn'):
+            if 'userfcn' in ppc:
                 ppc = run_userfcn(ppc.userfcn, 'ext2int', ppc)
     else:                    ## convert extra data
         if isinstance(val_or_field, str) or isinstance(val_or_field, list):
             ## field
             field = val_or_field                ## rename argument
+
             if isinstance(field, str):
-                ppc["order"]["ext"]["field"] = ppc["field"]
-                ppc["field"] = ext2int(ppc, ppc["field"], ordering, dim)
-#            else:
-#                for k in range(len(field)):
-#                    s[k]["type"] = '.'
-#                    s[k]["subs"] = field[k]
-#                ppc["order"]["ext"] = \
-#                    subsasgn(ppc["order"]["ext"], s, subsref(ppc, s))
-#                ppc = subsasgn(ppc, s,
-#                    ext2int(ppc, subsref(ppc, s), ordering, dim))
+                ppc["order"]["ext"][field] = ppc[field]
+                ppc[field] = ext2int(ppc, ppc[field], ordering, dim)
+            else:
+                for fld in field:
+                    ppc["order"]["ext"][fld] = ppc[fld]
+                    ppc[fld] = ext2int(ppc, ppc[fld], ordering, dim)
         else:
             ## value
             val = val_or_field                   ## rename argument
+
             o = ppc["order"]
             if isinstance(ordering, str):        ## single set
                 if ordering == 'gen':
@@ -234,29 +246,44 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=1):
                 else:
                     idx = o[ordering]["status"]["on"]
                 i2e = get_reorder(val, idx, dim)
-#            else:                            ## multiple: sets
-#                b = 0  ## base
-#                for k in range(len(ordering)):
-#                    n = o["ext"][ordering[k]].shape[0]
-#                    v = get_reorder(val, b + range(n), dim)
-#                    new_v[k] = ext2int(ppc, v, ordering[k], dim)
-#                    b = b + n
-#                n = val.shape[dim - 1]
-#                if n > b:                ## the rest
-#                    v = get_reorder(val, b + range(n), dim)
-#                    new_v[len(new_v) + 1] = v
-#                i2e = [dim] + new_v[:]
+            else:                            ## multiple: sets
+                b = 0  ## base
+                new_v = []
+                for ord in ordering:
+                    n = o["ext"][ord].shape[0]
+                    v = get_reorder(val, b + arange(n), dim)
+                    new_v.append( ext2int(ppc, v, ord, dim) )
+                    b = b + n
+                n = val.shape[dim]
+                if n > b:                ## the rest
+                    v = get_reorder(val, arange(b, n), dim)
+                    new_v.append(v)
+                i2e = concatenate(new_v, dim)
 
-#    else:            ## old form
-#        i2e = bus[:, BUS_I]
-#        e2i = csr_matrix((max(i2e), 1))
-#        e2i[i2e] = range(bus.shape[0])
-#
-#        bus[:, BUS_I]               = e2i[ bus[:, BUS_I]            ]
-#        gen[:, GEN_BUS]             = e2i[ gen[:, GEN_BUS]          ]
-#        branch[:, F_BUS]            = e2i[ branch[:, F_BUS]         ]
-#        branch[:, T_BUS]            = e2i[ branch[:, T_BUS]         ]
-#        if areas is not None & areas.any():
-#            areas[:, PRICE_REF_BUS] = e2i[ areas[:, PRICE_REF_BUS]  ]
+            return i2e
 
     return ppc
+
+
+def ext2int1(bus, gen, branch, areas=None):
+    """Converts from (possibly non-consecutive) external bus numbers to
+    consecutive internal bus numbers which start at 1. Changes are made
+    to BUS, GEN, BRANCH and optionally AREAS matrices, which are returned
+    along with a vector of indices I2E that can be passed to INT2EXT to
+    perform the reverse conversion.
+
+    @see: L{int2ext}
+    @see: U{http://www.pserc.cornell.edu/matpower/}
+    """
+    i2e = bus[:, BUS_I]
+    e2i = sparse((max(i2e), 1))
+    e2i[i2e] = range(bus.shape[0])
+
+    bus[:, BUS_I]               = e2i[ bus[:, BUS_I].astype(int)    ]
+    gen[:, GEN_BUS]             = e2i[ gen[:, GEN_BUS].astype(int)  ]
+    branch[:, F_BUS]            = e2i[ branch[:, F_BUS].astype(int) ]
+    branch[:, T_BUS]            = e2i[ branch[:, T_BUS].astype(int) ]
+    if areas is not None and len(areas) > 0:
+        areas[:, PRICE_REF_BUS] = e2i[ areas[:, PRICE_REF_BUS].astype(int) ]
+
+    return i2e, bus, gen, branch, areas
