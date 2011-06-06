@@ -285,9 +285,9 @@ def ext2int1(bus, gen, branch, areas=None):
     @see: L{int2ext}
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    i2e = bus[:, BUS_I]
-    e2i = sparse((max(i2e), 1))
-    e2i[i2e] = range(bus.shape[0])
+    i2e = bus[:, BUS_I].astype(int)
+    e2i = zeros(max(i2e) + 1)
+    e2i[i2e] = arange(bus.shape[0])
 
     bus[:, BUS_I]    = e2i[ bus[:, BUS_I].astype(int)    ]
     gen[:, GEN_BUS]  = e2i[ gen[:, GEN_BUS].astype(int)  ]

@@ -47,6 +47,7 @@ def t_jacobian(quiet=False):
     opt['VERBOSE'] = 0
     opt['OUT_ALL'] = 0
     ppc = loadcase(case30())
+
     results, _ = runpf(ppc, opt)
     baseMVA, bus, gen, branch = \
         results['baseMVA'], results['bus'], results['gen'], results['branch']
@@ -58,10 +59,10 @@ def t_jacobian(quiet=False):
     Yf_full   = Yf.todense()
     Yt_full   = Yt.todense()
     Vm = bus[:, VM].copy()
-    Va = bus[:, VA] * pi / 180
+    Va = bus[:, VA] * (pi / 180)
     V = Vm * exp(1j * Va)
-    f = branch[:, F_BUS].copy()       ## list of "from" buses
-    t = branch[:, T_BUS].copy()       ## list of "to" buses
+    f = branch[:, F_BUS].astype(int)       ## list of "from" buses
+    t = branch[:, T_BUS].astype(int)       ## list of "to" buses
     nl = len(f)
     nb = len(V)
     pert = 1e-8
@@ -76,10 +77,10 @@ def t_jacobian(quiet=False):
     dSbus_dVa_sp = dSbus_dVa.todense()
 
     ## compute numerically to compare
-    Vmp = (Vm * ones(nb) + pert * eye((nb, nb))) * (exp(1j * Va) * ones(nb))
-    Vap = (Vm * ones(nb)) * (exp(1j * (Va * ones(nb) + pert * eye((nb, nb)))))
-    num_dSbus_dVm = ( (Vmp * conj(Ybus * Vmp) - V * ones(nb) * conj(Ybus * V * ones(nb))) / pert ).todense()
-    num_dSbus_dVa = ( (Vap * conj(Ybus * Vap) - V * ones(nb) * conj(Ybus * V * ones(nb))) / pert ).todense()
+    Vmp = (Vm * ones((1, nb)) + pert*eye(nb)) * (exp(1j * Va) * ones((1, nb)))
+    Vap = (Vm * ones((1, nb))) * (exp(1j * (Va*ones((1, nb)) + pert*eye(nb))))
+    num_dSbus_dVm = (Vmp * conj(Ybus * Vmp) - V * ones(nb) * conj(Ybus * V * ones((1, nb)))) / pert
+    num_dSbus_dVa = (Vap * conj(Ybus * Vap) - V * ones(nb) * conj(Ybus * V * ones((1, nb)))) / pert
 
     t_is(dSbus_dVm_sp, num_dSbus_dVm, 5, 'dSbus_dVm (sparse)')
     t_is(dSbus_dVa_sp, num_dSbus_dVa, 5, 'dSbus_dVa (sparse)')

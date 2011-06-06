@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import conj
-from scipy.sparse import csr_matrix
+from numpy import conj, diag
+from scipy.sparse import issparse, csr_matrix as sparse
 
 def dSbus_dV(Ybus, V):
     """Computes partial derivatives of power injection w.r.t. voltage.
@@ -61,11 +61,16 @@ def dSbus_dV(Ybus, V):
              magnitude and voltage angle.
     """
     ib = range(len(V))
-    I = Ybus * V
+    Ibus = V * Ybus
 
-    diagV = csr_matrix((V, (ib, ib)))
-    diagIbus = csr_matrix((I, (ib, ib)))
-    diagVnorm = csr_matrix((V / abs(V), (ib, ib)))
+    if issparse(Ybus):
+        diagV = sparse((V, (ib, ib)))
+        diagIbus = sparse((Ibus, (ib, ib)))
+        diagVnorm = sparse((V / abs(V), (ib, ib)))
+    else:
+        diagV = diag(V)
+        diagIbus = diag(Ibus)
+        diagVnorm = diag(V / abs(V))
 
     dS_dVm = diagV * conj(Ybus * diagVnorm) + conj(diagIbus) * diagVnorm
     dS_dVa = 1j * diagV * conj(diagIbus - Ybus * diagV)
