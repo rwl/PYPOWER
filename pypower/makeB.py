@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import ones, zeros, copy
+from numpy import ones, zeros, copy, imag
 
 from idx_bus import BS
 from idx_brch import BR_B, BR_R, TAP, SHIFT
@@ -43,13 +43,13 @@ def makeB(baseMVA, bus, branch, alg):
     temp_branch[:, TAP] = ones(nl)             ## cancel out taps
     if alg == 2:                               ## if XB method
         temp_branch[:, BR_R] = zeros(nl)       ## zero out line resistance
-    Bp = -makeYbus(baseMVA, temp_bus, temp_branch).imag
+    Bp = -1 * imag(makeYbus(baseMVA, temp_bus, temp_branch)[0])
 
     ##-----  form Bpp (B double prime)  -----
     temp_branch = copy(branch)                 ## modify a copy of branch
     temp_branch[:, SHIFT] = zeros(nl)          ## zero out phase shifters
     if alg == 3:                               ## if BX method
         temp_branch[:, BR_R] = zeros(nl)    ## zero out line resistance
-    Bpp = -makeYbus(baseMVA, bus, temp_branch).imag
+    Bpp = -1 * imag(makeYbus(baseMVA, bus, temp_branch)[0])
 
     return Bp, Bpp

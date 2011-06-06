@@ -130,7 +130,7 @@ output options
 
 ppoption = {
     # power flow options
-    'PF_ALG':         2,      # 1  - PF_ALG
+    'PF_ALG':         1,      # 1  - PF_ALG
     'PF_TOL':         1e-8,   # 2  - PF_TOL
     'PF_MAX_IT':      10,     # 3  - PF_MAX_IT
     'PF_MAX_IT_FD':   30,     # 4  - PF_MAX_IT_FD

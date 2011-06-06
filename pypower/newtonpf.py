@@ -47,9 +47,9 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
         ppopt = ppoption
 
     ## options
-    tol     = ppopt[2]
-    max_it  = ppopt[3]
-    verbose = ppopt[31]
+    tol     = ppopt['PF_TOL']
+    max_it  = ppopt['PF_MAX_IT']
+    verbose = ppopt['VERBOSE']
 
     ## initialize
     converged = 0
@@ -59,12 +59,12 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     Vm = abs(V)
 
     ## set up indexing for updating V
-    pvpq = pv + pq
+    pvpq = r_[pv, pq]
     npv = len(pv)
     npq = len(pq)
     j1 = 0;         j2 = npv           ## j1:j2 - V angle of pv buses
-    j3 = j2 + 1;    j4 = j2 + npq      ## j3:j4 - V angle of pq buses
-    j5 = j4 + 1;    j6 = j4 + npq      ## j5:j6 - V mag of pq buses
+    j3 = j2;        j4 = j2 + npq      ## j3:j4 - V angle of pq buses
+    j5 = j4;        j6 = j4 + npq      ## j5:j6 - V mag of pq buses
 
     ## evaluate F(x0)
     mis = multiply(V, conj(Ybus * V)) - Sbus

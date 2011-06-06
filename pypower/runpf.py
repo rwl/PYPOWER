@@ -102,7 +102,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
 
     ## generator info
     on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?
-    gbus = gen[on, GEN_BUS]                ## what buses are they at?
+    gbus = gen[on, GEN_BUS].astype(int)    ## what buses are they at?
 
     ##-----  run the power flow  -----
     t0 = time()
@@ -221,9 +221,8 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
                     ## convert to PQ bus
                     gen[mx, QG] = fixedQg[mx]      ## set Qg to binding limit
                     gen[mx, GEN_STATUS] = 0        ## temporarily turn off gen,
-                    for i in range(mx):            ## [one at a time, since
-                        bi = gen[mx[i], GEN_BUS]   ##  they may be at same bus]
-                                                   ## adjust load accordingly,
+                    for i in range(mx):            ## [one at a time, since they may be at same bus]
+                        bi = gen[mx[i], GEN_BUS]   ## adjust load accordingly,
                         bus[bi, [PD, QD]] = (bus[bi, [PD, QD]] - gen[mx[i], [PG, QG]])
 
                     bus[gen[mx, GEN_BUS], BUS_TYPE] = PQ   ## & set bus type to PQ
@@ -243,9 +242,8 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         if qlim and len(limited) > 0:
             ## restore injections from limited gens [those at Q limits]
             gen[limited, QG] = fixedQg[limited]    ## restore Qg value,
-            for i in range(limited):               ## [one at a time, since
-                bi = gen[limited[i], GEN_BUS]      ##  they may be at same bus]
-                                                   ## re-adjust load,
+            for i in range(limited):               ## [one at a time, since they may be at same bus]
+                bi = gen[limited[i], GEN_BUS]      ## re-adjust load,
                 bus[bi, [PD, QD]] = bus[bi, [PD, QD]] + gen[limited[i], [PG, QG]]
 
             gen[limited, GEN_STATUS] = 1           ## and turn gen back on

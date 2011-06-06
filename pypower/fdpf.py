@@ -43,9 +43,9 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
         ppopt = ppoption()
 
     ## options
-    tol     = ppopt[2]
-    max_it  = ppopt[4]
-    verbose = ppopt[31]
+    tol     = ppopt['PF_TOL']
+    max_it  = ppopt['PF_MAX_IT_FD']
+    verbose = ppopt['VERBOSE']
 
     ## initialize
     converged = 0
@@ -57,7 +57,7 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     ## set up indexing for updating V
     npv = len(pv)
     npq = len(pq)
-    pvpq = pv + pq
+    pvpq = r_[pv, pq]
 
     ## evaluate initial mismatch
     mis = (multiply(V, conj(Ybus * V)) - Sbus) / Vm
@@ -84,8 +84,8 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     ## reduce B matrices
     pq_col = [[k] for k in pq]
     pvpq_col = [[k] for k in pvpq]
-    Bp = Bp[pvpq_col, pvpq].tocsc() # splu requires a CSC matrix
-    Bpp = Bpp[pq_col, pq].tocsc()
+    Bp = Bp[pvpq, pvpq].tocsc() # splu requires a CSC matrix
+    Bpp = Bpp[pq, pq].tocsc()
 
     ## factor B matrices
     Bp_solver = splu(Bp)

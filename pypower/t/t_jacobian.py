@@ -14,6 +14,27 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from numpy import ones, conj, eye, exp, pi
+
+from pypower.case30 import case30
+from pypower.ppoption import ppoption
+from pypower.loadcase import loadcase
+from pypower.ext2int import ext2int1
+from pypower.runpf import runpf
+from pypower.makeYbus import makeYbus
+from pypower.dSbus_dV import dSbus_dV
+from pypower.dSbr_dV import dSbr_dV
+from pypower.dAbr_dV import dAbr_dV
+from pypower.dIbr_dV import dIbr_dV
+
+from pypower.idx_bus import VM, VA
+from pypower.idx_brch import F_BUS, T_BUS
+
+from pypower.t.t_begin import t_begin
+from pypower.t.t_end import t_end
+from pypower.t.t_is import t_is
+
+
 def t_jacobian(quiet=False):
     """Numerical tests of partial derivative code.
 
@@ -21,26 +42,26 @@ def t_jacobian(quiet=False):
     """
     t_begin(28, quiet)
 
-    casefile = 'case30'
-
     ## run powerflow to get solved case
-    opt = ppoption()
+    opt = ppoption
     opt['VERBOSE'] = 0
     opt['OUT_ALL'] = 0
-    mpc = loadcase(casefile)
-    baseMVA, bus, gen, branch, success, et = runpf(mpc, opt)
+    ppc = loadcase(case30())
+    results, _ = runpf(ppc, opt)
+    baseMVA, bus, gen, branch = \
+        results['baseMVA'], results['bus'], results['gen'], results['branch']
 
     ## switch to internal bus numbering and build admittance matrices
-    i2e, bus, gen, branch = ext2int(bus, gen, branch)
+    _, bus, gen, branch = ext2int1(bus, gen, branch)
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
-    Ybus_full   = Ybus.todense()
-    Yf_full     = Yf.todense()
-    Yt_full     = Yt.todense()
-    Vm = bus.Vm.copy()
-    Va = bus.Va * pi / 180
+    Ybus_full = Ybus.todense()
+    Yf_full   = Yf.todense()
+    Yt_full   = Yt.todense()
+    Vm = bus[:, VM].copy()
+    Va = bus[:, VA] * pi / 180
     V = Vm * exp(1j * Va)
-    f = branch.f_bus.copy()       ## list of "from" buses
-    t = branch.t_bus.copy()       ## list of "to" buses
+    f = branch[:, F_BUS].copy()       ## list of "from" buses
+    t = branch[:, T_BUS].copy()       ## list of "to" buses
     nl = len(f)
     nb = len(V)
     pert = 1e-8
@@ -67,7 +88,8 @@ def t_jacobian(quiet=False):
 
     ##-----  check dSbr_dV code  -----
     ## full matrices
-    dSf_dVa_full, dSf_dVm_full, dSt_dVa_full, dSt_dVm_full, Sf, St = dSbr_dV(branch, Yf_full, Yt_full, V)
+    dSf_dVa_full, dSf_dVm_full, dSt_dVa_full, dSt_dVm_full, _, _ = \
+            dSbr_dV(branch, Yf_full, Yt_full, V)
 
     ## sparse matrices
     dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St = dSbr_dV(branch, Yf, Yt, V)
@@ -157,3 +179,7 @@ def t_jacobian(quiet=False):
     t_is(dIt_dVa_full, num_dIt_dVa, 5, 'dIt_dVa (full)')
 
     t_end
+
+
+if __name__ == "__main__":
+    t_jacobian(quiet=False)

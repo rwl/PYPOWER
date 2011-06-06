@@ -296,4 +296,6 @@ def ext2int1(bus, gen, branch, areas=None):
     if areas is not None and len(areas) > 0:
         areas[:, PRICE_REF_BUS] = e2i[ areas[:, PRICE_REF_BUS].astype(int) ]
 
-    return i2e, bus, gen, branch, areas
+        return i2e, bus, gen, branch, areas
+
+    return i2e, bus, gen, branch
