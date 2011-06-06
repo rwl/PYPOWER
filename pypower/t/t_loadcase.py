@@ -596,11 +596,15 @@ def t_loadcase(quiet=False):
     opt = ppoption
     opt['VERBOSE'] = 0
     opt['OUT_ALL'] = 0
-    baseMVA3, bus3, gen3, branch3, success, _ = runpf(pfcasefile, opt)
+    results3, success = runpf(pfcasefile, opt)
+    baseMVA3, bus3, gen3, branch3 = results3['baseMVA'], results3['bus'], \
+            results3['gen'], results3['branch']
     t_ok( success, t )
 
     t = 'runpf(my_object)'
-    baseMVA4, bus4, gen4, branch4, success, _ = runpf(c, opt)
+    results4, success = runpf(c, opt)
+    baseMVA4, bus4, gen4, branch4 = results4['baseMVA'], results4['bus'], \
+            results4['gen'], results4['branch']
     t_ok( success, t )
 
     t = 'runpf result comparison : '
@@ -611,10 +615,12 @@ def t_loadcase(quiet=False):
 
     t = 'runpf(modified_struct)'
     c['gen'][2, 1] = c['gen'][2, 1] + 1            ## increase gen 3 output by 1
-    _, _, gen5, _, success, _ = runpf(c, opt)
+    results5, success = runpf(c, opt)
+    gen5 = results5['gen']
     t_is(gen5[0, 1], gen4[0, 1] - 1, 1, t)   ## slack bus output should decrease by 1
 
     t_end()
+
 
 if __name__ == '__main__':
     t_loadcase(False)
