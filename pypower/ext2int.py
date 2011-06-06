@@ -16,6 +16,8 @@
 
 import sys
 
+from copy import deepcopy
+
 from numpy import array, copy, zeros, argsort, arange, concatenate
 from numpy import flatnonzero as find
 
@@ -87,6 +89,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
     @see: L{int2ext}
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
+    ppc = deepcopy(ppc)
     if ordering is None:  # nargin == 1
         first = 'order' not in ppc
         if first or ppc["order"]["state"] == 'e':
@@ -178,20 +181,21 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
             nb = ppc["bus"].shape[0]
 
             ## apply consecutive bus numbering
-            o["bus"]["i2e"] = ppc["bus"][:, BUS_I]
+            o["bus"]["i2e"] = ppc["bus"][:, BUS_I].copy()
             o["bus"]["e2i"] = zeros(max(o["bus"]["i2e"]) + 1)
-            o["bus"]["e2i"][o["bus"]["i2e"].astype(int)] = range(nb)
+            o["bus"]["e2i"][o["bus"]["i2e"].astype(int)] = arange(nb)
             ppc["bus"][:, BUS_I] = \
-                o["bus"]["e2i"][ ppc["bus"][:, BUS_I].astype(int) ]
+                o["bus"]["e2i"][ ppc["bus"][:, BUS_I].astype(int) ].copy()
             ppc["gen"][:, GEN_BUS] = \
-                o["bus"]["e2i"][ ppc["gen"][:, GEN_BUS].astype(int) ]
+                o["bus"]["e2i"][ ppc["gen"][:, GEN_BUS].astype(int) ].copy()
             ppc["branch"][:, F_BUS] = \
-                o["bus"]["e2i"][ ppc["branch"][:, F_BUS].astype(int) ]
+                o["bus"]["e2i"][ ppc["branch"][:, F_BUS].astype(int) ].copy()
             ppc["branch"][:, T_BUS] = \
-                o["bus"]["e2i"][ ppc["branch"][:, T_BUS].astype(int) ]
+                o["bus"]["e2i"][ ppc["branch"][:, T_BUS].astype(int) ].copy()
             if 'areas' in ppc:
                 ppc["areas"][:, PRICE_REF_BUS] = \
-                  o["bus"]["e2i"][ ppc["areas"][:, PRICE_REF_BUS].astype(int) ]
+                    o["bus"]["e2i"][ ppc["areas"][:,
+                        PRICE_REF_BUS].astype(int) ].copy()
 
             ## reorder gens in order of increasing bus number
             o["gen"]["e2i"] = argsort(ppc["gen"][:, GEN_BUS])
@@ -229,20 +233,27 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
             field = val_or_field                ## rename argument
 
             if isinstance(field, str):
-                ppc["order"]["ext"][field] = ppc[field]
-                ppc[field] = ext2int(ppc, ppc[field], ordering, dim)
+                key = '["%s"]' % field
             else:
+                key = '["%s"]' % '"]["'.join(field)
+
+                v_ext = ppc["order"]["ext"]
                 for fld in field:
-                    ppc["order"]["ext"][fld] = ppc[fld]
-                    ppc[fld] = ext2int(ppc, ppc[fld], ordering, dim)
+                    if fld not in v_ext:
+                        v_ext[fld] = {}
+                        v_ext = v_ext[fld]
+
+            exec 'ppc["order"]["ext"]%s = ppc%s.copy()' % (key, key)
+            exec 'ppc%s = ext2int(ppc, ppc%s, ordering, dim)' % (key, key)
+
         else:
             ## value
-            val = val_or_field                   ## rename argument
+            val = val_or_field.copy()                   ## rename argument
 
             o = ppc["order"]
             if isinstance(ordering, str):        ## single set
                 if ordering == 'gen':
-                    idx = o[ordering]["status"]["on"][o[ordering]["e2i"]]
+                    idx = o[ordering]["status"]["on"][ o[ordering]["e2i"] ]
                 else:
                     idx = o[ordering]["status"]["on"]
                 val = get_reorder(val, idx, dim)

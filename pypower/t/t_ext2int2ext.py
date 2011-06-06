@@ -173,7 +173,7 @@ def t_ext2int2ext(quiet=False):
     got = ext2int(ppc, 'xbus', 'bus')
     t_is(got['xbus'], ex, 12, t)
     t = 'ppc = int2ext(ppc, field, \'bus\')'
-    got = int2ext(got, 'xbus', 'bus')
+    got = int2ext(got, 'xbus', ordering='bus')
     t_is(got['xbus'], ppce['xbus'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, \'bus\', 1)'
@@ -182,7 +182,7 @@ def t_ext2int2ext(quiet=False):
     got = ext2int(ppc, 'xbus', 'bus', 1)
     t_is(got['xbus'], ex, 12, t)
     t = 'ppc = int2ext(ppc, field, \'bus\', 1)'
-    got = int2ext(got, 'xbus', 'bus', 1)
+    got = int2ext(got, 'xbus', ordering='bus', dim=1)
     t_is(got['xbus'], ppce['xbus'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, \'gen\')'
@@ -190,7 +190,7 @@ def t_ext2int2ext(quiet=False):
     got = ext2int(ppc, 'xgen', 'gen')
     t_is(got['xgen'], ex, 12, t)
     t = 'ppc = int2ext(ppc, field, \'gen\')'
-    got = int2ext(got, 'xgen', 'gen')
+    got = int2ext(got, 'xgen', ordering='gen')
     t_is(got['xgen'], ppce['xgen'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, \'gen\', 1)'
@@ -198,7 +198,7 @@ def t_ext2int2ext(quiet=False):
     got = ext2int(ppc, 'xgen', 'gen', 1)
     t_is(got['xgen'], ex, 12, t)
     t = 'ppc = int2ext(ppc, field, \'gen\', 1)'
-    got = int2ext(got, 'xgen', 'gen', 1)
+    got = int2ext(got, 'xgen', ordering='gen', dim=1)
     t_is(got['xgen'], ppce['xgen'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, \'branch\')'
@@ -207,7 +207,7 @@ def t_ext2int2ext(quiet=False):
     got = ext2int(ppc, 'xbranch', 'branch')
     t_is(got['xbranch'], ex, 12, t)
     t = 'ppc = int2ext(ppc, field, \'branch\')'
-    got = int2ext(got, 'xbranch', 'branch')
+    got = int2ext(got, 'xbranch', ordering='branch')
     t_is(got['xbranch'], ppce['xbranch'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, \'branch\', 1)'
@@ -216,29 +216,29 @@ def t_ext2int2ext(quiet=False):
     got = ext2int(ppc, 'xbranch', 'branch', 1)
     t_is(got['xbranch'], ex, 12, t)
     t = 'ppc = int2ext(ppc, field, \'branch\', 1)'
-    got = int2ext(got, 'xbranch', 'branch', 1)
+    got = int2ext(got, 'xbranch', ordering='branch', dim=1)
     t_is(got['xbranch'], ppce['xbranch'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, {\'branch\', \'gen\', \'bus\'})'
     ex = r_[ppce['xbranch'][range(6) + range(7, 10), :4],
             ppce['xgen'][[3, 1, 0], :],
             ppce['xbus'][range(5) + range(6, 10), :4],
-            -1 * ones(2, 4)]
+            -1 * ones((2, 4))]
     got = ext2int(ppc, 'xrows', ['branch', 'gen', 'bus'])
     t_is(got['xrows'], ex, 12, t)
     t = 'ppc = int2ext(ppc, field, {\'branch\', \'gen\', \'bus\'})'
-    got = int2ext(got, 'xrows', ['branch', 'gen', 'bus'])
+    got = int2ext(got, 'xrows', ordering=['branch', 'gen', 'bus'])
     t_is(got['xrows'], ppce['xrows'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, {\'branch\', \'gen\', \'bus\'}, 1)'
     ex = r_[ppce['xbranch'][range(6) + range(7, 10), :4],
             ppce['xgen'][[3, 1, 0], :],
             ppce['xbus'][range(5) + range(6, 10), :4],
-            -1 * ones(2, 4)].T
+            -1 * ones((2, 4))].T
     got = ext2int(ppc, 'xcols', ['branch', 'gen', 'bus'], 1)
     t_is(got['xcols'], ex, 12, t)
     t = 'ppc = int2ext(ppc, field, {\'branch\', \'gen\', \'bus\'})'
-    got = int2ext(got, 'xcols', ['branch', 'gen', 'bus'], 1)
+    got = int2ext(got, 'xcols', ordering=['branch', 'gen', 'bus'], dim=1)
     t_is(got['xcols'], ppce['xcols'], 12, t)
 
     t = 'ppc = ext2int(ppc, {\'field1\', \'field2\'}, ordering)'
@@ -246,7 +246,7 @@ def t_ext2int2ext(quiet=False):
     got = ext2int(ppc, ['x', 'more'], 'gen')
     t_is(got['x']['more'], ex, 12, t)
     t = 'ppc = int2ext(ppc, {\'field1\', \'field2\'}, ordering)'
-    got = int2ext(got, ['x', 'more'], 'gen')
+    got = int2ext(got, ['x', 'more'], ordering='gen')
     t_is(got['x']['more'], ppce['x']['more'], 12, t)
 
     t = 'ppc = ext2int(ppc, {\'field1\', \'field2\'}, ordering, 1)'
@@ -254,7 +254,7 @@ def t_ext2int2ext(quiet=False):
     got = ext2int(ppc, ['x', 'more'], 'gen', 1)
     t_is(got['x']['more'], ex, 12, t)
     t = 'ppc = int2ext(ppc, {\'field1\', \'field2\'}, ordering, 1)'
-    got = int2ext(got, ['x', 'more'], 'gen', 1)
+    got = int2ext(got, ['x', 'more'], ordering='gen', dim=1)
     t_is(got['x']['more'], ppce['x']['more'], 12, t)
 
     ##-----  more ppc = ext2int/int2ext(ppc)  -----
@@ -308,10 +308,10 @@ def t_ext2int2ext(quiet=False):
     ppci = loadcase('t_case_int')
     eVmQgcols = range(10, 20) + range(24, 28)
     iVmQgcols = range(9, 18) + range(21, 24)
-    ppce['A'][:, eVmQgcols] = []
-    ppce['N'][:, eVmQgcols] = []
-    ppci['A'][:, iVmQgcols] = []
-    ppci['N'][:, iVmQgcols] = []
+    ppce['A'] = delete(ppce['A'], eVmQgcols, 1)
+    ppce['N'] = delete(ppce['N'], eVmQgcols, 1)
+    ppci['A'] = delete(ppci['A'], iVmQgcols, 1)
+    ppci['N'] = delete(ppci['N'], iVmQgcols, 1)
     ppc = ext2int(ppce)
     t_is(ppc['bus'], ppci['bus'], 12, [t, 'bus'])
     t_is(ppc['branch'], ppci['branch'], 12, [t, 'branch'])

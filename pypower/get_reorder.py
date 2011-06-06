@@ -28,12 +28,12 @@ def get_reorder(A, idx, dim=0):
     """
     ndims = ndim(A)
     if ndims == 1:
-        B = A[idx]
+        B = A[idx].copy()
     elif ndims == 2:
         if dim == 0:
-            B = A[idx, :]
+            B = A[idx, :].copy()
         elif dim == 1:
-            B = A[:, idx]
+            B = A[:, idx].copy()
         else:
             raise ValueError, 'dim (%d) may be 0 or 1' % dim
     else:

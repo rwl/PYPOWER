@@ -16,6 +16,8 @@
 
 import sys
 
+from copy import deepcopy
+
 from numpy import arange, concatenate
 
 from idx_bus import BUS_I
@@ -84,6 +86,7 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
     @see: ext2int
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
+    ppc = deepcopy(ppc)
     if ordering is None: # nargin == 1
         if 'order' not in ppc:
             sys.stderr.write('int2ext: ppc does not have the "order" field '
@@ -155,19 +158,26 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
         if isinstance(val_or_field, str) or isinstance(val_or_field, list):
             ## field (key)
             field = val_or_field
+            if 'int' not in ppc['order']:
+                ppc['order']['int'] = {}
+
             if isinstance(field, str):
-                ppc["order"]["int"][field] = ppc[field]
-                ppc[field] = int2ext(ppc, ppc[field],
-                                     ppc["order"]["ext"][field], ordering, dim)
-            else:
-                if 'int' not in ppc['order']:
-                    ppc['order']['int'] = {}
+                key = '["%s"]' % field
+            else:  # nested dicts
+                key = '["%s"]' % '"]["'.join(field)
+
+                v_int = ppc["order"]["int"]
                 for fld in field:
-                    ppc["order"]["int"][fld] = ppc[fld]
-                    ppc[fld] = int2ext(ppc, ppc[fld], ordering, dim)
+                    if fld not in v_int:
+                        v_int[fld] = {}
+                        v_int = v_int[fld]
+
+            exec 'ppc["order"]["int"]%s = ppc%s.copy()' % (key, key)
+            exec 'ppc%s = int2ext(ppc, ppc%s, ppc["order"]["ext"]%s, ordering, dim)' % (key, key, key)
+
         else:
             ## value
-            val = val_or_field
+            val = val_or_field.copy()
             o = ppc["order"]
             if isinstance(ordering, str):         ## single set
                 if ordering == 'gen':
