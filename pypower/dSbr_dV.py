@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import conj
-from scipy.sparse import csr_matrix
+from numpy import conj, arange, diag, zeros, asmatrix, asarray, asscalar
+from scipy.sparse import issparse, csr_matrix as sparse
 
 from idx_brch import F_BUS, T_BUS
 
@@ -73,39 +73,67 @@ def dSbr_dV(branch, Yf, Yt, V):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## define
-    f = branch[:, F_BUS]       ## list of "from" buses
-    t = branch[:, T_BUS]       ## list of "to" buses
+    f = branch[:, F_BUS].astype(int)       ## list of "from" buses
+    t = branch[:, T_BUS].astype(int)       ## list of "to" buses
     nl = len(f)
     nb = len(V)
-    il = range(nl)
-    ib = range(nb)
-
-    ## compute currents
-    If = Yf * V
-    It = Yt * V
+    il = arange(nl)
+    ib = arange(nb)
 
     Vnorm = V / abs(V)
-    diagVf = csr_matrix((V[f], (il, il)))
-    diagIf = csr_matrix((If, (il, il)))
-    diagVt = csr_matrix((V[t], (il, il)))
-    diagIt = csr_matrix((It, (il, il)))
-    diagV  = csr_matrix((V, (ib, ib)))
-    diagVnorm = csr_matrix((Vnorm, (ib, ib)))
 
-    shape = (nl, nb)
-    # Partial derivative of S w.r.t voltage phase angle.
-    dSf_dVa = 1j * (conj(diagIf) *
-        csr_matrix((V[f], (il, f)), shape) - diagVf * conj(Yf * diagV))
+    if issparse(Yf):
+        ## compute currents
+        If = Yf * V
+        It = Yt * V
 
-    dSt_dVa = 1j * (conj(diagIt) *
-        csr_matrix((V[t], (il, t)), shape) - diagVt * conj(Yt * diagV))
+        diagVf = sparse((V[f], (il, il)))
+        diagIf = sparse((If, (il, il)))
+        diagVt = sparse((V[t], (il, il)))
+        diagIt = sparse((It, (il, il)))
+        diagV  = sparse((V, (ib, ib)))
+        diagVnorm = sparse((Vnorm, (ib, ib)))
 
-    # Partial derivative of S w.r.t. voltage amplitude.
-    dSf_dVm = diagVf * conj(Yf * diagVnorm) + conj(diagIf) * \
-        csr_matrix((Vnorm[f], (il, f)), shape)
+        shape = (nl, nb)
+        # Partial derivative of S w.r.t voltage phase angle.
+        dSf_dVa = 1j * (conj(diagIf) *
+            sparse((V[f], (il, f)), shape) - diagVf * conj(Yf * diagV))
 
-    dSt_dVm = diagVt * conj(Yt * diagVnorm) + conj(diagIt) * \
-        csr_matrix((Vnorm[t], (il, t)), shape)
+        dSt_dVa = 1j * (conj(diagIt) *
+            sparse((V[t], (il, t)), shape) - diagVt * conj(Yt * diagV))
+
+        # Partial derivative of S w.r.t. voltage amplitude.
+        dSf_dVm = diagVf * conj(Yf * diagVnorm) + conj(diagIf) * \
+            sparse((Vnorm[f], (il, f)), shape)
+
+        dSt_dVm = diagVt * conj(Yt * diagVnorm) + conj(diagIt) * \
+            sparse((Vnorm[t], (il, t)), shape)
+    else:  ## dense version
+        ## compute currents
+        If = asarray( Yf * asmatrix(V).T ).flatten()
+        It = asarray( Yt * asmatrix(V).T ).flatten()
+
+        diagVf      = asmatrix( diag(V[f]) )
+        diagIf      = asmatrix( diag(If) )
+        diagVt      = asmatrix( diag(V[t]) )
+        diagIt      = asmatrix( diag(It) )
+        diagV       = asmatrix( diag(V) )
+        diagVnorm   = asmatrix( diag(Vnorm) )
+        temp1       = asmatrix( zeros((nl, nb), complex) )
+        temp2       = asmatrix( zeros((nl, nb), complex) )
+        temp3       = asmatrix( zeros((nl, nb), complex) )
+        temp4       = asmatrix( zeros((nl, nb), complex) )
+        for i in range(nl):
+            fi, ti = f[i], t[i]
+            temp1[i, fi] = asscalar(V[fi])
+            temp2[i, fi] = asscalar(Vnorm[fi])
+            temp3[i, ti] = asscalar(V[ti])
+            temp4[i, ti] = asscalar(Vnorm[ti])
+
+        dSf_dVa = 1j * (conj(diagIf) * temp1 - diagVf * conj(Yf * diagV))
+        dSf_dVm = diagVf * conj(Yf * diagVnorm) + conj(diagIf) * temp2
+        dSt_dVa = 1j * (conj(diagIt) * temp3 - diagVt * conj(Yt * diagV))
+        dSt_dVm = diagVt * conj(Yt * diagVnorm) + conj(diagIt) * temp4
 
     # Compute power flow vectors.
     Sf = V[f] * conj(If)

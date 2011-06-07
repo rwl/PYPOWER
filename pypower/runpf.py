@@ -14,11 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
 import logging
 
 from time import time
 
-from numpy import r_, c_, zeros, pi, ones, exp, argmax, flatnonzero as find
+from numpy import r_, c_, ix_, zeros, pi, ones, exp, argmax
+from numpy import flatnonzero as find
 
 from bustypes import bustypes
 from ext2int import ext2int
@@ -107,12 +110,12 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     ##-----  run the power flow  -----
     t0 = time()
     if verbose > 0:
-        v = ppver['all']
-        print '\nMATPOWER Version %s, %s' % (v["Version"], v["Date"])
+        v = ppver('all')
+        sys.stdout.write('\nPYPOWER Version %s, %s' % (v["Version"], v["Date"]))
 
     if dc:                               # DC formulation
         if verbose:
-            print ' -- DC Power Flow\n'
+            sys.stdout.write(' -- DC Power Flow\n')
 
         ## initial state
         Va0 = bus[:, VA] * (pi / 180)
@@ -142,7 +145,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         success = 1
     else:                                ## AC formulation
         if verbose > 0:
-            print ' -- AC Power Flow '    ## solver name and \n added later
+            sys.stdout.write(' -- AC Power Flow ')    ## solver name and \n added later
 
         ## initial state
         # V0    = ones(bus.shape[0])            ## flat start
@@ -261,10 +264,10 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
 
     ## zero out result fields of out-of-service gens & branches
     if len(results["order"]["gen"]["status"]["off"]) > 0:
-        results["gen"][results["order"]["gen"]["status"]["off"], [PG, QG]] = 0
+        results["gen"][ix_(results["order"]["gen"]["status"]["off"], [PG, QG])] = 0
 
     if len(results["order"]["branch"]["status"]["off"]) > 0:
-        results["branch"][results["order"]["branch"]["status"]["off"], [PF, QF, PT, QT]] = 0
+        results["branch"][ix_(results["order"]["branch"]["status"]["off"], [PF, QF, PT, QT])] = 0
 
     if fname:
         fd = None
@@ -284,3 +287,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         savecase(solvedcase, results)
 
     return results, success
+
+
+if __name__ == '__main__':
+    runpf()

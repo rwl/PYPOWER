@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from scipy.sparse import csr_matrix
+from numpy import diag, asmatrix, asarray
+from scipy.sparse import issparse, csr_matrix as sparse
+
 
 def dIbr_dV(branch, Yf, Yt, V):
     """Computes partial derivatives of branch currents w.r.t. voltage.
@@ -47,15 +49,25 @@ def dIbr_dV(branch, Yf, Yt, V):
     i = range(len(V))
 
     Vnorm = V / abs(V)
-    diagV = csr_matrix((V, (i, i)))
-    diagVnorm = csr_matrix((Vnorm, (i, i)))
+
+    if issparse(Yf):
+        diagV = sparse((V, (i, i)))
+        diagVnorm = sparse((Vnorm, (i, i)))
+    else:
+        diagV       = asmatrix( diag(V) )
+        diagVnorm   = asmatrix( diag(Vnorm) )
+
     dIf_dVa = Yf * 1j * diagV
     dIf_dVm = Yf * diagVnorm
     dIt_dVa = Yt * 1j * diagV
     dIt_dVm = Yt * diagVnorm
 
     # Compute currents.
-    If = Yf * V
-    It = Yt * V
+    if issparse(Yf):
+        If = Yf * V
+        It = Yt * V
+    else:
+        If = asarray( Yf * asmatrix(V).T ).flatten()
+        It = asarray( Yt * asmatrix(V).T ).flatten()
 
     return dIf_dVa, dIf_dVm, dIt_dVa, dIt_dVm, If, It

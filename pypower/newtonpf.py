@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import angle, exp, linalg, multiply, conj, r_, Inf
+import sys
+
+from numpy import array, angle, exp, linalg, multiply, conj, r_, ix_, Inf
 
 from scipy.sparse import hstack, vstack
 from scipy.sparse.linalg import spsolve, splu
@@ -75,15 +77,15 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     ## check tolerance
     normF = linalg.norm(F, Inf)
     if verbose > 0:
-        print '(Newton)'
+        sys.stdout.write('(Newton)\n')
     if verbose > 1:
-        print ' it    max P & Q mismatch (p.u.)'
-        print '----  ---------------------------'
-        print '%3d        %10.3e' % (i, normF)
+        sys.stdout.write('\n it    max P & Q mismatch (p.u.)')
+        sys.stdout.write('\n----  ---------------------------')
+        sys.stdout.write('\n%3d        %10.3e' % (i, normF))
     if normF < tol:
         converged = 1
         if verbose > 1:
-            print 'Converged!'
+            sys.stdout.write('\nConverged!\n')
 
     ## do Newton iterations
     while (not converged and i < max_it):
@@ -93,12 +95,10 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
         ## evaluate Jacobian
         dS_dVm, dS_dVa = dSbus_dV(Ybus, V)
 
-        pq_col = [[i] for i in pq]
-        pvpq_col = [[i] for i in pvpq]
-        J11 = dS_dVa[pvpq_col, pvpq].real
-        J12 = dS_dVm[pvpq_col, pq].real
-        J21 = dS_dVa[pq_col, pvpq].imag
-        J22 = dS_dVm[pq_col, pq].imag
+        J11 = dS_dVa[array([pvpq]).T, pvpq].real
+        J12 = dS_dVm[array([pvpq]).T, pq].real
+        J21 = dS_dVa[array([pq]).T, pvpq].imag
+        J22 = dS_dVm[array([pq]).T, pq].imag
 
         J = vstack([
                 hstack([J11, J12]),
@@ -127,16 +127,16 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
         ## check for convergence
         normF = linalg.norm(F, Inf)
         if verbose > 1:
-            print '%3d        %10.3e' % (i, normF)
+            sys.stdout.write('\n%3d        %10.3e' % (i, normF))
         if normF < tol:
             converged = 1
             if verbose:
-                print "Newton's method power flow converged in %d "
-                "iterations." % i
+                sys.stdout.write("\nNewton's method power flow converged in "
+                                 "%d iterations.\n" % i)
 
     if verbose:
         if not converged:
-            print "Newton's method power did not converge in %d "
-            "iterations." % i
+            sys.stdout.write("\nNewton's method power did not converge in %d "
+                             "iterations.\n" % i)
 
     return V, converged, i
