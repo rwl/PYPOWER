@@ -280,7 +280,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
                 printpf(results, fd, ppopt)
                 fd.close()
 
-    printpf(results, ppopt=ppopt)
+    printpf(results, 1, ppopt)
 
     ## save solved case
     if solvedcase:

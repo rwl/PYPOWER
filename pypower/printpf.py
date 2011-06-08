@@ -15,7 +15,7 @@
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
 from numpy import \
-    array, ones, zeros, nonzero, r_, sort, exp, pi, diff, real, imag
+    array, ones, zeros, nonzero, r_, sort, exp, pi, diff, real, imag, arange
 
 from scipy.sparse import csr_matrix
 
@@ -27,6 +27,7 @@ from idx_cost import *
 from isload import isload
 from run_userfcn import run_userfcn
 from ppoption import ppoption
+
 
 def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             et=None, fd=None, ppopt=None):
@@ -87,7 +88,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             ppopt = ppoption()   ## use default options
             if fd is None:
                 fd = 1         ## print to stdio by default
-        if ppopt['OUT_ALL'] == 0 & ppopt['OUT_RAW'] == 0:
+        if ppopt['OUT_ALL'] == 0 and ppopt['OUT_RAW'] == 0:
             return     ## nothin' to see here, bail out now
 
     isOPF = any(f)    ## FALSE -> only simple PF data, TRUE -> OPF data
@@ -130,7 +131,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     ## create map of external bus numbers to bus indices
     i2e = bus[:, BUS_I]
     e2i = csr_matrix((max(i2e), 1))
-    e2i[i2e] = range(bus.shape[0])
+    e2i[i2e] = arange(bus.shape[0])
 
     ## sizes of things
     nb = bus.shape[0]      ## number of buses

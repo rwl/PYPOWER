@@ -24,11 +24,12 @@ f.close()
 
 setup(name="PYPOWER",
       version="0.1.1",
-      description="A Python port of MATPOWER.",
+      description="Solves power flow and optimal power flow problems",
       author="Richard Lincoln",
       author_email="r.w.lincoln@gmail.com",
       url="http://rwl.github.com/PYPOWER",
 #      install_requires=["numpy", "scipy"],
+      entry_points={"console_scripts": ["pypower = pypower.main:main"]},
       license="GPLv3",
       include_package_data=False,
       packages=find_packages(),
