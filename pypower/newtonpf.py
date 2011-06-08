@@ -47,7 +47,7 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     """
     ## default arguments
     if ppopt is None:
-        ppopt = ppoption
+        ppopt = ppoption()
 
     ## options
     tol     = ppopt['PF_TOL']

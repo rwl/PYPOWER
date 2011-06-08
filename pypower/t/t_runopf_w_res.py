@@ -36,17 +36,12 @@ def t_runopf_w_res(quiet=False):
 
     casefile = 't_case30_userfcns'
 
-    opt = ppoption
-    opt['OPF_VIOLATION'] = 1e-6
-    opt['PDIPM_GRADTOL'] = 1e-8
-    opt['PDIPM_COMPTOL'] = 1e-8
-    opt['PDIPM_COSTTOL'] = 1e-9
-    opt['OUT_ALL'] = 0
-    opt['VERBOSE'] = verbose
-    opt['OPF_ALG'] = 560
+    ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
+                     PDIPM_COMPTOL=1e-8, PDIPM_COSTTOL=1e-9)
+    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=verbose, OPF_ALG=560)
 
     t = 'runopf_w_res(''t_case30_userfcns'') : '
-    r = runopf_w_res(casefile, opt)
+    r = runopf_w_res(casefile, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 19.3906, 0.6094], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 7, [t, 'mu.l'])
@@ -62,7 +57,7 @@ def t_runopf_w_res(quiet=False):
     ppc['reserves']['zones'][:, 4] = 0
     ppc['reserves']['cost'][4] = []
     ppc['reserves']['qty'][4] = []
-    r = runopf_w_res(ppc, opt)
+    r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 20], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 0, 3.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 7, [t, 'mu.l'])
@@ -81,7 +76,7 @@ def t_runopf_w_res(quiet=False):
     ppc['reserves']['cost'] = ppc['reserves']['cost'][idx]
     ppc['reserves']['qty'] = ppc['reserves']['qty'][idx]
     ppc.gen[3, GEN_STATUS] = 0
-    r = runopf_w_res(ppc, opt)
+    r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 19.3906, 0.6094], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 3.5, 2, 3.5, 3.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 0, 2, 0, 0], 7, [t, 'mu.l'])
@@ -103,7 +98,7 @@ def t_runopf_w_res(quiet=False):
     ppc['reserves']['zones'][:, 5] = 0
     ppc['reserves']['cost'][5] = []
     ppc['reserves']['qty'][5] = []
-    r = runopf_w_res(ppc, opt)
+    r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 0, 20], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 3.5, 2, 0, 3.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 0, 2, 0, 0], 7, [t, 'mu.l'])
@@ -116,7 +111,7 @@ def t_runopf_w_res(quiet=False):
     t = 'no qty (Rmax) : '
     ppc = loadcase(casefile)
     del ppc['reserves']['qty']
-    r = runopf_w_res(ppc, opt)
+    r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [39.3826, 0.6174, 0, 0, 19.3818, 0.6182], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 5, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 5, [t, 'mu.l'])
@@ -129,7 +124,7 @@ def t_runopf_w_res(quiet=False):
     ppc = loadcase(casefile)
     del ppc['reserves']['qty']
     ppc.gen[0, RAMP_10] = 25
-    r = runopf_w_res(ppc, opt)
+    r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 19.3906, 0.6094], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 7, [t, 'mu.l'])
@@ -138,4 +133,4 @@ def t_runopf_w_res(quiet=False):
     t_is(r['reserves']['cost'], ppc['reserves']['cost'], 12, [t, 'cost'])
     t_is(r['reserves']['totalcost'], 177.8047, 4, [t, 'totalcost'])
 
-    t_end
+    t_end()

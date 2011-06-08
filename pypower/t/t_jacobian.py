@@ -43,12 +43,10 @@ def t_jacobian(quiet=False):
     t_begin(28, quiet)
 
     ## run powerflow to get solved case
-    opt = ppoption
-    opt['VERBOSE'] = 0
-    opt['OUT_ALL'] = 0
+    ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
     ppc = loadcase(case30())
 
-    results, _ = runpf(ppc, opt)
+    results, _ = runpf(ppc, ppopt)
     baseMVA, bus, gen, branch = \
         results['baseMVA'], results['bus'], results['gen'], results['branch']
 
@@ -183,7 +181,7 @@ def t_jacobian(quiet=False):
     t_is(dIt_dVm_full, num_dIt_dVm, 5, 'dIt_dVm (full)')
     t_is(dIt_dVa_full, num_dIt_dVa, 5, 'dIt_dVa (full)')
 
-    t_end
+    t_end()
 
 
 if __name__ == "__main__":

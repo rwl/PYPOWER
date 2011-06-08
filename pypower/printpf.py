@@ -65,7 +65,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         have_results_struct = 1
         results = baseMVA
         if gen is None:
-            ppopt = ppoption   ## use default options
+            ppopt = ppoption()   ## use default options
         else:
             ppopt = gen
         if ppopt['OUT_ALL'] == 0 and ppopt['OUT_RAW'] == 0:
@@ -84,28 +84,28 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     else:
         have_results_struct = 0
         if ppopt is None:
-            ppopt = ppoption   ## use default options
+            ppopt = ppoption()   ## use default options
             if fd is None:
                 fd = 1         ## print to stdio by default
-        if ppopt[32] == 0 & ppopt[43] == 0:     ## OUT_ALL or OUT_RAW
+        if ppopt['OUT_ALL'] == 0 & ppopt['OUT_RAW'] == 0:
             return     ## nothin' to see here, bail out now
 
     isOPF = any(f)    ## FALSE -> only simple PF data, TRUE -> OPF data
 
     ## options
-    isDC            = ppopt[10]        ## use DC formulation?
-    OUT_ALL         = ppopt[32]
+    isDC            = ppopt['PF_DC']        ## use DC formulation?
+    OUT_ALL         = ppopt['OUT_ALL']
     OUT_ANY         = OUT_ALL == 1     ## set to true if any pretty output is to be generated
-    OUT_SYS_SUM     = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt[33])
-    OUT_AREA_SUM    = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt[34])
-    OUT_BUS         = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt[35])
-    OUT_BRANCH      = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt[36])
-    OUT_GEN         = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt[37])
+    OUT_SYS_SUM     = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_SYS_SUM'])
+    OUT_AREA_SUM    = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_AREA_SUM'])
+    OUT_BUS         = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_BUS'])
+    OUT_BRANCH      = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_BRANCH'])
+    OUT_GEN         = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_GEN'])
     OUT_ANY         = OUT_ANY | (OUT_ALL == -1 &
                         (OUT_SYS_SUM | OUT_AREA_SUM | OUT_BUS |
                          OUT_BRANCH | OUT_GEN))
     if OUT_ALL == -1:
-        OUT_ALL_LIM = ppopt[38]
+        OUT_ALL_LIM = ppopt['OUT_ALL_LIM']
     elif OUT_ALL == 1:
         OUT_ALL_LIM = 2
     else:
@@ -113,10 +113,10 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
 
     OUT_ANY         = OUT_ANY | OUT_ALL_LIM >= 1
     if OUT_ALL_LIM == -1:
-        OUT_V_LIM       = ppopt[39]
-        OUT_LINE_LIM    = ppopt[40]
-        OUT_PG_LIM      = ppopt[41]
-        OUT_QG_LIM      = ppopt[42]
+        OUT_V_LIM       = ppopt['OUT_V_LIM']
+        OUT_LINE_LIM    = ppopt['OUT_LINE_LIM']
+        OUT_PG_LIM      = ppopt['OUT_PG_LIM']
+        OUT_QG_LIM      = ppopt['OUT_QG_LIM']
     else:
         OUT_V_LIM       = OUT_ALL_LIM
         OUT_LINE_LIM    = OUT_ALL_LIM
@@ -124,7 +124,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         OUT_QG_LIM      = OUT_ALL_LIM
 
     OUT_ANY         = OUT_ANY | (OUT_ALL_LIM == -1 & (OUT_V_LIM | OUT_LINE_LIM | OUT_PG_LIM | OUT_QG_LIM))
-    OUT_RAW         = ppopt[43]
+    OUT_RAW         = ppopt['OUT_RAW']
     ptol = 1e-6        ## tolerance for displaying shadow prices
 
     ## create map of external bus numbers to bus indices
@@ -622,11 +622,11 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n')
 
         ## line flow constraints
-        if ppopt[24] == 1 | isDC:  ## P limit
+        if ppopt['OPF_FLOW_LIM'] == 1 | isDC:  ## P limit
             Ff = branch[:, PF]
             Ft = branch[:, PT]
             str = '\n  #     Bus    Pf  mu     Pf      |Pmax|      Pt      Pt  mu   Bus'
-        elif ppopt[24] == 2:   ## |I| limit
+        elif ppopt['OPF_FLOW_LIM'] == 2:   ## |I| limit
             Ff = abs( (branch[:, PF] + 1j * branch[:, QF]) / V[e2i[branch[:, F_BUS]]] )
             Ft = abs( (branch[:, PT] + 1j * branch[:, QT]) / V[e2i[branch[:, T_BUS]]] )
             str = '\n  #     Bus   |If| mu    |If|     |Imax|     |It|    |It| mu   Bus'

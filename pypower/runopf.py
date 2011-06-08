@@ -30,7 +30,7 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
-    ppopt = ppoption() if ppopt is None else ppopt
+    ppopt = ppoption(ppopt)
 
     ##-----  run the optimal power flow  -----
     r, success = opf(casedata, ppopt)

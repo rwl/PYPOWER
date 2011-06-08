@@ -27,6 +27,7 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 from pypower.t.t_end import t_end
 
+
 def t_total_load(quiet=False):
     """Tests for code in C{total_load}.
 
@@ -227,4 +228,4 @@ def t_total_load(quiet=False):
     t_is(Pd, [area[2]['disp']['p'], area[0]['disp']['p']], 12, [t, 'Pd'])
     t_is(Qd, [area[2]['disp']['q'], area[0]['disp']['q']], 12, [t, 'Qd'])
 
-    t_end
+    t_end()

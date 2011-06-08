@@ -14,10 +14,27 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import pi, random, ones, zeros, real
+from numpy import pi, random, ones, zeros, real, exp
 from scipy.sparse import csr_matrix as sparse
 
+from pypower.ppoption import ppoption
 from pypower.runpf import runpf
+from pypower.ext2int import ext2int1
+from pypower.makeYbus import makeYbus
+from pypower.dSbus_dV import dSbus_dV
+from pypower.d2Sbus_dV2 import d2Sbus_dV2
+from pypower.dSbr_dV import dSbr_dV
+from pypower.d2Sbr_dV2 import d2Sbr_dV2
+from pypower.dIbr_dV import dIbr_dV
+from pypower.d2Ibr_dV2 import d2Ibr_dV2
+from pypower.dAbr_dV import dAbr_dV
+from pypower.d2ASbr_dV2 import d2ASbr_dV2
+from pypower.d2AIbr_dV2 import d2AIbr_dV2
+
+from pypower.t.t_begin import t_begin
+from pypower.t.t_is import t_is
+from pypower.t.t_end import t_end
+
 
 def t_hessian(quiet=False):
     """Numerical tests of 2nd derivative code.
@@ -29,13 +46,11 @@ def t_hessian(quiet=False):
     casefile = 'case30'
 
     ## run powerflow to get solved case
-    opt = mpoption()
-    opt['VERBOSE'] = 0
-    opt['OUT_ALL'] = 0
-    baseMVA, bus, gen, branch, success, et = runpf(casefile, opt)
+    ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
+    baseMVA, bus, gen, branch, success, et = runpf(casefile, ppopt)
 
     ## switch to internal bus numbering and build admittance matrices
-    i2e, bus, gen, branch = ext2int(bus, gen, branch)
+    i2e, bus, gen, branch = ext2int1(bus, gen, branch)
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
     Vm = bus.Vm.copy()
     Va = bus.Va * pi/180
@@ -314,3 +329,7 @@ def t_hessian(quiet=False):
     t_is(Gtvv.todense(), num_Gtvv, 2, ['Gtvv', t])
 
     t_end
+
+
+if __name__ == '__main__':
+    t_hessian(quiet=False)

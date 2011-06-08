@@ -27,6 +27,7 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 from pypower.t.t_end import t_end
 
+
 def t_makePTDF(quiet=False):
     """Tests for C{makePTDF}.
 
@@ -39,10 +40,8 @@ def t_makePTDF(quiet=False):
     verbose = not quiet
 
     ## load case
-    opt = ppoption()
-    opt['VERBOSE'] = 0
-    opt['OUT_ALL'] = 0
-    baseMVA, bus, gen, _, branch, _, _, _ = rundcopf(casefile, opt)
+    ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
+    baseMVA, bus, gen, _, branch, _, _, _ = rundcopf(casefile, ppopt)
     _, bus, gen, branch = ext2int(bus, gen, branch)
     nb  = bus.size()
     nbr = branch.size()

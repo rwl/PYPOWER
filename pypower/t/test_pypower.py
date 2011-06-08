@@ -16,6 +16,7 @@
 
 from pypower.t.t_run_tests import t_run_tests
 
+
 def test_pypower(verbose=False):
     """Run all PYPOWER tests.
 
@@ -43,7 +44,7 @@ def test_pypower(verbose=False):
     tests.append('t_opf_mips_sc')
 
     try:
-        import pyipopt
+        import pyipopt  #@UnusedImport
         tests.append('t_opf_ipopt')
         tests.append('t_opf_dc_ipopt')
     except ImportError:
@@ -53,7 +54,7 @@ def test_pypower(verbose=False):
     tests.append('t_opf_dc_mips_sc')
 
     try:
-        import mosek
+        import mosek  #@UnusedImport
         tests.append('t_opf_dc_mosek')
     except ImportError:
         pass
@@ -81,3 +82,7 @@ class TestGlobals(object):
     t_not_ok_cnt = 0
     t_skip_cnt = 0
     t_clock = 0.0
+
+
+if __name__ == '__main__':
+    test_pypower(verbose=True)

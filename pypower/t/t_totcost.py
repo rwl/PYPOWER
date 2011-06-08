@@ -22,6 +22,7 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 from pypower.t.t_end import t_end
 
+
 def t_totcost(quiet=False):
     """Tests for code in C{totcost}.
 
@@ -71,4 +72,4 @@ def t_totcost(quiet=False):
     t_is(totcost(gencost, [0, 0, 0, -30]), [1, 2, 0, -2400], 8, t)
     t_is(totcost(gencost, [0, 0, 0, -35]), [1, 2, 0, -2700], 8, t)
 
-    t_end
+    t_end()

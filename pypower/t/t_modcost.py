@@ -23,6 +23,7 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 from pypower.t.t_end import t_end
 
+
 def t_modcost(quiet=False):
     """Tests for code in C{modcost}.
 

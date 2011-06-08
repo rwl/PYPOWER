@@ -25,7 +25,6 @@ def rundcpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
-    ppopt = ppoption if ppopt is None else ppopt.copy()
+    ppopt = ppoption(ppopt, PF_DC=True)
 
-    ppopt['PF_DC'] = True
     return runpf(casedata, ppopt, fname, solvedcase)

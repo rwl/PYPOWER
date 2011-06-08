@@ -20,6 +20,8 @@ from pypower.hasPQcap import hasPQcap
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
+from pypower.t.t_end import t_end
+
 
 def t_hasPQcap(quiet=False):
     """Tests for C{hasPQcap}.
@@ -56,4 +58,4 @@ def t_hasPQcap(quiet=False):
     t = 'hasPQcap(gen, \'L\')'
     t_is(hasPQcap(gen, 'L'), [0,1,0,1,1,1,1,0,0,0,0], 12, t)
 
-    t_end
+    t_end()

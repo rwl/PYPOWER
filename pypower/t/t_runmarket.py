@@ -48,16 +48,10 @@ def t_runmarket(quiet=False):
 
     ppc = loadcase('t_auction_case')
 
-    opt = ppoption
-    opt['OPF_ALG'] = 560
-    opt['OUT_ALL_LIM'] = 1
-    opt['OUT_BRANCH'] = 0
-    opt['OUT_SYS_SUM'] = 0
-    opt['OUT_ALL'] = 0
-    opt['VERBOSE'] = 1
-    #opt['OUT_GEN'] = 1
-    #opt['OUT_BRANCH'] = 0
-    #opt['OUT_SYS_SUM'] = 0
+    ppopt = ppoption(OPF_ALG=560, OUT_ALL_LIM=1,
+                     OUT_BRANCH=0, OUT_SYS_SUM=0)
+    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=1)
+    #ppopt = ppoption(ppopt, OUT_GEN=1, OUT_BRANCH=0, OUT_SYS_SUM=0)
 
     offers = {'P': {}, 'Q': {}}
     bids = {'P': {}, 'Q': {}}
@@ -102,7 +96,7 @@ def t_runmarket(quiet=False):
                       't': [],
                      'u0': [],
                     'lim': []}
-    r, co, cb, _, _, _, _ = runmarket(ppc, offers, bids, mkt, opt)
+    r, co, cb, _, _, _, _ = runmarket(ppc, offers, bids, mkt, ppopt)
     co5 = co.copy()
     cb5 = cb.copy()
 
@@ -135,7 +129,7 @@ def t_runmarket(quiet=False):
 
     t = 'marginal Q offer, marginal PQ bid, auction_type = 0'
     mkt['auction_type'] = 0
-    r, co, cb, _, _, _, _ = runmarket(ppc, offers, bids, mkt, opt)
+    r, co, cb, _, _, _, _ = runmarket(ppc, offers, bids, mkt, ppopt)
     t_is( co['P']['qty'], co5['P']['qty'], 8, [t, ' : gen P quantities'] )
     t_is( cb['P']['qty'], cb5['P']['qty'], 8, [t, ' : load P quantities'] )
     t_is( co['P']['prc'], offers['P']['prc'], 8, [t, ' : gen P prices'] )

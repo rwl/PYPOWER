@@ -24,7 +24,6 @@ def rundcopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
-    ppopt = ppoption() if ppopt is None else ppopt
-
     ppopt = ppoption(ppopt, PF_DC=True)
+
     return runopf(casedata, ppopt, fname, solvedcase)

@@ -26,6 +26,7 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 from pypower.t.t_end import t_end
 
+
 def t_makeLODF(quiet=False):
     """Tests for C{makeLODF}.
 
@@ -39,10 +40,8 @@ def t_makeLODF(quiet=False):
 
     ## load case
     ppc = loadcase(casefile)
-    opt = ppoption()
-    opt['VERBOSE'] = 0
-    opt['OUT_ALL'] = 0
-    baseMVA, bus, gen, gencost, branch, f, success, et = rundcopf(ppc, mpopt)
+    ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
+    baseMVA, bus, gen, gencost, branch, f, success, et = rundcopf(ppc, ppopt)
     i2e, bus, gen, branch = ext2int(bus, gen, branch)
 
     ## compute injections and flows
@@ -65,9 +64,9 @@ def t_makeLODF(quiet=False):
     for k in outages:
         ppc.branch = branch0.copy()
         ppc.status[k] = 0
-        baseMVA, bus, gen, branch, success, et = rundcpf(ppc, opt)
+        baseMVA, bus, gen, branch, success, et = rundcpf(ppc, ppopt)
         F = branch.Pf.copy()
 
         t_is(LODF[:, k], (F - F0) / F0[k], 6, 'LODF(:, %d)' % k)
 
-    t_end
+    t_end()

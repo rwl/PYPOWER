@@ -29,6 +29,6 @@ def dcopf(*args, **kw_args):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc, ppopt = opf_args(*args, **kw_args);
-    ppopt = ppoption(ppopt, "PF_DC", 1)
+    ppopt = ppoption(ppopt, PF_DC=1)
 
     return opf(ppc, ppopt)

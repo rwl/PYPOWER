@@ -41,6 +41,7 @@ from pypower.t.t_is import t_is
 from pypower.t.t_ok import t_ok
 from pypower.t.t_end import t_end
 
+
 def t_opf_pips_sc(quiet=False):
     """Tests for step-controlled PIPS-based AC optimal power flow.
 
@@ -54,14 +55,9 @@ def t_opf_pips_sc(quiet=False):
     verbose = not quiet
 
     t0 = 'PIPS-sc : '
-    opt = ppoption
-    opt['OPF_VIOLATION'] = 1e-6
-    opt['PDIPM_GRADTOL'] = 1e-8
-    opt['PDIPM_COMPTOL'] = 1e-8
-    opt['PDIPM_COSTTOL'] = 1e-9
-    opt['OUT_ALL'] = 0
-    opt['VERBOSE'] = verbose
-    opt['OPF_ALG'] = 565
+    ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
+                     PDIPM_COMPTOL=1e-8, PDIPM_COSTTOL=1e-9)
+    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=verbose, OPF_ALG=565)
 
     ## set up indices
     ib_data     = range(BUS_AREA + 1) + range(BASE_KV, VMIN)
@@ -85,7 +81,7 @@ def t_opf_pips_sc(quiet=False):
 
     ## run OPF
     t = t0
-    _, bus, gen, _, branch, f, success, _ = runopf(casefile, opt)
+    _, bus, gen, _, branch, f, success, _ = runopf(casefile, ppopt)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -103,7 +99,7 @@ def t_opf_pips_sc(quiet=False):
     t = [t0, '(single-block PWL) : '];
     ppc = loadcase(casefile)
     ppc.gencost[2, NCOST] = 2
-    r = runopf(ppc, opt)
+    r = runopf(ppc, ppopt)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -129,9 +125,8 @@ def t_opf_pips_sc(quiet=False):
 
     ## run OPF with active power line limits
     t = [t0, '(P line lim) : ']
-    opt1 = opt
-    opt1['OPF_FLOW_LIM'] = 1
-    _, bus, gen, _, branch, f, success, _ = runopf(casefile, opt1)
+    ppopt1 = ppoption(ppopt, OPF_FLOW_LIM=1)
+    _, bus, gen, _, branch, f, success, _ = runopf(casefile, ppopt1)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -153,7 +148,7 @@ def t_opf_pips_sc(quiet=False):
         [2,   3000, 0,   3,   0.1225,  1,   0]
     ])
     _, bus_soln, gen_soln, _, branch_soln, f_soln, success, _ = \
-            runopf(ppc, opt)
+            runopf(ppc, ppopt)
     branch_soln = branch_soln[:, 0:MU_ST]
 
     A = sparse((0, 0))
@@ -175,7 +170,7 @@ def t_opf_pips_sc(quiet=False):
 
     ## run OPF with quadratic gen costs moved to generalized costs
     t = [t0, 'w/quadratic generalized gen cost : ']
-    r, success = opf(ppc, A, l, u, opt, N, fparm, H, Cw)
+    r, success = opf(ppc, A, l, u, ppopt, N, fparm, H, Cw)
     f, bus, gen, branch = r['f'], r['bus'], r['gen'], r['branch']
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
@@ -213,7 +208,7 @@ def t_opf_pips_sc(quiet=False):
     Cw = 100
 
     t = [t0, 'w/extra constraints & costs 1 : ']
-    r, success = opf(casefile, A, l, u, opt, N, fparm, H, Cw)
+    r, success = opf(casefile, A, l, u, ppopt, N, fparm, H, Cw)
     f, bus, gen, branch = r['f'], r['bus'], r['gen'], r['branch']
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
@@ -245,7 +240,7 @@ def t_opf_pips_sc(quiet=False):
 
     ## run OPF with capability curves
     t = [t0, 'w/capability curves : ']
-    _, bus, gen, _, branch, f, success, _ = runopf(ppc, opt)
+    _, bus, gen, _, branch, f, success, _ = runopf(ppc, ppopt)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -273,7 +268,7 @@ def t_opf_pips_sc(quiet=False):
 
     ## run OPF with angle difference limits
     t = [t0, 'w/angle difference limits : ']
-    _, bus, gen, _, branch, f, success, _ = runopf(ppc, opt)
+    _, bus, gen, _, branch, f, success, _ = runopf(ppc, ppopt)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -298,9 +293,8 @@ def t_opf_pips_sc(quiet=False):
 
     ## run OPF with ignored angle difference limits
     t = [t0, 'w/ignored angle difference limits : ']
-    opt1 = opt
-    opt['OPF_IGNORE_ANG_LIM'] = 1
-    _, bus, gen, _, branch, f, success, _ = runopf(ppc, opt1)
+    ppopt1 = ppoption(ppopt, OPF_IGNORE_ANG_LIM=1)
+    _, bus, gen, _, branch, f, success, _ = runopf(ppc, ppopt1)
     ## ang limits are not in this solution data, so let's remove them
     branch[0, ANGMAX] = 360
     branch[8, ANGMIN] = -360
@@ -317,4 +311,4 @@ def t_opf_pips_sc(quiet=False):
     t_is(branch[:, ibr_flow  ], branch_soln[:, ibr_flow  ],  3, [t, 'branch flow'])
     t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
 
-    t_end
+    t_end()

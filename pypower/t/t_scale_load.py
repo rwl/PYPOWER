@@ -28,6 +28,7 @@ from pypower.t.t_is import t_is
 from pypower.t.t_ok import t_ok
 from pypower.t.t_end import t_end
 
+
 def t_scale_load(quiet=False):
     """Tests for code in C{scale_load}.
 
@@ -386,4 +387,4 @@ def t_scale_load(quiet=False):
     Pd[[6, 7]] = load[1] * Pd[[6, 7]]
     t_is( bus[:, PD], Pd, 8, t)
 
-    t_end
+    t_end()

@@ -37,6 +37,7 @@ from pypower.t.t_is import t_is
 from pypower.t.t_ok import t_ok
 from pypower.t.t_end import t_end
 
+
 def t_opf_dc_pips(quiet=False):
     """Tests for DC optimal power flow using PIPS solver.
 
@@ -50,10 +51,7 @@ def t_opf_dc_pips(quiet=False):
     verbose = not quiet
 
     t0 = 'DC OPF (PIPS): '
-    opt = ppoption
-    opt['VERBOSE'] = verbose
-    opt['OUT_ALL'] = 0
-    opt['OPF_ALG_DC'] = 200
+    ppopt = ppoption(VERBOSE=verbose, OUT_ALL=0, OPF_ALG_DC=200)
 
     ## run DC OPF
 
@@ -79,7 +77,7 @@ def t_opf_dc_pips(quiet=False):
 
     ## run OPF
     t = t0
-    _, bus, gen, _, branch, f, success, _ = rundcopf(casefile, opt)
+    _, bus, gen, _, branch, f, success, _ = rundcopf(casefile, ppopt)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -112,7 +110,7 @@ def t_opf_dc_pips(quiet=False):
     ppc.Cw = array([1000, 1])
 
     t = [t0, 'w/extra constraints & costs 1 : ']
-    r, success = rundcopf(ppc, opt)
+    r, success = rundcopf(ppc, ppopt)
     t_ok(success, [t, 'success'])
     t_is(r.gen[0, PG], 116.15974, 4, [t, 'Pg1 = 116.15974'])
     t_is(r.gen[1, PG], 116.15974, 4, [t, 'Pg2 = 116.15974'])
@@ -134,7 +132,7 @@ def t_opf_dc_pips(quiet=False):
     ppc.Cw = array([1000, 1])
 
     t = [t0, 'w/extra constraints & costs 2 : ']
-    r, success = rundcopf(ppc, opt)
+    r, success = rundcopf(ppc, ppopt)
     t_ok(success, [t, 'success'])
     t_is(r.gen[0, PG], 116.15974, 4, [t, 'Pg1 = 116.15974'])
     t_is(r.gen[1, PG], 116.15974, 4, [t, 'Pg2 = 116.15974'])
@@ -147,7 +145,7 @@ def t_opf_dc_pips(quiet=False):
     ppc.A = sparse(([1, 1], ([0, 0], [9, 10])), (1, 14))   ## Pg1 + Pg2
     ppc.u = Inf
     ppc.l = 600
-    r, success = rundcopf(ppc, opt)
+    r, success = rundcopf(ppc, ppopt)
     t_ok(not success, [t, 'no success'])
 
     t_end

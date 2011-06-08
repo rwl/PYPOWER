@@ -16,11 +16,9 @@
 
 import os
 
-from pickle import dump
+from numpy import zeros
 
-from numpy import zeros, ndarray
-
-from scipy.io import loadmat, savemat
+from scipy.io import savemat
 
 from pypower.loadcase import loadcase
 from pypower.ppoption import ppoption
@@ -38,6 +36,7 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 from pypower.t.t_ok import t_ok
 from pypower.t.t_end import t_end
+
 
 def t_loadcase(quiet=False):
     """Test that C{loadcase} works with an object as well as case file.
@@ -593,16 +592,14 @@ def t_loadcase(quiet=False):
     os.remove(pfmatfilev2 + '.mat')
 
     t = 'runpf(my_PY_file)'
-    opt = ppoption
-    opt['VERBOSE'] = 0
-    opt['OUT_ALL'] = 0
-    results3, success = runpf(pfcasefile, opt)
+    ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
+    results3, success = runpf(pfcasefile, ppopt)
     baseMVA3, bus3, gen3, branch3 = results3['baseMVA'], results3['bus'], \
             results3['gen'], results3['branch']
     t_ok( success, t )
 
     t = 'runpf(my_object)'
-    results4, success = runpf(c, opt)
+    results4, success = runpf(c, ppopt)
     baseMVA4, bus4, gen4, branch4 = results4['baseMVA'], results4['bus'], \
             results4['gen'], results4['branch']
     t_ok( success, t )
@@ -615,7 +612,7 @@ def t_loadcase(quiet=False):
 
     t = 'runpf(modified_struct)'
     c['gen'][2, 1] = c['gen'][2, 1] + 1            ## increase gen 3 output by 1
-    results5, success = runpf(c, opt)
+    results5, success = runpf(c, ppopt)
     gen5 = results5['gen']
     t_is(gen5[0, 1], gen4[0, 1] - 1, 1, t)   ## slack bus output should decrease by 1
 

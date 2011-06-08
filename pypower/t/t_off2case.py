@@ -25,6 +25,7 @@ from pypower.t.t_skip import t_skip
 from pypower.t.t_is import t_is
 from pypower.t.t_end import t_end
 
+
 def t_off2case(quiet=False):
     """Tests for code in C{off2case}.
 
@@ -492,4 +493,4 @@ def t_off2case(quiet=False):
     ])
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
-    t_end
+    t_end()

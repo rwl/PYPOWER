@@ -28,6 +28,7 @@ from pypower.t.t_is import t_is
 from pypower.t.t_ok import t_ok
 from pypower.t.t_end import t_end
 
+
 def t_opf_userfcns(quiet=False):
     """Tests for userfcn callbacks (reserves/iflims) w/OPF.
 
@@ -40,24 +41,17 @@ def t_opf_userfcns(quiet=False):
     casefile = 't_case30_userfcns';
     verbose = not quiet
 
-    opt = ppoption
-    opt['OPF_VIOLATION'] = 1e-6
-    opt['PDIPM_GRADTOL'] = 1e-8
-    opt['PDIPM_COMPTOL'] = 1e-8
-    opt['PDIPM_COSTTOL'] = 1e-9
-    opt['OUT_ALL'] = 0
-    opt['VERBOSE'] = verbose
-    opt['OPF_ALG'] = 560
-    opt['OPF_ALG_DC'] = 200
-    #opt['OUT_ALL'] = -1
-    #opt['VERBOSE'] = 2
-    #opt['OUT_GEN'] = 1
+    ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
+                     PDIPM_COMPTOL=1e-8, PDIPM_COSTTOL=1e-9)
+    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=verbose,
+                     OPF_ALG=560, OPF_ALG_DC=200)
+    #ppopt = ppoption(ppopt, OUT_ALL=-1, VERBOSE=2, OUT_GEN=1)
 
     ## run the OPF with fixed reserves
     t = 'fixed reserves : '
     ppc = loadcase(casefile)
     ppc = toggle_reserves(ppc, 'on')
-    r = runopf(ppc, opt)
+    r = runopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
     t_is(r['reserves']['R'], [25, 15, 0, 0, 19.3906, 0.6094], 4, [t, 'reserves.R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 4, [t, 'reserves.prc'])
@@ -69,7 +63,7 @@ def t_opf_userfcns(quiet=False):
 
     t = 'toggle_reserves(ppc, ''off'') : ';
     ppc = toggle_reserves(ppc, 'off')
-    r = runopf(ppc, opt)
+    r = runopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
     t_ok('R' not in r['reserves'], [t, 'no reserves'])
     t_ok('P' not in r['iface'], [t, 'no iflims'])
@@ -77,7 +71,7 @@ def t_opf_userfcns(quiet=False):
     t = 'interface flow lims (DC) : ';
     ppc = loadcase(casefile)
     ppc = toggle_iflims(ppc, 'on')
-    r = rundcopf(ppc, opt)
+    r = rundcopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
     t_is(r['iface']['P'], [-15, 20], 4, [t, 'if.P'])
     t_is(r['iface']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
@@ -89,7 +83,7 @@ def t_opf_userfcns(quiet=False):
     ppc = loadcase(casefile)
     ppc = toggle_reserves(ppc, 'on')
     ppc = toggle_iflims(ppc, 'on')
-    r = rundcopf(ppc, opt)
+    r = rundcopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
     t_is(r['iface']['P'], [-15, 20], 4, [t, 'if.P'])
     t_is(r['iface']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
@@ -103,7 +97,7 @@ def t_opf_userfcns(quiet=False):
 
     t = 'interface flow lims (AC) : ';
     ppc = toggle_reserves(ppc, 'off')
-    r = runopf(ppc, opt)
+    r = runopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
     t_is(r['iface']['P'], [-9.101, 21.432], 3, [t, 'if.P'])
     t_is(r['iface']['mu']['l'], [0, 0], 4, [t, 'if.mu.l'])
@@ -114,7 +108,7 @@ def t_opf_userfcns(quiet=False):
     ppc = loadcase(casefile)
     ppc = toggle_iflims(ppc, 'on')
     ppc.branch[11, BR_STATUS] = 0      ## take out line 6-10
-    r = rundcopf(ppc, opt)
+    r = rundcopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
     t_is(r['iface']['P'], [-15, 20], 4, [t, 'if.P'])
     t_is(r['iface']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
@@ -133,4 +127,4 @@ def t_opf_userfcns(quiet=False):
     # r['iface']['mu']['l']
     # r['iface']['mu']['u']
 
-    t_end
+    t_end()
