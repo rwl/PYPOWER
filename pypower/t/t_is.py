@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import ndarray, array, max, abs, nonzero, argmax, zeros
+from numpy import array, max, abs, nonzero, argmax, zeros
 
 from pypower.t.t_ok import t_ok
 from pypower.t.test_pypower import TestGlobals
@@ -31,8 +31,15 @@ def t_is(got, expected, prec=5, msg=''):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    if not isinstance(got, ndarray): got = array([got])
-    if not isinstance(expected, ndarray): expected = array([expected])
+    if isinstance(got, int) or isinstance(got, float):
+        got = array([got])
+    elif isinstance(got, list) or isinstance(got, tuple):
+        got = array(got)
+
+    if isinstance(expected, int) or isinstance(expected, float):
+        expected = array([expected])
+    elif isinstance(expected, list) or isinstance(expected, tuple):
+        expected = array(expected)
 
     if (got.shape == expected.shape) or (expected.shape == (0,)):
         got_minus_expected = got - expected

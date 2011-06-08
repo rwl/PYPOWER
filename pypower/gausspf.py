@@ -14,9 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import angle, linalg, multiply, conj, r_, Inf
+import sys
+
+from numpy import angle, linalg, multiply, conj, r_, Inf, asscalar
 
 from ppoption import ppoption
+
 
 def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     """Solves the power flow using a Gauss-Seidel method.
@@ -43,60 +46,63 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
         ppopt = ppoption()
 
     ## options
-    tol     = ppopt[2]
-    max_it  = ppopt[4]
-    verbose = ppopt[31]
+    tol     = ppopt['PF_TOL']
+    max_it  = ppopt['PF_MAX_IT_GS']
+    verbose = ppopt['VERBOSE']
 
     ## initialize
     converged = 0
     i = 0
-    V = V0
+    V = V0.copy()
     Va = angle(V)
     Vm = abs(V)
 
     ## set up indexing for updating V
     npv = len(pv)
     npq = len(pq)
-    pvpq = pv + pq
+    pvpq = r_[pv, pq]
 
     ## evaluate F(x0)
-    mis = multiply(V, conj(Ybus * V)) - Sbus
+    mis = V * conj(Ybus * V) - Sbus
     F = r_[  mis[pvpq].real,
              mis[pq].imag   ]
 
     ## check tolerance
     normF = linalg.norm(F, Inf)
     if verbose > 0:
-        print '(Gauss-Seidel)'
+        sys.stdout.write('(Gauss-Seidel)\n')
     if verbose > 1:
-        print ' it    max P & Q mismatch (p.u.)'
-        print '----  ---------------------------'
-        print '%3d        %10.3e' % (i, normF)
+        sys.stdout.write('\n it    max P & Q mismatch (p.u.)')
+        sys.stdout.write('\n----  ---------------------------')
+        sys.stdout.write('\n%3d        %10.3e' % (i, normF))
     if normF < tol:
         converged = 1
         if verbose > 1:
-            print 'Converged!'
+            sys.stdout.write('\nConverged!\n')
 
     ## do Gauss-Seidel iterations
-    while (~converged and i < max_it):
+    while (not converged and i < max_it):
         ## update iteration counter
-        i = i + 1;
+        i = i + 1
 
         ## update voltage
         ## at PQ buses
         for k in pq[range(npq)]:
-            V[k] = V[k] + (conj(Sbus[k] / V[k]) - Ybus[k, :] * V ) / Ybus[k, k]
+            tmp = (conj(Sbus[k] / V[k]) - Ybus[k, :] * V) / Ybus[k, k]
+            V[k] = V[k] + asscalar(tmp)
 
         ## at PV buses
         if npv:
             for k in pv[range(npv)]:
-                Sbus[k] = Sbus[k].real + 1j * (V[k] * conj(Ybus[k,:] * V)).imag
-                V[k] = V[k] + (conj(Sbus[k] / V[k]) - Ybus[k,:]*V) / Ybus[k,k]
+                tmp = (V[k] * conj(Ybus[k,:] * V)).imag
+                Sbus[k] = Sbus[k].real + 1j * asscalar(tmp)
+                tmp = (conj(Sbus[k] / V[k]) - Ybus[k, :] * V) / Ybus[k, k]
+                V[k] = V[k] + asscalar(tmp)
 #               V[k] = Vm[k] * V[k] / abs(V[k])
             V[pv] = Vm[pv] * V[pv] / abs(V[pv])
 
         ## evalute F(x)
-        mis = multiply(V, conj(Ybus * V)) - Sbus
+        mis = V * conj(Ybus * V) - Sbus
         F = r_[  mis[pv].real,
                  mis[pq].real,
                  mis[pq].imag  ]
@@ -104,14 +110,16 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
         ## check for convergence
         normF = linalg.norm(F, Inf)
         if verbose > 1:
-            print '%3d        %10.3e' % (i, normF)
+            sys.stdout.write('\n%3d        %10.3e' % (i, normF))
         if normF < tol:
             converged = 1
             if verbose:
-                print 'Gauss-Seidel power flow converged in %d iterations.' % i
+                sys.stdout.write('\nGauss-Seidel power flow converged in '
+                                 '%d iterations.\n' % i)
 
     if verbose:
-        if ~converged:
-            print 'Gauss-Seidel power did not converge in %d iterations.' % i
+        if not converged:
+            sys.stdout.write('Gauss-Seidel power did not converge in %d '
+                             'iterations.' % i)
 
     return V, converged, i

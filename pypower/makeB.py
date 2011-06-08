@@ -43,13 +43,13 @@ def makeB(baseMVA, bus, branch, alg):
     temp_branch[:, TAP] = ones(nl)             ## cancel out taps
     if alg == 2:                               ## if XB method
         temp_branch[:, BR_R] = zeros(nl)       ## zero out line resistance
-    Bp = -1 * imag(makeYbus(baseMVA, temp_bus, temp_branch)[0])
+    Bp = -1 * makeYbus(baseMVA, temp_bus, temp_branch)[0].imag
 
     ##-----  form Bpp (B double prime)  -----
     temp_branch = copy(branch)                 ## modify a copy of branch
     temp_branch[:, SHIFT] = zeros(nl)          ## zero out phase shifters
     if alg == 3:                               ## if BX method
         temp_branch[:, BR_R] = zeros(nl)    ## zero out line resistance
-    Bpp = -1 * imag(makeYbus(baseMVA, bus, temp_branch)[0])
+    Bpp = -1 * makeYbus(baseMVA, bus, temp_branch)[0].imag
 
     return Bp, Bpp

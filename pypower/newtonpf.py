@@ -24,6 +24,7 @@ from scipy.sparse.linalg import spsolve, splu
 from dSbus_dV import dSbus_dV
 from ppoption import ppoption
 
+
 def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     """Solves the power flow using a full Newton's method.
 
@@ -69,7 +70,7 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     j5 = j4;        j6 = j4 + npq      ## j5:j6 - V mag of pq buses
 
     ## evaluate F(x0)
-    mis = multiply(V, conj(Ybus * V)) - Sbus
+    mis = V * conj(Ybus * V) - Sbus
     F = r_[  mis[pv].real,
              mis[pq].real,
              mis[pq].imag  ]
@@ -119,7 +120,7 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
         Va = angle(V)          ## we wrapped around with a negative Vm
 
         ## evalute F(x)
-        mis = multiply(V, conj(Ybus * V)) - Sbus
+        mis = V * conj(Ybus * V) - Sbus
         F = r_[  mis[pv].real,
                  mis[pq].real,
                  mis[pq].imag  ]

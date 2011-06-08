@@ -25,6 +25,7 @@ from idx_brch import F_BUS, T_BUS, BR_STATUS, PF, PT, QF, QT
 
 EPS = finfo(float).eps
 
+
 def pfsoln(baseMVA, bus0, gen0, branch0, Ybus, Yf, Yt, V, ref, pv, pq):
     """Updates bus, gen, branch data structures to match power flow soln.
 

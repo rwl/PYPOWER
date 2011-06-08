@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import r_
+from numpy import array, r_
 
 from scipy.io import loadmat
 
@@ -29,6 +29,7 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 from pypower.t.t_ok import t_ok
 from pypower.t.t_end import t_end
+
 
 def t_pf(quiet=False):
     """Tests for power flow solvers.
@@ -46,7 +47,7 @@ def t_pf(quiet=False):
 
     ## get solved AC power flow case from MAT-file
     ## defines bus_soln, gen_soln, branch_soln
-    soln9_pf = loadmat('soln9_pf')
+    soln9_pf = loadmat('soln9_pf.mat', struct_as_record=False)
     bus_soln = soln9_pf['bus_soln']
     gen_soln = soln9_pf['gen_soln']
     branch_soln = soln9_pf['branch_soln']
@@ -54,7 +55,8 @@ def t_pf(quiet=False):
     ## run Newton PF
     t = 'Newton PF : ';
     opt['PF_ALG'] = 1
-    _, bus, gen, branch, success, _ = runpf(casefile, opt)
+    results, success = runpf(casefile, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 6, [t, 'bus'])
     t_is(gen, gen_soln, 6, [t, 'gen'])
@@ -63,7 +65,8 @@ def t_pf(quiet=False):
     ## run fast-decoupled PF (XB version)
     t = 'Fast Decoupled (XB) PF : ';
     opt['PF_ALG'] = 2
-    [_, bus, gen, branch, success, _] = runpf(casefile, opt)
+    results, success = runpf(casefile, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 6, [t, 'bus'])
     t_is(gen, gen_soln, 6, [t, 'gen'])
@@ -72,7 +75,8 @@ def t_pf(quiet=False):
     ## run fast-decoupled PF (BX version)
     t = 'Fast Decoupled (BX) PF : ';
     opt['PF_ALG'] = 3
-    [_, bus, gen, branch, success, _] = runpf(casefile, opt)
+    results, success = runpf(casefile, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 6, [t, 'bus'])
     t_is(gen, gen_soln, 6, [t, 'gen'])
@@ -81,7 +85,8 @@ def t_pf(quiet=False):
     ## run Gauss-Seidel PF
     t = 'Gauss-Seidel PF : ';
     opt['PF_ALG'] = 4
-    [_, bus, gen, branch, success, _] = runpf(casefile, opt)
+    results, success = runpf(casefile, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 5, [t, 'bus'])
     t_is(gen, gen_soln, 5, [t, 'gen'])
@@ -89,14 +94,15 @@ def t_pf(quiet=False):
 
     ## get solved AC power flow case from MAT-file
     ## defines bus_soln, gen_soln, branch_soln
-    soln9_dcpf = loadmat('soln9_dcpf')
+    soln9_dcpf = loadmat('soln9_dcpf.mat', struct_as_record=False)
     bus_soln = soln9_dcpf['bus_soln']
     gen_soln = soln9_dcpf['gen_soln']
     branch_soln = soln9_dcpf['branch_soln']
 
     ## run DC PF
     t = 'DC PF : '
-    _, bus, gen, branch, success, _ = rundcpf(casefile, opt)
+    results, success = rundcpf(casefile, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 6, [t, 'bus'])
     t_is(gen, gen_soln, 6, [t, 'gen'])
@@ -107,29 +113,38 @@ def t_pf(quiet=False):
     opt['PF_ALG'] = 1
     opt['VERBOSE'] = 0
     ppc = loadcase(casefile)
-    ppc.gen[0, [QMIN, QMAX]] = [20, 20]
-    _, bus, gen, branch, success, _ = runpf(ppc, opt)
+    ppc['gen'][0, [QMIN, QMAX]] = [20, 20]
+    results, success = runpf(ppc, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_is(gen[0, QG], 24.07, 2, [t, 'single gen, Qmin = Qmax'])
 
-    ppc.gen = r_[ppc.gen[0, :], ppc.gen]
-    ppc.gen[0, [QMIN, QMAX]] = [10, 10]
-    ppc.gen[1, [QMIN, QMAX]] = [ 0, 50]
-    _, bus, gen, branch, success, _ = runpf(ppc, opt)
+    ppc['gen'] = r_[array([ ppc['gen'][0, :] ]), ppc['gen']]
+    ppc['gen'][0, [QMIN, QMAX]] = [10, 10]
+    ppc['gen'][1, [QMIN, QMAX]] = [ 0, 50]
+    results, success = runpf(ppc, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_is(gen[0:2, QG], [10, 14.07], 2, [t, '2 gens, Qmin = Qmax for one'])
 
-    ppc.gen[0, [QMIN, QMAX]] = [10, 10]
-    ppc.gen[1, [QMIN, QMAX]] = [-50, -50]
-    _, bus, gen, branch, success, _ = runpf(ppc, opt)
+    ppc['gen'][0, [QMIN, QMAX]] = [10, 10]
+    ppc['gen'][1, [QMIN, QMAX]] = [-50, -50]
+    results, success = runpf(ppc, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_is(gen[0:2, QG], [12.03, 12.03], 2, [t, '2 gens, Qmin = Qmax for both'])
 
-    ppc.gen[0, [QMIN, QMAX]] = [0,  50]
-    ppc.gen[1, [QMIN, QMAX]] = [0, 100]
-    _, bus, gen, branch, success, _ = runpf(ppc, opt)
+    ppc['gen'][0, [QMIN, QMAX]] = [0,  50]
+    ppc['gen'][1, [QMIN, QMAX]] = [0, 100]
+    results, success = runpf(ppc, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_is(gen[0:2, QG], [8.02, 16.05], 2, [t, '2 gens, proportional'])
 
-    ppc.gen[0, [QMIN, QMAX]] = [-50, 0]
-    ppc.gen[1, [QMIN, QMAX]] = [50, 150]
-    _, bus, gen, branch, success, _ = runpf(ppc, opt)
+    ppc['gen'][0, [QMIN, QMAX]] = [-50, 0]
+    ppc['gen'][1, [QMIN, QMAX]] = [50, 150]
+    results, success = runpf(ppc, opt)
+    bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_is(gen[0:2, QG], [-50 + 8.02, 50 + 16.05], 2, [t, '2 gens, proportional'])
 
     t_end
+
+
+if __name__ == '__main__':
+    t_pf(quiet=False)

@@ -14,10 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import angle, exp, linalg, multiply, conj, r_, Inf
+import sys
+
+from numpy import array, angle, exp, linalg, multiply, conj, r_, Inf
 from scipy.sparse.linalg import splu
 
 from ppoption import ppoption
+
 
 def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     """Solves the power flow using a fast decoupled method.
@@ -60,7 +63,7 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     pvpq = r_[pv, pq]
 
     ## evaluate initial mismatch
-    mis = (multiply(V, conj(Ybus * V)) - Sbus) / Vm
+    mis = (V * conj(Ybus * V) - Sbus) / Vm
     P = mis[pvpq].real
     Q = mis[pq].imag
 
@@ -68,31 +71,29 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     normP = linalg.norm(P, Inf)
     normQ = linalg.norm(Q, Inf)
     if verbose > 0:
-        alg = ppopt[1]
-        s = 'XB' if ppopt[1] == 2 else 'BX'
-        print '(fast-decoupled, %s)' % s
+        alg = ppopt['PF_ALG']
+        s = 'XB' if alg == 2 else 'BX'
+        sys.stdout.write('(fast-decoupled, %s)\n' % s)
     if verbose > 1:
-        print 'iteration     max mismatch (p.u.)  '
-        print 'type   #        P            Q     '
-        print '---- ----  -----------  -----------'
-        print '  -  %3d   %10.3e   %10.3e' % (i, normP, normQ)
+        sys.stdout.write('\niteration     max mismatch (p.u.)  ')
+        sys.stdout.write('\ntype   #        P            Q     ')
+        sys.stdout.write('\n---- ----  -----------  -----------')
+        sys.stdout.write('\n  -  %3d   %10.3e   %10.3e' % (i, normP, normQ))
     if normP < tol and normQ < tol:
         converged = 1
         if verbose > 1:
-            print 'Converged!'
+            sys.stdout.write('\nConverged!\n')
 
     ## reduce B matrices
-    pq_col = [[k] for k in pq]
-    pvpq_col = [[k] for k in pvpq]
-    Bp = Bp[pvpq, pvpq].tocsc() # splu requires a CSC matrix
-    Bpp = Bpp[pq, pq].tocsc()
+    Bp = Bp[array([pvpq]).T, pvpq].tocsc() # splu requires a CSC matrix
+    Bpp = Bpp[array([pq]).T, pq].tocsc()
 
     ## factor B matrices
     Bp_solver = splu(Bp)
     Bpp_solver = splu(Bpp)
 
     ## do P and Q iterations
-    while (~converged and i < max_it):
+    while (not converged and i < max_it):
         ## update iteration counter
         i = i + 1
 
@@ -104,7 +105,7 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
         V = Vm * exp(1j * Va)
 
         ## evalute mismatch
-        mis = (multiply(V, conj(Ybus * V)) - Sbus) / abs(V)
+        mis = (V * conj(Ybus * V) - Sbus) / Vm
         P = mis[pvpq].real
         Q = mis[pq].imag
 
@@ -112,12 +113,13 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
         normP = linalg.norm(P, Inf)
         normQ = linalg.norm(Q, Inf)
         if verbose > 1:
-            print "  %s  %3d   %10.3e   %10.3e" % (type,i, normP, normQ)
+            sys.stdout.write("\n  %s  %3d   %10.3e   %10.3e" %
+                             (type,i, normP, normQ))
         if normP < tol and normQ < tol:
             converged = 1
             if verbose:
-                print 'Fast-decoupled power flow converged in %d P-iterations '
-                'and %d Q-iterations.\n' % (i, i - 1)
+                sys.stdout.write('\nFast-decoupled power flow converged in %d '
+                    'P-iterations and %d Q-iterations.\n' % (i, i - 1))
             break
 
         ##-----  do Q iteration, update Vm  -----
@@ -128,7 +130,7 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
         V = Vm * exp(1j * Va)
 
         ## evalute mismatch
-        mis = (multiply(V, conj(Ybus * V)) - Sbus) / abs(V)
+        mis = (V * conj(Ybus * V) - Sbus) / Vm
         P = mis[pvpq].real
         Q = mis[pq].imag
 
@@ -136,17 +138,17 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
         normP = linalg.norm(P, Inf)
         normQ = linalg.norm(Q, Inf)
         if verbose > 1:
-            print '  Q  %3d   %10.3e   %10.3e' % (i, normP, normQ)
+            sys.stdout.write('\n  Q  %3d   %10.3e   %10.3e' % (i, normP, normQ))
         if normP < tol and normQ < tol:
             converged = 1
             if verbose:
-                print 'Fast-decoupled power flow converged in %d P-iterations '
-                'and %d Q-iterations.\n' % (i, i)
+                sys.stdout.write('\nFast-decoupled power flow converged in %d '
+                    'P-iterations and %d Q-iterations.\n' % (i, i))
             break
 
     if verbose:
-        if ~converged:
-            print 'Fast-decoupled power flow did not converge in %d '
-            'iterations.' % i
+        if not converged:
+            sys.stdout.write('\nFast-decoupled power flow did not converge in '
+                             '%d iterations.' % i)
 
     return V, converged, i
