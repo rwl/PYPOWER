@@ -41,7 +41,7 @@ from run_userfcn import run_userfcn
 from ppver import ppver
 from dcopf_solver import dcopf_solver
 from pipsopf_solver import pipsopf_solver
-from update_mupq import update_mupq
+#from update_mupq import update_mupq
 from int2ext import int2ext
 from printpf import printpf
 

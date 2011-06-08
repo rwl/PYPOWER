@@ -13,16 +13,25 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
+from os.path import dirname, join
+
 from optparse import OptionParser, OptionGroup, OptionValueError
 
 from pypower.ppver import ppver
 from pypower.ppoption import ppoption, PF_OPTIONS, OPF_OPTIONS, OUTPUT_OPTIONS
+from pypower.runpf import runpf
+from pypower.runopf import runopf
+from pypower.runuopf import runuopf
 
 TYPE_MAP = {bool: 'choice', float: 'float', int: 'int'}
 
 AFFIRMATIVE = ('True', 'Yes', 'true', 'yes', '1', 'Y', 'y')
 NEGATIVE = ('False', 'No', 'false', 'no', '0', 'N', 'n')
 
+CASES = ('case4gs', 'case6ww', 'case9', 'case9Q', 'case14', 'case24_ieee_rts',
+    'case30', 'case30Q', 'case30pwl', 'case39', 'case57', 'case118', 'case300')
 
 def option_callback(option, opt, value, parser, *args, **kw_args):
     if isinstance(value, str):
@@ -65,8 +74,41 @@ def add_options(group, options, *callback_args, **callback_kwargs):
 def main():
     ppopt = ppoption()
 
-    parser = OptionParser(usage='usage: %prog [options]',
+    parser = OptionParser(usage='usage: %prog [options] [casefile]',
                           version='%%prog %s' % (ppver()['Version']))
+
+    parser.add_option('-t', '--type',
+            type='choice',
+            choices=('pf', 'opf', 'udopf'),
+            default='pf',
+            metavar="PROBLEM_TYPE",
+            help='Power flow is run by default. '
+            'To run an optimal power flow set this option to "opf" '
+            'or to "udopf" to solve using the unit-decommitment heuristic.')
+
+    parser.add_option('-c', '--casedata',
+            default=CASES[2],
+            type='choice',
+            choices=CASES,
+            metavar="CASEDATA",
+            help='Built-in case to solve. Ignored if casefile is specified. ('
+            +', '.join(CASES)
+            +') [default: %default]')
+
+    parser.add_option('--fname',
+            metavar="FNAME",
+            default='',
+            help='If FNAME is specified the pretty printed output will be '
+            'appended to the file with the specified name, otherwise the '
+            'output is written to stdout.')
+
+    parser.add_option('--solvedcase',
+            metavar="SOLVEDCASE",
+            default='',
+            help='If SOLVEDCASE is specified the solved case will be written '
+            'to a case file in PYPOWER format with the specified name. If '
+            'SOLVEDCASE ends with \'.mat\' the case is saved as a MAT-file '
+            'otherwise it saves it as a Python file.')
 
     pf_options = OptionGroup(parser, "Power Flow Options")
     opf_options = OptionGroup(parser, "OPF Options")
@@ -80,15 +122,32 @@ def main():
     parser.add_option_group(opf_options)
     parser.add_option_group(output_options)
 
-    parser.print_help()
+    options, args = parser.parse_args()
 
+    if len(args) == 0:
+#        casedata = join(dirname(__file__), options.casedata)
+        casedata = options.casedata
+    elif len(args) == 1:
+        casedata = args[0]
+    else:
+        sys.stderr.write('too many arguments')
+        parser.print_help()
+        return 2
 
-    ags = ["--verbose=2", '--pf_tol=1e-6', '--out_all=0', "--pf_dc=true"]
+    fname = options.fname
+    solvedcase = options.solvedcase
 
-    options, args = parser.parse_args(ags)
+    if options.type == 'pf':
+        _, success = runpf(casedata, ppopt, fname, solvedcase)
+    elif options.type == 'opf':
+        _, success = runopf(casedata, ppopt, fname, solvedcase)
+    elif options.type == 'udopf':
+        _, success = runuopf(casedata, ppopt, fname, solvedcase)
+    else:
+        raise OptionValueError
 
-    print ppopt['VERBOSE'], ppopt['PF_TOL'], ppopt['OUT_ALL'], ppopt['PF_DC']
+    return 0 if success else 2
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
