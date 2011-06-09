@@ -14,13 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+import sys
 
-from numpy import zeros, nonzero
+from numpy import zeros, arange, flatnonzero as find
 
 from idx_cost import MODEL, NCOST, PW_LINEAR, COST
 
-logger = logging.getLogger(__name__)
 
 def polycost(gencost, Pg, der=0):
     """Evaluates polynomial generator cost & derivatives.
@@ -38,7 +37,7 @@ def polycost(gencost, Pg, der=0):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if any(gencost[:, MODEL] == PW_LINEAR):
-        logger.error('polycost: all costs must be polynomial')
+        sys.stderr.write('polycost: all costs must be polynomial\n')
 
     ng = len(Pg)
     maxN = max(gencost[:, NCOST])
@@ -46,9 +45,9 @@ def polycost(gencost, Pg, der=0):
 
     ## form coefficient matrix where 1st column is constant term, 2nd linear, etc.
     c = zeros((ng, maxN))
-    for n in range(minN, maxN):
-        k = nonzero(gencost[:, NCOST] == n)   ## cost with n coefficients
-        c[k, :n] = gencost[k, (COST + n - 1):-1:COST]
+    for n in arange(minN, maxN + 1):
+        k = find(gencost[:, NCOST] == n)   ## cost with n coefficients
+        c[k, :n] = gencost[k, (COST + n - 1):COST - 1:-1]
 
     ## do derivatives
     for d in range(der):
@@ -61,11 +60,11 @@ def polycost(gencost, Pg, der=0):
             c[:, k] = k * c[:, k]
 
     ## evaluate polynomial
-    if not any(c):
+    if len(c) == 0:
         f = zeros(Pg.shape)
     else:
         f = c[:, 0]        ## constant term
         for k in range(1, c.shape[1]):
-            f = f + c[:, k] * Pg**(k - 1)
+            f = f + c[:, k] * Pg**k
 
     return f

@@ -14,11 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import zeros
+from numpy import zeros, arange
 from numpy import flatnonzero as find
 
 from polycost import polycost
-from idx_cost import *
+from idx_cost import PW_LINEAR, POLYNOMIAL, COST, NCOST, MODEL
+
 
 def totcost(gencost, Pg):
     """ Computes total cost for generators at given output level.
@@ -32,7 +33,7 @@ def totcost(gencost, Pg):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ng, m = gencost.shape
-    totalcost = zeros(ng, Pg.shape[1])
+    totalcost = zeros(ng)
 
     if len(gencost) > 0:
         ipwl = find(gencost[:, MODEL] == PW_LINEAR)
@@ -40,9 +41,10 @@ def totcost(gencost, Pg):
         if len(ipwl) > 0:
             p = gencost[:, COST:(m-1):2]
             c = gencost[:, (COST+1):m:2]
+
             for i in ipwl:
                 ncost = gencost[i, NCOST]
-                for k in range(ncost):
+                for k in arange(ncost - 1):
                     p1, p2 = p[i, k], p[i, k+1]
                     c1, c2 = c[i, k], c[i, k+1]
                     m = (c2 - c1) / (p2 - p1)
