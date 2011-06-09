@@ -31,57 +31,47 @@ def test_pypower(verbose=False):
     tests.append('t_ext2int2ext')
     tests.append('t_jacobian')
     tests.append('t_hessian')
-    tests.append('t_totcost')
-    tests.append('t_modcost')
-    tests.append('t_hasPQcap')
+#    tests.append('t_totcost')
+#    tests.append('t_modcost')
+#    tests.append('t_hasPQcap')
 
-    tests.append('t_mips')
+#    tests.append('t_mips')
 
-    tests.append('t_qps_pypower')
+#    tests.append('t_qps_pypower')
     tests.append('t_pf')
 
-    tests.append('t_opf_mips')
-    tests.append('t_opf_mips_sc')
+#    tests.append('t_opf_mips')
+#    tests.append('t_opf_mips_sc')
 
-    try:
-        import pyipopt  #@UnusedImport
-        tests.append('t_opf_ipopt')
-        tests.append('t_opf_dc_ipopt')
-    except ImportError:
-        pass
+#    try:
+#        import pyipopt  #@UnusedImport
+#        tests.append('t_opf_ipopt')
+#        tests.append('t_opf_dc_ipopt')
+#    except ImportError:
+#        pass
+#
+#    tests.append('t_opf_dc_mips')
+#    tests.append('t_opf_dc_mips_sc')
+#
+#    try:
+#        import mosek  #@UnusedImport
+#        tests.append('t_opf_dc_mosek')
+#    except ImportError:
+#        pass
+#
+#    tests.append('t_opf_userfcns')
+#    tests.append('t_runopf_w_res')
+#    tests.append('t_makePTDF')
+#    tests.append('t_makeLODF')
+#    tests.append('t_total_load')
+#    tests.append('t_scale_load')
+#
+#    ## smartmarket tests
+#    tests.append('t_off2case')
+#    tests.append('t_auction_mips')
+#    tests.append('t_runmarket')
 
-    tests.append('t_opf_dc_mips')
-    tests.append('t_opf_dc_mips_sc')
-
-    try:
-        import mosek  #@UnusedImport
-        tests.append('t_opf_dc_mosek')
-    except ImportError:
-        pass
-
-    tests.append('t_opf_userfcns')
-    tests.append('t_runopf_w_res')
-    tests.append('t_makePTDF')
-    tests.append('t_makeLODF')
-    tests.append('t_total_load')
-    tests.append('t_scale_load')
-
-    ## smartmarket tests
-    tests.append('t_off2case')
-    tests.append('t_auction_mips')
-    tests.append('t_runmarket')
-
-    t_run_tests( tests, verbose )
-
-
-class TestGlobals(object):
-    t_quiet = False
-    t_num_of_tests = 0
-    t_counter = 0
-    t_ok_cnt = 0
-    t_not_ok_cnt = 0
-    t_skip_cnt = 0
-    t_clock = 0.0
+    t_run_tests(tests, verbose)
 
 
 if __name__ == '__main__':

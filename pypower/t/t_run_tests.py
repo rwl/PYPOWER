@@ -14,9 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
 from time import time
 
 from numpy import zeros
+
+from pypower.t.t_globals import TestGlobals
+
 
 def t_run_tests(test_names, verbose=False):
     """Run a series of tests.
@@ -27,18 +32,18 @@ def t_run_tests(test_names, verbose=False):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    global t_num_of_tests
-    global t_counter
-    global t_ok_cnt
-    global t_not_ok_cnt
-    global t_skip_cnt
+    t_num_of_tests = TestGlobals.t_num_of_tests
+    t_counter = TestGlobals.t_counter
+    t_ok_cnt = TestGlobals.t_ok_cnt
+    t_not_ok_cnt = TestGlobals.t_not_ok_cnt
+    t_skip_cnt = TestGlobals.t_skip_cnt
 
     ## figure out padding for printing
     if not verbose:
-        len = zeros(len(test_names))
+        length = zeros(len(test_names))
         for k in range(len(test_names)):
-            len[k] = len(test_names[k])
-        maxlen = max(len)
+            length[k] = len(test_names[k])
+        maxlen = max(length)
 
     ## initialize statistics
     num_of_tests = 0
@@ -48,16 +53,20 @@ def t_run_tests(test_names, verbose=False):
     skip_cnt = 0
 
     t0 = time()
-    s = ''
     for k in range(len(test_names)):
         if verbose:
-            s += '\n----------  %s  ----------\n' % test_names[k]
+            sys.stdout.write('\n----------  %s  ----------\n' % test_names[k])
         else:
             pad = maxlen + 4 - len(test_names[k])
-            s += '%s' % test_names[k]
-            for m in range(pad): s += '.'
+            s = '%s' % test_names[k]
+            for _ in range(pad): s += '.'
+            sys.stdout.write(s)
 
-        eval( test_names[k], not verbose )
+
+        tname = test_names[k]
+        __import__('pypower.t.'+tname)
+        mod = sys.modules['pypower.t.'+tname]  #@PydevCodeAnalysisIgnore
+        eval('mod.%s(not verbose)' % tname)
 
         num_of_tests    = num_of_tests  + t_num_of_tests
         counter         = counter       + t_counter
@@ -65,6 +74,7 @@ def t_run_tests(test_names, verbose=False):
         not_ok_cnt      = not_ok_cnt    + t_not_ok_cnt
         skip_cnt        = skip_cnt      + t_skip_cnt
 
+    s = ''
     if verbose:
         s += '\n\n----------  Summary  ----------\n'
 
@@ -73,7 +83,7 @@ def t_run_tests(test_names, verbose=False):
             s += 'All tests successful (%d passed, %d skipped of %d)' % \
                 (ok_cnt, skip_cnt, num_of_tests)
         else:
-            s += 'All tests successful (%d of %d)' % ok_cnt, num_of_tests
+            s += 'All tests successful (%d of %d)' % (ok_cnt, num_of_tests)
     else:
         s += 'Ran %d of %d tests: %d passed, %d failed' % \
             (counter, num_of_tests, ok_cnt, not_ok_cnt)
@@ -81,4 +91,4 @@ def t_run_tests(test_names, verbose=False):
             s += ', %d skipped' % skip_cnt
 
     s += '\nElapsed time %.2f seconds.\n' % (time() - t0)
-    print s
+    sys.stdout.write(s)

@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import ones, conj
-from scipy.sparse import csr_matrix
+from numpy import ones, conj, arange
+from scipy.sparse import csr_matrix as sparse
+
 
 def d2Sbus_dV2(Ybus, V, lam):
     """Computes 2nd derivatives of power injection w.r.t. voltage.
@@ -38,18 +39,18 @@ def d2Sbus_dV2(Ybus, V, lam):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     nb = len(V)
-    ib = range(nb)
+    ib = arange(nb)
     Ibus = Ybus * V
-    diaglam = csr_matrix((lam, (ib, ib)))
-    diagV = csr_matrix((V, (ib, ib)))
+    diaglam = sparse((lam, (ib, ib)))
+    diagV = sparse((V, (ib, ib)))
 
-    A = csr_matrix((lam * V, (ib, ib)))
+    A = sparse((lam * V, (ib, ib)))
     B = Ybus * diagV
     C = A * conj(B)
     D = Ybus.H * diagV
-    E = diagV.conj() * (D * diaglam - csr_matrix((D * lam, (ib, ib))))
-    F = C - A * csr_matrix((conj(Ibus), (ib, ib)))
-    G = csr_matrix((ones(nb) / abs(V), (ib, ib)))
+    E = diagV.conj() * (D * diaglam - sparse((D * lam, (ib, ib))))
+    F = C - A * sparse((conj(Ibus), (ib, ib)))
+    G = sparse((ones(nb) / abs(V), (ib, ib)))
 
     Gaa = E + F
     Gva = 1j * G * (E - F)

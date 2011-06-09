@@ -33,6 +33,6 @@ setup(name="PYPOWER",
       license="GPLv3",
       include_package_data=False,
       packages=find_packages(),
-      test_suite="pypower.test",
+      test_suite="pypower.t.test_pypower.test_pypower",
       zip_safe=True,
       **kwds)

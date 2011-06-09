@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import ones
-from scipy.sparse import csr_matrix
+from numpy import ones, arange
+from scipy.sparse import csr_matrix as sparse
+
 
 def d2Ibr_dV2(Ybr, V, lam):
     """Computes 2nd derivatives of complex branch current w.r.t. voltage.
@@ -38,12 +39,12 @@ def d2Ibr_dV2(Ybr, V, lam):
     @see: http://www.pserc.cornell.edu/matpower/
     """
     nb = len(V)
-    ib = range(nb)
-    diaginvVm = csr_matrix((ones(nb) / abs(V), (ib, ib)))
+    ib = arange(nb)
+    diaginvVm = sparse((ones(nb) / abs(V), (ib, ib)))
 
-    Haa = csr_matrix((-(Ybr.T * lam) / V, (ib, ib)))
+    Haa = sparse((-(Ybr.T * lam) * V, (ib, ib)))
     Hva = -1j * Haa * diaginvVm
-    Hav = Hva
-    Hvv = csr_matrix((nb, nb))
+    Hav = Hva.copy()
+    Hvv = sparse((nb, nb))
 
     return Haa, Hav, Hva, Hvv

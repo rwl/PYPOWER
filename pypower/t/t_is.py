@@ -17,7 +17,8 @@
 from numpy import array, max, abs, nonzero, argmax, zeros
 
 from pypower.t.t_ok import t_ok
-from pypower.t.test_pypower import TestGlobals
+from pypower.t.t_globals import TestGlobals
+
 
 def t_is(got, expected, prec=5, msg=''):
     """Tests if two matrices are identical to some tolerance.

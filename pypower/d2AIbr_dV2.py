@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix as sparse
 
 from d2Ibr_dV2 import d2Ibr_dV2
 
@@ -43,8 +43,8 @@ def d2AIbr_dV2(dIbr_dVa, dIbr_dVm, Ibr, Ybr, V, lam):
     # define
     il = range(len(lam))
 
-    diaglam = csr_matrix((lam, (il, il)))
-    diagIbr_conj = csr_matrix((Ibr.conj(), (il, il)))
+    diaglam = sparse((lam, (il, il)))
+    diagIbr_conj = sparse((Ibr.conj(), (il, il)))
 
     Iaa, Iav, Iva, Ivv = d2Ibr_dV2(Ybr, V, diagIbr_conj * lam)
 

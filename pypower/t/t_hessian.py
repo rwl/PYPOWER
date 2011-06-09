@@ -17,6 +17,7 @@
 from numpy import pi, random, ones, zeros, real, exp
 from scipy.sparse import csr_matrix as sparse
 
+from pypower.case30 import case30
 from pypower.ppoption import ppoption
 from pypower.runpf import runpf
 from pypower.ext2int import ext2int1
@@ -31,6 +32,9 @@ from pypower.dAbr_dV import dAbr_dV
 from pypower.d2ASbr_dV2 import d2ASbr_dV2
 from pypower.d2AIbr_dV2 import d2AIbr_dV2
 
+from pypower.idx_bus import VM, VA
+from pypower.idx_brch import T_BUS, F_BUS
+
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 from pypower.t.t_end import t_end
@@ -43,20 +47,20 @@ def t_hessian(quiet=False):
     """
     t_begin(44, quiet)
 
-    casefile = 'case30'
-
     ## run powerflow to get solved case
     ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
-    baseMVA, bus, gen, branch, success, et = runpf(casefile, ppopt)
+    results, _ = runpf(case30(), ppopt)
+    baseMVA, bus, gen, branch = \
+        results['baseMVA'], results['bus'], results['gen'], results['branch']
 
     ## switch to internal bus numbering and build admittance matrices
-    i2e, bus, gen, branch = ext2int1(bus, gen, branch)
+    _, bus, gen, branch = ext2int1(bus, gen, branch)
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
-    Vm = bus.Vm.copy()
-    Va = bus.Va * pi/180
+    Vm = bus[:, VM]
+    Va = bus[:, VA] * (pi / 180)
     V = Vm * exp(1j * Va)
-    f = branch.f_bus.copy()       ## list of "from" buses
-    t = branch.t_bus.copy()       ## list of "to" buses
+    f = branch[:, F_BUS]       ## list of "from" buses
+    t = branch[:, T_BUS]       ## list of "to" buses
     nl = len(f)
     nb = len(V)
     Cf = sparse((ones(nl), (range(nl), f)), (nl, nb))  ## connection matrix for line & from buses
@@ -65,11 +69,11 @@ def t_hessian(quiet=False):
 
     ##-----  check d2Sbus_dV2 code  -----
     t = ' - d2Sbus_dV2 (complex power injections)'
-    lam = 10 * random(nb)
-    num_Haa = zeros((nb, nb))
-    num_Hav = zeros((nb, nb))
-    num_Hva = zeros((nb, nb))
-    num_Hvv = zeros((nb, nb))
+    lam = 10 * random.rand(nb)
+    num_Haa = zeros((nb, nb), complex)
+    num_Hav = zeros((nb, nb), complex)
+    num_Hva = zeros((nb, nb), complex)
+    num_Hvv = zeros((nb, nb), complex)
     dSbus_dVm, dSbus_dVa = dSbus_dV(Ybus, V)
     Haa, Hav, Hva, Hvv = d2Sbus_dV2(Ybus, V, lam)
     for i in range(nb):
@@ -92,17 +96,17 @@ def t_hessian(quiet=False):
 
     ##-----  check d2Sbr_dV2 code  -----
     t = ' - d2Sbr_dV2 (complex power flows)'
-    lam = 10 * random(nl)
+    lam = 10 * random.rand(nl)
     # lam = [1 zeros(nl-1, 1)]
-    num_Gfaa = zeros((nb, nb))
-    num_Gfav = zeros((nb, nb))
-    num_Gfva = zeros((nb, nb))
-    num_Gfvv = zeros((nb, nb))
-    num_Gtaa = zeros((nb, nb))
-    num_Gtav = zeros((nb, nb))
-    num_Gtva = zeros((nb, nb))
-    num_Gtvv = zeros((nb, nb))
-    dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St = dSbr_dV(branch, Yf, Yt, V)
+    num_Gfaa = zeros((nb, nb), complex)
+    num_Gfav = zeros((nb, nb), complex)
+    num_Gfva = zeros((nb, nb), complex)
+    num_Gfvv = zeros((nb, nb), complex)
+    num_Gtaa = zeros((nb, nb), complex)
+    num_Gtav = zeros((nb, nb), complex)
+    num_Gtva = zeros((nb, nb), complex)
+    num_Gtvv = zeros((nb, nb), complex)
+    dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, _, _ = dSbr_dV(branch, Yf, Yt, V)
     Gfaa, Gfav, Gfva, Gfvv = d2Sbr_dV2(Cf, Yf, V, lam)
     Gtaa, Gtav, Gtva, Gtvv = d2Sbr_dV2(Ct, Yt, V, lam)
     for i in range(nb):
@@ -136,18 +140,19 @@ def t_hessian(quiet=False):
 
     ##-----  check d2Ibr_dV2 code  -----
     t = ' - d2Ibr_dV2 (complex currents)'
-    lam = 10 * random(nl)
+    lam = 10 * random.rand(nl)
     # lam = [1, zeros(nl-1)]
-    num_Gfaa = zeros((nb, nb))
-    num_Gfav = zeros((nb, nb))
-    num_Gfva = zeros((nb, nb))
-    num_Gfvv = zeros((nb, nb))
-    num_Gtaa = zeros((nb, nb))
-    num_Gtav = zeros((nb, nb))
-    num_Gtva = zeros((nb, nb))
-    num_Gtvv = zeros((nb, nb))
-    dIf_dVa, dIf_dVm, dIt_dVa, dIt_dVm, If, It = dIbr_dV(branch, Yf, Yt, V)
+    num_Gfaa = zeros((nb, nb), complex)
+    num_Gfav = zeros((nb, nb), complex)
+    num_Gfva = zeros((nb, nb), complex)
+    num_Gfvv = zeros((nb, nb), complex)
+    num_Gtaa = zeros((nb, nb), complex)
+    num_Gtav = zeros((nb, nb), complex)
+    num_Gtva = zeros((nb, nb), complex)
+    num_Gtvv = zeros((nb, nb), complex)
+    dIf_dVa, dIf_dVm, dIt_dVa, dIt_dVm, _, _ = dIbr_dV(branch, Yf, Yt, V)
     Gfaa, Gfav, Gfva, Gfvv = d2Ibr_dV2(Yf, V, lam)
+
     Gtaa, Gtav, Gtva, Gtvv = d2Ibr_dV2(Yt, V, lam)
     for i in range(nb):
         Vap = V.copy()
@@ -180,16 +185,16 @@ def t_hessian(quiet=False):
 
     ##-----  check d2ASbr_dV2 code  -----
     t = ' - d2ASbr_dV2 (squared apparent power flows)'
-    lam = 10 * random(nl)
+    lam = 10 * random.rand(nl)
     # lam = [1 zeros(nl-1, 1)]
-    num_Gfaa = zeros((nb, nb))
-    num_Gfav = zeros((nb, nb))
-    num_Gfva = zeros((nb, nb))
-    num_Gfvv = zeros((nb, nb))
-    num_Gtaa = zeros((nb, nb))
-    num_Gtav = zeros((nb, nb))
-    num_Gtva = zeros((nb, nb))
-    num_Gtvv = zeros((nb, nb))
+    num_Gfaa = zeros((nb, nb), complex)
+    num_Gfav = zeros((nb, nb), complex)
+    num_Gfva = zeros((nb, nb), complex)
+    num_Gfvv = zeros((nb, nb), complex)
+    num_Gtaa = zeros((nb, nb), complex)
+    num_Gtav = zeros((nb, nb), complex)
+    num_Gtva = zeros((nb, nb), complex)
+    num_Gtvv = zeros((nb, nb), complex)
     dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St = dSbr_dV(branch, Yf, Yt, V)
     dAf_dVa, dAf_dVm, dAt_dVa, dAt_dVm = \
                             dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St)
@@ -230,28 +235,28 @@ def t_hessian(quiet=False):
 
     ##-----  check d2ASbr_dV2 code  -----
     t = ' - d2ASbr_dV2 (squared real power flows)'
-    lam = 10 * random(nl)
+    lam = 10 * random.rand(nl)
     # lam = [1 zeros(nl-1, 1)]
-    num_Gfaa = zeros((nb, nb))
-    num_Gfav = zeros((nb, nb))
-    num_Gfva = zeros((nb, nb))
-    num_Gfvv = zeros((nb, nb))
-    num_Gtaa = zeros((nb, nb))
-    num_Gtav = zeros((nb, nb))
-    num_Gtva = zeros((nb, nb))
-    num_Gtvv = zeros((nb, nb))
+    num_Gfaa = zeros((nb, nb), complex)
+    num_Gfav = zeros((nb, nb), complex)
+    num_Gfva = zeros((nb, nb), complex)
+    num_Gfvv = zeros((nb, nb), complex)
+    num_Gtaa = zeros((nb, nb), complex)
+    num_Gtav = zeros((nb, nb), complex)
+    num_Gtva = zeros((nb, nb), complex)
+    num_Gtvv = zeros((nb, nb), complex)
     dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St = dSbr_dV(branch, Yf, Yt, V)
     dAf_dVa, dAf_dVm, dAt_dVa, dAt_dVm = \
-           dAbr_dV(real(dSf_dVa), real(dSf_dVm), real(dSt_dVa), real(dSt_dVm), real(Sf), real(St))
-    Gfaa, Gfav, Gfva, Gfvv = d2ASbr_dV2(real(dSf_dVa), real(dSf_dVm), real(Sf), Cf, Yf, V, lam)
-    Gtaa, Gtav, Gtva, Gtvv = d2ASbr_dV2(real(dSt_dVa), real(dSt_dVm), real(St), Ct, Yt, V, lam)
+           dAbr_dV(dSf_dVa.real, dSf_dVm.real, dSt_dVa.real, dSt_dVm.real, Sf.real, St.real)
+    Gfaa, Gfav, Gfva, Gfvv = d2ASbr_dV2(dSf_dVa.real, dSf_dVm.real, Sf.real, Cf, Yf, V, lam)
+    Gtaa, Gtav, Gtva, Gtvv = d2ASbr_dV2(dSt_dVa.real, dSt_dVm.real, St.real, Ct, Yt, V, lam)
     for i in range(nb):
         Vap = V.copy()
         Vap[i] = Vm[i] * exp(1j * (Va[i] + pert))
         dSf_dVa_ap, dSf_dVm_ap, dSt_dVa_ap, dSt_dVm_ap, Sf_ap, St_ap = \
             dSbr_dV(branch, Yf, Yt, Vap)
         dAf_dVa_ap, dAf_dVm_ap, dAt_dVa_ap, dAt_dVm_ap = \
-            dAbr_dV(real(dSf_dVa_ap), real(dSf_dVm_ap), real(dSt_dVa_ap), real(dSt_dVm_ap), real(Sf_ap), real(St_ap))
+            dAbr_dV(dSf_dVa_ap.real, dSf_dVm_ap.real, dSt_dVa_ap.real, dSt_dVm_ap.real, Sf_ap.real, St_ap.real)
         num_Gfaa[:, i] = (dAf_dVa_ap - dAf_dVa).T * lam / pert
         num_Gfva[:, i] = (dAf_dVm_ap - dAf_dVm).T * lam / pert
         num_Gtaa[:, i] = (dAt_dVa_ap - dAt_dVa).T * lam / pert
@@ -262,7 +267,7 @@ def t_hessian(quiet=False):
         dSf_dVa_mp, dSf_dVm_mp, dSt_dVa_mp, dSt_dVm_mp, Sf_mp, St_mp = \
             dSbr_dV(branch, Yf, Yt, Vmp)
         dAf_dVa_mp, dAf_dVm_mp, dAt_dVa_mp, dAt_dVm_mp = \
-            dAbr_dV(real(dSf_dVa_mp), real(dSf_dVm_mp), real(dSt_dVa_mp), real(dSt_dVm_mp), real(Sf_mp), real(St_mp))
+            dAbr_dV(dSf_dVa_mp.real, dSf_dVm_mp.real, dSt_dVa_mp.real, dSt_dVm_mp.real, Sf_mp.real, St_mp.real)
         num_Gfav[:, i] = (dAf_dVa_mp - dAf_dVa).T * lam / pert
         num_Gfvv[:, i] = (dAf_dVm_mp - dAf_dVm).T * lam / pert
         num_Gtav[:, i] = (dAt_dVa_mp - dAt_dVa).T * lam / pert
@@ -280,16 +285,16 @@ def t_hessian(quiet=False):
 
     ##-----  check d2AIbr_dV2 code  -----
     t = ' - d2AIbr_dV2 (squared current magnitudes)'
-    lam = 10 * random(nl, 1)
+    lam = 10 * random.rand(nl)
     # lam = [1 zeros(nl-1, 1)]
-    num_Gfaa = zeros((nb, nb))
-    num_Gfav = zeros((nb, nb))
-    num_Gfva = zeros((nb, nb))
-    num_Gfvv = zeros((nb, nb))
-    num_Gtaa = zeros((nb, nb))
-    num_Gtav = zeros((nb, nb))
-    num_Gtva = zeros((nb, nb))
-    num_Gtvv = zeros((nb, nb))
+    num_Gfaa = zeros((nb, nb), complex)
+    num_Gfav = zeros((nb, nb), complex)
+    num_Gfva = zeros((nb, nb), complex)
+    num_Gfvv = zeros((nb, nb), complex)
+    num_Gtaa = zeros((nb, nb), complex)
+    num_Gtav = zeros((nb, nb), complex)
+    num_Gtva = zeros((nb, nb), complex)
+    num_Gtvv = zeros((nb, nb), complex)
     dIf_dVa, dIf_dVm, dIt_dVa, dIt_dVm, If, It = dIbr_dV(branch, Yf, Yt, V)
     dAf_dVa, dAf_dVm, dAt_dVa, dAt_dVm = \
                             dAbr_dV(dIf_dVa, dIf_dVm, dIt_dVa, dIt_dVm, If, It)
@@ -328,7 +333,7 @@ def t_hessian(quiet=False):
     t_is(Gtva.todense(), num_Gtva, 3, ['Gtva', t])
     t_is(Gtvv.todense(), num_Gtvv, 2, ['Gtvv', t])
 
-    t_end
+    t_end()
 
 
 if __name__ == '__main__':

@@ -16,7 +16,7 @@
 
 from time import time
 
-from pypower.t.test_pypower import TestGlobals
+from pypower.t.t_globals import TestGlobals
 
 def t_begin(num_of_tests, quiet=False):
     """Initializes the global test counters, setting everything up to

@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from pypower.t.test_pypower import TestGlobals
+from pypower.t.t_globals import TestGlobals
+
 
 def t_ok(cond, msg=''):
     """Tests if a condition is true.

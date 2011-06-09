@@ -14,9 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
 from time import time
 
-from pypower.t.test_pypower import TestGlobals
+from pypower.t.t_globals import TestGlobals
+
 
 def t_end():
     """Finish running tests and print statistics.
@@ -67,4 +70,4 @@ def t_end():
                 s += ', %d skipped' % TestGlobals.t_skip_cnt
         s += '\nElapsed time %.2f seconds.\n' % (time() - TestGlobals.t_clock)
 
-    print s
+    sys.stdout.write(s)
