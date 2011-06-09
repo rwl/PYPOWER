@@ -59,3 +59,7 @@ def t_hasPQcap(quiet=False):
     t_is(hasPQcap(gen, 'L'), [0,1,0,1,1,1,1,0,0,0,0], 12, t)
 
     t_end()
+
+
+if __name__ == '__main__':
+    t_hasPQcap(quiet=False)

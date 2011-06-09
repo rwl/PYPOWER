@@ -33,7 +33,7 @@ def test_pypower(verbose=False):
     tests.append('t_hessian')
     tests.append('t_totcost')
     tests.append('t_modcost')
-#    tests.append('t_hasPQcap')
+    tests.append('t_hasPQcap')
 
 #    tests.append('t_mips')
 

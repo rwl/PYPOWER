@@ -32,12 +32,6 @@ def t_run_tests(test_names, verbose=False):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    t_num_of_tests = TestGlobals.t_num_of_tests
-    t_counter = TestGlobals.t_counter
-    t_ok_cnt = TestGlobals.t_ok_cnt
-    t_not_ok_cnt = TestGlobals.t_not_ok_cnt
-    t_skip_cnt = TestGlobals.t_skip_cnt
-
     ## figure out padding for printing
     if not verbose:
         length = zeros(len(test_names))
@@ -68,11 +62,11 @@ def t_run_tests(test_names, verbose=False):
         mod = sys.modules['pypower.t.'+tname]  #@PydevCodeAnalysisIgnore
         eval('mod.%s(not verbose)' % tname)
 
-        num_of_tests    = num_of_tests  + t_num_of_tests
-        counter         = counter       + t_counter
-        ok_cnt          = ok_cnt        + t_ok_cnt
-        not_ok_cnt      = not_ok_cnt    + t_not_ok_cnt
-        skip_cnt        = skip_cnt      + t_skip_cnt
+        num_of_tests    = num_of_tests  + TestGlobals.t_num_of_tests
+        counter         = counter       + TestGlobals.t_counter
+        ok_cnt          = ok_cnt        + TestGlobals.t_ok_cnt
+        not_ok_cnt      = not_ok_cnt    + TestGlobals.t_not_ok_cnt
+        skip_cnt        = skip_cnt      + TestGlobals.t_skip_cnt
 
     s = ''
     if verbose:

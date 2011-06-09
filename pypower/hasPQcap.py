@@ -14,13 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
 from numpy import any, zeros, nonzero
 
 from idx_gen import QMAX, QMIN, PMAX, PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX
 
-logger = logging.getLogger(__name__)
 
 def hasPQcap(gen, hilo='B'):
     """Checks for P-Q capability curve constraints.
@@ -49,14 +48,14 @@ def hasPQcap(gen, hilo='B'):
     """
     ## check for errors capability curve data
     if any( gen[:, PC1] > gen[:, PC2] ):
-        logger.error('hasPQcap: Pc1 > Pc2')
+        stderr.write('hasPQcap: Pc1 > Pc2\n')
     if any( gen[:, QC2MAX] > gen[:, QC1MAX] ):
-        logger.error('hasPQcap: Qc2max > Qc1max')
+        stderr.write('hasPQcap: Qc2max > Qc1max\n')
     if any( gen[:, QC2MIN] < gen[:, QC1MIN] ):
-        logger.error('hasPQcap: Qc2min < Qc1min')
+        stderr.write('hasPQcap: Qc2min < Qc1min\n')
 
-    L = zeros(gen.shape[0])
-    U = zeros(gen.shape[0])
+    L = zeros(gen.shape[0], bool)
+    U = zeros(gen.shape[0], bool)
     k = nonzero( gen[:, PC1] != gen[:, PC2] )
 
     if hilo != 'U':       ## include lower constraint
