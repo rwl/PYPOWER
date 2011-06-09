@@ -63,7 +63,7 @@ def polycost(gencost, Pg, der=0):
     if len(c) == 0:
         f = zeros(Pg.shape)
     else:
-        f = c[:, 0]        ## constant term
+        f = c[:, :1].flatten()  ## constant term
         for k in range(1, c.shape[1]):
             f = f + c[:, k] * Pg**k
 
