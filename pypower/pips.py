@@ -19,12 +19,12 @@ from numpy import array, flatnonzero, Inf, any, isnan, ones, r_, finfo, \
 
 from numpy.linalg import norm
 
-from scipy.sparse import csr_matrix, vstack, hstack, eye
+from scipy.sparse import vstack, hstack, eye, csr_matrix as sparse
 from scipy.sparse.linalg import spsolve
 
 EPS = finfo(float).eps
 
-def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
+def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
          gh_fcn=None, hess_fcn=None, opt=None):
     """Primal-dual interior point method for NLP (nonlinear programming).
     Minimize a function F(X) beginning from a starting point M{x0}, subject to
@@ -157,8 +157,8 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
                    - None = numerically failed
                - C{output} - output dictionary with keys:
                    - C{iterations} - number of iterations performed
-                   - C{hist} - dictionary of arrays with trajectories of the
-                     following: feascond, gradcond, coppcond, costcond, gamma,
+                   - C{hist} - list of arrays with trajectories of the
+                     following: feascond, gradcond, compcond, costcond, gamma,
                      stepsize, obj, alphap, alphad
                    - C{message} - exit message
                - C{lmbda} - dictionary containing the Langrange and Kuhn-Tucker
@@ -173,6 +173,19 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
     @see: U{http://www.pserc.cornell.edu/matpower/}
     @license: GNU GPL version 3
     """
+    if isinstance(f_fcn, dict):  ## problem dict
+        p = f_fcn
+        f_fcn = p['f_fcn']
+        x0 = p['x0']
+        if 'opt' in p: opt = p['opt']
+        if 'hess_fcn' in p: hess_fcn = p['hess_fcn']
+        if 'gh_fcn' in p: gh_fcn = p['gh_fcn']
+        if 'xmax' in p: xmax = p['xmax']
+        if 'xmin' in p: xmin = p['xmin']
+        if 'u' in p: u = p['u']
+        if 'l' in p: l = p['l']
+        if 'A' in p: A = p['A']
+
     nx = x0.shape[0]                        # number of variables
     nA = A.shape[0] if A is not None else 0 # number of original linear constr
 
@@ -192,27 +205,27 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 
     opt = {} if opt is None else opt
     # options
-    if not opt.has_key("feastol"):
+    if "feastol" not in opt:
         opt["feastol"] = 1e-06
-    if not opt.has_key("gradtol"):
+    if "gradtol" not in opt:
         opt["gradtol"] = 1e-06
-    if not opt.has_key("comptol"):
+    if "comptol" not in opt:
         opt["comptol"] = 1e-06
-    if not opt.has_key("costtol"):
+    if "costtol" not in opt:
         opt["costtol"] = 1e-06
-    if not opt.has_key("max_it"):
+    if "max_it" not in opt:
         opt["max_it"] = 150
-    if not opt.has_key("max_red"):
+    if "max_red" not in opt:
         opt["max_red"] = 20
-    if not opt.has_key("step_control"):
+    if "step_control" not in opt:
         opt["step_control"] = False
-    if not opt.has_key("cost_mult"):
+    if "cost_mult" not in opt:
         opt["cost_mult"] = 1
-    if not opt.has_key("verbose"):
-        opt["verbose"] = False
+    if "verbose" not in opt:
+        opt["verbose"] = 0
 
     # initialize history
-    hist = {}
+    hist = []
 
     # constants
     xi = 0.99995
@@ -263,7 +276,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
             dh = None
         elif dhn is None:
             dh = Ai.T
-        elif Ae is None:
+        elif Ai is None:
             dh = dhn
         else:
             dh = hstack([dhn, Ai.T])
@@ -319,39 +332,41 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
     gnorm = norm(g, Inf) if len(g) else 0.0
     lam_norm = norm(lam, Inf) if len(lam) else 0.0
     mu_norm = norm(mu, Inf) if len(mu) else 0.0
+    znorm = norm(z, Inf) if len(z) else 0.0
     feascond = \
-        max([gnorm, maxh]) / (1 + max([norm(x, Inf), norm(z, Inf)]))
+        max([gnorm, maxh]) / (1 + max([norm(x, Inf), znorm]))
     gradcond = \
         norm(Lx, Inf) / (1 + max([lam_norm, mu_norm]))
-    coppcond = dot(z, mu) / (1 + norm(x, Inf))
+    compcond = dot(z, mu) / (1 + norm(x, Inf))
     costcond = absolute(f - f0) / (1 + absolute(f0))
 
     # save history
-    hist[i] = {'feascond': feascond, 'gradcond': gradcond,
-        'coppcond': coppcond, 'costcond': costcond, 'gamma': gamma,
-        'stepsize': 0, 'obj': f / opt["cost_mult"], 'alphap': 0, 'alphad': 0}
+    hist.append({'feascond': feascond, 'gradcond': gradcond,
+        'compcond': compcond, 'costcond': costcond, 'gamma': gamma,
+        'stepsize': 0, 'obj': f / opt["cost_mult"], 'alphap': 0, 'alphad': 0})
 
     if opt["verbose"]:
 #        s = '-sc' if opt["step_control"] else ''
 #        version, date = '1.0b2', '24-Mar-2010'
 #        print 'Python Interior Point Solver - PIPS%s, Version %s, %s' % \
 #                    (s, version, date)
-        print " it    objective   step size   feascond     gradcond     " \
-              "coppcond     costcond  "
-        print "----  ------------ --------- ------------ ------------ " \
-              "------------ ------------"
-        print "%3d  %12.8g %10s %12g %12g %12g %12g" % \
-            (i, (f / opt["cost_mult"]), "",
-             feascond, gradcond, coppcond, costcond)
+        if opt['verbose'] > 1:
+            print " it    objective   step size   feascond     gradcond     " \
+                  "compcond     costcond  "
+            print "----  ------------ --------- ------------ ------------ " \
+                  "------------ ------------"
+            print "%3d  %12.8g %10s %12g %12g %12g %12g" % \
+                (i, (f / opt["cost_mult"]), "",
+                 feascond, gradcond, compcond, costcond)
 
     if feascond < opt["feastol"] and gradcond < opt["gradtol"] and \
-        coppcond < opt["comptol"] and costcond < opt["costtol"]:
+        compcond < opt["comptol"] and costcond < opt["costtol"]:
         converged = True
         if opt["verbose"]:
             print "Converged!"
 
     # do Newton iterations
-    while (not converged and i < opt["max_it"]):
+    while (not converged) and (i < opt["max_it"]):
         # update iteration counter
         i += 1
 
@@ -368,16 +383,16 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
             _, _, d2f = f_fcn(x)      # cost
             Lxx = d2f * opt["cost_mult"]
         rz = range(len(z))
-        zinvdiag = csr_matrix((1.0 / z, (rz, rz))) if len(z) else None
+        zinvdiag = sparse((1.0 / z, (rz, rz))) if len(z) else None
         rmu = range(len(mu))
-        mudiag = csr_matrix((mu, (rmu, rmu))) if len(mu) else None
+        mudiag = sparse((mu, (rmu, rmu))) if len(mu) else None
         dh_zinv = None if dh is None else dh * zinvdiag
         M = Lxx if dh is None else Lxx + dh_zinv * mudiag * dh.T
         N = Lx if dh is None else Lx + dh_zinv * (mudiag * h + gamma * e)
 
-        Ab = M if dg is None else vstack([
+        Ab = sparse(M) if dg is None else vstack([
             hstack([M, dg]),
-            hstack([dg.T, csr_matrix((neq, neq))])
+            hstack([dg.T, sparse((neq, neq))])
         ])
         bb = r_[-N, -g]
 
@@ -436,7 +451,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
 #                g1 = r_[gn1, Ai * x1 - bi]         # inequality constraints
 #                h1 = r_[hn1, Ae * x1 - be]         # equality constraints
 #                L1 = f1 + lam.H * h1 + mu.H * (g1 + z) - gamma * sum(log(z))
-#                if opt["verbose"]:
+#                if opt["verbose"] > 2:
 #                    logger.info("\n   %3d            %10.f" % (-j, norm(dx1)))
 #                rho = (L1 - L) / (Lx.H * dx1 + 0.5 * dx1.H * Lxx * dx1)
 #                if rho > rho_min and rho < rho_max:
@@ -475,7 +490,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
                 dh = None
             elif dhn is None:
                 dh = Ai.T
-            elif Ae is None:
+            elif Ai is None:
                 dh = dhn
             else:
                 dh = hstack([dhn, Ai.T])
@@ -505,25 +520,26 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
         gnorm = norm(g, Inf) if len(g) else 0.0
         lam_norm = norm(lam, Inf) if len(lam) else 0.0
         mu_norm = norm(mu, Inf) if len(mu) else 0.0
+        znorm = norm(z, Inf) if len(z) else 0.0
         feascond = \
-            max([gnorm, maxh]) / (1+max([norm(x, Inf), norm(z, Inf)]))
+            max([gnorm, maxh]) / (1 + max([norm(x, Inf), znorm]))
         gradcond = \
             norm(Lx, Inf) / (1 + max([lam_norm, mu_norm]))
-        coppcond = dot(z, mu) / (1 + norm(x, Inf))
+        compcond = dot(z, mu) / (1 + norm(x, Inf))
         costcond = float(absolute(f - f0) / (1 + absolute(f0)))
 
-        hist[i] = {'feascond': feascond, 'gradcond': gradcond,
-            'coppcond': coppcond, 'costcond': costcond, 'gamma': gamma,
+        hist.append({'feascond': feascond, 'gradcond': gradcond,
+            'compcond': compcond, 'costcond': costcond, 'gamma': gamma,
             'stepsize': norm(dx), 'obj': f / opt["cost_mult"],
-            'alphap': alphap, 'alphad': alphad}
+            'alphap': alphap, 'alphad': alphad})
 
-        if opt["verbose"]:
+        if opt["verbose"] > 1:
             print "%3d  %12.8g %10.5g %12g %12g %12g %12g" % \
                 (i, (f / opt["cost_mult"]), norm(dx), feascond, gradcond,
-                 coppcond, costcond)
+                 compcond, costcond)
 
         if feascond < opt["feastol"] and gradcond < opt["gradtol"] and \
-            coppcond < opt["comptol"] and costcond < opt["costtol"]:
+            compcond < opt["comptol"] and costcond < opt["costtol"]:
             converged = True
             if opt["verbose"]:
                 print "Converged!"
@@ -556,7 +572,7 @@ def pips(f_fcn, x0, A=None, l=None, u=None, xmin=None, xmax=None,
     else:
         raise
 
-    output = {"iterations": i, "history": hist, "message": message}
+    output = {"iterations": i, "hist": hist, "message": message}
 
     # zero out multipliers on non-binding constraints
     mu[flatnonzero( (h < -opt["feastol"]) & (mu < mu_threshold) )] = 0.0

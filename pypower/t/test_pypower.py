@@ -35,7 +35,7 @@ def test_pypower(verbose=False):
     tests.append('t_modcost')
     tests.append('t_hasPQcap')
 
-#    tests.append('t_mips')
+    tests.append('t_pips')
 
 #    tests.append('t_qps_pypower')
     tests.append('t_pf')

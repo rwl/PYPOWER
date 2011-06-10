@@ -169,7 +169,7 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
         opt["cost_mult"] = 1
 
     def qp_f(x):
-        f = 0.5 * dot(x.T * H, x) + dot(c.T, x)
+        f = 0.5 * dot(x * H, x) + dot(c, x)
         df = H * x + c
         d2f = H
         return f, df, d2f

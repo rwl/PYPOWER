@@ -33,14 +33,14 @@ def t_is(got, expected, prec=5, msg=''):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if isinstance(got, int) or isinstance(got, float):
-        got = array([got])
+        got = array([got], float)
     elif isinstance(got, list) or isinstance(got, tuple):
-        got = array(got)
+        got = array(got, float)
 
     if isinstance(expected, int) or isinstance(expected, float):
-        expected = array([expected])
+        expected = array([expected], float)
     elif isinstance(expected, list) or isinstance(expected, tuple):
-        expected = array(expected)
+        expected = array(expected, float)
 
     if (got.shape == expected.shape) or (expected.shape == (0,)):
         got_minus_expected = got - expected
