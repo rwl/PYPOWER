@@ -16,7 +16,7 @@
 
 from numpy import Inf, ones, zeros, dot
 
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix as sparse
 
 from pips import pips
 
@@ -129,7 +129,8 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
                    - C{lower} - lower bound on optimization variables
                    - C{upper} - upper bound on optimization variables
 
-    @license: GNU GPL version 3
+
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if H is None or H.nnz == 0:
         if A is None or A.nnz == 0 and \
@@ -144,7 +145,7 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
                 nx = xmin.shape[0]
             elif xmax is not None and len(xmax) > 0:
                 nx = xmax.shape[0]
-        H = csr_matrix((nx, nx))
+        H = sparse((nx, nx))
     else:
         nx = H.shape[0]
 
