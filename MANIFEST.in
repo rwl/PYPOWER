@@ -1,4 +1,11 @@
 include LICENSE
 include README
-include pydyn/test/data/*.mtx
 include pypower/test/data/*.mtx
+include pypower/t/sol9_dcopf.mat
+include pypower/t/sol9_dcpf.mat
+include pypower/t/sol9_opf_ang.mat
+include pypower/t/sol9_opf_extras1.mat
+include pypower/t/sol9_opf_Plim.mat
+include pypower/t/sol9_PQcap.mat
+include pypower/t/sol9_opf.mat
+include pypower/t/sol9_pf.mat
