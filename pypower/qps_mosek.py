@@ -21,7 +21,11 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
 
-from pymosek import mosekopt
+try:
+    from pymosek import mosekopt
+except ImportError:
+#    print 'MOSEK not available'
+    pass
 
 from pypower.mosek_options import mosek_options
 

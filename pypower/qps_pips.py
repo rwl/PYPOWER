@@ -132,64 +132,53 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    if H is None or H.nnz == 0:
-        if A is None or A.nnz == 0 and \
-           xmin is None or len(xmin) == 0 and \
-           xmax is None or len(xmax) == 0:
+    if isinstance(H, dict):
+        p = H
+    else:
+        p = {'H': H, 'c': c, 'A': A, 'l': l, 'u': u}
+        if xmin is not None: p['xmin'] = xmin
+        if xmax is not None: p['xmax'] = xmax
+        if x0 is not None: p['x0'] = x0
+        if opt is not None: p['opt'] = opt
+
+    if 'H' not in p or p['H'] == None:#p['H'].nnz == 0:
+        if p['A'] is None or p['A'].nnz == 0 and \
+           'xmin' not in p and \
+           'xmax' not in p:
+#           'xmin' not in p or len(p['xmin']) == 0 and \
+#           'xmax' not in p or len(p['xmax']) == 0:
             print 'qps_pips: LP problem must include constraints or variable bounds'
             return
         else:
-            if A is not None and A.nnz >= 0:
-                nx = A.shape[1]
-            elif xmin is not None and len(xmin) > 0:
-                nx = xmin.shape[0]
-            elif xmax is not None and len(xmax) > 0:
-                nx = xmax.shape[0]
-        H = sparse((nx, nx))
+            if p['A'] is not None and p['A'].nnz >= 0:
+                nx = p['A'].shape[1]
+            elif 'xmin' in p and len(p['xmin']) > 0:
+                nx = p['xmin'].shape[0]
+            elif 'xmax' in p and len(p['xmax']) > 0:
+                nx = p['xmax'].shape[0]
+        p['H'] = sparse((nx, nx))
     else:
-        nx = H.shape[0]
+        nx = p['H'].shape[0]
 
-    xmin = -Inf * ones(nx) if xmin is None else xmin
-    xmax =  Inf * ones(nx) if xmax is None else xmax
+    p['xmin'] = -Inf * ones(nx) if 'xmin' not in p else p['xmin']
+    p['xmax'] =  Inf * ones(nx) if 'xmax' not in p else p['xmax']
 
-    c = zeros(nx) if c is None else c
+    p['c'] = zeros(nx) if p['c'] is None else p['c']
 
-#    if x0 is None:
-#        x0 = zeros(nx)
-#        k = flatnonzero( (VUB < 1e10) & (VLB > -1e10) )
-#        x0[k] = ((VUB[k] + VLB[k]) / 2)
-#        k = flatnonzero( (VUB < 1e10) & (VLB <= -1e10) )
-#        x0[k] = VUB[k] - 1
-#        k = flatnonzero( (VUB >= 1e10) & (VLB > -1e10) )
-#        x0[k] = VLB[k] + 1
-
-    x0 = zeros(nx) if x0 is None else x0
-
-    opt = {} if opt is None else opt
-    if not opt.has_key("cost_mult"):
-        opt["cost_mult"] = 1
+    p['x0'] = zeros(nx) if 'x0' not in p else p['x0']
 
     def qp_f(x):
-        f = 0.5 * dot(x * H, x) + dot(c, x)
-        df = H * x + c
-        d2f = H
+        f = 0.5 * dot(x * p['H'], x) + dot(p['c'], x)
+        df = p['H'] * x + p['c']
+        d2f = p['H']
         return f, df, d2f
 
-#    def qp_gh(x):
-#        g = array([])
-#        h = array([])
-#        dg = None
-#        dh = None
-#        return g, h, dg, dh
-#
-#    def qp_hessian(x, lmbda):
-#        Lxx = H * opt["cost_mult"]
-#        return Lxx
+    p['f_fcn'] = qp_f
 
-#    l = -Inf * ones(b.shape[0])
-#    l[:N] = b[:N]
+    sol = pips(p)
 
-    return pips(qp_f, x0, A, l, u, xmin, xmax, opt=opt)
+    return sol["x"], sol["f"], sol["eflag"], sol["output"], sol["lmbda"]
+
 
 if __name__ == "__main__":
     import doctest

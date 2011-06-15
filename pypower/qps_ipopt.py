@@ -21,7 +21,11 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import issparse, csr_matrix as sparse
 
-import pyipopt
+try:
+    import pyipopt
+except ImportError:
+#    print 'IPOPT not available'
+    pass
 
 from pypower.ipopt_options import ipopt_options
 

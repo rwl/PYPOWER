@@ -135,10 +135,10 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         if 'c' in p: c = p['c']
         if 'H' in p: H = p['H']
     else:                         ## individual args
-        assert H is not None
+#        assert H is not None  zero dimensional sparse matrices not supported
         assert c is not None
-        assert A is not None
-        assert l is not None
+#        assert A is not None  zero dimensional sparse matrices not supported
+#        assert l is not None  no lower bounds indicated by None
 
     if opt is None:
         opt = {}

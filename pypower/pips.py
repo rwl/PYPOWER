@@ -610,8 +610,8 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
 #             "mu_l": mu_l[nx:], "mu_u": mu_u[nx:],
 #             "lower": mu_l[:nx], "upper": mu_u[:nx]}
 
-    solution =  {"x": x, "f": f, "converged": converged,
-                 "lmbda": lmbda, "output": output}
+    solution =  {"x": x, "f": f, "eflag": converged,
+                 "output": output, "lmbda": lmbda}
 
     return solution
 

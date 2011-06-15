@@ -14,7 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from pymosek import mosekopt
+try:
+    from pymosek import mosekopt
+except ImportError:
+#    print "MOSEK not available"
+    pass
+
 
 def mosek_options(overrides=None, ppopt=None):
     """Sets options for MOSEK.

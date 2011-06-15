@@ -21,7 +21,11 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
 
-from cplex import Cplex, cplexlp, cplexqp
+try:
+    from cplex import Cplex, cplexlp, cplexqp
+except ImportError:
+#    print 'CPLEX not available'
+    pass
 
 from pypower.cplex_options import cplex_options
 

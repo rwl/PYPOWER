@@ -14,7 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from cplex import cplexoptimset
+try:
+    from cplex import cplexoptimset
+except ImportError:
+#    print "CPLEX not available"
+    pass
+
 
 def cplex_options(overrides=None, ppopt=None):
     """Sets options for CPLEX.
