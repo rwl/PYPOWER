@@ -14,14 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
 from ppoption import ppoption
 from opf import opf
 from printpf import printpf
 from savecase import savecase
 
-logger = logging.getLogger(__name__)
 
 def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     """ Runs an optimal power flow.
@@ -40,8 +39,8 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         fd = None
         try:
             fd = open(fname, "wb")
-        except Exception, detail:
-            logger.error("Error opening %s: %s." % (fname, detail))
+        except IOError, detail:
+            stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
             if fd is not None:
                 printpf(r, fd, ppopt)

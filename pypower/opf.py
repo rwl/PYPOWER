@@ -15,37 +15,19 @@
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
 from time import time
-from os.path import exists
-import logging
 
-from numpy import array, ones, zeros, any, nonzero, pi, Inf, r_
+from numpy import zeros, c_, shape
 
-from scipy.sparse import csr_matrix
+from pypower.idx_bus import MU_VMIN
+from pypower.idx_gen import PG, QG, MU_QMIN, MU_PMAX, MU_PMIN
+from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, MU_ANGMIN, MU_ANGMAX
 
-from idx_bus import BUS_TYPE, PD, GS, VA, VM, VMIN, VMAX, MU_VMIN, REF
-from idx_gen import GEN_BUS, PG, QG, PMIN, PMAX, QMIN, QMAX, VG, MU_QMIN, \
-    MU_PMAX, MU_PMIN
-from idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, RATE_A, MU_ANGMIN, MU_ANGMAX
-from idx_cost import MODEL, NCOST, COST, PW_LINEAR, POLYNOMIAL
-
-from ext2int import ext2int
-from opf_args import opf_args
-from pqcost import pqcost
-from makeBdc import makeBdc
-from makeAvl import makeAvl
-from makeApq import makeApq
-from makeAang import makeAang
-from makeAy import makeAy
-from opf_model import opf_model
-from run_userfcn import run_userfcn
-from ppver import ppver
-from dcopf_solver import dcopf_solver
-from pipsopf_solver import pipsopf_solver
-#from update_mupq import update_mupq
+from pypower.ext2int import ext2int
+from pypower.opf_args import opf_args
+from pypower.opf_setup import opf_setup
+from pypower.opf_execute import opf_execute
 from int2ext import int2ext
-from printpf import printpf
 
-logger = logging.getLogger(__name__)
 
 def opf(*args, **kw_args):
     """Solves an optimal power flow.
@@ -170,7 +152,8 @@ def opf(*args, **kw_args):
                     (other)
         C{cost}       user defined cost values, by named block
 
-    @see: L{runopf}, L{dcopf}, L{UOPF}, L{caseformat}
+    @see: L{runopf}, L{dcopf}, L{uopf}, L{caseformat}
+    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ##----- initialization -----
     t0 = time()         ## start timer
@@ -178,403 +161,43 @@ def opf(*args, **kw_args):
     ## process input arguments
     ppc, ppopt = opf_args(args, kw_args)
 
-    ## options
-    dc  = ppopt[10]        ## PF_DC        : 1 = DC OPF, 0 = AC OPF
-    alg = ppopt[11]        ## OPF_ALG
-    verbose = ppopt[31]    ## VERBOSE
-
-    ## set AC OPF algorithm code
-    if not dc:
-        if alg == 0:                   ## OPF_ALG not set, choose best option
-            if exists('pdipmopf'):
-                alg = 540              ## PDIPM
-        else:
-            raise NotImplementedError  ## MIPS
-        ## update deprecated algorithm codes to new, generalized equivalents
-        if alg == 100 | alg == 200:   ## CONSTR
-            raise NotImplementedError
-        elif alg == 120 | alg == 220: ## dense LP
-            raise NotImplementedError
-        elif alg == 140 | alg == 240: ## sparse (relaxed) LP
-            raise NotImplementedError
-        elif alg == 160 | alg == 260: ## sparse (full) LP
-            raise NotImplementedError
-        ppopt[11] = alg
-
-    ## data dimensions
-    nb   = ppc["bus"].shape[0]    ## number of buses
-    nl   = ppc["branch"].shape[0] ## number of branches
-    ng   = ppc["gen"].shape[0]    ## number of dispatchable injections
-    if ppc.has_key('A'):
-        nusr = ppc["A"].shape[0]  ## number of linear user constraints
-    else:
-        nusr = 0
-    if ppc.has_key('N'):
-        nw = ppc["N"].shape[0]    ## number of general cost vars, w
-    else:
-        nw = 0
-
     ## add zero columns to bus, gen, branch for multipliers, etc if needed
-    if ppc["bus"].shape[1] < MU_VMIN:
-        ppc["bus"] = r_[ppc["bus"], zeros((nb, MU_VMIN - ppc["bus"].shape[1]))]
-    if ppc["gen"].shape[1] < MU_QMIN:
-        ppc["gen"] = r_[ppc["gen"], zeros((ng, MU_QMIN - ppc["gen"].shape[1]))]
-    if ppc["branch"].shape[1] < MU_ANGMAX:
-        ppc["branch"] = \
-            r_[ppc["branch"], zeros((nl, MU_ANGMAX - ppc["branch"].shape[1]))]
+    nb   = shape(ppc['bus'])[0]    ## number of buses
+    nl   = shape(ppc['branch'])[0] ## number of branches
+    ng   = shape(ppc['gen'])[0]    ## number of dispatchable injections
+    if shape(ppc['bus'])[1] < MU_VMIN:
+        ppc['bus'] = c_[ppc['bus'], zeros((nb, MU_VMIN - shape(ppc['bus'])[1]))]
 
-    if dc:
-        ## ignore reactive costs for DC
-        ppc["gencost"] = pqcost(ppc["gencost"], ng)
+    if shape(ppc['gen'])[1] < MU_QMIN:
+        ppc['gen'] = c_[ppc['gen'], zeros((ng, MU_QMIN - shape(ppc['gen'])[1]))]
 
-        ## reduce A and/or N from AC dimensions to DC dimensions, if needed
-        if nusr | nw:
-            ## Vm and Qg columns
-            acc = r_[nb + range(nb), 2 * nb + ng + range(ng)]
-            if nusr & ppc["A"].shape[1] >= 2 * nb + 2 * ng:
-                ## make sure there aren't any constraints on Vm or Qg
-                if any(any(ppc["A"][:, acc])):
-                    logger.error('opf: attempting to solve DC OPF with user '
-                                 'constraints on Vm or Qg')
-                ppc["A"][:, acc] = array([])       ## delete Vm and Qg columns
-            if nw & ppc["N"].shape[1] >= 2 * nb + 2 * ng:
-                ## make sure there aren't any costs on Vm or Qg
-                if any(any(ppc["N"][:, acc])):
-                    logger.error('opf: attempting to solve DC OPF with user '
-                                 'costs on Vm or Qg')
-                ppc["N"][:, acc] = array([])       ## delete Vm and Qg columns
+    if shape(ppc['branch'])[1] < MU_ANGMAX:
+        ppc['branch'] = c_[ppc['branch'], zeros((nl, MU_ANGMAX - shape(ppc['branch'])[1]))]
 
-    ## convert single-block piecewise-linear costs into linear polynomial cost
-    p1 = nonzero(ppc["gencost"][:, MODEL] == PW_LINEAR &
-                 ppc["gencost"][:, NCOST] == 2)
-    # p1 = []
-    if any(p1):
-        x0 = ppc["gencost"][p1, COST]
-        y0 = ppc["gencost"][p1, COST+1]
-        x1 = ppc["gencost"][p1, COST+2]
-        y1 = ppc["gencost"][p1, COST+3]
-        m = (y1 - y0) / (x1 - x0)
-        b = y0 - m * x0
-        ppc["gencost"][p1, MODEL] = POLYNOMIAL
-        ppc["gencost"][p1, NCOST] = 2
-        ppc["gencost"][p1, COST:COST + 1] = r_[m, b]
-
-    ## convert to internal numbering, remove out-of-service stuff
+    ##-----  convert to internal numbering, remove out-of-service stuff  -----
     ppc = ext2int(ppc)
 
-    # TODO: Translate opf_setup and opf_execute
+    ##-----  construct OPF model object  -----
+    om = opf_setup(ppc, ppopt)
 
-    ## update dimensions
-    nb   = ppc["bus"].shape[0]    ## number of buses
-    nl   = ppc["branch"].shape[0] ## number of branches
-    ng   = ppc["gen"].shape[0]    ## number of dispatchable injections
+    ##-----  execute the OPF  -----
+    results, success, raw = opf_execute(om, ppopt)
 
-    ## create (read-only) copies of individual fields for convenience
-    baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, mpopt, \
-        N, fparm, H, Cw, z0, zl, zu, userfcn = opf_args(ppc, ppopt)
-
-    ## warn if there is more than one reference bus
-    refs = nonzero(bus[:, BUS_TYPE] == REF)
-    if len(refs) > 1 & verbose > 0:
-        errstr = 'opf: Warning: Multiple reference buses.\n' \
-            '     For a system with islands, a reference bus in each\n' \
-            '     island may help convergence, but in a fully connected\n' \
-            '     system such a situation is probably not reasonable.'
-        print errstr
-
-    ## set up initial variables and bounds
-    Va   = bus[:, VA] * (pi / 180)
-    Vm   = bus[:, VM]
-    Vm[gen[:, GEN_BUS]] = gen[:, VG]  ## buses with gens, init Vm from gen data
-    Pg   = gen[:, PG] / baseMVA
-    Qg   = gen[:, QG] / baseMVA
-    Pmin = gen[:, PMIN] / baseMVA
-    Pmax = gen[:, PMAX] / baseMVA
-    Qmin = gen[:, QMIN] / baseMVA
-    Qmax = gen[:, QMAX] / baseMVA
-
-    if dc:               ## DC model
-        ## more problem dimensions
-        nv    = 0            ## number of voltage magnitude vars
-        nq    = 0            ## number of Qg vars
-        q1    = array([])    ## index of 1st Qg column in Ay
-
-        ## power mismatch constraints
-        B, Bf, Pbusinj, Pfinj = makeBdc(baseMVA, bus, branch)
-        ## Pbus w.r.t. Pg
-        neg_Cg = csr_matrix((-1, (gen[:, GEN_BUS], range(ng))), (nb, ng))
-        Amis = r_[B, neg_Cg]
-        bmis = -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj
-
-        ## branch flow constraints
-        il = nonzero(branch[:, RATE_A] != 0 & branch[:, RATE_A] < 1e10)
-        nl2 = len(il)         ## number of constrained lines
-        lpf = -Inf * ones(nl2)
-        upf = branch[il, RATE_A] / baseMVA - Pfinj[il]
-        upt = branch[il, RATE_A] / baseMVA + Pfinj[il]
-
-        user_vars = ['Va', 'Pg']
-        ycon_vars = ['Pg', 'y']
-    else:                ## AC model
-        ## more problem dimensions
-        nv    = nb           ## number of voltage magnitude vars
-        nq    = ng           ## number of Qg vars
-        q1    = 1 + ng         ## index of 1st Qg column in Ay
-
-        ## dispatchable load, constant power factor constraints
-        Avl, lvl, uvl  = makeAvl(baseMVA, gen)
-
-        ## generator PQ capability curve constraints
-        Apqh, ubpqh, Apql, ubpql, Apqdata = makeApq(baseMVA, gen)
-
-        user_vars = ['Va', 'Vm', 'Pg', 'Qg']
-        ycon_vars = ['Pg', 'Qg', 'y']
-
-    ## voltage angle reference constraints
-    Vau = Inf * ones(nb)
-    Val = -Vau
-    Vau[refs] = Va[refs]
-    Val[refs] = Va[refs]
-
-    ## branch voltage angle difference limits
-    Aang, lang, uang, iang  = makeAang(baseMVA, branch, nb, mpopt)
-
-    ## basin constraints for piece-wise linear gen cost variables
-    if alg == 545 | alg == 550:     ## SC-PDIPM or TRALM, no CCV cost vars
-        ny = 0
-        Ay = csr_matrix((0, ng + nq))
-        by = array([])
-    else:
-        ## piece-wise linear costs
-        ipwl = nonzero(gencost[:, MODEL] == PW_LINEAR)
-        ny = ipwl.shape[0]   ## number of piece-wise linear cost vars
-        Ay, by = makeAy(baseMVA, ng, gencost, 1, q1, 1 + ng + nq)
-
-    ## more problem dimensions
-    nx = nb+nv + ng+nq  ## number of standard OPF control variables
-    if nusr:
-        nz = ppc["A"].shape[1] - nx ## number of user z variables
-        if nz < 0:
-            logger.error('opf: user supplied A matrix must have at least %d '
-                         'columns.' % nx)
-    else:
-        nz = 0               ## number of user z variables
-        if nw:                 ## still need to check number of columns of N
-            if ppc["N"].shape[1] != nx:
-                logger.error('opf: user supplied N matrix must have %d '
-                             'columns.' % nx)
-
-    ## construct OPF model object
-    om = opf_model(ppc)
-    if dc:
-        om = om.userdata('Bf', Bf)
-        om = om.userdata('Pfinj', Pfinj)
-        om = om.add_vars('Va', nb, Va, Val, Vau)
-        om = om.add_vars('Pg', ng, Pg, Pmin, Pmax)
-        om = om.add_constraints('Pmis', Amis, bmis, bmis, ['Va', 'Pg']) ## nb
-        om = om.add_constraints('Pf',  Bf[il,:], lpf, upf, ['Va'])      ## nl
-        om = om.add_constraints('Pt', -Bf[il,:], lpf, upt, ['Va'])      ## nl
-        om = om.add_constraints('ang', Aang, lang, uang, ['Va'])        ## nang
-    else:
-        om = om.add_vars('Va', nb, Va, Val, Vau)
-        om = om.add_vars('Vm', nb, Vm, bus[:, VMIN], bus[:, VMAX])
-        om = om.add_vars('Pg', ng, Pg, Pmin, Pmax)
-        om = om.add_vars('Qg', ng, Qg, Qmin, Qmax)
-        om = om.add_constraints('Pmis', nb, 'nonlinear')
-        om = om.add_constraints('Qmis', nb, 'nonlinear')
-        om = om.add_constraints('Sf', nl, 'nonlinear')
-        om = om.add_constraints('St', nl, 'nonlinear')
-        om = om.add_constraints('PQh', Apqh, [], ubpqh, ['Pg', 'Qg']) ## npqh
-        om = om.add_constraints('PQl', Apql, [], ubpql, ['Pg', 'Qg']) ## npql
-        om = om.add_constraints('vl',  Avl, lvl, uvl, ['Pg', 'Qg'])   ## nvl
-        om = om.add_constraints('ang', Aang, lang, uang, ['Va'])      ## nang
-
-    ## y vars, constraints for piece-wise linear gen costs
-    if ny > 0:
-        om = om.add_vars(om, 'y', ny)
-        om = om.add_constraints(om, 'ycon', Ay, [], by, ycon_vars)    ## ncony
-
-    ## add user vars, constraints and costs (as specified via A, ..., N, ...)
-    if nz > 0:
-        om = om.add_vars('z', nz, z0, zl, zu)
-        user_vars[-1] = 'z'
-    if nusr:
-        om = om.add_constraints('usr', ppc.A, lbu, ubu, user_vars)    ## nusr
-    if nw:
-        user_cost = {}
-        user_cost["N"] = ppc["N"]
-        user_cost["Cw"] = Cw
-        if any(fparm):
-            user_cost["dd"] = fparm[:, 1]
-            user_cost["rh"] = fparm[:, 2]
-            user_cost["kk"] = fparm[:, 3]
-            user_cost["mm"] = fparm[:, 4]
-        if any(H):
-            user_cost["H"] = H
-        om = om.add_costs('usr', user_cost, user_vars)
-
-    ## execute userfcn callbacks for 'formulation' stage
-    om = run_userfcn(userfcn, 'formulation', om)
-
-    ## build user-defined costs
-    om = om.build_cost_params()
-
-    ## get indexing
-    vv, ll, nn = om.get_idx()
-
-    ## select optional solver output args
-    output = {'g': array([]), 'dg': array([])}
-
-    ## call the specific solver
-    if verbose > 0:
-        v = ppver('all')
-        print 'PYPOWER Version %s, %s' % (v["Version"], v["Date"])
-    if dc:
-        if verbose > 0:
-            print ' -- DC Optimal Power Flow'
-        results, success, raw = dcopf_solver(om, mpopt, output)
-    else:
-        ##-----  call specific AC OPF solver  -----
-        if verbose > 0:
-            print ' -- AC Optimal Power Flow'
-        if alg == 500:                                 ## MINOPF
-            raise NotImplementedError
-        elif alg == 300:                               ## CONSTR
-            raise NotImplementedError
-        elif alg == 320 | alg == 340 | alg == 360:     ## LP
-            raise NotImplementedError
-        elif alg == 520:                               ## FMINCON
-            raise NotImplementedError
-        elif alg == 540 | alg == 545 | alg == 550:
-            if alg == 540:       # PDIPM_OPF
-                raise NotImplementedError
-            elif alg == 545:     # SCPDIPM_OPF
-                raise NotImplementedError
-            elif alg == 550:     # TRALM_OPF
-                raise NotImplementedError
-        elif alg == 560 | alg == 565:                 ## PIPS
-            results, success, raw = pipsopf_solver(om, mpopt, output)
-    if not raw.has_key('output') or \
-       not raw["output"].has_key('alg') or \
-       not any(raw["output"]["alg"]):
-        raw["output"]["alg"] = alg
-    if results.has_key('g'):
-        g = results["g"]
-    if results.has_key('dg'):
-        jac = results["dg"]
-
-    if success:
-        if not dc:
-            ## copy bus voltages back to gen matrix
-            results["gen"][:, VG] = \
-                results["bus"][results["gen"][:, GEN_BUS], VM]
-
-            ## gen PQ capability curve multipliers
-            if ll["N"]["PQh"] > 0 | ll["N"]["PQl"] > 0:
-                mu_PQh = results["mu"]["lin"]["l"][
-                        ll["i1"]["PQh"]:ll["iN"]["PQh"]
-                    ] - results["mu"]["lin"]["u"][
-                        ll["i1"]["PQh"]:["ll"]["iN"]["PQh"]
-                    ]
-                mu_PQl = results["mu"]["lin"]["l"][
-                        ll["i1"]["PQl"]:ll["iN"]["PQl"]
-                    ] - results["mu"]["lin"]["u"][
-                        ll["i1"]["PQl"]:ll["iN"]["PQl"]
-                    ]
-                results["gen"] = \
-                    update_mupq(baseMVA, results.gen, mu_PQh, mu_PQl, Apqdata)
-
-        ## angle limit constraint multipliers
-        if ll.N.ang > 0:
-            results["branch"][iang, MU_ANGMIN] = \
-                results["mu"]["lin"]["l"][
-                        ll["i1"]["ang"]:ll["iN"]["ang"]
-                    ] * pi / 180
-            results["branch"][iang, MU_ANGMAX] = \
-                results["mu"]["lin"]["u"][
-                        ll["i1"]["ang"]:ll["iN"]["ang"]
-                    ] * pi / 180
-
-    ## assign values and limit shadow prices for variables
-    om_var_order = om.get('var', 'order')
-    for k in range(len(om_var_order)):
-        name = om_var_order[k]
-        if om.getN('var', name):
-            idx = range(vv["i1"][name], vv["iN"][name])
-            results["var"]["val"]["name"] = results["x"][idx]
-            results["var"]["mu"]["l"][name] = results["mu"]["var"]["l"][idx]
-            results["var"]["mu"]["u"][name] = results["mu"]["var"]["u"][idx]
-
-    ## assign shadow prices for linear constraints
-    om_lin_order = om.get('lin', 'order')
-    for k in range(len(om_lin_order)):
-        name = om_lin_order[k]
-        if om.getN('lin', name):
-            idx = range(ll["i1"][name], ll["iN"][name])
-            results["lin"]["mu"]["l"][name] = results["mu"]["lin"]["l"][idx]
-            results["lin"]["mu"]["u"][name] = results["mu"]["lin"]["u"][idx]
-
-    ## assign shadow prices for nonlinear constraints
-    if not dc:
-        om_nln_order = om.get('nln', 'order')
-        for k in range(len(om_nln_order)):
-            name = om_nln_order[k]
-            if om.getN('nln', name):
-                idx = range(nn["i1"][name], nn["iN"][name])
-                results["nln"]["mu"]["l"][name] = \
-                    results["mu"]["nln"]["l"][idx]
-                results["nln"]["mu"]["u"][name] = \
-                    results["mu"]["nln"]["u"][idx]
-
-    ## assign values for components of user cost
-    om_cost_order = om.get('cost', 'order')
-    for k in range(len(om_cost_order)):
-        name = om_cost_order[k]
-        if om.getN('cost', name):
-            results["cost"][name] = om.compute_cost(results["x"], name)
-
-    ## revert to original ordering, including out-of-service stuff
+    ##-----  revert to original ordering, including out-of-service stuff  -----
     results = int2ext(results)
 
     ## zero out result fields of out-of-service gens & branches
-    if any(results["order"]["gen"]["status"]["off"]):
-        results["gen"][results["order"]["gen"]["status"]["off"],
-                r_[PG, QG, MU_PMAX, MU_PMIN]] = 0
-    if any(results["order"]["branch"]["status"]["off"]):
-        results["branch"][results["order"]["branch"]["status"]["off"],
-                r_[PF, QF, PT, QT, MU_SF, MU_ST, MU_ANGMIN, MU_ANGMAX]] = 0
+    if len(results['order']['gen']['status']['off']) > 0:
+        results['gen'][results['order']['gen']['status']['off'], [PG, QG, MU_PMAX, MU_PMIN]] = 0
 
-    ## if single-block PWL costs were converted to POLY, insert dummy y into x
-    ## Note: The "y" portion of x will be messed up, but everything else
-    ##       should be in the expected locations.
-    if any(p1) & alg != 545 & alg != 550:
-        if dc:
-            nx = vv["N"]["Pg"]
-        else:
-            nx = vv["N"]["Qg"]
-        y = zeros(len(p1))
-        raw["xr"] = r_[ raw["xr"][:nx], y, raw["xr"][nx + 1:] ]
-        results["x"] = r_[ results["x"][:nx], y. results["x"][nx + 1:]]
+    if len(results['order']['branch']['status']['off']) > 0:
+        results['branch'][results['order']['branch']['status']['off'], [PF, QF, PT, QT, MU_SF, MU_ST, MU_ANGMIN, MU_ANGMAX]] = 0
 
-    ## compute elapsed time
-    et = time() - t0
+    ##-----  finish preparing output  -----
+    et = time() - t0      ## compute elapsed time
 
-    ## finish preparing output
-#    if nargout > 0:
-#        if nargout <= 2:
-    results["et"] = et
-    results["success"] = success
-    results["raw"] = raw
-#            busout = results
-#            genout = success
-#        else:
-#            busout, genout, branchout, f, info, xr, pimul = \
-#                results["bus"], results["gen"], results["branch"], \
-#                results["f"], raw["info"], raw["xr"], raw["pimul"]
-#    elif success:
-#        results.et = et
-#        results.success = success
-#        printpf(results, 1, mpopt)
+    results['et'] = et
+    results['success'] = success
+    results['raw'] = raw
 
-#    return busout, genout, branchout, f, success, info, et, g, jac, xr, pimul
-    return results, success
+    return results

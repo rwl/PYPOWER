@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
 from numpy import array
 from scipy.sparse import spmatrix
@@ -22,7 +22,6 @@ from scipy.sparse import spmatrix
 from ppoption import ppoption
 from loadcase import loadcase
 
-logger = logging.getLogger(__name__)
 
 def opf_args(*args):
     """Parses and initializes OPF input arguments.
@@ -165,7 +164,7 @@ def opf_args(*args):
                 Au = None
                 casefile = args
         else:
-            logger.logger.error('opf_args: Incorrect input arg order, number or type')
+            stderr.write('opf_args: Incorrect input arg order, number or type\n')
 
         ppc = loadcase(casefile)
         baseMVA, bus, gen, branch, gencost = \
@@ -267,7 +266,7 @@ def opf_args(*args):
                 Au = None
                 baseMVA, bus, gen, branch, areas, gencost = args
         else:
-            logger.logger.error('opf_args: Incorrect input arg order, number or type')
+            stderr.write('opf_args: Incorrect input arg order, number or type\n')
 
         if want_ppc:
             ppc = {  'baseMVA': baseMVA,
@@ -278,26 +277,26 @@ def opf_args(*args):
     nw = N.shape[0]
     if nw:
         if Cw.shape[0] != nw:
-            logger.error('opf_args.m: dimension mismatch between N and Cw in '
-                         'generalized cost parameters')
+            stderr.write('opf_args.m: dimension mismatch between N and Cw in '
+                         'generalized cost parameters\n')
         if any(fparm) & fparm.shape[0] != nw:
-            logger.error('opf_args.m: dimension mismatch between N and fparm '
-                         'in generalized cost parameters')
+            stderr.write('opf_args.m: dimension mismatch between N and fparm '
+                         'in generalized cost parameters\n')
         if any(H) & (H.shape[0] != nw | H.shape[0] != nw):
-            logger.error('opf_args.m: dimension mismatch between N and H in '
-                         'generalized cost parameters')
+            stderr.write('opf_args.m: dimension mismatch between N and H in '
+                         'generalized cost parameters\n')
         if Au.shape[0] > 0 & N.shape[1] != Au.shape[1]:
-            logger.error('opf_args.m: A and N must have the same number of '
-                         'columns')
+            stderr.write('opf_args.m: A and N must have the same number of '
+                         'columns\n')
         ## make sure N and H are sparse
         if not isinstance(N, spmatrix):
-            logger.error('opf_args.m: N must be sparse in generalized cost '
-                         'parameters')
+            stderr.write('opf_args.m: N must be sparse in generalized cost '
+                         'parameters\n')
         if not isinstance(H, spmatrix):
-            logger.error('opf_args.m: H must be sparse in generalized cost parameters')
+            stderr.write('opf_args.m: H must be sparse in generalized cost parameters\n')
 
     if not isinstance(Au, spmatrix):
-        logger.error('opf_args.m: Au must be sparse')
+        stderr.write('opf_args.m: Au must be sparse\n')
     if len(ppopt) == 0:
         ppopt = ppoption
     if want_ppc:

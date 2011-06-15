@@ -51,7 +51,7 @@ def t_opf_pips(quiet=False):
 
     t_begin(num_tests, quiet)
 
-    casefile = 't_case9_opf'
+    casefile = 't_case9_opf.mat'
     verbose = not quiet
 
     t0 = 'PIPS : '
@@ -312,3 +312,7 @@ def t_opf_pips(quiet=False):
     t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
 
     t_end()
+
+
+if __name__ == '__main__':
+    t_opf_pips(quiet=False)
