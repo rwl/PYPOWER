@@ -37,7 +37,7 @@ def test_pypower(verbose=False):
 
     tests.append('t_pips')
 
-#    tests.append('t_qps_pypower')
+    tests.append('t_qps_pypower')
     tests.append('t_pf')
 
 #    tests.append('t_opf_mips')

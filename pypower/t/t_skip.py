@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from pypower.t.t_globals import TestGlobals
+
 def t_skip(cnt, msg=''):
     """Skips a number of tests.
 
@@ -24,14 +26,12 @@ def t_skip(cnt, msg=''):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    global t_quiet
-    global t_counter
-    global t_skip_cnt
-
     msg = ' : ' + msg
 
-    t_skip_cnt = t_skip_cnt + cnt
-    if not t_quiet:
-        print 'skipped tests %d..%d%s\n' % (t_counter, t_counter + cnt - 1, msg)
+    TestGlobals.t_skip_cnt = TestGlobals.t_skip_cnt + cnt
+    if not TestGlobals.t_quiet:
+        print 'skipped tests %d..%d%s' % (TestGlobals.t_counter,
+                                            TestGlobals.t_counter + cnt - 1,
+                                            msg)
 
-    t_counter = t_counter + cnt
+    TestGlobals.t_counter = TestGlobals.t_counter + cnt

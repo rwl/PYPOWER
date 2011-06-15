@@ -36,4 +36,4 @@ def t_begin(num_of_tests, quiet=False):
     TestGlobals.t_clock = time()
 
     if not TestGlobals.t_quiet:
-        print '1..%d\n' % num_of_tests
+        print '1..%d' % num_of_tests

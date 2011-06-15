@@ -183,7 +183,7 @@ def t_pips(quiet=False):
     x0 = array([-1.9, 2])
     # solution = pips(f_fcn, x0, opt={'verbose': 2})
     solution = pips(f_fcn, x0)
-    x, f, s, lam, out = solution["x"], solution["f"], solution["converged"], \
+    x, f, s, lam, out = solution["x"], solution["f"], solution["eflag"], \
             solution["lmbda"], solution["output"]
     t_is(s, 1, 13, [t, 'success'])
     t_is(x, [1, 1], 13, [t, 'x'])
@@ -200,7 +200,7 @@ def t_pips(quiet=False):
     x0 = array([0, 0, 0], float)
     # solution = pips(f_fcn, x0, opt={'verbose': 2})
     solution = pips(f_fcn, x0)
-    x, f, s, lam, out = solution["x"], solution["f"], solution["converged"], \
+    x, f, s, lam, out = solution["x"], solution["f"], solution["eflag"], \
             solution["lmbda"], solution["output"]
     t_is(s, 1, 13, [t, 'success'])
     t_is(x, [3, 5, 7], 13, [t, 'x'])
@@ -224,7 +224,7 @@ def t_pips(quiet=False):
     xmin = zeros(4)
     # solution = pips(f_fcn, x0, A, l, u, xmin, opt={'verbose': 2})
     solution = pips(f_fcn, x0, A, l, u, xmin)
-    x, f, s, lam, out = solution["x"], solution["f"], solution["converged"], \
+    x, f, s, lam, out = solution["x"], solution["f"], solution["eflag"], \
             solution["lmbda"], solution["output"]
     t_is(s, 1, 13, [t, 'success'])
     t_is(x, array([0, 2.8, 0.2, 0]) / 3, 6, [t, 'x'])
@@ -262,7 +262,7 @@ def t_pips(quiet=False):
     # xmax = 3 * ones(2, 1)
     # solution = pips(f_fcn, x0, xmin=xmin, gh_fcn=gh_fcn, hess_fcn=hess_fcn, opt={'verbose': 2})
     solution = pips(f_fcn, x0, xmin=xmin, gh_fcn=gh_fcn, hess_fcn=hess_fcn)
-    x, f, s, lam, out = solution["x"], solution["f"], solution["converged"], \
+    x, f, s, lam, out = solution["x"], solution["f"], solution["eflag"], \
             solution["lmbda"], solution["output"]
     t_is(s, 1, 13, [t, 'success'])
     t_is(x, [1, 1], 6, [t, 'x'])
@@ -290,7 +290,7 @@ def t_pips(quiet=False):
     x0 = array([1.0, 1.0, 0.0])
     # solution = pips(f_fcn, x0, gh_fcn=gh_fcn, hess_fcn=hess_fcn, opt={'verbose': 2, 'comptol': 1e-9})
     solution = pips(f_fcn, x0, gh_fcn=gh_fcn, hess_fcn=hess_fcn)
-    x, f, s, lam, out = solution["x"], solution["f"], solution["converged"], \
+    x, f, s, lam, out = solution["x"], solution["f"], solution["eflag"], \
             solution["lmbda"], solution["output"]
     t_is(s, 1, 13, [t, 'success'])
     t_is(x, [1.58113883, 2.23606798, 1.58113883], 6, [t, 'x'])
@@ -313,7 +313,7 @@ def t_pips(quiet=False):
     t = 'constrained 3-d nonlinear (dict) : '
     p = {'f_fcn': f_fcn, 'x0': x0, 'gh_fcn': gh_fcn, 'hess_fcn': hess_fcn}
     solution = pips(p)
-    x, f, s, lam, out = solution["x"], solution["f"], solution["converged"], \
+    x, f, s, lam, out = solution["x"], solution["f"], solution["eflag"], \
             solution["lmbda"], solution["output"]
     t_is(s, 1, 13, [t, 'success'])
     t_is(x, [1.58113883, 2.23606798, 1.58113883], 6, [t, 'x'])
@@ -335,7 +335,7 @@ def t_pips(quiet=False):
     xmax = 5 * xmin
     # solution = pips(f_fcn, x0, xmin=xmin, xmax=xmax, gh_fcn=gh_fcn, hess_fcn=hess_fcn, opt={'verbose': 2, 'comptol': 1e-9})
     solution = pips(f_fcn, x0, xmin=xmin, xmax=xmax, gh_fcn=gh_fcn, hess_fcn=hess_fcn)
-    x, f, s, lam, _ = solution["x"], solution["f"], solution["converged"], \
+    x, f, s, lam, _ = solution["x"], solution["f"], solution["eflag"], \
             solution["lmbda"], solution["output"]
     t_is(s, 1, 13, [t, 'success'])
     t_is(x, [1, 4.7429994, 3.8211503, 1.3794082], 6, [t, 'x'])
