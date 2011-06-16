@@ -48,10 +48,10 @@ def opf_execute(om, ppopt):
     verbose = ppopt['VERBOSE']
 
     ## build user-defined costs
-    om = om.build_cost_params()
+    om.build_cost_params()
 
     ## get indexing
-    vv, ll, nn = om.get_idx()
+    vv, ll, nn, _ = om.get_idx()
 
     if verbose > 0:
         v = ppver('all')
@@ -85,7 +85,7 @@ def opf_execute(om, ppopt):
         ppopt['OPF_ALG_POLY'] = alg
 
         ## run specific AC OPF solver
-        if alg == 560 | alg == 565:                   ## PIPS
+        if alg == 560 or alg == 565:                   ## PIPS
             results, success, raw = pipsopf_solver(om, ppopt)
         elif alg == 580:                              ## IPOPT
             try:

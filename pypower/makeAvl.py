@@ -14,16 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
-from numpy import array, zeros, nonzero, sin, cos, arctan2, r_
-from scipy.sparse import csr_matrix
+from numpy import array, zeros, arange, sin, cos, arctan2, r_
+from numpy import flatnonzero as find
+from scipy.sparse import csr_matrix as sparse
 
 from idx_gen import PG, QG, PMIN, QMIN, QMAX
 
 from isload import isload
 
-logger = logging.getLogger(__name__)
 
 def makeAvl(baseMVA, gen):
     """Construct linear constraints for constant power factor var loads.
@@ -53,13 +53,13 @@ def makeAvl(baseMVA, gen):
     # capacitive loads). If both Qmin and Qmax are zero, this implies a unity
     # power factor without the need for an additional constraint.
 
-    ivl = nonzero( isload(gen) & (Qmin != 0 | Qmax != 0) )
+    ivl = find( isload(gen) & ((Qmin != 0) | (Qmax != 0)) )
     nvl = ivl.shape[0]  ## number of dispatchable loads
 
     ## at least one of the Q limits must be zero (corresponding to Pmax == 0)
-    if any( Qmin[ivl] != 0 & Qmax[ivl] != 0 ):
-        logger.error('makeAvl: either Qmin or Qmax must be equal to zero for '
-                     'each dispatchable load.')
+    if any( (Qmin[ivl] != 0) & (Qmax[ivl] != 0) ):
+        stderr.write('makeAvl: either Qmin or Qmax must be equal to zero for '
+                     'each dispatchable load.\n')
 
     # Initial values of PG and QG must be consistent with specified power
     # factor This is to prevent a user from unknowingly using a case file which
@@ -67,9 +67,9 @@ def makeAvl(baseMVA, gen):
     # version which used PG and QG to define the power factor.
     Qlim = (Qmin[ivl] == 0) * Qmax[ivl] + (Qmax[ivl] == 0) * Qmin[ivl]
     if any( abs( Qg[ivl] - Pg[ivl] * Qlim / Pmin[ivl] ) > 1e-6 ):
-        logger.error('makeAvl: For a dispatchable load, PG and QG must be '
+        stderr.write('makeAvl: For a dispatchable load, PG and QG must be '
                      'consistent with the power factor defined by PMIN and '
-                     'the Q limits.')
+                     'the Q limits.\n')
 
     # make Avl, lvl, uvl, for lvl <= Avl * [Pg Qg] <= uvl
     if nvl > 0:
@@ -78,13 +78,13 @@ def makeAvl(baseMVA, gen):
         pftheta = arctan2(yy, xx)
         pc = sin(pftheta)
         qc = -cos(pftheta)
-        ii = r_[ range(nvl), range(nvl) ]
+        ii = r_[ arange(nvl), arange(nvl) ]
         jj = r_[ ivl, ivl + ng ]
-        Avl = csr_matrix((r_[pc, qc], (ii, jj)), (nvl, 2 * ng))
+        Avl = sparse((r_[pc, qc], (ii, jj)), (nvl, 2 * ng))
         lvl = zeros(nvl)
         uvl = lvl
     else:
-        Avl = zeros(0, 2 * ng)
+        Avl = zeros((0, 2*ng))
         lvl = array([])
         uvl = array([])
 

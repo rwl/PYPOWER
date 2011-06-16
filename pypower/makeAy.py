@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, zeros, nonzero, diff, any, ones, r_
-from scipy.sparse import csr_matrix
+from numpy import array, diff, any, zeros, r_, flatnonzero as find
+from scipy.sparse import csr_matrix as sparse
+#from scipy.sparse import lil_matrix as sparse
 
 from idx_cost import MODEL, PW_LINEAR, NCOST, COST
+
 
 def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     """Make the A matrix and RHS for the CCV formulation.
@@ -41,13 +43,13 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## find all pwl cost rows in gencost, either real or reactive
-    iycost = nonzero(gencost[:, MODEL] == PW_LINEAR)
+    iycost = find(gencost[:, MODEL] == PW_LINEAR)
 
     ## this is the number of extra "y" variables needed to model those costs
     ny = iycost.shape[0]
 
     if ny == 0:
-        Ay = zeros(0, ybas + ny - 1)
+        Ay = zeros((0, ybas+ny-1))
         by = array([])
         return Ay, by
 
@@ -65,32 +67,40 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     ## this should be the quickest.
 
     m = sum(gencost[iycost, NCOST])  ## total number of cost points
-    Ay = csr_matrix((m-ny, ybas + ny - 1), nnz=2 * (m - ny))
+    Ay = sparse((m - ny, ybas + ny - 1))
     by = array([])
     ## First fill the Pg or Qg coefficients (since their columns come first)
     ## and the rhs
-    k = 1
+    k = 0
     for i in iycost:
         ns = gencost[i, NCOST]              ## # of cost points segments = ns-1
-        p = gencost[i, COST:2:COST + 2 * ns - 1] / baseMVA
-        c = gencost[i, COST + 1:2:COST + 2 * ns]
-        m = diff(c) / diff(p)                ## slopes for Pg (or Qg)
+        p = gencost[i, COST:COST + 2 * ns - 1:2] / baseMVA
+        c = gencost[i, COST + 1:COST + 2 * ns:2]
+        m = diff(c) / diff(p)               ## slopes for Pg (or Qg)
         if any(diff(p) == 0):
             print 'makeAy: bad x axis data in row ##i of gencost matrix' % i
         b = m * p[:ns - 1] - c[:ns - 1]        ## and rhs
         by = r_[by,  b]
         if i > ng:
-            sidx = qgbas + (i - ng) - 1           ## this was for a q cost
+            sidx = qgbas + (i - ng) - 1        ## this was for a q cost
         else:
-            sidx = pgbas + i - 1                ## this was for a p cost
-        Ay[k:k + ns - 2, sidx] = m
+            sidx = pgbas + i - 1               ## this was for a p cost
+
+        ## FIXME: Bug in SciPy 0.7.2 prevents setting with a sequence
+#        Ay[k:k + ns - 1, sidx] = m
+        for ii, kk in enumerate(range(k, k + ns - 1)):
+            Ay[kk, sidx] = m[ii]
+
         k = k + ns - 1
     ## Now fill the y columns with -1's
-    k = 1
-    j = 1
+    k = 0
+    j = 0
     for i in iycost:
         ns = gencost[i, NCOST]
-        Ay[k:k + ns - 2, ybas + j - 1] = -ones(ns - 1)
+        ## FIXME: Bug in SciPy 0.7.2 prevents setting with a sequence
+#        Ay[k:k + ns - 1, ybas + j - 1] = -ones(ns - 1)
+        for kk in range(k, k + ns - 1):
+            Ay[kk, ybas + j - 1] = -1
         k = k + ns - 1
         j = j + 1
 

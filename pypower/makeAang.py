@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, zeros, ones, nonzero, r_, Inf, pi
-from scipy.sparse import csr_matrix
+from numpy import array, ones, zeros, r_, Inf, pi, arange
+from numpy import flatnonzero as find
+from scipy.sparse import csr_matrix as sparse
 
 from idx_brch import F_BUS, T_BUS, ANGMIN, ANGMAX
+
 
 def makeAang(baseMVA, branch, nb, ppopt):
     """Construct constraints for branch angle difference limits.
@@ -33,7 +35,7 @@ def makeAang(baseMVA, branch, nb, ppopt):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## options
-    ignore_ang_lim = ppopt[25]     ## OPF_IGNORE_ANG_LIM
+    ignore_ang_lim = ppopt['OPF_IGNORE_ANG_LIM']
 
     if ignore_ang_lim:
         Aang  = zeros((0, nb))
@@ -41,17 +43,17 @@ def makeAang(baseMVA, branch, nb, ppopt):
         uang  = array([])
         iang  = array([])
     else:
-        iang = nonzero((branch[:, ANGMIN] > -360 & branch[:, ANGMIN] > -360) |
-                       (branch[:, ANGMAX] < 360 & branch[:, ANGMAX] < 360))
-        iangl = nonzero(branch(iang, ANGMIN))
-        iangh = nonzero(branch(iang, ANGMAX))
+        iang = find(((branch[:, ANGMIN] > -360) & (branch[:, ANGMIN] > -360)) |
+                    ((branch[:, ANGMAX] < 360) & (branch[:, ANGMAX] < 360)))
+        iangl = find(branch[iang, ANGMIN])
+        iangh = find(branch[iang, ANGMAX])
         nang = len(iang)
 
         if nang > 0:
-            ii = range(nang) + range(nang)
-            jj = r_[branch(iang, F_BUS), branch(iang, T_BUS)]
-            Aang = csr_matrix((r_[ones(nang, 1) -ones(nang, 1)],
-                               (ii, jj)), nang, nb)
+            ii = arange(nang) + arange(nang)
+            jj = r_[branch[iang, F_BUS], branch[iang, T_BUS]]
+            Aang = sparse((r_[ones(nang), -ones(nang)],
+                           (ii, jj)), nang, nb)
             uang = Inf * ones(nang)
             lang = -uang
             lang[iangl] = branch[iang[iangl], ANGMIN] * pi / 180

@@ -26,4 +26,4 @@ def isload(gen):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    return gen[:, PMIN] < 0 & gen[:, PMAX] == 0
+    return (gen[:, PMIN] < 0) & (gen[:, PMAX] == 0)

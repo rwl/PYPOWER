@@ -29,7 +29,7 @@ from pypower.opf_execute import opf_execute
 from int2ext import int2ext
 
 
-def opf(*args, **kw_args):
+def opf(*args):
     """Solves an optimal power flow.
 
     Returns either a RESULTS struct and an optional SUCCESS flag, or individual
@@ -159,7 +159,7 @@ def opf(*args, **kw_args):
     t0 = time()         ## start timer
 
     ## process input arguments
-    ppc, ppopt = opf_args(args, kw_args)
+    ppc, ppopt = opf_args(*args)
 
     ## add zero columns to bus, gen, branch for multipliers, etc if needed
     nb   = shape(ppc['bus'])[0]    ## number of buses

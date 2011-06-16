@@ -13,5 +13,5 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-def run_userfcn():
+def run_userfcn(userfcn, stage, *args):
     pass

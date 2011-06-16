@@ -91,7 +91,7 @@ def opf_setup(ppc, ppopt):
                 ppc['N'] = delete(ppc['N'], acc, 1)               ## delete Vm and Qg columns
 
     ## convert single-block piecewise-linear costs into linear polynomial cost
-    pwl1 = find(ppc['gencost'][:, MODEL] == PW_LINEAR & ppc['gencost'][:, NCOST] == 2)
+    pwl1 = find((ppc['gencost'][:, MODEL] == PW_LINEAR) & (ppc['gencost'][:, NCOST] == 2))
     # p1 = array([])
     if len(pwl1) > 0:
         x0 = ppc['gencost'][pwl1, COST]
@@ -106,7 +106,7 @@ def opf_setup(ppc, ppopt):
 
     ## create (read-only) copies of individual fields for convenience
     baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, ppopt, \
-        N, fparm, H, Cw, z0, zl, zu, userfcn = opf_args(ppc, ppopt)
+        N, fparm, H, Cw, z0, zl, zu, userfcn, areas = opf_args(ppc, ppopt, want_ppc=False)
 
     ## warn if there is more than one reference bus
     refs = find(bus[:, BUS_TYPE] == REF)
@@ -118,9 +118,10 @@ def opf_setup(ppc, ppopt):
         stdout.write(errstr)
 
     ## set up initial variables and bounds
+    gbus = gen[:, GEN_BUS].astype(int)
     Va   = bus[:, VA] * (pi / 180.0)
     Vm   = bus[:, VM].copy()
-    Vm[gen[:, GEN_BUS]] = gen[:, VG]   ## buses with gens, init Vm from gen data
+    Vm[gbus] = gen[:, VG]   ## buses with gens, init Vm from gen data
     Pg   = gen[:, PG] / baseMVA
     Qg   = gen[:, QG] / baseMVA
     Pmin = gen[:, PMIN] / baseMVA
@@ -156,7 +157,7 @@ def opf_setup(ppc, ppopt):
         q1    = 1 + ng       ## index of 1st Qg column in Ay
 
         ## dispatchable load, constant power factor constraints
-        Avl, lvl, uvl  = makeAvl(baseMVA, gen)
+        Avl, lvl, uvl, _  = makeAvl(baseMVA, gen)
 
         ## generator PQ capability curve constraints
         Apqh, ubpqh, Apql, ubpql, Apqdata = makeApq(baseMVA, gen)
@@ -183,7 +184,7 @@ def opf_setup(ppc, ppopt):
         ny = shape(ipwl)[0]   ## number of piece-wise linear cost vars
         Ay, by = makeAy(baseMVA, ng, gencost, 1, q1, 1+ng+nq)
 
-    if any(gencost[:, MODEL] != POLYNOMIAL and gencost[:, MODEL] != PW_LINEAR):
+    if any((gencost[:, MODEL] != POLYNOMIAL) & (gencost[:, MODEL] != PW_LINEAR)):
         stderr.write('opf_setup: some generator cost rows have invalid MODEL value\n')
 
     ## more problem dimensions
@@ -201,46 +202,46 @@ def opf_setup(ppc, ppopt):
     ## construct OPF model object
     om = opf_model(ppc)
     if len(pwl1) > 0:
-      om = om.userdata('pwl1', pwl1)
+        om.userdata('pwl1', pwl1)
 
     if dc:
-        om = om.userdata('Bf', Bf)
-        om = om.userdata('Pfinj', Pfinj)
-        om = om.userdata('iang', iang)
-        om = om.add_vars('Va', nb, Va, Val, Vau)
-        om = om.add_vars('Pg', ng, Pg, Pmin, Pmax)
-        om = om.add_constraints('Pmis', Amis, bmis, bmis, ['Va', 'Pg']) ## nb
-        om = om.add_constraints('Pf',  Bf[il, :], lpf, upf, ['Va'])     ## nl
-        om = om.add_constraints('Pt', -Bf[il, :], lpf, upt, ['Va'])     ## nl
-        om = om.add_constraints('ang', Aang, lang, uang, ['Va'])        ## nang
+        om.userdata('Bf', Bf)
+        om.userdata('Pfinj', Pfinj)
+        om.userdata('iang', iang)
+        om.add_vars('Va', nb, Va, Val, Vau)
+        om.add_vars('Pg', ng, Pg, Pmin, Pmax)
+        om.add_constraints('Pmis', Amis, bmis, bmis, ['Va', 'Pg']) ## nb
+        om.add_constraints('Pf',  Bf[il, :], lpf, upf, ['Va'])     ## nl
+        om.add_constraints('Pt', -Bf[il, :], lpf, upt, ['Va'])     ## nl
+        om.add_constraints('ang', Aang, lang, uang, ['Va'])        ## nang
     else:
-        om = om.userdata('Apqdata', Apqdata)
-        om = om.userdata('iang', iang)
-        om = om.add_vars('Va', nb, Va, Val, Vau)
-        om = om.add_vars('Vm', nb, Vm, bus[:, VMIN], bus[:, VMAX])
-        om = om.add_vars('Pg', ng, Pg, Pmin, Pmax)
-        om = om.add_vars('Qg', ng, Qg, Qmin, Qmax)
-        om = om.add_constraints('Pmis', nb, 'nonlinear')
-        om = om.add_constraints('Qmis', nb, 'nonlinear')
-        om = om.add_constraints('Sf', nl, 'nonlinear')
-        om = om.add_constraints('St', nl, 'nonlinear')
-        om = om.add_constraints('PQh', Apqh, array([]), ubpqh, ['Pg', 'Qg'])   ## npqh
-        om = om.add_constraints('PQl', Apql, array([]), ubpql, ['Pg', 'Qg'])   ## npql
-        om = om.add_constraints('vl',  Avl, lvl, uvl,   ['Pg', 'Qg'])   ## nvl
-        om = om.add_constraints('ang', Aang, lang, uang, ['Va'])        ## nang
+        om.userdata('Apqdata', Apqdata)
+        om.userdata('iang', iang)
+        om.add_vars('Va', nb, Va, Val, Vau)
+        om.add_vars('Vm', nb, Vm, bus[:, VMIN], bus[:, VMAX])
+        om.add_vars('Pg', ng, Pg, Pmin, Pmax)
+        om.add_vars('Qg', ng, Qg, Qmin, Qmax)
+        om.add_constraints('Pmis', nb, 'nonlinear')
+        om.add_constraints('Qmis', nb, 'nonlinear')
+        om.add_constraints('Sf', nl, 'nonlinear')
+        om.add_constraints('St', nl, 'nonlinear')
+        om.add_constraints('PQh', Apqh, array([]), ubpqh, ['Pg', 'Qg'])   ## npqh
+        om.add_constraints('PQl', Apql, array([]), ubpql, ['Pg', 'Qg'])   ## npql
+        om.add_constraints('vl',  Avl, lvl, uvl,   ['Pg', 'Qg'])   ## nvl
+        om.add_constraints('ang', Aang, lang, uang, ['Va'])        ## nang
 
     ## y vars, constraints for piece-wise linear gen costs
     if ny > 0:
-        om = om.add_vars('y', ny)
-        om = om.add_constraints('ycon', Ay, array([]), by, ycon_vars)          ## ncony
+        om.add_vars('y', ny)
+        om.add_constraints('ycon', Ay, array([]), by, ycon_vars)          ## ncony
 
     ## add user vars, constraints and costs (as specified via A, ..., N, ...)
     if nz > 0:
-        om = om.add_vars('z', nz, z0, zl, zu)
+        om.add_vars('z', nz, z0, zl, zu)
         user_vars.append('z')
 
     if nusr:
-        om = om.add_constraints('usr', ppc['A'], lbu, ubu, user_vars)      ## nusr
+        om.add_constraints('usr', ppc['A'], lbu, ubu, user_vars)      ## nusr
 
     if nw:
         user_cost = {}
@@ -255,9 +256,9 @@ def opf_setup(ppc, ppopt):
         if len(H) > 0:
             user_cost['H'] = H
 
-        om = om.add_costs('usr', user_cost, user_vars)
+        om.add_costs('usr', user_cost, user_vars)
 
     ## execute userfcn callbacks for 'formulation' stage
-    om = run_userfcn(userfcn, 'formulation', om)
+    run_userfcn(userfcn, 'formulation', om)
 
     return om

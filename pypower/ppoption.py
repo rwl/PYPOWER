@@ -7,7 +7,7 @@
 # or (at your option) any later version.
 #
 # PYPOWER is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# but WITHOUT ANY WARRANTY without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
@@ -111,6 +111,22 @@ OUTPUT_OPTIONS = [
     ('out_raw', False, 'print raw data')
 ]
 
+PIPS_OPTIONS = [
+    ('pdipm_feastol', 0, '''feasibility (equality) tolerance
+for Primal-Dual Interior Points Methods, set
+to value of OPF_VIOLATION by default'''),
+    ('pdipm_gradtol', 1e-6, '''gradient tolerance for
+Primal-Dual Interior Points Methods'''),
+    ('pdipm_comptol', 1e-6, '''complementary condition (inequality)
+tolerance for Primal-Dual Interior Points Methods'''),
+    ('pdipm_costtol', 1e-6, '''optimality tolerance for
+Primal-Dual Interior Points Methods'''),
+    ('pdipm_max_it',  150, '''maximum number of iterations for
+Primal-Dual Interior Points Methods'''),
+    ('scpdipm_red_it', 20, '''maximum number of reductions per iteration
+for Step-Control Primal-Dual Interior Points Methods''')
+]
+
 def ppoption(ppopt=None, **kw_args):
     """PYPOWER options dictionary.
 
@@ -173,9 +189,19 @@ def ppoption(ppopt=None, **kw_args):
 #        'RESERVED48':   0,      # 48 - RESERVED48
 #        'RESERVED49':   0,      # 49 - RESERVED49
 #        'RESERVED50':   0,      # 50 - RESERVED50
+#
+#        # PDIPM options
+#        0      # 81 - PDIPM_FEASTOL
+#        1e-6   # 82 - PDIPM_GRADTOL
+#        1e-6   # 83 - PDIPM_COMPTOL
+#        1e-6   # 84 - PDIPM_COSTTOL
+#        150    # 85 - PDIPM_MAX_IT
+#        20     # 86 - SCPDIPM_RED_IT
     }
 
-    for name, default, _ in PF_OPTIONS+OPF_OPTIONS+OUTPUT_OPTIONS:
+    options = PF_OPTIONS + OPF_OPTIONS + OUTPUT_OPTIONS + PIPS_OPTIONS
+
+    for name, default, _ in options:
         default_ppopt[name.upper()] = default
 
     ppopt = default_ppopt if ppopt == None else ppopt.copy()

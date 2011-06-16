@@ -14,13 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
 from numpy import array, zeros, ones, Inf, copy, r_
 from numpy import flatnonzero as find
-from scipy.sparse import csr_matrix as sparse
+from scipy.sparse import lil_matrix, csr_matrix as sparse
 
-logger = logging.getLogger(__name__)
 
 class opf_model(object):
     """This class implements the OPF model object used to encapsulate
@@ -36,11 +35,79 @@ class opf_model(object):
         #: PYPOWER case dict used to build the object.
         self.ppc = ppc
 
-        self.var = {}
-        self.nln = {}
-        self.lin = {}
-        self.cost = {}
-        self.userdata = {}
+        #: data for optimization variable sets that make up the
+        #  full optimization variable x
+        self.var = {
+            'idx': {
+                'i1': {},  ## starting index within x
+                'iN': {},  ## ending index within x
+                'N': {}    ## number of elements in this variable set
+            },
+            'N': 0,        ## total number of elements in x
+            'NS': 0,       ## number of variable sets or named blocks
+            'data': {      ## bounds and initial value data
+                'v0': {},  ## vector of initial values
+                'vl': {},  ## vector of lower bounds
+                'vu': {},  ## vector of upper bounds
+            },
+            'order': []    ## list of names for variable blocks in the order they appear in x
+        }
+
+        #: data for nonlinear constraints that make up the
+        #  full set of nonlinear constraints ghn(x)
+        self.nln = {
+            'idx': {
+                'i1': {},   ## starting index within ghn(x)
+                'iN': {},   ## ending index within ghn(x)
+                'N': {}     ## number of elements in this constraint set
+            },
+            'N': 0 ,        ## total number of elements in ghn(x)
+            'NS': 0,        ## number of nonlinear constraint sets or named blocks
+            'order': []     ## list of names for nonlinear constraint blocks in the order they appear in ghn(x)
+        }
+
+        #: data for linear constraints that make up the
+        #  full set of linear constraints ghl(x)
+        self.lin = {
+            'idx': {
+                'i1': {},   ## starting index within ghl(x)
+                'iN': {},   ## ending index within ghl(x)
+                'N': {}     ## number of elements in this constraint set
+            },
+            'N': 0,         ## total number of elements in ghl(x)
+            'NS': 0,        ## number of linear constraint sets or named blocks
+            'data': {       ## data for l <= A*xx <= u linear constraints
+                'A': {},    ## sparse linear constraint matrix
+                'l': {},    ## left hand side vector, bounding A*x below
+                'u': {},    ## right hand side vector, bounding A*x above
+                'vs': {}    ## cell array of variable sets that define the xx for this constraint block
+            },
+            'order': []     ## list of names for linear constraint blocks in the order they appear in ghl(x)
+        }
+
+        #: data for user-defined costs
+        self.cost = {
+            'idx': {
+                'i1': {},   ## starting row index within full N matrix
+                'iN': {},   ## ending row index within full N matrix
+                'N':  {}    ## number of rows in this cost block in full N matrix
+            },
+            'N': 0,         ## total number of rows in full N matrix
+            'NS': 0,        ## number of cost blocks
+            'data': {       ## data for each user-defined cost block
+                'N': {},    ## see help for add_costs() for details
+                'H': {},    ##               "
+                'Cw': {},   ##               "
+                'dd': {},   ##               "
+                'rr': {},   ##               "
+                'kk': {},   ##               "
+                'mm': {},   ##               "
+                'vs': {}    ## list of variable sets that define xx for this cost block, where the N for this block multiplies xx'
+            },
+            'order': []     ## of names for cost blocks in the order they appear in the rows of the full N matrix
+        }
+
+        self.user_data = {}
 
 
     def add_constraints(self, name, AorN, l, u=None, varsets=None):
@@ -64,7 +131,7 @@ class opf_model(object):
         ## nonlinear
             ## prevent duplicate named constraint sets
             if name in self.nln["idx"]["N"]:
-                logger.error("opf_model.add_constraints: nonlinear constraint set named '%s' already exists" % name)
+                stderr.write("opf_model.add_constraints: nonlinear constraint set named '%s' already exists\n" % name)
 
             ## add info about this nonlinear constraint set
             self.nln["idx"]["i1"][name] = self.nln["N"] + 1    ## starting index
@@ -76,11 +143,12 @@ class opf_model(object):
             self.nln["NS"] = self.nln["NS"] + 1
 
             ## put name in ordered list of constraint sets
-            self.nln["order"][self.nln["NS"]] = name
+#            self.nln["order"][self.nln["NS"]] = name
+            self.nln["order"].append(name)
         else:                ## linear
             ## prevent duplicate named constraint sets
             if name in self.lin["idx"]["N"]:
-                logger.error('opf_model.add_constraints: linear constraint set named ''%s'' already exists' % name)
+                stderr.write('opf_model.add_constraints: linear constraint set named ''%s'' already exists\n' % name)
 
             if varsets is None:
                 varsets = []
@@ -97,18 +165,18 @@ class opf_model(object):
 
             ## check sizes
             if l.shape[0] != N or u.shape[0] != N:
-                logger.error('opf_model.add_constraints: sizes of A, l and u must match')
+                stderr.write('opf_model.add_constraints: sizes of A, l and u must match\n')
 
             nv = 0
             for k in range(len(varsets)):
                 nv = nv + self.var["idx"]["N"][varsets[k]]
 
             if M != nv:
-                logger.error('opf_model.add_constraints: number of columns of A does not match\nnumber of variables, A is %d x %d, nv = %d\n' % (N, M, nv))
+                stderr.write('opf_model.add_constraints: number of columns of A does not match\nnumber of variables, A is %d x %d, nv = %d\n' % (N, M, nv))
 
             ## add info about this linear constraint set
-            self.lin["idx"]["i1"][name]  = self["lin"]["N"] + 1   ## starting index
-            self.lin["idx"]["iN"][name]  = self["lin"]["N"] + N   ## ing index
+            self.lin["idx"]["i1"][name]  = self.lin["N"] + 1   ## starting index
+            self.lin["idx"]["iN"][name]  = self.lin["N"] + N   ## ing index
             self.lin["idx"]["N"][name]   = N              ## number of constraints
             self.lin["data"]["A"][name]  = AorN
             self.lin["data"]["l"][name]  = l
@@ -120,7 +188,8 @@ class opf_model(object):
             self.lin["NS"] = self.lin["NS"] + 1
 
             ## put name in ordered list of var sets
-            self.lin["order"][self.lin["NS"]] = name
+#            self.lin["order"][self.lin["NS"]] = name
+            self.lin["order"].append(name)
 
 
     def add_costs(self, name, cp, varsets):
@@ -169,7 +238,7 @@ class opf_model(object):
         """
         ## prevent duplicate named cost sets
         if name in self.cost["idx"]["N"]:
-            logger.error('opf_model.add_costs: cost set named ''%s'' already exists' % name)
+            stderr.write('opf_model.add_costs: cost set named ''%s'' already exists\n' % name)
 
         if varsets is None:
             varsets = []
@@ -188,25 +257,25 @@ class opf_model(object):
             if nw == 0:
                 cp["N"] = sparse(nw, nx)
             else:
-                logger.error('opf_model.add_costs: number of columns in N (%d x %d) does not match\nnumber of variables (%d)\n' % (nw, nx, nv))
+                stderr.write('opf_model.add_costs: number of columns in N (%d x %d) does not match\nnumber of variables (%d)\n' % (nw, nx, nv))
 
         if cp["Cw"].shape[0] != nw:
-            logger.error('opf_model.add_costs: number of rows of Cw (%d x %d) and N (%d x %d) must match\n' % (cp["Cw"].shape[0], nw, nx))
+            stderr.write('opf_model.add_costs: number of rows of Cw (%d x %d) and N (%d x %d) must match\n' % (cp["Cw"].shape[0], nw, nx))
 
         if 'H' in cp & (cp["H"].shape[0] != nw | cp["H"].shape[1] != nw):
-            logger.error('opf_model.add_costs: both dimensions of H (%d x %d) must match the number of rows in N (%d x %d)\n' % (cp["H"].shape, nw, nx))
+            stderr.write('opf_model.add_costs: both dimensions of H (%d x %d) must match the number of rows in N (%d x %d)\n' % (cp["H"].shape, nw, nx))
 
         if 'dd' in cp & cp["dd"].shape[0] != nw:
-            logger.error('opf_model.add_costs: number of rows of dd (%d x %d) and N (%d x %d) must match\n' % (cp["dd"].shape, nw, nx))
+            stderr.write('opf_model.add_costs: number of rows of dd (%d x %d) and N (%d x %d) must match\n' % (cp["dd"].shape, nw, nx))
 
         if 'rh' in cp & cp["rh"].shape[0] != nw:
-            logger.error('opf_model.add_costs: number of rows of rh (%d x %d) and N (%d x %d) must match\n' % (cp["rh"].shape, nw, nx))
+            stderr.write('opf_model.add_costs: number of rows of rh (%d x %d) and N (%d x %d) must match\n' % (cp["rh"].shape, nw, nx))
 
         if 'kk' in cp & cp["kk"].shape[0] != nw:
-            logger.error('opf_model.add_costs: number of rows of kk (%d x %d) and N (%d x %d) must match\n' % (cp["kk"].shape, nw, nx))
+            stderr.write('opf_model.add_costs: number of rows of kk (%d x %d) and N (%d x %d) must match\n' % (cp["kk"].shape, nw, nx))
 
         if 'mm' in cp & cp["mm"].shape[0] != nw:
-            logger.error('opf_model.add_costs: number of rows of mm (%d x %d) and N (%d x %d) must match\n' % (cp["mm"].shape, nw, nx))
+            stderr.write('opf_model.add_costs: number of rows of mm (%d x %d) and N (%d x %d) must match\n' % (cp["mm"].shape, nw, nx))
 
         ## add info about this user cost set
         self.cost["idx"]["i1"][name]  = self.cost["N"] + 1     ## starting index
@@ -250,7 +319,7 @@ class opf_model(object):
         """
         ## prevent duplicate named var sets
         if name in self.var["idx"]["N"]:
-            logger.error('opf_model.add_vars: variable set named ''%s'' already exists' % name)
+            stderr.write('opf_model.add_vars: variable set named ''%s'' already exists\n' % name)
 
         if v0 is None or len(v0) == 0:
             v0 = zeros(N)           ## init to zero by default
@@ -275,7 +344,8 @@ class opf_model(object):
         self.var["NS"] = self.var["NS"] + 1
 
         ## put name in ordered list of var sets
-        self.var["order"][self.var["NS"]] = name
+#        self.var["order"][self.var["NS"]] = name
+        self.var["order"].append(name)
 
 
     def build_cost_params(self):
@@ -298,13 +368,19 @@ class opf_model(object):
 #            if name in self.cost["data"]["H"]:
 #                nnzH = nnzH + nnz(self.cost["data"]["H"][name])
 
-        N = sparse((nw, self.var["N"]))
+        if nw:
+            N = sparse((nw, self.var["N"]))
+            H = sparse((nw, nw))            ## default => no quadratic term
+        else:
+            ## FIXME Zero dimensional sparse matrices
+            N = zeros((nw, self.var["N"]))
+            H = zeros((nw, nw))
+
         Cw = zeros(nw)
-        H = sparse((nw, nw))                ## default => no quadratic term
         dd = ones(nw)                       ## default => linear
-        rh = copy(Cw)                          ## default => no shift
-        kk = copy(Cw)                          ## default => no dead zone
-        mm = copy(dd)                          ## default => no scaling
+        rh = copy(Cw)                       ## default => no shift
+        kk = copy(Cw)                       ## default => no dead zone
+        mm = copy(dd)                       ## default => no scaling
 
         ## fill in each piece
         for k in range(self.cost["NS"]):
@@ -482,10 +558,10 @@ class opf_model(object):
         print self.ppc
 
         print '  userdata = '
-        if len(self.userdata) > 0:
+        if len(self.user_data) > 0:
             print '\n'
 
-        print self.userdata
+        print self.user_data
 
 
     def get_cost_params(self, name=None):
@@ -505,7 +581,7 @@ class opf_model(object):
             rh, kk - nw x 1 vectors (optional, all zeros by default)
         """
         if not 'params' in self.cost:
-            logger.error('opf_model.get_cost_params: must call build_cost_params first')
+            stderr.write('opf_model.get_cost_params: must call build_cost_params first\n')
 
         cp = self.cost["params"]
 
@@ -646,13 +722,13 @@ class opf_model(object):
         for k in range(self.lin["NS"]):
             name = self.lin["order"][k]
             N = self.lin["idx"]["N"][name]
-            if N:                                ## non-zero number of rows to add
+            if N:                                  ## non-zero number of rows to add
                 Ak = self.lin["data"]["A"][name]          ## A for kth linear constrain set
                 i1 = self.lin["idx"]["i1"][name]          ## starting row index
                 iN = self.lin["idx"]["iN"][name]          ## ing row index
                 vsl = self.lin["data"]["vs"][name]        ## var set list
-                kN = 0                             ## initialize last col of Ak used
-                Ai = sparse((N, self.var["N"]))
+                kN = -1                            ## initialize last col of Ak used
+                Ai = lil_matrix((N, self.var["N"]))
                 for v in vsl:
                     j1 = self.var["idx"]["i1"][v]    ## starting column in A
                     jN = self.var["idx"]["iN"][v]    ## ing column in A
@@ -678,9 +754,9 @@ class opf_model(object):
         of the solved case.
         """
         if val is not None:
-            self.userdata[name] = val
+            self.user_data[name] = val
         else:
-            if name in self.userdata:
-                return self.userdata[name]
+            if name in self.user_data:
+                return self.user_data[name]
             else:
                 return None

@@ -105,7 +105,7 @@ def loadcase(casefile,
 
                 except IOError, e:
                     info = 3
-                    lasterr = e.message
+                    lasterr = str(e)
             elif extension == '.py':      ## from Python file
                 try:
                     __import__(rootname)
@@ -115,7 +115,7 @@ def loadcase(casefile,
                         s = eval('mod.%s()' % rootname)
                     except ValueError, e:
                         info = 4
-                        lasterr = e.message
+                        lasterr = str(e)
                     ## if not try individual data matrices
                     if info == 0 and not isinstance(s, dict):
                         s = {}
@@ -126,7 +126,7 @@ def loadcase(casefile,
                                     s['gencost'] = eval('mod.%s()' % rootname)
                             except IOError, e:
                                 info = 4
-                                lasterr = e.message
+                                lasterr = str(e)
                         else:
                             if return_as_obj:
                                 try:
@@ -139,18 +139,18 @@ def loadcase(casefile,
                                             eval('mod.%s()' % rootname)
                                     except ValueError, e:
                                         info = 4
-                                        lasterr = e.message
+                                        lasterr = str(e)
                             else:
                                 try:
                                     s['baseMVA'], s['bus'], s['gen'], s['branch'] = \
                                         eval('mod.%s()' % rootname)
                                 except ValueError, e:
                                     info = 4
-                                    lasterr = e.message
+                                    lasterr = str(e)
 
                 except ImportError, e:
                     info = 4
-                    lasterr = e.message
+                    lasterr = str(e)
 
                 if info == 4 and exists(rootname + '.py'):
                     info = 5

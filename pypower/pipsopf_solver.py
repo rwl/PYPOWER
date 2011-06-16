@@ -70,16 +70,16 @@ def pipsopf_solver(om, ppopt, out_opt=None):
         out_opt = {}
 
     ## options
-    verbose = ppopt[31]    ## VERBOSE
-    feastol = ppopt[81]    ## PDIPM_FEASTOL
-    gradtol = ppopt[82]    ## PDIPM_GRADTOL
-    comptol = ppopt[83]    ## PDIPM_COMPTOL
-    costtol = ppopt[84]    ## PDIPM_COSTTOL
-    max_it  = ppopt[85]    ## PDIPM_MAX_IT
-    max_red = ppopt[86]    ## SCPDIPM_RED_IT
-    step_control = (ppopt[11] == 565)  ## OPF_ALG == 565, PIPS-sc
+    verbose = ppopt['VERBOSE']
+    feastol = ppopt['PDIPM_FEASTOL']
+    gradtol = ppopt['PDIPM_GRADTOL']
+    comptol = ppopt['PDIPM_COMPTOL']
+    costtol = ppopt['PDIPM_COSTTOL']
+    max_it  = ppopt['PDIPM_MAX_IT']
+    max_red = ppopt['SCPDIPM_RED_IT']
+    step_control = (ppopt['OPF_ALG'] == 565)  ## OPF_ALG == 565, PIPS-sc
     if feastol == 0:
-        feastol = ppopt[16]    ## = OPF_VIOLATION by default
+        feastol = ppopt['OPF_VIOLATION']
     opt = {  'feastol': feastol,
              'gradtol': gradtol,
              'comptol': comptol,
@@ -94,7 +94,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     ppc = om.get_ppc()
     baseMVA, bus, gen, branch, gencost = \
         ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"], ppc["gencost"]
-    vv, ll, nn = om.get_idx()
+    vv, ll, nn, _ = om.get_idx()
 
     ## problem dimensions
     nb = bus.shape[0]          ## number of buses

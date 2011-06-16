@@ -20,7 +20,11 @@ from numpy import flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 from scipy.sparse import eye as speye
 
-import pyipopt
+try:
+    import pyipopt
+except:
+#    print "IPOPT not available"
+    pass
 
 from pypower.idx_bus import BUS_TYPE, REF, VM, VA, MU_VMAX, MU_VMIN, LAM_P, LAM_Q
 from pypower.idx_brch import F_BUS, T_BUS, RATE_A, PF, QF, PT, QT, MU_SF, MU_ST

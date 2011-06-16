@@ -7,7 +7,7 @@
 # or (at your option) any later version.
 #
 # PYPOWER is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# but WITHOUT ANY WARRANTY without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
@@ -17,13 +17,16 @@
 from sys import stderr
 
 from numpy import array
-from scipy.sparse import spmatrix
+from scipy.sparse import issparse
 
 from ppoption import ppoption
 from loadcase import loadcase
 
 
-def opf_args(*args):
+def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
+             gencost=None, Au=None, lbu=None, ubu=None, ppopt=None, N=None,
+             fparm=None, H=None, Cw=None, z0=None, zl=None, zu=None,
+             want_ppc=True):
     """Parses and initializes OPF input arguments.
 
     Returns the full set of initialized OPF input arguments, filling in
@@ -83,131 +86,148 @@ def opf_args(*args):
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    nargin = len(args)
+    nargin = len([arg for arg in [baseMVA, bus, gen, branch, areas, gencost,
+                                  Au, lbu, ubu, ppopt, N, fparm, H, Cw,
+                                  z0, zl, zu] if arg is not None])
 
-    want_ppc = 1
     userfcn = array([])
-    ## passing filename or struct
-    baseMVA = args[0]
-    if isinstance(baseMVA, str) or isinstance(baseMVA, dict):
-        # - - - -opf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
-        # 12  opf(casefile, Au, lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
-        # 9   opf(casefile, Au, lbu, ubu, ppopt, N, fparm, H, Cw)
-        # 5   opf(casefile, Au, lbu, ubu, ppopt)
-        # 4   opf(casefile, Au, lbu, ubu)
+    ## passing filename or dict
+    if isinstance(baseMVA, basestring) or isinstance(baseMVA, dict):
+        # ----opf( baseMVA,     bus,   gen, branch, areas, gencost,    Au, lbu,  ubu, ppopt,  N, fparm, H, Cw, z0, zl, zu)
+        # 12  opf(casefile,      Au,   lbu,    ubu, ppopt,       N, fparm,    H,  Cw,    z0, zl,    zu)
+        # 9   opf(casefile,      Au,   lbu,    ubu, ppopt,       N, fparm,    H,  Cw)
+        # 5   opf(casefile,      Au,   lbu,    ubu, ppopt)
+        # 4   opf(casefile,      Au,   lbu,    ubu)
         # 3   opf(casefile, userfcn, ppopt)
-        # 2   opf(casefile, ppopt)
+        # 2   opf(casefile,   ppopt)
         # 1   opf(casefile)
         if nargin in [1, 2, 3, 4, 5, 9, 12]:
+            casefile = baseMVA
             if nargin == 12:
-                casefile, Au, lbu, ubu, ppopt, \
-                    N, fparm, H, Cw, z0, zl, zu = args
+                zu    = fparm
+                zl    = N
+                z0    = ppopt
+                Cw    = ubu
+                H     = lbu
+                fparm = Au
+                N     = gencost
+                ppopt = areas
+                ubu   = branch
+                lbu   = gen
+                Au    = bus
             elif nargin == 9:
-                zu = array([])
-                zl = array([])
-                z0 = array([])
-                casefile, Au, lbu, ubu, ppopt, N, fparm, H, Cw = args
+                zu    = array([])
+                zl    = array([])
+                z0    = array([])
+                Cw    = ubu
+                H     = lbu
+                fparm = Au
+                N     = gencost
+                ppopt = areas
+                ubu   = branch
+                lbu   = gen
+                Au    = bus
             elif nargin == 5:
-                zu = array([])
-                zl = array([])
-                z0 = array([])
-                Cw = array([])
-                H = None
+                zu    = array([])
+                zl    = array([])
+                z0    = array([])
+                Cw    = array([])
+                H     = None
                 fparm = array([])
-                N = None
-                casefile, Au, lbu, ubu, ppopt = args
+                N     = None
+                ppopt = areas
+                ubu   = branch
+                lbu   = gen
+                Au    = bus
             elif nargin == 4:
-                zu = array([])
-                zl = array([])
-                z0 = array([])
-                Cw = array([])
-                H = None
+                zu    = array([])
+                zl    = array([])
+                z0    = array([])
+                Cw    = array([])
+                H     = None
                 fparm = array([])
-                N = None
-                ppopt = ppoption
-                casefile, Au, lbu, ubu = args
+                N     = None
+                ppopt = ppoption()
+                ubu   = branch
+                lbu   = gen
+                Au    = bus
             elif nargin == 3:
-                zu = array([])
-                zl = array([])
-                z0 = array([])
-                Cw = array([])
-                H = None
+                userfcn = bus
+                zu    = array([])
+                zl    = array([])
+                z0    = array([])
+                Cw    = array([])
+                H     = None
                 fparm = array([])
-                N = None
-                ubu = array([])
-                lbu = array([])
-                Au = None
-                casefile, userfcn, ppopt = args
+                N     = None
+                ppopt = gen
+                ubu   = array([])
+                lbu   = array([])
+                Au    = None
             elif nargin == 2:
-                zu = array([])
-                zl = array([])
-                z0 = array([])
-                Cw = array([])
-                H = None
+                zu    = array([])
+                zl    = array([])
+                z0    = array([])
+                Cw    = array([])
+                H     = None
                 fparm = array([])
-                N = None
-                ubu = array([])
-                lbu = array([])
-                Au = None
-                casefile, ppopt = args
+                N     = None
+                ppopt = bus
+                ubu   = array([])
+                lbu   = array([])
+                Au    = None
             elif nargin == 1:
-                zu = array([])
-                zl = array([])
-                z0 = array([])
-                Cw = array([])
-                H = None
+                zu    = array([])
+                zl    = array([])
+                z0    = array([])
+                Cw    = array([])
+                H     = None
                 fparm = array([])
-                N = None
-                ppopt = ppoption
-                ubu = array([])
-                lbu = array([])
-                Au = None
-                casefile = args
+                N     = None
+                ppopt = ppoption()
+                ubu   = array([])
+                lbu   = array([])
+                Au    = None
         else:
             stderr.write('opf_args: Incorrect input arg order, number or type\n')
 
         ppc = loadcase(casefile)
         baseMVA, bus, gen, branch, gencost = \
-            ppc.baseMVA, ppc.bus, ppc.gen, ppc.branch, ppc.gencost
-        if ppc.has_key('areas'):
-            areas = ppc.areas
+            ppc['baseMVA'], ppc['bus'], ppc['gen'], ppc['branch'], ppc['gencost']
+        if 'areas' in ppc:
+            areas = ppc['areas']
         else:
             areas = array([])
-        if not any(Au) & ppc.has_key('A'):
+        if (Au is None or len(Au) == 0) and 'A' in ppc:
             Au, lbu, ubu = ppc["A"], ppc["l"], ppc["u"]
-        if not any(N) & ppc.has_key('N'): ## these two must go together
+        if (N is None or len(N) == 0) and 'N' in ppc:  ## these two must go together
             N, Cw = ppc["N"], ppc["Cw"]
-        if not any(H) & ppc.has_key('H'): ## will default to zeros
+        if (H is None or len(H) == 0) and 'H' in ppc:  ## will default to zeros
             H = ppc["H"]
-        if not any(fparm) & ppc.has_key('fparm'): ## will default to [1 0 0 1]
+        if (fparm is None or len(fparm) == 0) and 'fparm' in ppc:  ## will default to [1 0 0 1]
             fparm = ppc["fparm"]
-        if not any(z0) & ppc.has_key('z0'):
+        if (z0 is None or len(z0) == 0) and 'z0' in ppc:
             z0 = ppc["z0"]
-        if not any(zl) & ppc.has_key('zl'):
+        if (zl is None or len(zl) == 0) and 'zl' in ppc:
             zl = ppc["zl"]
-        if not any(zu) & ppc.has_key('zu'):
+        if (zu is None or len(zu) == 0) and 'zu' in ppc:
             zu = ppc["zu"]
-        if not any(userfcn) & ppc.has_key('userfcn'):
-            userfcn = ppc.userfcn
+        if (userfcn is None or len(userfcn) == 0) and 'userfcn' in ppc:
+            userfcn = ppc['userfcn']
     else: ## passing individual data matrices
-        # - - - -opf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
-        # 17  opf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
-        # 14  opf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt, N, fparm, H, Cw)
-        # 10  opf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt)
-        # 9   opf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu)
+        # ----opf(baseMVA, bus, gen, branch, areas, gencost,      Au, lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
+        # 17  opf(baseMVA, bus, gen, branch, areas, gencost,      Au, lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
+        # 14  opf(baseMVA, bus, gen, branch, areas, gencost,      Au, lbu, ubu, ppopt, N, fparm, H, Cw)
+        # 10  opf(baseMVA, bus, gen, branch, areas, gencost,      Au, lbu, ubu, ppopt)
+        # 9   opf(baseMVA, bus, gen, branch, areas, gencost,      Au, lbu, ubu)
         # 8   opf(baseMVA, bus, gen, branch, areas, gencost, userfcn, ppopt)
         # 7   opf(baseMVA, bus, gen, branch, areas, gencost, ppopt)
         # 6   opf(baseMVA, bus, gen, branch, areas, gencost)
         if nargin in [6, 7, 8, 9, 10, 14, 17]:
-            if nargin == 17:
-                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
-                ppopt, N, fparm, H, Cw, z0, zl, zu = args
-            elif nargin == 14:
+            if nargin == 14:
                 zu = array([])
                 zl = array([])
                 z0 = array([])
-                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
-                ppopt, N, fparm, H, Cw = args
             elif nargin == 10:
                 zu = array([])
                 zl = array([])
@@ -216,8 +236,6 @@ def opf_args(*args):
                 H = None
                 fparm = array([])
                 N = None
-                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
-                ppopt = args
             elif nargin == 9:
                 zu = array([])
                 zl = array([])
@@ -226,8 +244,7 @@ def opf_args(*args):
                 H = None
                 fparm = array([])
                 N = None
-                ppopt = ppoption
-                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu = args
+                ppopt = ppoption()
             elif nargin == 8:
                 zu = array([])
                 zl = array([])
@@ -239,7 +256,6 @@ def opf_args(*args):
                 ubu = array([])
                 lbu = array([])
                 Au = None
-                baseMVA, bus, gen, branch, areas, gencost, userfcn, ppopt =args
             elif nargin == 7:
                 zu = array([])
                 zl = array([])
@@ -251,7 +267,6 @@ def opf_args(*args):
                 ubu = array([])
                 lbu = array([])
                 Au = None
-                baseMVA, bus, gen, branch, areas, gencost, ppopt = args
             elif nargin == 6:
                 zu = array([])
                 zl = array([])
@@ -260,11 +275,10 @@ def opf_args(*args):
                 H = None
                 fparm = array([])
                 N = None
-                ppopt = ppoption
+                ppopt = ppoption()
                 ubu = array([])
                 lbu = array([])
                 Au = None
-                baseMVA, bus, gen, branch, areas, gencost = args
         else:
             stderr.write('opf_args: Incorrect input arg order, number or type\n')
 
@@ -274,54 +288,53 @@ def opf_args(*args):
                      'gen': gen,
                      'branch': branch,
                      'gencost': gencost  }
-    nw = N.shape[0]
+
+    nw = N.shape[0] if N is not None else 0
     if nw:
         if Cw.shape[0] != nw:
             stderr.write('opf_args.m: dimension mismatch between N and Cw in '
                          'generalized cost parameters\n')
-        if any(fparm) & fparm.shape[0] != nw:
+        if any(fparm) and fparm.shape[0] != nw:
             stderr.write('opf_args.m: dimension mismatch between N and fparm '
                          'in generalized cost parameters\n')
-        if any(H) & (H.shape[0] != nw | H.shape[0] != nw):
+        if any(H) and (H.shape[0] != nw | H.shape[0] != nw):
             stderr.write('opf_args.m: dimension mismatch between N and H in '
                          'generalized cost parameters\n')
-        if Au.shape[0] > 0 & N.shape[1] != Au.shape[1]:
+        if Au.shape[0] > 0 and N.shape[1] != Au.shape[1]:
             stderr.write('opf_args.m: A and N must have the same number of '
                          'columns\n')
         ## make sure N and H are sparse
-        if not isinstance(N, spmatrix):
+        if not issparse(N):
             stderr.write('opf_args.m: N must be sparse in generalized cost '
                          'parameters\n')
-        if not isinstance(H, spmatrix):
+        if not issparse(H):
             stderr.write('opf_args.m: H must be sparse in generalized cost parameters\n')
 
-    if not isinstance(Au, spmatrix):
+    if not issparse(Au):
         stderr.write('opf_args.m: Au must be sparse\n')
-    if len(ppopt) == 0:
-        ppopt = ppoption
+    if ppopt == None or len(ppopt) == 0:
+        ppopt = ppoption()
     if want_ppc:
-        if any(areas):
+        if areas is not None and len(areas) > 0:
             ppc["areas"] = areas
-        if any(Au):
+        if lbu is not None and len(lbu) > 0:
             ppc["A"], ppc["l"], ppc["u"] = Au, lbu, ubu
-        if any(N):
+        if Cw is not None and len(Cw) > 0:
             ppc["N"], ppc["Cw"] = N, Cw
-            if any(fparm):
+            if len(fparm) > 0:
                 ppc["fparm"] = fparm
-            if any(H):
-                ppc["H"] = H
-        if any(z0):
+            #if len(H) > 0:
+            ppc["H"] = H
+        if z0 is not None and len(z0) > 0:
             ppc["z0"] = z0
-        if any(zl):
+        if zl is not None and len(zl) > 0:
             ppc["zl"] = zl
-        if any(zu):
+        if zu is not None and len(zu) > 0:
             ppc["zu"] = zu
-        if any(userfcn):
+        if userfcn is not None and len(userfcn) > 0:
             ppc["userfcn"] = userfcn
-        baseMVA = ppc
-        bus = ppopt
 
-        return ppc, Au, lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu
+        return ppc, ppopt
     else:
         return baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, \
             ppopt, N, fparm, H, Cw, z0, zl, zu, userfcn, areas
