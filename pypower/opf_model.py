@@ -134,7 +134,7 @@ class opf_model(object):
                 stderr.write("opf_model.add_constraints: nonlinear constraint set named '%s' already exists\n" % name)
 
             ## add info about this nonlinear constraint set
-            self.nln["idx"]["i1"][name] = self.nln["N"] + 1    ## starting index
+            self.nln["idx"]["i1"][name] = self.nln["N"] #+ 1    ## starting index
             self.nln["idx"]["iN"][name] = self.nln["N"] + AorN ## ing index
             self.nln["idx"]["N"][name]  = AorN            ## number of constraints
 
@@ -175,7 +175,7 @@ class opf_model(object):
                 stderr.write('opf_model.add_constraints: number of columns of A does not match\nnumber of variables, A is %d x %d, nv = %d\n' % (N, M, nv))
 
             ## add info about this linear constraint set
-            self.lin["idx"]["i1"][name]  = self.lin["N"] + 1   ## starting index
+            self.lin["idx"]["i1"][name]  = self.lin["N"] #+ 1   ## starting index
             self.lin["idx"]["iN"][name]  = self.lin["N"] + N   ## ing index
             self.lin["idx"]["N"][name]   = N              ## number of constraints
             self.lin["data"]["A"][name]  = AorN
@@ -278,7 +278,7 @@ class opf_model(object):
             stderr.write('opf_model.add_costs: number of rows of mm (%d x %d) and N (%d x %d) must match\n' % (cp["mm"].shape, nw, nx))
 
         ## add info about this user cost set
-        self.cost["idx"]["i1"][name]  = self.cost["N"] + 1     ## starting index
+        self.cost["idx"]["i1"][name]  = self.cost["N"] #+ 1     ## starting index
         self.cost["idx"]["iN"][name]  = self.cost["N"] + nw    ## ing index
         self.cost["idx"]["N"][name]   = nw                ## number of costs (nw)
         self.cost["data"]["N"][name]  = cp["N"]
@@ -332,7 +332,7 @@ class opf_model(object):
 
 
         ## add info about this var set
-        self.var["idx"]["i1"][name]  = self.var["N"] + 1   ## starting index
+        self.var["idx"]["i1"][name]  = self.var["N"] #+ 1   ## starting index
         self.var["idx"]["iN"][name]  = self.var["N"] + N   ## ing index
         self.var["idx"]["N"][name]   = N              ## number of vars
         self.var["data"]["v0"][name] = v0             ## initial value
@@ -662,7 +662,7 @@ class opf_model(object):
             N = getN(om, 'nln', name)   : number of nonlinear cons. in named set
             N = getN(om, 'cost', name)  : number of cost rows (in N) in named set
         """
-        if name is not None:
+        if name is None:
             N = getattr(self, selector)["N"]
         else:
             if name in getattr(self, selector)["idx"]["N"]:
@@ -699,6 +699,8 @@ class opf_model(object):
                 vl = array([])
                 vu = array([])
 
+        return v0, vl, vu
+
 
     def linear_constraints(self):
         """Builds and returns the full set of linear constraints.
@@ -714,7 +716,7 @@ class opf_model(object):
 #        for k in range(self.lin["NS"]):
 #            nnzA = nnzA + nnz(self.lin["data"].A.(self.lin.order{k}))
 
-        A = sparse((self.lin["N"], self.var["N"]))
+        A = lil_matrix((self.lin["N"], self.var["N"]))
         u = Inf * ones(self.lin["N"])
         l = -u
 
@@ -728,15 +730,16 @@ class opf_model(object):
                 iN = self.lin["idx"]["iN"][name]          ## ing row index
                 vsl = self.lin["data"]["vs"][name]        ## var set list
                 kN = -1                            ## initialize last col of Ak used
-                Ai = lil_matrix((N, self.var["N"]))
+                Ai = lil_matrix((self.var["N"], N))  # row based
                 for v in vsl:
                     j1 = self.var["idx"]["i1"][v]    ## starting column in A
                     jN = self.var["idx"]["iN"][v]    ## ing column in A
                     k1 = kN + 1                      ## starting column in Ak
                     kN = kN + self.var["idx"]["N"][v]## ing column in Ak
-                    Ai[:, j1:jN] = Ak[:, k1:kN]
+                    Ai[j1:jN, :] = Ak[:, k1:kN].T
 
-                A[i1:iN, :] = Ai
+                A[i1:iN, :] = Ai.T
+
                 l[i1:iN] = self.lin["data"]["l"][name]
                 u[i1:iN] = self.lin["data"]["u"][name]
 

@@ -14,9 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import zeros, conj, exp, r_, Inf
+from numpy import zeros, conj, exp, r_, Inf, arange
 
-from scipy.sparse import csr_matrix, lil_matrix, vstack, hstack
+from scipy.sparse import lil_matrix, vstack, hstack, csr_matrix as sparse
 
 from idx_gen import GEN_BUS, PG, QG
 from idx_brch import F_BUS, T_BUS, RATE_A
@@ -27,7 +27,8 @@ from dIbr_dV import dIbr_dV
 from dSbr_dV import dSbr_dV
 from dAbr_dV import dAbr_dV
 
-def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
+
+def opf_consfcn(x, om, Ybus, Yf, Yt, ppopt, il=None, *args):
     """Evaluates nonlinear constraints and their Jacobian for OPF.
 
     Constraint evaluation function for AC optimal power flow, suitable
@@ -68,9 +69,9 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
     ##----- initialize -----
 
     ## unpack data
-    mpc = om.get_mpc()
+    ppc = om.get_ppc()
     baseMVA, bus, gen, branch = \
-        mpc["baseMVA"], mpc["bus"], mpc["gen"], mpc["branch"]
+        ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"]
     vv = om.get_idx()
 
     ## problem dimensions
@@ -113,7 +114,7 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
     if nl2 > 0:
         flow_max = (branch[il, RATE_A] / baseMVA)**2
         flow_max[flow_max == 0] = Inf
-        if mpopt[24] == 2:       ## current magnitude limit, |I|
+        if ppopt['OPF_FLOW_LIM'] == 2:       ## current magnitude limit, |I|
             If = Yf * V
             It = Yt * V
             h = r_[ If * conj(If) - flow_max,     ## branch I limits (from bus)
@@ -124,7 +125,7 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
             Sf = V[branch[il, F_BUS]] * conj(Yf * V)
             ## complex power injected at "to" bus (p.u.)
             St = V[branch[il, T_BUS]] * conj(Yt * V)
-            if mpopt[24] == 1:   ## active power limit, P (Pan Wei)
+            if ppopt[24] == 1:   ## active power limit, P (Pan Wei)
                 h = r_[ Sf.real**2 - flow_max,   ## branch P limits (from bus)
                         St.real**2 - flow_max ]  ## branch P limits (to bus)
             else:                ## apparent power limit, |S|
@@ -135,20 +136,20 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
 
     ##----- evaluate partials of constraints -----
     ## index ranges
-    iVa = range(vv["i1"]["Va"], vv["iN"]["Va"])
-    iVm = range(vv["i1"]["Vm"], vv["iN"]["Vm"])
-    iPg = range(vv["i1"]["Pg"], vv["iN"]["Pg"])
-    iQg = range(vv["i1"]["Qg"], vv["iN"]["Qg"])
+    iVa = arange(vv["i1"]["Va"], vv["iN"]["Va"])
+    iVm = arange(vv["i1"]["Vm"], vv["iN"]["Vm"])
+    iPg = arange(vv["i1"]["Pg"], vv["iN"]["Pg"])
+    iQg = arange(vv["i1"]["Qg"], vv["iN"]["Qg"])
     iVaVmPgQg = r_[iVa, iVm, iPg, iQg].T
 
     ## compute partials of injected bus powers
     dSbus_dVm, dSbus_dVa = dSbus_dV(Ybus, V)           ## w.r.t. V
     ## Pbus w.r.t. Pg, Qbus w.r.t. Qg
-    neg_Cg = csr_matrix((-1, (gen[:, GEN_BUS], range(ng))), (nb, ng))
+    neg_Cg = sparse((-1, (gen[:, GEN_BUS], range(ng))), (nb, ng))
 
     ## construct Jacobian of equality constraints (power flow) and transpose it
     dg = lil_matrix((2 * nb, nxyz))
-    blank = csr_matrix((nb, ng))
+    blank = sparse((nb, ng))
     dg[:, iVaVmPgQg] = vstack([
             ## P mismatch w.r.t Va, Vm, Pg, Qg
             hstack([dSbus_dVa.real, dSbus_dVm.real, neg_Cg, blank]),
@@ -159,13 +160,13 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
 
     if nl2 > 0:
         ## compute partials of Flows w.r.t. V
-        if mpopt[24] == 2:     ## current
+        if ppopt['OPF_FLOW_LIM'] == 2:     ## current
             dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft = \
                     dIbr_dV(branch[il, :], Yf, Yt, V)
         else:                  ## power
             dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft = \
                     dSbr_dV(branch[il, :], Yf, Yt, V)
-        if mpopt[24] == 1:     ## real part of flow (active power)
+        if ppopt['OPF_FLOW_LIM'] == 1:     ## real part of flow (active power)
             dFf_dVa = dFf_dVa.real
             dFf_dVm = dFf_dVm.real
             dFt_dVa = dFt_dVa.real
@@ -186,6 +187,6 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, mpopt, il=None, *args):
             ], "csr")
         dh = dh.T
     else:
-        dh = csr_matrix(nxyz, 0)
+        dh = None
 
     return h, g, dh, dg

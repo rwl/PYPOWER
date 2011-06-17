@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, nonzero, ones, zeros, r_
-from scipy.sparse import csr_matrix
+from numpy import array, ones, zeros, arange, r_, dot, flatnonzero as find
+from scipy.sparse import csr_matrix as sparse
 
 from idx_cost import MODEL, POLYNOMIAL
 
 from totcost import totcost
 from polycost import polycost
+
 
 def opf_costfcn(x, om, *args):
     """Evaluates objective function, gradient and Hessian for OPF.
@@ -43,12 +44,12 @@ def opf_costfcn(x, om, *args):
     """
     ##----- initialize -----
     ## unpack data
-    mpc = om.get_mpc()
-    baseMVA, gen, gencost = mpc["baseMVA"], mpc["gen"], mpc["gencost"]
+    ppc = om.get_ppc()
+    baseMVA, gen, gencost = ppc["baseMVA"], ppc["gen"], ppc["gencost"]
     cp = om.get_cost_params()
     N, Cw, H, dd, rh, kk, mm = \
         cp["N"], cp["Cw"], cp["H"], cp["dd"], cp["rh"], cp["kk"], cp["mm"]
-    vv = om.get_idx()
+    vv, _, _, _ = om.get_idx()
 
     ## problem dimensions
     ng = gen.shape[0]          ## number of dispatchable injections
@@ -63,7 +64,7 @@ def opf_costfcn(x, om, *args):
     ## polynomial cost of P and Q
     # use totcost only on polynomial cost in the minimization problem
     # formulation, pwl cost is the sum of the y variables.
-    ipol = nonzero(gencost[:, MODEL] == POLYNOMIAL)   ## poly MW and MVAr costs
+    ipol = find(gencost[:, MODEL] == POLYNOMIAL)   ## poly MW and MVAr costs
     xx = r_[ Pg, Qg ] * baseMVA
     if any(ipol):
         f = sum( totcost(gencost[ipol, :], xx[ipol]) )  ## cost of poly P or Q
@@ -72,11 +73,10 @@ def opf_costfcn(x, om, *args):
 
     ## piecewise linear cost of P and Q
     if ny > 0:
-        ccost = csr_matrix((ones(1,ny),
-                            (ones((1,ny)),
-                             range(vv["i1"]["y"], vv["iN"]["y"]))),
-                            (1, nxyz)).todense()
-        f = f + ccost * x
+        ccost = sparse((ones(ny),
+                        (zeros(ny), arange(vv["i1"]["y"], vv["iN"]["y"]))),
+                       (1, nxyz)).todense()
+        f = f + dot(ccost, x)
     else:
         ccost = zeros((1, nxyz))
 
@@ -84,21 +84,20 @@ def opf_costfcn(x, om, *args):
     if any(N):
         nw = N.shape[0]
         r = N * x - rh                  ## Nx - rhat
-        iLT = nonzero(r < -kk)          ## below dead zone
-        iEQ = nonzero(r == 0 & kk == 0) ## dead zone doesn't exist
-        iGT = nonzero(r > kk)           ## above dead zone
+        iLT = find(r < -kk)          ## below dead zone
+        iEQ = find(r == 0 & kk == 0) ## dead zone doesn't exist
+        iGT = find(r > kk)           ## above dead zone
         iND = r_[iLT, iEQ, iGT]         ## rows that are Not in the Dead region
-        iL = nonzero(dd == 1)           ## rows using linear function
-        iQ = nonzero(dd == 2)           ## rows using quadratic function
-        LL = csr_matrix((1, (iL, iL)), (nw, nw))
-        QQ = csr_matrix((1, (iQ, iQ)), (nw, nw))
-        kbar = csr_matrix((r_[   ones((len(iLT), 1)),
-                                zeros((len(iEQ), 1)),
-                                -ones((len(iGT), 1))], (iND, iND)),
-                                (nw, nw)) * kk
+        iL = find(dd == 1)           ## rows using linear function
+        iQ = find(dd == 2)           ## rows using quadratic function
+        LL = sparse((1, (iL, iL)), (nw, nw))
+        QQ = sparse((1, (iQ, iQ)), (nw, nw))
+        kbar = sparse((r_[ones((len(iLT), 1)),
+                          zeros((len(iEQ), 1)),
+                          -ones((len(iGT), 1))], (iND, iND)), (nw, nw)) * kk
         rr = r + kbar                  ## apply non-dead zone shift
-        M = csr_matrix((mm(iND), (iND, iND)), (nw, nw))  ## dead zone or scale
-        diagrr = csr_matrix((rr, (range(nw), range(nw))), (nw, nw))
+        M = sparse((mm(iND), (iND, iND)), (nw, nw))  ## dead zone or scale
+        diagrr = sparse((rr, (range(nw), range(nw))), (nw, nw))
 
         ## linear rows multiplied by rr(i), quadratic rows by rr(i)^2
         w = M * (LL + QQ * diagrr) * rr
@@ -136,7 +135,7 @@ def opf_costfcn(x, om, *args):
                 xx[k] = xx[k] + step
                 ddff[k] = (opf_costfcn(xx, om) - f) / step
             if max(abs(ddff - df)) > tol:
-                idx = nonzero(abs(ddff - df) == max(abs(ddff - df)))
+                idx = find(abs(ddff - df) == max(abs(ddff - df)))
                 print 'Mismatch in gradient'
                 print 'idx             df(num)         df              diff'
                 print '%4d%16g%16g%16g' % \
@@ -153,21 +152,21 @@ def opf_costfcn(x, om, *args):
         qcost = array([])
 
     ## polynomial generator costs
-    d2f_dPg2 = csr_matrix((ng, 1))               ## w.r.t. p.u. Pg
-    d2f_dQg2 = csr_matrix((ng, 1))               ## w.r.t. p.u. Qg
-    ipolp = nonzero(pcost[:, MODEL] == POLYNOMIAL)
+    d2f_dPg2 = sparse((ng, 1))               ## w.r.t. p.u. Pg
+    d2f_dQg2 = sparse((ng, 1))               ## w.r.t. p.u. Qg
+    ipolp = find(pcost[:, MODEL] == POLYNOMIAL)
     d2f_dPg2[ipolp] = \
             baseMVA**2 * polycost(pcost[ipolp, :], Pg[ipolp]*baseMVA, 2)
     if any(qcost):          ## Qg is not free
-        ipolq = nonzero(qcost[:, MODEL] == POLYNOMIAL)
+        ipolq = find(qcost[:, MODEL] == POLYNOMIAL)
         d2f_dQg2[ipolq] = \
                 baseMVA**2 * polycost(qcost[ipolq, :], Qg[ipolq] * baseMVA, 2)
     i = r_[iPg, iQg].T
-    d2f = csr_matrix((r_[d2f_dPg2, d2f_dQg2], (i, i)), (nxyz, nxyz))
+    d2f = sparse((r_[d2f_dPg2, d2f_dQg2], (i, i)), (nxyz, nxyz))
 
     ## generalized cost
     if any(N):
         d2f = d2f + AA * H * AA.T + 2 * N.T * M * QQ * \
-                csr_matrix((HwC, (range(nw), range(nw))), (nw, nw)) * N
+                sparse((HwC, (range(nw), range(nw))), (nw, nw)) * N
 
     return f, df, d2f

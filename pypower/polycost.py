@@ -50,11 +50,11 @@ def polycost(gencost, Pg, der=0):
         c[k, :n] = gencost[k, (COST + n - 1):COST - 1:-1]
 
     ## do derivatives
-    for d in range(der):
+    for d in range(1, der + 1):
         if c.shape[1] >= 2:
-            c = c[:, 2:maxN - d + 1]
+            c = c[:, 1:maxN - d + 1]
         else:
-            c = zeros(ng)
+            c = zeros((ng, 1))
             break
         for k in range(1, maxN - d):
             c[:, k] = k * c[:, k]

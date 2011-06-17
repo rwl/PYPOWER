@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, ones, zeros, nonzero, Inf, pi, exp, conj, r_
+from numpy import array, ones, zeros, Inf, pi, exp, conj, r_
+from numpy import flatnonzero as find
 
 from idx_bus import BUS_TYPE, REF, VM, VA, MU_VMAX, MU_VMIN, LAM_P, LAM_Q
 from idx_brch import F_BUS, T_BUS, RATE_A, PF, QF, PT, QT, MU_SF, MU_ST
@@ -35,7 +36,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     a struct containing fields (can be empty) for each of the desired
     optional output fields.
 
-    Outputs are a RESULTS struct, SUCCESS flag and RAW output struct.
+    outputs are a RESULTS struct, SUCCESS flag and RAW output struct.
 
     RESULTS is a MATPOWER case struct (ppc) with the usual baseMVA, bus
     branch, gen, gencost fields, along with the following additional
@@ -111,7 +112,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
 
     ## try to select an interior initial point
-    ll = xmin, uu = xmax
+    ll, uu = xmin.copy(), xmax.copy()
     ll[xmin == -Inf] = -1e10   ## replace Inf with numerical proxies
     uu[xmax ==  Inf] =  1e10
     x0 = (ll + uu) / 2
@@ -119,23 +120,25 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     ## angles set to first reference angle
     x0[vv["i1"]["Va"]:vv["iN"]["Va"]] = Varefs[0]
     if ny > 0:
-        ipwl = nonzero(gencost[:, MODEL] == PW_LINEAR)
+        ipwl = find(gencost[:, MODEL] == PW_LINEAR)
 #         PQ = r_[gen[:, PMAX], gen[:, QMAX]]
 #         c = totcost(gencost[ipwl, :], PQ[ipwl])
-        c = gencost(sub2ind(gencost.shape, ipwl, NCOST+2*gencost[ipwl, NCOST]))    ## largest y-value in CCV data
+        c = gencost.flatten()[sub2ind(gencost.shape, ipwl, NCOST+2*gencost[ipwl, NCOST])]    ## largest y-value in CCV data
         x0[vv["i1"]["y"]:vv["iN"]["y"]] = max(c) + 0.1 * abs(max(c))
 #        x0[vv["i1"]["y"]:vv["iN"]["y"]] = c + 0.1 * abs(c)
 
     ## find branches with flow limits
-    il = nonzero(branch[:, RATE_A] != 0 & branch[:, RATE_A] < 1e10)
+    il = find((branch[:, RATE_A] != 0) & (branch[:, RATE_A] < 1e10))
     nl2 = len(il)           ## number of constrained lines
 
     ##-----  run opf  -----
-    f_fcn = opf_costfcn#(x, om)
-    gh_fcn = opf_consfcn#(x, om, Ybus, Yf(il,:), Yt(il,:), ppopt, il)
-    hess_fcn = opf_hessfcn#(x, Lmbda, om, Ybus, Yf(il,:), Yt(il,:), ppopt, il, opt.cost_mult)
-    x, f, info, Output, Lmbda = \
-      pips(f_fcn, x0, A, l, u, xmin, xmax, gh_fcn, hess_fcn, opt)
+    f_fcn = lambda x: opf_costfcn(x, om)
+    gh_fcn = lambda x: opf_consfcn(x, om, Ybus, Yf[il, :], Yt[il,:], ppopt, il)
+    hess_fcn = lambda x, lmbda, cost_mult: opf_hessfcn(x, lmbda, cost_mult, om, Ybus, Yf[il, :], Yt[il, :], ppopt, il)
+
+    x, f, info, output, lmbda = \
+        pips(f_fcn, x0, A, l, u, xmin, xmax, gh_fcn, hess_fcn, opt)
+
     success = (info > 0)
 
     ## update solution data
@@ -167,21 +170,21 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     muSt = zeros(nl)
     if il.any():
         muSf[il] = \
-            2 * Lmbda["ineqnonlin"][:nl2] * branch[il, RATE_A] / baseMVA
+            2 * lmbda["ineqnonlin"][:nl2] * branch[il, RATE_A] / baseMVA
         muSt[il] = \
-            2 * Lmbda["ineqnonlin"][nl2:nl2+nl2] * branch[il, RATE_A] / baseMVA
+            2 * lmbda["ineqnonlin"][nl2:nl2+nl2] * branch[il, RATE_A] / baseMVA
 
     ## update Lagrange multipliers
-    bus[:, MU_VMAX]  = Lmbda["upper"][vv["i1"]["Vm"]:vv["iN"]["Vm"]]
-    bus[:, MU_VMIN]  = Lmbda["lower"][vv["i1"]["Vm"]:vv["iN"]["Vm"]]
-    gen[:, MU_PMAX]  = Lmbda["upper"][vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
-    gen[:, MU_PMIN]  = Lmbda["lower"][vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
-    gen[:, MU_QMAX]  = Lmbda["upper"][vv["i1"]["Qg"]:vv["iN"]["Qg"]] / baseMVA
-    gen[:, MU_QMIN]  = Lmbda["lower"][vv["i1"]["Qg"]:vv["iN"]["Qg"]] / baseMVA
+    bus[:, MU_VMAX]  = lmbda["upper"][vv["i1"]["Vm"]:vv["iN"]["Vm"]]
+    bus[:, MU_VMIN]  = lmbda["lower"][vv["i1"]["Vm"]:vv["iN"]["Vm"]]
+    gen[:, MU_PMAX]  = lmbda["upper"][vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
+    gen[:, MU_PMIN]  = lmbda["lower"][vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
+    gen[:, MU_QMAX]  = lmbda["upper"][vv["i1"]["Qg"]:vv["iN"]["Qg"]] / baseMVA
+    gen[:, MU_QMIN]  = lmbda["lower"][vv["i1"]["Qg"]:vv["iN"]["Qg"]] / baseMVA
     bus[:, LAM_P] = \
-        Lmbda["eqnonlin"][nn["i1"]["Pmis"]:nn["iN"]["Pmis"]] / baseMVA
+        lmbda["eqnonlin"][nn["i1"]["Pmis"]:nn["iN"]["Pmis"]] / baseMVA
     bus[:, LAM_Q] = \
-        Lmbda["eqnonlin"][nn["i1"]["Qmis"]:nn["iN"]["Qmis"]] / baseMVA
+        lmbda["eqnonlin"][nn["i1"]["Qmis"]:nn["iN"]["Qmis"]] / baseMVA
     branch[:, MU_SF] = muSf / baseMVA
     branch[:, MU_ST] = muSt / baseMVA
 
@@ -189,17 +192,17 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     nlnN = om.getN('nln')
 
     ## extract multipliers for nonlinear constraints
-    kl = nonzero(Lmbda["eqnonlin"] < 0)
-    ku = nonzero(Lmbda["eqnonlin"] > 0)
+    kl = find(lmbda["eqnonlin"] < 0)
+    ku = find(lmbda["eqnonlin"] > 0)
     nl_mu_l = zeros(nlnN)
     nl_mu_u = r_[zeros(2*nb), muSf, muSt]
-    nl_mu_l[kl] = -Lmbda["eqnonlin"][kl]
-    nl_mu_u[ku] =  Lmbda["eqnonlin"][ku]
+    nl_mu_l[kl] = -lmbda["eqnonlin"][kl]
+    nl_mu_u[ku] =  lmbda["eqnonlin"][ku]
 
     mu = {
-      'var': {'l': Lmbda["lower"], 'u': Lmbda["upper"]},
+      'var': {'l': lmbda["lower"], 'u': lmbda["upper"]},
       'nln': {'l': nl_mu_l, 'u': nl_mu_u},
-      'lin': {'l': Lmbda["mu_l"], 'u': Lmbda["mu_u"]} }
+      'lin': {'l': lmbda["mu_l"], 'u': lmbda["mu_u"]} }
 
     results = ppc
     results["bus"], results["branch"], results["gen"], \
@@ -212,6 +215,6 @@ def pipsopf_solver(om, ppopt, out_opt=None):
         -ones(ny > 0),
         results["mu"]["var"]["l"] - results["mu"]["var"]["u"],
     ]
-    raw = {'xr': x, 'pimul': pimul, 'info': info, 'output': Output}
+    raw = {'xr': x, 'pimul': pimul, 'info': info, 'output': output}
 
     return results, success, raw
