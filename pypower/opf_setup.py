@@ -71,7 +71,7 @@ def opf_setup(ppc, ppopt):
         ppc['gencost'] = pqcost(ppc['gencost'], ng)
 
         ## reduce A and/or N from AC dimensions to DC dimensions, if needed
-        if nusr | nw:
+        if nusr or nw:
             acc = r_[nb + arange(nb), 2 * nb + ng + arange(ng)]   ## Vm and Qg columns
             if nusr and shape(ppc['A'])[1] >= 2*nb + 2*ng:
                 ## make sure there aren't any constraints on Vm or Qg
@@ -154,7 +154,7 @@ def opf_setup(ppc, ppopt):
         ## more problem dimensions
         nv    = nb           ## number of voltage magnitude vars
         nq    = ng           ## number of Qg vars
-        q1    = 1 + ng       ## index of 1st Qg column in Ay
+        q1    = ng           ## index of 1st Qg column in Ay
 
         ## dispatchable load, constant power factor constraints
         Avl, lvl, uvl, _  = makeAvl(baseMVA, gen)

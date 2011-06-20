@@ -104,4 +104,4 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
         k = k + ns - 1
         j = j + 1
 
-    return Ay, by
+    return Ay.tocsr(), by
