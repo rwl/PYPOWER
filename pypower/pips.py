@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, flatnonzero, Inf, any, isnan, ones, r_, finfo, \
-    zeros, dot, absolute, log
+from numpy import array, Inf, any, isnan, ones, r_, finfo, \
+    zeros, dot, absolute, log, flatnonzero as find
 
 from numpy.linalg import norm
 
@@ -250,10 +250,10 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     uu = r_[xmax, u]
 
     # split up linear constraints
-    ieq = flatnonzero( absolute(uu - ll) <= EPS )
-    igt = flatnonzero( (uu >=  1e10) & (ll > -1e10) )
-    ilt = flatnonzero( (ll <= -1e10) & (uu <  1e10) )
-    ibx = flatnonzero( (absolute(uu - ll) > EPS) & (uu < 1e10) & (ll > -1e10) )
+    ieq = find( absolute(uu - ll) <= EPS )
+    igt = find( (uu >=  1e10) & (ll > -1e10) )
+    ilt = find( (ll <= -1e10) & (uu <  1e10) )
+    ibx = find( (absolute(uu - ll) > EPS) & (uu < 1e10) & (ll > -1e10) )
     # zero-sized sparse matrices unsupported
     Ae = AA[ieq, :] if len(ieq) else None
     if len(ilt) or len(igt) or len(ibx):
@@ -266,7 +266,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
 
     # evaluate cost f(x0) and constraints g(x0), h(x0)
     x = x0
-    f, df, _ = f_fcn(x)                 # cost
+    f, df = f_fcn(x)                 # cost
     f = f * opt["cost_mult"]
     df = df * opt["cost_mult"]
     if nonlinear:
@@ -311,9 +311,9 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     lam = zeros(neq)
     z = z0 * ones(niq)
     mu = z0 * ones(niq)
-    k = flatnonzero(h < -z0)
+    k = find(h < -z0)
     z[k] = -h[k]
-    k = flatnonzero((gamma / z) > z0)
+    k = find((gamma / z) > z0)
     mu[k] = gamma / z[k]
     e = ones(niq)
 
@@ -324,6 +324,8 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
 
     Lx = df
     Lx = Lx + dg * lam if dg is not None else Lx
+
+    print dh.shape, mu.shape
     Lx = Lx + dh * mu  if dh is not None else Lx
 
     maxh = zeros(1) if len(h) == 0 else max(h)
@@ -379,7 +381,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
                       "your own hessian evaluation function."
             Lxx = hess_fcn(x, lmbda, opt["cost_mult"])
         else:
-            _, _, d2f = f_fcn(x)      # cost
+            _, _, d2f = f_fcn(x, True)      # cost
             Lxx = d2f * opt["cost_mult"]
         rz = range(len(z))
         zinvdiag = sparse((1.0 / z, (rz, rz))) if len(z) else None
@@ -414,7 +416,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
             x1 = x + dx
 
             # evaluate cost, constraints, derivatives at x1
-            f1, df1, _ = f_fcn(x1)          # cost
+            f1, df1 = f_fcn(x1)          # cost
             f1 = f1 * opt["cost_mult"]
             df1 = df1 * opt["cost_mult"]
             if nonlinear:
@@ -472,7 +474,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
             for j in range(opt["max_red"]):
                 dx1 = alpha * dx
                 x1 = x + dx1
-                f1, _, _ = f_fcn(x1)             # cost
+                f1, _ = f_fcn(x1)             # cost
                 f1 = f1 * opt["cost_mult"]
                 if nonlinear:
                     hn1, gn1, _, _ = gh_fcn(x1)              # nonlinear constraints
@@ -499,9 +501,9 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
             dmu = alpha * dmu
 
         # do the update
-        k = flatnonzero(dz < 0.0)
+        k = find(dz < 0.0)
         alphap = min([xi * min(z[k] / -dz[k]), 1]) if len(k) else 1.0
-        k = flatnonzero(dmu < 0.0)
+        k = find(dmu < 0.0)
         alphad = min([xi * min(mu[k] / -dmu[k]), 1]) if len(k) else 1.0
         x = x + alphap * dx
         z = z + alphap * dz
@@ -511,7 +513,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
             gamma = sigma * dot(z, mu) / niq
 
         # evaluate cost, constraints, derivatives
-        f, df, _ = f_fcn(x)             # cost
+        f, df = f_fcn(x)             # cost
         f = f * opt["cost_mult"]
         df = df * opt["cost_mult"]
         if nonlinear:
@@ -610,7 +612,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     output = {"iterations": i, "hist": hist, "message": message}
 
     # zero out multipliers on non-binding constraints
-    mu[flatnonzero( (h < -opt["feastol"]) & (mu < mu_threshold) )] = 0.0
+    mu[find( (h < -opt["feastol"]) & (mu < mu_threshold) )] = 0.0
 
     # un-scale cost and prices
     f = f / opt["cost_mult"]
@@ -620,8 +622,8 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     # re-package multipliers into struct
     lam_lin = lam[neqnln:neq]           # lambda for linear constraints
     mu_lin = mu[niqnln:niq]             # mu for linear constraints
-    kl = flatnonzero(lam_lin < 0.0)     # lower bound binding
-    ku = flatnonzero(lam_lin > 0.0)     # upper bound binding
+    kl = find(lam_lin < 0.0)     # lower bound binding
+    ku = find(lam_lin > 0.0)     # upper bound binding
 
     mu_l = zeros(nx + nA)
     mu_l[ieq[kl]] = -lam_lin[kl]

@@ -310,7 +310,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
         if not issparse(H):
             stderr.write('opf_args.m: H must be sparse in generalized cost parameters\n')
 
-    if not issparse(Au):
+    if Au is not None and not issparse(Au):
         stderr.write('opf_args.m: Au must be sparse\n')
     if ppopt == None or len(ppopt) == 0:
         ppopt = ppoption()

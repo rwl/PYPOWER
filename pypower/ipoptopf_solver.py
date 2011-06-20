@@ -101,7 +101,7 @@ def ipoptopf_solver(om, ppopt):
     ppc = om.get_ppc()
     baseMVA, bus, gen, branch, gencost = \
         ppc['baseMVA'], ppc['bus'], ppc['gen'], ppc['branch'], ppc['gencost']
-    vv, ll, nn = om.get_idx()
+    vv, _, nn, _ = om.get_idx()
 
     ## problem dimensions
     nb = shape(bus)[0]          ## number of buses
@@ -158,7 +158,7 @@ def ipoptopf_solver(om, ppopt):
         [Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))],
         [A]
     ]
-    f, df, d2f = opf_costfcn(x0, om)
+    f, _, d2f = opf_costfcn(x0, om, True)
     Hs = tril(d2f + [
         [Cb,  Cb,  sparse((nb, nxtra))],
         [Cb,  Cb,  sparse((nb, nxtra))],
@@ -236,7 +236,7 @@ def ipoptopf_solver(om, ppopt):
     else:
         output['iterations'] = array([])
 
-    f = opf_costfcn(x, om)
+    f, _ = opf_costfcn(x, om)
 
     ## update solution data
     Va = x[vv['i1']['Va']:vv['iN']['Va']]
@@ -324,7 +324,7 @@ def ipoptopf_solver(om, ppopt):
 
 
 def objective(x, d):
-    f = opf_costfcn(x, d.om)
+    f,  _ = opf_costfcn(x, d.om)
     return f
 
 
@@ -343,7 +343,7 @@ def constraints(x, d):
 
 
 def jacobian(x, d):
-    hn, gn, dhn, dgn = opf_consfcn(x, d['om'], d['Ybus'], d['Yf'], d['Yt'], d['ppopt'], d['il'])
+    _, _, dhn, dgn = opf_consfcn(x, d['om'], d['Ybus'], d['Yf'], d['Yt'], d['ppopt'], d['il'])
     J = r_[dgn.T, dhn.T, d['A']]
     return J
 
@@ -352,7 +352,7 @@ def hessian(x, sigma, lmbda, d):
     lam = {}
     lam['eqnonlin']   = lmbda[:d['neqnln']]
     lam['ineqnonlin'] = lmbda[d['neqnln'] + arange(d['niqnln'])]
-    H = tril(opf_hessfcn(x, lam, sigma, d['om'], d['Ybus'], d['Yf'], d['Yt'], d['ppopt'], d['il']))
+    H = tril(opf_hessfcn(x, lam, d['om'], d['Ybus'], d['Yf'], d['Yt'], d['ppopt'], d['il'], sigma))
     return H
 
 

@@ -132,9 +132,9 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     nl2 = len(il)           ## number of constrained lines
 
     ##-----  run opf  -----
-    f_fcn = lambda x: opf_costfcn(x, om)
+    f_fcn = lambda x, return_hessian=False: opf_costfcn(x, om, return_hessian)
     gh_fcn = lambda x: opf_consfcn(x, om, Ybus, Yf[il, :], Yt[il,:], ppopt, il)
-    hess_fcn = lambda x, lmbda, cost_mult: opf_hessfcn(x, lmbda, cost_mult, om, Ybus, Yf[il, :], Yt[il, :], ppopt, il)
+    hess_fcn = lambda x, lmbda, cost_mult: opf_hessfcn(x, lmbda, om, Ybus, Yf[il, :], Yt[il, :], ppopt, il, cost_mult)
 
     x, f, info, output, lmbda = \
         pips(f_fcn, x0, A, l, u, xmin, xmax, gh_fcn, hess_fcn, opt)
@@ -146,7 +146,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     Vm = x[vv["i1"]["Vm"]:vv["iN"]["Vm"]]
     Pg = x[vv["i1"]["Pg"]:vv["iN"]["Pg"]]
     Qg = x[vv["i1"]["Qg"]:vv["iN"]["Qg"]]
-    V = Vm * exp(1j*Va)
+    V = Vm * exp(1j * Va)
 
     ##-----  calculate return values  -----
     ## update voltages & generator outputs

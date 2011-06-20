@@ -23,7 +23,7 @@ from totcost import totcost
 from polycost import polycost
 
 
-def opf_costfcn(x, om, *args):
+def opf_costfcn(x, om, return_hessian=False):
     """Evaluates objective function, gradient and Hessian for OPF.
 
     Objective function evaluation routine for AC optimal power flow,
@@ -143,6 +143,9 @@ def opf_costfcn(x, om, *args):
                 print 'MAX'
                 print '%4d%16g%16g%16g' % \
                     (idx.T, ddff[idx].T, df[idx].T, abs(ddff[idx] - df[idx]).T)
+
+    if not return_hessian:
+        return f, df
 
     ## ---- evaluate cost Hessian -----
     pcost = gencost[range(ng), :]

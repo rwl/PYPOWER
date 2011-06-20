@@ -128,7 +128,7 @@ def opf_execute(om, ppopt):
                     raw['dg'] = r_[dgeq.T, dg.T]   ## true Jacobian organization
 
                 ## compute df, d2f
-                _, df, d2f = opf_costfcn(results['x'], om)
+                _, df, d2f = opf_costfcn(results['x'], om, True)
                 raw['df'] = df
                 raw['d2f'] = d2f
 

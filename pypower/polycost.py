@@ -40,8 +40,8 @@ def polycost(gencost, Pg, der=0):
         sys.stderr.write('polycost: all costs must be polynomial\n')
 
     ng = len(Pg)
-    maxN = max(gencost[:, NCOST])
-    minN = min(gencost[:, NCOST])
+    maxN = max( gencost[:, NCOST].astype(int) )
+    minN = min( gencost[:, NCOST].astype(int) )
 
     ## form coefficient matrix where 1st column is constant term, 2nd linear, etc.
     c = zeros((ng, maxN))
