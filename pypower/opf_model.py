@@ -110,6 +110,75 @@ class opf_model(object):
         self.user_data = {}
 
 
+    def __str__(self):
+        s = ''
+        if self.var['NS']:
+            s += '\n%-22s %5s %8s %8s %8s\n' % ('VARIABLES', 'name', 'i1', 'iN', 'N')
+            s += '%-22s %5s %8s %8s %8s\n' % ('=========', '------', '-----', '-----', '------')
+            for k in range(self.var['NS']):
+                name = self.var['order'][k]
+                idx = self.var['idx']
+                s += '%15d:%12s %8d %8d %8d\n' % (k, name, idx['i1'][name], idx['iN'][name], idx['N'][name])
+
+            s += '%15s%31s\n' % (('var[\'NS\'] = %d' % self.var['NS']), ('var[\'N\'] = %d' % self.var['N']))
+            s += '\n'
+        else:
+            s += '%s  :  <none>\n', 'VARIABLES'
+
+        if self.nln['NS']:
+            s += '\n%-22s %5s %8s %8s %8s\n' % ('NON-LINEAR CONSTRAINTS', 'name', 'i1', 'iN', 'N')
+            s += '%-22s %5s %8s %8s %8s\n' % ('======================', '------', '-----', '-----', '------')
+            for k in range(self.nln['NS']):
+                name = self.nln['order'][k]
+                idx = self.nln['idx']
+                s += '%15d:%12s %8d %8d %8d\n' % (k, name, idx['i1'][name], idx['iN'][name], idx['N'][name])
+
+            s += '%15s%31s\n' % (('nln.NS = %d' % self.nln['NS']), ('nln.N = %d' % self.nln['N']))
+            s += '\n'
+        else:
+            s += '%s  :  <none>\n', 'NON-LINEAR CONSTRAINTS'
+
+        if self.lin['NS']:
+            s += '\n%-22s %5s %8s %8s %8s\n' % ('LINEAR CONSTRAINTS', 'name', 'i1', 'iN', 'N')
+            s += '%-22s %5s %8s %8s %8s\n' % ('==================', '------', '-----', '-----', '------')
+            for k in range(self.lin['NS']):
+                name = self.lin['order'][k]
+                idx = self.lin['idx']
+                s += '%15d:%12s %8d %8d %8d\n' % (k, name, idx['i1'][name], idx['iN'][name], idx['N'][name])
+
+            s += '%15s%31s\n' % (('lin.NS = %d' % self.lin['NS']), ('lin.N = %d' % self.lin['N']))
+            s += '\n'
+        else:
+            s += '%s  :  <none>\n', 'LINEAR CONSTRAINTS'
+
+        if self.cost['NS']:
+            s += '\n%-22s %5s %8s %8s %8s\n' % ('COSTS', 'name', 'i1', 'iN', 'N')
+            s += '%-22s %5s %8s %8s %8s\n' % ('=====', '------', '-----', '-----', '------')
+            for k in range(self.cost['NS']):
+                name = self.cost['order'][k]
+                idx = self.cost['idx']
+                s += '%15d:%12s %8d %8d %8d\n' % (k, name, idx['i1'][name], idx['iN'][name], idx['N'][name])
+
+            s += '%15s%31s\n' % (('cost.NS = %d' % self.cost['NS']), ('cost.N = %d' % self.cost['N']))
+            s += '\n'
+        else:
+            s += '%s  :  <none>\n' % 'COSTS'
+
+        #s += '  ppc = '
+        #if len(self.ppc):
+        #    s += '\n'
+        #
+        #s += str(self.ppc) + '\n'
+
+        s += '  userdata = '
+        if len(self.user_data):
+            s += '\n'
+
+        s += str(self.user_data)
+
+        return s
+
+
     def add_constraints(self, name, AorN, l, u=None, varsets=None):
         """Adds a set of constraints to the model.
 
@@ -127,8 +196,7 @@ class opf_model(object):
         by PYPOWER, but there is no way for the user to specify
         additional nonlinear constraints.
         """
-        if u is None:
-        ## nonlinear
+        if u is None:  ## nonlinear
             ## prevent duplicate named constraint sets
             if name in self.nln["idx"]["N"]:
                 stderr.write("opf_model.add_constraints: nonlinear constraint set named '%s' already exists\n" % name)
@@ -164,7 +232,7 @@ class opf_model(object):
                 varsets = self.var["order"]
 
             ## check sizes
-            if l.shape[0] != N or u.shape[0] != N:
+            if (l.shape[0] != N) or (u.shape[0] != N):
                 stderr.write('opf_model.add_constraints: sizes of A, l and u must match\n')
 
             nv = 0
@@ -377,10 +445,10 @@ class opf_model(object):
             H = zeros((nw, nw))
 
         Cw = zeros(nw)
-        dd = ones(nw)                       ## default => linear
-        rh = copy(Cw)                       ## default => no shift
-        kk = copy(Cw)                       ## default => no dead zone
-        mm = copy(dd)                       ## default => no scaling
+        dd = ones(nw)                        ## default => linear
+        rh = zeros(nw)                       ## default => no shift
+        kk = zeros(nw)                       ## default => no dead zone
+        mm = ones(nw)                        ## default => no scaling
 
         ## fill in each piece
         for k in range(self.cost["NS"]):
