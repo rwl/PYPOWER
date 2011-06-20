@@ -108,7 +108,10 @@ OUTPUT_OPTIONS = [
 
     ('out_qg_lim', 1, 'control output of gen Q limit info'),
 
-    ('out_raw', False, 'print raw data')
+    ('out_raw', False, 'print raw data'),
+
+    ('return_raw_der', 0, '''return constraint and derivative info
+in results['raw'] (in keys g, dg, df, d2f))''')
 ]
 
 PIPS_OPTIONS = [

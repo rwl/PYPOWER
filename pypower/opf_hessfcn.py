@@ -113,8 +113,8 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
         qcost = array([])
 
     ## ----- evaluate d2f -----
-    d2f_dPg2 = sparse((ng, 1))               ## w.r.t. p.u. Pg
-    d2f_dQg2 = sparse((ng, 1))               ## w.r.t. p.u. Qg
+    d2f_dPg2 = zeros(ng)#sparse((ng, 1))               ## w.r.t. p.u. Pg
+    d2f_dQg2 = zeros(ng)#sparse((ng, 1))               ## w.r.t. p.u. Qg
     ipolp = find(pcost[:, MODEL] == POLYNOMIAL)
     d2f_dPg2[ipolp] = \
             baseMVA**2 * polycost(pcost[ipolp, :], Pg[ipolp] * baseMVA, 2)
@@ -122,10 +122,11 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
         ipolq = find(qcost[:, MODEL] == POLYNOMIAL)
         d2f_dQg2[ipolq] = \
                 baseMVA**2 * polycost(qcost[ipolq, :], Qg[ipolq] * baseMVA, 2)
-    i = arange(vv["i1"]["Pg"], vv["iN"]["Pg"]) + \
-        arange(vv["i1"]["Qg"], vv["iN"]["Qg"])
-    d2f = sparse((vstack([d2f_dPg2, d2f_dQg2]).toarray().flatten(),
-                  (i, i)), shape=(nxyz, nxyz))
+    i = r_[arange(vv["i1"]["Pg"], vv["iN"]["Pg"]),
+           arange(vv["i1"]["Qg"], vv["iN"]["Qg"])]
+#    d2f = sparse((vstack([d2f_dPg2, d2f_dQg2]).toarray().flatten(),
+#                  (i, i)), shape=(nxyz, nxyz))
+    d2f = sparse((r_[d2f_dPg2, d2f_dQg2], (i, i)), (nxyz, nxyz))
 
     ## generalized cost
     if any(N):

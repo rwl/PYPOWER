@@ -165,14 +165,14 @@ def opf(*args):
     nb   = shape(ppc['bus'])[0]    ## number of buses
     nl   = shape(ppc['branch'])[0] ## number of branches
     ng   = shape(ppc['gen'])[0]    ## number of dispatchable injections
-    if shape(ppc['bus'])[1] < MU_VMIN:
-        ppc['bus'] = c_[ppc['bus'], zeros((nb, MU_VMIN - shape(ppc['bus'])[1]))]
+    if shape(ppc['bus'])[1] < MU_VMIN + 1:
+        ppc['bus'] = c_[ppc['bus'], zeros((nb, MU_VMIN + 1 - shape(ppc['bus'])[1]))]
 
-    if shape(ppc['gen'])[1] < MU_QMIN:
-        ppc['gen'] = c_[ppc['gen'], zeros((ng, MU_QMIN - shape(ppc['gen'])[1]))]
+    if shape(ppc['gen'])[1] < MU_QMIN + 1:
+        ppc['gen'] = c_[ppc['gen'], zeros((ng, MU_QMIN + 1 - shape(ppc['gen'])[1]))]
 
-    if shape(ppc['branch'])[1] < MU_ANGMAX:
-        ppc['branch'] = c_[ppc['branch'], zeros((nl, MU_ANGMAX - shape(ppc['branch'])[1]))]
+    if shape(ppc['branch'])[1] < MU_ANGMAX + 1:
+        ppc['branch'] = c_[ppc['branch'], zeros((nl, MU_ANGMAX + 1 - shape(ppc['branch'])[1]))]
 
     ##-----  convert to internal numbering, remove out-of-service stuff  -----
     ppc = ext2int(ppc)

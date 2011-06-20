@@ -32,7 +32,8 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     ppopt = ppoption(ppopt)
 
     ##-----  run the optimal power flow  -----
-    r, success = opf(casedata, ppopt)
+    r = opf(casedata, ppopt)
+    success = r['success']
 
     ##-----  output results  -----
     if fname:

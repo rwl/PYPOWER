@@ -14,15 +14,21 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from sys import stdout
+
 from numpy import \
-    array, ones, zeros, nonzero, r_, sort, exp, pi, diff, real, imag, arange
+    array, ones, zeros, r_, sort, exp, pi, diff, real, imag, arange
 
-from scipy.sparse import csr_matrix
+from numpy import flatnonzero as find
 
-from idx_bus import *
-from idx_gen import *
-from idx_brch import *
-from idx_cost import *
+from scipy.sparse import csr_matrix as sparse
+
+from idx_bus import BUS_I, BUS_TYPE, PD, QD, GS, BS, BUS_AREA, VM, VA, \
+    VMAX, VMIN, LAM_P, LAM_Q, MU_VMAX, MU_VMIN
+from idx_gen import GEN_BUS, PG, QG, QMAX, QMIN, VG, GEN_STATUS, \
+    PMAX, PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
+from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, RATE_A, \
+    TAP, SHIFT, BR_STATUS, PF, QF, PT, QT, MU_SF, MU_ST
 
 from isload import isload
 from run_userfcn import run_userfcn
@@ -72,26 +78,26 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         if ppopt['OUT_ALL'] == 0 and ppopt['OUT_RAW'] == 0:
             return     ## nothin' to see here, bail out now
         if bus is None:
-            fd = 1         ## print to stdio by default
+            fd = stdout         ## print to stdout by default
         else:
             fd = bus
         baseMVA, bus, gen, branch, success, et = \
             results["baseMVA"], results["bus"], results["gen"], \
             results["branch"], results["success"], results["et"]
-        if results.has_key('f') and any(results["f"]):
+        if 'f' in results:
             f = results["f"]
         else:
-            f = array([])
+            f = None
     else:
         have_results_struct = 0
         if ppopt is None:
             ppopt = ppoption()   ## use default options
             if fd is None:
-                fd = 1         ## print to stdio by default
+                fd = stdout         ## print to stdout by default
         if ppopt['OUT_ALL'] == 0 and ppopt['OUT_RAW'] == 0:
             return     ## nothin' to see here, bail out now
 
-    isOPF = any(f)    ## FALSE -> only simple PF data, TRUE -> OPF data
+    isOPF = f is not None    ## FALSE -> only simple PF data, TRUE -> OPF data
 
     ## options
     isDC            = ppopt['PF_DC']        ## use DC formulation?
@@ -129,8 +135,8 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     ptol = 1e-6        ## tolerance for displaying shadow prices
 
     ## create map of external bus numbers to bus indices
-    i2e = bus[:, BUS_I]
-    e2i = csr_matrix((max(i2e), 1))
+    i2e = bus[:, BUS_I].astype(int)
+    e2i = zeros(max(i2e) + 1, int)
     e2i[i2e] = arange(bus.shape[0])
 
     ## sizes of things
@@ -145,33 +151,33 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         branch[:, r_[BR_R, BR_B]]   = zeros((nl, 2))
 
     ## parameters
-    ties = nonzero(bus[e2i[branch[:, F_BUS]], BUS_AREA] !=
-                   bus[e2i[branch[:, T_BUS]], BUS_AREA])
+    ties = find(bus[e2i[branch[:, F_BUS].astype(int)], BUS_AREA] !=
+                   bus[e2i[branch[:, T_BUS].astype(int)], BUS_AREA])
                             ## area inter-ties
     tap = ones(nl)                           ## default tap ratio = 1 for lines
-    xfmr = nonzero(branch[:, TAP])           ## indices of transformers
+    xfmr = find(branch[:, TAP])           ## indices of transformers
     tap[xfmr] = branch[xfmr, TAP]            ## include transformer tap ratios
     tap = tap * exp(1j * pi / 180 * branch[:, SHIFT]) ## add phase shifters
-    nzld = nonzero(bus[:, PD] | bus[:, QD])
+    nzld = find((bus[:, PD] != 0.0) | (bus[:, QD] != 0.0))
     sorted_areas = sort(bus[:, BUS_AREA])
     ## area numbers
-    s_areas = sorted_areas[r_[1, nonzero(diff(sorted_areas)) + 1]]
-    nzsh = nonzero(bus[:, GS] | bus[:, BS])
-    allg = nonzero( not isload(gen) )
-    ong  = nonzero( gen[:, GEN_STATUS] > 0 and not isload(gen) )
-    onld = nonzero( gen[:, GEN_STATUS] > 0 and     isload(gen) )
+    s_areas = sorted_areas[r_[1, find(diff(sorted_areas)) + 1]]
+    nzsh = find((bus[:, GS] != 0.0) | (bus[:, BS] != 0.0))
+    allg = find( ~isload(gen) )
+    ong  = find( (gen[:, GEN_STATUS] > 0) & ~isload(gen) )
+    onld = find( (gen[:, GEN_STATUS] > 0) &  isload(gen) )
     V = bus[:, VM] * exp(-1j * pi / 180 * bus[:, VA])
-    out = nonzero(branch[:, BR_STATUS] == 0)        ## out-of-service branches
+    out = find(branch[:, BR_STATUS] == 0)        ## out-of-service branches
     nout = len(out)
     if isDC:
         loss = zeros(nl)
     else:
-        loss = baseMVA * abs(V[e2i[branch[:, F_BUS]]] / tap -
-                             V[e2i[branch[:, T_BUS]]])**2 / \
+        loss = baseMVA * abs(V[e2i[ branch[:, F_BUS].astype(int) ]] / tap -
+                             V[e2i[ branch[:, T_BUS].astype(int) ]])**2 / \
                     (branch[:, BR_R] - 1j * branch[:, BR_X])
 
-    fchg = abs(V[e2i[branch[:, F_BUS]]] / tap)**2 * branch[:, BR_B] * baseMVA / 2
-    tchg = abs(V[e2i[branch[:, T_BUS]]]      )**2 * branch[:, BR_B] * baseMVA / 2
+    fchg = abs(V[e2i[ branch[:, F_BUS].astype(int) ]] / tap)**2 * branch[:, BR_B] * baseMVA / 2
+    tchg = abs(V[e2i[ branch[:, T_BUS].astype(int) ]]      )**2 * branch[:, BR_B] * baseMVA / 2
     loss[out] = zeros(nout)
     fchg[out] = zeros(nout)
     tchg[out] = zeros(nout)
@@ -186,7 +192,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
 
         ## objective function value
         if isOPF:
-            fd.write('\nObjective Function Value = %.2f $/hr', f)
+            fd.write('\nObjective Function Value = %.2f $/hr' % f)
 
     if OUT_SYS_SUM:
         fd.write('\n================================================================================')
@@ -238,19 +244,19 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         fd.write('\n----  -----   -----  ------   -----  -----  -----   -----   -----  -----  -----')
         for i in range(len(s_areas)):
             a = s_areas[i]
-            ib = nonzero(bus[:, BUS_AREA] == a)
-            ig = nonzero(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & ~isload(gen))
-            igon = nonzero(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & gen[:, GEN_STATUS] > 0 & ~isload(gen))
-            ildon = nonzero(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & gen[:, GEN_STATUS] > 0 & isload(gen))
-            inzld = nonzero(bus[:, BUS_AREA] == a & (bus[:, PD] | bus[:, QD]))
-            inzsh = nonzero(bus[:, BUS_AREA] == a & (bus[:, GS] | bus[:, BS]))
-            ibrch = nonzero(bus[e2i[branch[:, F_BUS]], BUS_AREA] == a & bus[e2i[branch[:, T_BUS]], BUS_AREA] == a)
-            in_tie = nonzero(bus[e2i[branch[:, F_BUS]], BUS_AREA] == a & bus[e2i[branch[:, T_BUS]], BUS_AREA] != a)
-            out_tie = nonzero(bus[e2i[branch[:, F_BUS]], BUS_AREA] != a & bus[e2i[branch[:, T_BUS]], BUS_AREA] == a)
+            ib = find(bus[:, BUS_AREA] == a)
+            ig = find(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & ~isload(gen))
+            igon = find(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & gen[:, GEN_STATUS] > 0 & ~isload(gen))
+            ildon = find(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & gen[:, GEN_STATUS] > 0 & isload(gen))
+            inzld = find(bus[:, BUS_AREA] == a & (bus[:, PD] | bus[:, QD]))
+            inzsh = find(bus[:, BUS_AREA] == a & (bus[:, GS] | bus[:, BS]))
+            ibrch = find(bus[e2i[branch[:, F_BUS]], BUS_AREA] == a & bus[e2i[branch[:, T_BUS]], BUS_AREA] == a)
+            in_tie = find(bus[e2i[branch[:, F_BUS]], BUS_AREA] == a & bus[e2i[branch[:, T_BUS]], BUS_AREA] != a)
+            out_tie = find(bus[e2i[branch[:, F_BUS]], BUS_AREA] != a & bus[e2i[branch[:, T_BUS]], BUS_AREA] == a)
             if not any(xfmr):
                 nxfmr = 0
             else:
-                nxfmr = len(nonzero(bus[e2i[branch[xfmr, F_BUS]], BUS_AREA] == a & bus[e2i[branch[xfmr, T_BUS]], BUS_AREA] == a))
+                nxfmr = len(find(bus[e2i[branch[xfmr, F_BUS]], BUS_AREA] == a & bus[e2i[branch[xfmr, T_BUS]], BUS_AREA] == a))
             fd.write('\n%3d  %6d   %5d  %5d   %5d  %5d  %5d   %5d   %5d  %5d  %5d' %
                 (a, len(ib), len(ig), len(igon), \
                 len(inzld)+len(ildon), len(inzld), len(ildon), \
@@ -266,8 +272,8 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         fd.write('\n----   ------  ------------------   ------  ------------------    ------  ------')
         for i in range(len(s_areas)):
             a = s_areas[i]
-            ig = nonzero(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & ~isload(gen))
-            igon = nonzero(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & gen[:, GEN_STATUS] > 0 & ~isload(gen))
+            ig = find(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & ~isload(gen))
+            igon = find(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & gen[:, GEN_STATUS] > 0 & ~isload(gen))
             fd.write('\n%3d   %7.1f  %7.1f to %-7.1f  %7.1f  %7.1f to %-7.1f   %7.1f %7.1f' %
                 (a, sum(gen[ig, PMAX]), sum(gen[ig, QMIN]), sum(gen[ig, QMAX]),
                 sum(gen[igon, PMAX]), sum(gen[igon, QMIN]), sum(gen[igon, QMAX]),
@@ -285,8 +291,8 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         Qlim = (gen[:, QMIN] == 0) * gen[:, QMAX] + (gen[:, QMAX] == 0) * gen[:, QMIN]
         for i in range(len(s_areas)):
             a = s_areas[i]
-            ildon = nonzero(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & gen[:, GEN_STATUS] > 0 & isload(gen))
-            inzld = nonzero(bus[:, BUS_AREA] == a & (bus[:, PD] | bus[:, QD]))
+            ildon = find(bus[e2i[gen[:, GEN_BUS]], BUS_AREA] == a & gen[:, GEN_STATUS] > 0 & isload(gen))
+            inzld = find(bus[:, BUS_AREA] == a & (bus[:, PD] | bus[:, QD]))
             fd.write('\n%3d    %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f' %
                 (a, -sum(gen[ildon, PMIN]),
                 -sum(Qlim[ildon]),
@@ -309,10 +315,10 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         fd.write('\n----    ------  ------    --------    ------  ------    ------  ------')
         for i in range(len(s_areas)):
             a = s_areas[i]
-            inzsh = nonzero(bus[:, BUS_AREA] == a & (bus[:, GS] | bus[:, BS]))
-            ibrch = nonzero(bus[e2i[branch[:, F_BUS]], BUS_AREA] == a & bus[e2i[branch[:, T_BUS]], BUS_AREA] == a & branch[:, BR_STATUS])
-            in_tie = nonzero(bus[e2i[branch[:, F_BUS]], BUS_AREA] != a & bus[e2i[branch[:, T_BUS]], BUS_AREA] == a & branch[:, BR_STATUS])
-            out_tie = nonzero(bus[e2i[branch[:, F_BUS]], BUS_AREA] == a & bus[e2i[branch[:, T_BUS]], BUS_AREA] != a & branch[:, BR_STATUS])
+            inzsh = find(bus[:, BUS_AREA] == a & (bus[:, GS] | bus[:, BS]))
+            ibrch = find(bus[e2i[branch[:, F_BUS]], BUS_AREA] == a & bus[e2i[branch[:, T_BUS]], BUS_AREA] == a & branch[:, BR_STATUS])
+            in_tie = find(bus[e2i[branch[:, F_BUS]], BUS_AREA] != a & bus[e2i[branch[:, T_BUS]], BUS_AREA] == a & branch[:, BR_STATUS])
+            out_tie = find(bus[e2i[branch[:, F_BUS]], BUS_AREA] == a & bus[e2i[branch[:, T_BUS]], BUS_AREA] != a & branch[:, BR_STATUS])
             fd.write('\n%3d    %7.1f %7.1f    %7.1f    %7.2f %7.2f   %7.1f %7.1f' %
                 (a, -sum(bus[inzsh, VM]**2 * bus[inzsh, GS]),
                  sum(bus[inzsh, VM]**2 * bus[inzsh, BS]),
@@ -392,9 +398,9 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         if isOPF: fd.write('  -------  -------')
         for i in range(nb):
             fd.write('\n%5d%7.3f%9.3f' % (bus(i, [BUS_I, VM, VA])))
-            g  = nonzero(gen[:, GEN_STATUS] > 0 & gen[:, GEN_BUS] == bus[i, BUS_I] &
+            g  = find(gen[:, GEN_STATUS] > 0 & gen[:, GEN_BUS] == bus[i, BUS_I] &
                         ~isload(gen))
-            ld = nonzero(gen[:, GEN_STATUS] > 0 & gen[:, GEN_BUS] == bus[i, BUS_I] &
+            ld = find(gen[:, GEN_STATUS] > 0 & gen[:, GEN_BUS] == bus[i, BUS_I] &
                         isload(gen))
             if any(g):
                 fd.write('%10.2f%10.2f', sum(gen[g, PG]), sum(gen[g, QG]))
@@ -442,7 +448,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
 
     ##-----  constraint data  -----
     if isOPF:
-        ctol = ppopt[16]   ## constraint violation tolerance
+        ctol = ppopt['OPF_VIOLATION']   ## constraint violation tolerance
         ## voltage constraints
         if not isDC & (OUT_V_LIM == 2 | (OUT_V_LIM == 1 &
                              (any(bus[:, VM] < bus[:, VMIN] + ctol) |

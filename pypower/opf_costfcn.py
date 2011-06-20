@@ -75,10 +75,10 @@ def opf_costfcn(x, om, return_hessian=False):
     if ny > 0:
         ccost = sparse((ones(ny),
                         (zeros(ny), arange(vv["i1"]["y"], vv["iN"]["y"]))),
-                       (1, nxyz)).todense()
+                       (1, nxyz)).toarray().flatten()
         f = f + dot(ccost, x)
     else:
-        ccost = zeros((1, nxyz))
+        ccost = zeros(nxyz)
 
     ## generalized cost term
     if any(N):
@@ -117,7 +117,7 @@ def opf_costfcn(x, om, return_hessian=False):
     df[iQg] = df_dPgQg[ng:ng + ng]
 
     ## piecewise linear cost of P and Q
-    df = df + ccost.T  # The linear cost row is additive wrt any nonlinear cost.
+    df = df + ccost  # The linear cost row is additive wrt any nonlinear cost.
 
     ## generalized cost term
     if any(N):

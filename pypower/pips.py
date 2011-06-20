@@ -322,10 +322,8 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     if opt["step_control"]:
         L = f + dot(lam, g) + dot(mu, h + z) - gamma * sum(log(z))
 
-    Lx = df
+    Lx = df.copy()
     Lx = Lx + dg * lam if dg is not None else Lx
-
-    print dh.shape, mu.shape
     Lx = Lx + dh * mu  if dh is not None else Lx
 
     maxh = zeros(1) if len(h) == 0 else max(h)

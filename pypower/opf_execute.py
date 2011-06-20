@@ -102,7 +102,7 @@ def opf_execute(om, ppopt):
     if success:
         if not dc:
             ## copy bus voltages back to gen matrix
-            results['gen'][:, VG] = results['bus'][results['gen'][:, GEN_BUS], VM]
+            results['gen'][:, VG] = results['bus'][results['gen'][:, GEN_BUS].astype(int), VM]
 
             ## gen PQ capability curve multipliers
             if ll['N']['PQh'] > 0 | ll['N']['PQl'] > 0:
@@ -151,9 +151,9 @@ def opf_execute(om, ppopt):
             raw['d2f'] = array([])
 
     ## assign values and limit shadow prices for variables
-    om_var_order = om.get('var', 'order')
-    for k in range(len(om_var_order)):
-        name = om_var_order[k]
+    if om.var['order']:
+        results['var'] = {'val': {}, 'mu': {'l': {}, 'u': {}}}
+    for name in om.var['order']:
         if om.getN('var', name):
             idx = arange(vv['i1'][name], vv['iN'][name])
             results['var']['val'][name] = results['x'][idx]
@@ -161,9 +161,9 @@ def opf_execute(om, ppopt):
             results['var']['mu']['u'][name] = results['mu']['var']['u'][idx]
 
     ## assign shadow prices for linear constraints
-    om_lin_order = om.get('lin', 'order')
-    for k in range(len(om_lin_order)):
-        name = om_lin_order[k]
+    if om.lin['order']:
+        results['lin'] = {'mu': {'l': {}, 'u': {}}}
+    for name in om.lin['order']:
         if om.getN('lin', name):
             idx = arange(ll['i1'][name], ll['iN'][name])
             results['lin']['mu']['l'][name] = results['mu']['lin']['l'][idx]
@@ -171,18 +171,18 @@ def opf_execute(om, ppopt):
 
     ## assign shadow prices for nonlinear constraints
     if not dc:
-        om_nln_order = om.get('nln', 'order')
-        for k in range(len(om_nln_order)):
-            name = om_nln_order[k]
+        if om.nln['order']:
+            results['nln'] = {'mu': {'l': {}, 'u': {}}}
+        for name in om.nln['order']:
             if om.getN('nln', name):
-                idx = arange(nn['i1']['name'], nn['iN']['name'])
+                idx = arange(nn['i1'][name], nn['iN'][name])
                 results['nln']['mu']['l'][name] = results['mu']['nln']['l'][idx]
                 results['nln']['mu']['u'][name] = results['mu']['nln']['u'][idx]
 
     ## assign values for components of user cost
-    om_cost_order = om.get('cost', 'order')
-    for k in range(len(om_cost_order)):
-        name = om_cost_order[k]
+    if om.cost['order']:
+        results['cost'] = {}
+    for name in om.cost['order']:
         if om.getN('cost', name):
             results['cost'][name] = om.compute_cost(results['x'], name)
 

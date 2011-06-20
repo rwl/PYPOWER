@@ -136,8 +136,9 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     gh_fcn = lambda x: opf_consfcn(x, om, Ybus, Yf[il, :], Yt[il,:], ppopt, il)
     hess_fcn = lambda x, lmbda, cost_mult: opf_hessfcn(x, lmbda, om, Ybus, Yf[il, :], Yt[il, :], ppopt, il, cost_mult)
 
-    x, f, info, output, lmbda = \
-        pips(f_fcn, x0, A, l, u, xmin, xmax, gh_fcn, hess_fcn, opt)
+    solution = pips(f_fcn, x0, A, l, u, xmin, xmax, gh_fcn, hess_fcn, opt)
+    x, f, info, lmbda, output = solution["x"], solution["f"], \
+            solution["eflag"], solution["lmbda"], solution["output"]
 
     success = (info > 0)
 
@@ -146,6 +147,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     Vm = x[vv["i1"]["Vm"]:vv["iN"]["Vm"]]
     Pg = x[vv["i1"]["Pg"]:vv["iN"]["Pg"]]
     Qg = x[vv["i1"]["Qg"]:vv["iN"]["Qg"]]
+
     V = Vm * exp(1j * Va)
 
     ##-----  calculate return values  -----
@@ -154,11 +156,11 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     bus[:, VM] = Vm
     gen[:, PG] = Pg * baseMVA
     gen[:, QG] = Qg * baseMVA
-    gen[:, VG] = Vm[gen[:, GEN_BUS]]
+    gen[:, VG] = Vm[ gen[:, GEN_BUS].astype(int) ]
 
     ## compute branch flows
-    Sf = V[branch[:, F_BUS]] * conj(Yf * V)  ## cplx pwr at "from" bus, p["u"].
-    St = V[branch[:, T_BUS]] * conj(Yt * V)  ## cplx pwr at "to" bus, p["u"].
+    Sf = V[ branch[:, F_BUS].astype(int) ] * conj(Yf * V)  ## cplx pwr at "from" bus, p["u"].
+    St = V[ branch[:, T_BUS].astype(int) ] * conj(Yt * V)  ## cplx pwr at "to" bus, p["u"].
     branch[:, PF] = Sf.real * baseMVA
     branch[:, QF] = Sf.imag * baseMVA
     branch[:, PT] = St.real * baseMVA

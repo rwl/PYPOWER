@@ -758,8 +758,9 @@ class opf_model(object):
         """
         if val is not None:
             self.user_data[name] = val
+            return self
         else:
             if name in self.user_data:
                 return self.user_data[name]
             else:
-                return None
+                return array([])
