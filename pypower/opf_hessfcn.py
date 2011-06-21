@@ -108,7 +108,7 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
     nxtra = nxyz - 2 * nb
     pcost = gencost[arange(ng), :]
     if gencost.shape[0] > ng:
-        qcost = gencost[arange(ng + 1, 2 * ng), :]
+        qcost = gencost[arange(ng, 2 * ng), :]
     else:
         qcost = array([])
 
@@ -131,18 +131,18 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
     ## generalized cost
     if any(N):
         nw = N.shape[0]
-        r = N * x - rh                  ## Nx - rhat
-        iLT = find(r < -kk)          ## below dead zone
-        iEQ = find(r == 0 & kk == 0) ## dead zone doesn't exist
-        iGT = find(r > kk)           ## above dead zone
-        iND = r_[iLT, iEQ, iGT]         ## rows that are Not in the Dead region
-        iL = find(dd == 1)           ## rows using linear function
-        iQ = find(dd == 2)           ## rows using quadratic function
+        r = N * x - rh                    ## Nx - rhat
+        iLT = find(r < -kk)               ## below dead zone
+        iEQ = find((r == 0) & (kk == 0))  ## dead zone doesn't exist
+        iGT = find(r > kk)                ## above dead zone
+        iND = r_[iLT, iEQ, iGT]           ## rows that are Not in the Dead region
+        iL = find(dd == 1)                ## rows using linear function
+        iQ = find(dd == 2)                ## rows using quadratic function
         LL = sparse((ones(nw), (iL, iL)), (nw, nw))
         QQ = sparse((ones(nw), (iQ, iQ)), (nw, nw))
-        kbar = sparse((r_[  ones(len(iLT), 1),
-                            zeros(len(iEQ), 1),
-                            -ones(len(iGT), 1)], (iND, iND)), nw, nw) * kk
+        kbar = sparse((r_[  ones(len(iLT)),
+                            zeros(len(iEQ)),
+                           -ones(len(iGT))], (iND, iND)), nw, nw) * kk
         rr = r + kbar                  ## apply non-dead zone shift
         M = sparse((mm[iND], (iND, iND)), (nw, nw))  ## dead zone or scale
         diagrr = sparse((rr, arange(nw), arange(nw)), (nw, nw))
@@ -191,17 +191,17 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
         ## connection matrix for line & to buses
         Ct = sparse((ones(nl2), (arange(nl2), t)), (nl2, nb))
         dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St = \
-            dSbr_dV(branch[il,:], Yf, Yt, V)
+                dSbr_dV(branch[il,:], Yf, Yt, V)
         if ppopt['OPF_FLOW_LIM'] == 1:     ## real power
-            Hfaa, Hfav, Hfva, Hfvv = d2ASbr_dV2(dSf_dVa.real(), dSf_dVm.real(),
-                                                Sf.real(), Cf, Yf, V, muF)
-            Htaa, Htav, Htva, Htvv = d2ASbr_dV2(dSt_dVa.real(), dSt_dVm.real(),
-                                                St.real(), Ct, Yt, V, muT)
+            Hfaa, Hfav, Hfva, Hfvv = d2ASbr_dV2(dSf_dVa.real, dSf_dVm.real,
+                                                Sf.real, Cf, Yf, V, muF)
+            Htaa, Htav, Htva, Htvv = d2ASbr_dV2(dSt_dVa.real, dSt_dVm.real,
+                                                St.real, Ct, Yt, V, muT)
         else:                  ## apparent power
             Hfaa, Hfav, Hfva, Hfvv = \
-                d2ASbr_dV2(dSf_dVa, dSf_dVm, Sf, Cf, Yf, V, muF)
+                    d2ASbr_dV2(dSf_dVa, dSf_dVm, Sf, Cf, Yf, V, muF)
             Htaa, Htav, Htva, Htvv = \
-                d2ASbr_dV2(dSt_dVa, dSt_dVm, St, Ct, Yt, V, muT)
+                    d2ASbr_dV2(dSt_dVa, dSt_dVm, St, Ct, Yt, V, muT)
 
     d2H = vstack([
             hstack([

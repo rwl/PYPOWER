@@ -102,7 +102,7 @@ def opf_setup(ppc, ppopt):
         b = y0 - m * x0
         ppc['gencost'][pwl1, MODEL] = POLYNOMIAL
         ppc['gencost'][pwl1, NCOST] = 2
-        ppc['gencost'][pwl1, COST:COST + 1] = r_[m, b]
+        ppc['gencost'][pwl1, COST:COST + 2] = r_[m, b]
 
     ## create (read-only) copies of individual fields for convenience
     baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, ppopt, \

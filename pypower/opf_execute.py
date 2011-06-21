@@ -190,16 +190,16 @@ def opf_execute(om, ppopt):
     ## Note: The "y" portion of x will be nonsense, but everything should at
     ##       least be in the expected locations.
     pwl1 = om.userdata('pwl1')
-    if len(pwl1) > 0 and alg != 545 and alg != 550:
+    if (len(pwl1) > 0) and (alg != 545) and (alg != 550):
         ## get indexing
-        vv = om.get_idx()
+        vv, _, _, _ = om.get_idx()
         if dc:
             nx = vv['iN']['Pg']
         else:
             nx = vv['iN']['Qg']
 
         y = zeros(len(pwl1))
-        raw['xr'] = r_[c_[raw['xr'][:nx], y], raw['xr'][nx + 1:]]
-        results['x'] = r_[c_[results['x'][:nx], y], results['x'][nx + 1:]]
+        raw['xr'] = r_[raw['xr'][:nx], y, raw['xr'][nx:]]
+        results['x'] = r_[results['x'][:nx], y, results['x'][nx:]]
 
     return results, success, raw

@@ -110,7 +110,7 @@ class opf_model(object):
         self.user_data = {}
 
 
-    def __str__(self):
+    def __repr__(self):
         s = ''
         if self.var['NS']:
             s += '\n%-22s %5s %8s %8s %8s\n' % ('VARIABLES', 'name', 'i1', 'iN', 'N')
@@ -792,18 +792,18 @@ class opf_model(object):
         for k in range(self.lin["NS"]):
             name = self.lin["order"][k]
             N = self.lin["idx"]["N"][name]
-            if N:                                  ## non-zero number of rows to add
-                Ak = self.lin["data"]["A"][name]          ## A for kth linear constrain set
-                i1 = self.lin["idx"]["i1"][name]          ## starting row index
-                iN = self.lin["idx"]["iN"][name]          ## ing row index
-                vsl = self.lin["data"]["vs"][name]        ## var set list
-                kN = -1                            ## initialize last col of Ak used
-                Ai = lil_matrix((self.var["N"], N))  # row based
+            if N:                                   ## non-zero number of rows to add
+                Ak = self.lin["data"]["A"][name]    ## A for kth linear constrain set
+                i1 = self.lin["idx"]["i1"][name]    ## starting row index
+                iN = self.lin["idx"]["iN"][name]    ## ing row index
+                vsl = self.lin["data"]["vs"][name]  ## var set list
+                kN = 0                              ## initialize last col of Ak used
+                Ai = lil_matrix((self.var["N"], N))   # row based (transpose required)
                 for v in vsl:
-                    j1 = self.var["idx"]["i1"][v]    ## starting column in A
-                    jN = self.var["idx"]["iN"][v]    ## ing column in A
-                    k1 = kN + 1                      ## starting column in Ak
-                    kN = kN + self.var["idx"]["N"][v]## ing column in Ak
+                    j1 = self.var["idx"]["i1"][v]      ## starting column in A
+                    jN = self.var["idx"]["iN"][v]      ## ing column in A
+                    k1 = kN                            ## starting column in Ak
+                    kN = kN + self.var["idx"]["N"][v]  ## ing column in Ak
                     Ai[j1:jN, :] = Ak[:, k1:kN].T
 
                 A[i1:iN, :] = Ai.T
@@ -811,7 +811,7 @@ class opf_model(object):
                 l[i1:iN] = self.lin["data"]["l"][name]
                 u[i1:iN] = self.lin["data"]["u"][name]
 
-        return A, l, u
+        return A.tocsr(), l, u
 
 
     def userdata(self, name, val=None):

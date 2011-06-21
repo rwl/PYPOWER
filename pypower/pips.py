@@ -192,12 +192,10 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     nA = A.shape[0] if A is not None else 0 # number of original linear constr
 
     # default argument values
-#    l = array([]) if A is None else l
-#    u = array([]) if A is None else u
-    l = -Inf * ones(nA) if l is None else l
-    u =  Inf * ones(nA) if u is None else u
-    xmin = -Inf * ones(x0.shape[0]) if xmin is None else xmin
-    xmax =  Inf * ones(x0.shape[0]) if xmax is None else xmax
+    if l is None or len(l) == 0: l = -Inf * ones(nA)
+    if u is None or len(u) == 0: u =  Inf * ones(nA)
+    if xmin is None or len(xmin) == 0: xmin = -Inf * ones(x0.shape[0])
+    if xmax is None or len(xmax) == 0: xmax =  Inf * ones(x0.shape[0])
     if gh_fcn is None:
         nonlinear = False
         gn = array([])
@@ -205,7 +203,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     else:
         nonlinear = True
 
-    opt = {} if opt is None else opt
+    if opt is None: opt = {}
     # options
     if "feastol" not in opt:
         opt["feastol"] = 1e-06
@@ -258,7 +256,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     Ae = AA[ieq, :] if len(ieq) else None
     if len(ilt) or len(igt) or len(ibx):
         idxs = [(1, ilt), (-1, igt), (1, ibx), (-1, ibx)]
-        Ai = vstack([sig * AA[idx, :] for sig, idx in idxs if len(idx)])
+        Ai = vstack([sig * AA[idx, :] for sig, idx in idxs if len(idx)], 'csr')
     else:
         Ai = None
     be = uu[ieq, :]

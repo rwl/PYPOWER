@@ -33,7 +33,6 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
 
     ##-----  run the optimal power flow  -----
     r = opf(casedata, ppopt)
-    success = r['success']
 
     ##-----  output results  -----
     if fname:
@@ -53,4 +52,4 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     if solvedcase:
         savecase(solvedcase, r)
 
-    return r, success
+    return r

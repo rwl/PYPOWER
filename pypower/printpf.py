@@ -462,38 +462,40 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n-----  --------   -----  -----  -----   --------')
             for i in range(nb):
                 if OUT_V_LIM == 2 | (OUT_V_LIM == 1 &
-                             (bus[i, VM] < bus[i, VMIN] + ctol |
-                              bus[i, VM] > bus[i, VMAX] - ctol |
-                              bus[i, MU_VMIN] > ptol | bus[i, MU_VMAX] > ptol)):
+                             ((bus[i, VM] < bus[i, VMIN] + ctol) |
+                              (bus[i, VM] > bus[i, VMAX] - ctol) |
+                              (bus[i, MU_VMIN] > ptol) |
+                              (bus[i, MU_VMAX] > ptol))):
                     fd.write('\n%5d', bus[i, BUS_I])
-                    if bus[i, VM] < bus[i, VMIN] + ctol | bus[i, MU_VMIN] > ptol:
+                    if ((bus[i, VM] < bus[i, VMIN] + ctol) |
+                            (bus[i, MU_VMIN] > ptol)):
                         fd.write('%10.3f' % bus[i, MU_VMIN])
                     else:
                         fd.write('      -   ')
 
                     fd.write('%8.3f%7.3f%7.3f' % bus[i, [VMIN, VM, VMAX]])
                     if bus[i, VM] > bus[i, VMAX] - ctol | bus[i, MU_VMAX] > ptol:
-                        fd.write('%10.3f', bus[i, MU_VMAX])
+                        fd.write('%10.3f' % bus[i, MU_VMAX])
                     else:
                         fd.write('      -    ')
             fd.write('\n')
 
         ## generator P constraints
         if OUT_PG_LIM == 2 | \
-                (OUT_PG_LIM == 1 & (any(gen[ong, PG] < gen[ong, PMIN] + ctol) |
-                                    any(gen[ong, PG] > gen[ong, PMAX] - ctol) |
-                                    any(gen[ong, MU_PMIN] > ptol) |
-                                    any(gen[ong, MU_PMAX] > ptol))) | \
+                ((OUT_PG_LIM == 1) & (any(gen[ong, PG] < gen[ong, PMIN] + ctol) |
+                                      any(gen[ong, PG] > gen[ong, PMAX] - ctol) |
+                                      any(gen[ong, MU_PMIN] > ptol) |
+                                      any(gen[ong, MU_PMAX] > ptol))) | \
                 (not isDC & (OUT_QG_LIM == 2 |
-                (OUT_QG_LIM == 1 & (any(gen[ong, QG] < gen[ong, QMIN] + ctol) |
-                                    any(gen[ong, QG] > gen[ong, QMAX] - ctol) |
-                                    any(gen[ong, MU_QMIN] > ptol) |
-                                    any(gen[ong, MU_QMAX] > ptol))))):
+                ((OUT_QG_LIM == 1) & (any(gen[ong, QG] < gen[ong, QMIN] + ctol) |
+                                      any(gen[ong, QG] > gen[ong, QMAX] - ctol) |
+                                      any(gen[ong, MU_QMIN] > ptol) |
+                                      any(gen[ong, MU_QMAX] > ptol))))):
             fd.write('\n================================================================================')
             fd.write('\n|     Generation Constraints                                                   |')
             fd.write('\n================================================================================')
 
-        if OUT_PG_LIM == 2 | (OUT_PG_LIM == 1 &
+        if OUT_PG_LIM == 2 | ((OUT_PG_LIM == 1) &
                                  (any(gen[ong, PG] < gen[ong, PMIN] + ctol) |
                                   any(gen[ong, PG] > gen[ong, PMAX] - ctol) |
                                   any(gen[ong, MU_PMIN] > ptol) |
@@ -503,7 +505,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n----  -----  -------  --------  --------  --------  -------')
             for k in range(len(ong)):
                 i = ong[k]
-                if OUT_PG_LIM == 2 | (OUT_PG_LIM == 1 &
+                if OUT_PG_LIM == 2 | ((OUT_PG_LIM == 1) &
                             (gen[i, PG] < gen[i, PMIN] + ctol |
                              gen[i, PG] > gen[i, PMAX] - ctol |
                              gen[i, MU_PMIN] > ptol | gen[i, MU_PMAX] > ptol)):
@@ -523,7 +525,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n')
 
         ## generator Q constraints
-        if not isDC & (OUT_QG_LIM == 2 | (OUT_QG_LIM == 1 &
+        if not isDC & ((OUT_QG_LIM == 2) | ((OUT_QG_LIM == 1) &
                                  (any(gen[ong, QG] < gen[ong, QMIN] + ctol) |
                                   any(gen[ong, QG] > gen[ong, QMAX] - ctol) |
                                   any(gen[ong, MU_QMIN] > ptol) |
@@ -533,12 +535,13 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n---  ---  -------  --------  --------  --------  -------')
             for k in range(len(ong)):
                 i = ong[k]
-                if OUT_QG_LIM == 2 | (OUT_QG_LIM == 1 &
-                            (gen[i, QG] < gen[i, QMIN] + ctol |
-                             gen[i, QG] > gen[i, QMAX] - ctol |
-                             gen[i, MU_QMIN] > ptol | gen[i, MU_QMAX] > ptol)):
+                if (OUT_QG_LIM == 2) | ((OUT_QG_LIM == 1) &
+                            ((gen[i, QG] < gen[i, QMIN] + ctol) |
+                             (gen[i, QG] > gen[i, QMAX] - ctol) |
+                             (gen[i, MU_QMIN] > ptol) |
+                             (gen[i, MU_QMAX] > ptol))):
                     fd.write('\n%3d%5d' % (i, gen(i, GEN_BUS)))
-                    if gen[i, QG] < gen[i, QMIN] + ctol | gen[i, MU_QMIN] > ptol:
+                    if (gen[i, QG] < gen[i, QMIN] + ctol) | (gen[i, MU_QMIN] > ptol):
                         fd.write('%8.3f' % gen[i, MU_QMIN])
                     else:
                         fd.write('     -  ')
@@ -547,26 +550,26 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                     else:
                         fd.write('%10.2f       -  %10.2f' % gen[i, [QMIN, QMAX]])
 
-                    if gen[i, QG] > gen[i, QMAX] - ctol | gen[i, MU_QMAX] > ptol:
+                    if (gen[i, QG] > gen[i, QMAX] - ctol) | (gen[i, MU_QMAX] > ptol):
                         fd.write('%9.3f' % gen(i, MU_QMAX))
                     else:
                         fd.write('      -  ')
             fd.write('\n')
 
         ## dispatchable load P constraints
-        if OUT_PG_LIM == 2 | OUT_QG_LIM == 2 | \
-                (OUT_PG_LIM == 1 & (any(gen[onld, PG] < gen[onld, PMIN] + ctol) |
-                                    any(gen[onld, PG] > gen[onld, PMAX] - ctol) |
-                                    any(gen[onld, MU_PMIN] > ptol) |
-                                    any(gen[onld, MU_PMAX] > ptol))) | \
-                (OUT_QG_LIM == 1 & (any(gen[onld, QG] < gen[onld, QMIN] + ctol) |
-                                    any(gen[onld, QG] > gen[onld, QMAX] - ctol) |
-                                    any(gen[onld, MU_QMIN] > ptol) |
-                                    any(gen[onld, MU_QMAX] > ptol))):
+        if (OUT_PG_LIM == 2) | (OUT_QG_LIM == 2) | \
+                ((OUT_PG_LIM == 1) & (any(gen[onld, PG] < gen[onld, PMIN] + ctol) |
+                                      any(gen[onld, PG] > gen[onld, PMAX] - ctol) |
+                                      any(gen[onld, MU_PMIN] > ptol) |
+                                      any(gen[onld, MU_PMAX] > ptol))) | \
+                ((OUT_QG_LIM == 1) & (any(gen[onld, QG] < gen[onld, QMIN] + ctol) |
+                                      any(gen[onld, QG] > gen[onld, QMAX] - ctol) |
+                                      any(gen[onld, MU_QMIN] > ptol) |
+                                      any(gen[onld, MU_QMAX] > ptol))):
             fd.write('\n================================================================================')
             fd.write('\n|     Dispatchable Load Constraints                                            |')
             fd.write('\n================================================================================')
-        if OUT_PG_LIM == 2 | (OUT_PG_LIM == 1 &
+        if (OUT_PG_LIM == 2) | ((OUT_PG_LIM == 1) &
                                  (any(gen[onld, PG] < gen[onld, PMIN] + ctol) |
                                   any(gen[onld, PG] > gen[onld, PMAX] - ctol) |
                                   any(gen[onld, MU_PMIN] > ptol) |
@@ -576,12 +579,13 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n---  ---  -------  --------  --------  --------  -------')
             for k in range(len(onld)):
                 i = onld[k]
-                if OUT_PG_LIM == 2 | (OUT_PG_LIM == 1 &
-                            (gen[i, PG] < gen[i, PMIN] + ctol |
-                             gen[i, PG] > gen[i, PMAX] - ctol |
-                             gen[i, MU_PMIN] > ptol | gen[i, MU_PMAX] > ptol)):
-                    fd.write('\n%3d%5d' % (i, gen(i, GEN_BUS)))
-                    if gen[i, PG] < gen[i, PMIN] + ctol | gen[i, MU_PMIN] > ptol:
+                if (OUT_PG_LIM == 2) | ((OUT_PG_LIM == 1) &
+                            ((gen[i, PG] < gen[i, PMIN] + ctol) |
+                             (gen[i, PG] > gen[i, PMAX] - ctol) |
+                             (gen[i, MU_PMIN] > ptol) |
+                             (gen[i, MU_PMAX] > ptol))):
+                    fd.write('\n%3d%5d' % (i, gen[i, GEN_BUS]))
+                    if (gen[i, PG] < gen[i, PMIN] + ctol) | (gen[i, MU_PMIN] > ptol):
                         fd.write('%8.3f' % gen[i, MU_PMIN])
                     else:
                         fd.write('     -  ')
@@ -590,14 +594,14 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                     else:
                         fd.write('%10.2f       -  %10.2f' % gen[i, [PMIN, PMAX]])
 
-                    if gen[i, PG] > gen[i, PMAX] - ctol | gen[i, MU_PMAX] > ptol:
+                    if (gen[i, PG] > gen[i, PMAX] - ctol) | (gen[i, MU_PMAX] > ptol):
                         fd.write('%9.3f' % gen[i, MU_PMAX])
                     else:
                         fd.write('      -  ')
             fd.write('\n')
 
         ## dispatchable load Q constraints
-        if not isDC & (OUT_QG_LIM == 2 | (OUT_QG_LIM == 1 &
+        if (not isDC) & ((OUT_QG_LIM == 2) | ((OUT_QG_LIM == 1) &
                                  (any(gen[onld, QG] < gen[onld, QMIN] + ctol) |
                                   any(gen[onld, QG] > gen[onld, QMAX] - ctol) |
                                   any(gen[onld, MU_QMIN] > ptol) |
@@ -607,12 +611,13 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n---  ---  -------  --------  --------  --------  -------')
             for k in range(len(onld)):
                 i = onld[k]
-                if OUT_QG_LIM == 2 | (OUT_QG_LIM == 1 &
-                            (gen[i, QG] < gen[i, QMIN] + ctol |
-                             gen[i, QG] > gen[i, QMAX] - ctol |
-                             gen[i, MU_QMIN] > ptol | gen[i, MU_QMAX] > ptol)):
+                if (OUT_QG_LIM == 2) | ((OUT_QG_LIM == 1) &
+                            ((gen[i, QG] < gen[i, QMIN] + ctol) |
+                             (gen[i, QG] > gen[i, QMAX] - ctol) |
+                             (gen[i, MU_QMIN] > ptol) |
+                             (gen[i, MU_QMAX] > ptol))):
                     fd.write('\n%3d%5d' % (i, gen(i, GEN_BUS)))
-                    if gen[i, QG] < gen[i, QMIN] + ctol | gen[i, MU_QMIN] > ptol:
+                    if (gen[i, QG] < gen[i, QMIN] + ctol) | (gen[i, MU_QMIN] > ptol):
                         fd.write('%8.3f' % gen[i, MU_QMIN])
                     else:
                         fd.write('     -  ')
@@ -622,14 +627,14 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                     else:
                         fd.write('%10.2f       -  %10.2f' % gen[i, [QMIN, QMAX]])
 
-                    if gen[i, QG] > gen[i, QMAX] - ctol | gen[i, MU_QMAX] > ptol:
+                    if (gen[i, QG] > gen[i, QMAX] - ctol) | (gen[i, MU_QMAX] > ptol):
                         fd.write('%9.3f' % gen[i, MU_QMAX])
                     else:
                         fd.write('      -  ')
             fd.write('\n')
 
         ## line flow constraints
-        if ppopt['OPF_FLOW_LIM'] == 1 | isDC:  ## P limit
+        if (ppopt['OPF_FLOW_LIM'] == 1) | isDC:  ## P limit
             Ff = branch[:, PF]
             Ft = branch[:, PT]
             str = '\n  #     Bus    Pf  mu     Pf      |Pmax|      Pt      Pt  mu   Bus'
@@ -642,9 +647,9 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             Ft = abs(branch[:, PT] + 1j * branch[:, QT])
             str = '\n  #     Bus   |Sf| mu    |Sf|     |Smax|     |St|    |St| mu   Bus'
 
-        if OUT_LINE_LIM == 2 | (OUT_LINE_LIM == 1 &
-                            (any(branch[:, RATE_A] != 0 & abs(Ff) > branch[:, RATE_A] - ctol) |
-                             any(branch[:, RATE_A] != 0 & abs(Ft) > branch[:, RATE_A] - ctol) |
+        if (OUT_LINE_LIM == 2) | ((OUT_LINE_LIM == 1) &
+                            (any((branch[:, RATE_A] != 0) & (abs(Ff) > branch[:, RATE_A] - ctol)) |
+                             any((branch[:, RATE_A] != 0) & (abs(Ft) > branch[:, RATE_A] - ctol)) |
                              any(branch[:, MU_SF] > ptol) |
                              any(branch[:, MU_ST] > ptol))):
             fd.write('\n================================================================================')
@@ -654,19 +659,19 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write(str)
             fd.write('\n-----  -----  -------  --------  --------  --------  -------  -----')
             for i in range(nl):
-                if OUT_LINE_LIM == 2 | (OUT_LINE_LIM == 1 &
-                       ((branch[i, RATE_A] != 0 & abs(Ff[i]) > branch[i, RATE_A] - ctol) |
-                        (branch[i, RATE_A] != 0 & abs(Ft[i]) > branch[i, RATE_A] - ctol) |
-                        branch[i, MU_SF] > ptol | branch[i, MU_ST] > ptol)):
-                    fd.write('\n%4d%7d' % (i, branch(i, F_BUS)))
-                    if Ff[i] > branch[i, RATE_A] - ctol | branch[i, MU_SF] > ptol:
-                        fd.write('%10.3f' % branch(i, MU_SF))
+                if (OUT_LINE_LIM == 2) | ((OUT_LINE_LIM == 1) &
+                       (((branch[i, RATE_A] != 0) & (abs(Ff[i]) > branch[i, RATE_A] - ctol)) |
+                        ((branch[i, RATE_A] != 0) & (abs(Ft[i]) > branch[i, RATE_A] - ctol)) |
+                        (branch[i, MU_SF] > ptol) | (branch[i, MU_ST] > ptol))):
+                    fd.write('\n%4d%7d' % (i, branch[i, F_BUS]))
+                    if (Ff[i] > branch[i, RATE_A] - ctol) | (branch[i, MU_SF] > ptol):
+                        fd.write('%10.3f' % branch[i, MU_SF])
                     else:
                         fd.write('      -   ')
 
                     fd.write('%9.2f%10.2f%10.2f' %
-                        [Ff[i], branch[i, RATE_A], Ft[i]])
-                    if Ft[i] > branch[i, RATE_A] - ctol | branch[i, MU_ST] > ptol:
+                        (Ff[i], branch[i, RATE_A], Ft[i]))
+                    if (Ft[i] > branch[i, RATE_A] - ctol) | (branch[i, MU_ST] > ptol):
                         fd.write('%10.3f' % branch[i, MU_ST])
                     else:
                         fd.write('      -   ')
