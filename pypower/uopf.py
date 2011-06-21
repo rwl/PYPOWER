@@ -19,7 +19,7 @@ from time import time
 from numpy import copy
 from numpy import flatnonzero as find
 
-from opf_args import opf_args
+from opf_args import opf_args2
 from ppoption import ppoption
 from isload import isload
 from totcost import totcost
@@ -50,7 +50,7 @@ def uopf(*args, **kw_args):
     t0 = time()                                 ## start timer
 
     ## process input arguments
-    ppc, ppopt = opf_args(args, kw_args)
+    ppc, ppopt = opf_args2(args, kw_args)
 
     ## options
     verbose = ppopt["VERBOSE"]

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from opf_args import opf_args
+from opf_args import opf_args2
 from ppoption import ppoption
 from opf import opf
 
@@ -28,7 +28,7 @@ def dcopf(*args, **kw_args):
     @see: L{rundcopf}.
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    ppc, ppopt = opf_args(*args, **kw_args);
+    ppc, ppopt = opf_args2(*args, **kw_args);
     ppopt = ppoption(ppopt, PF_DC=1)
 
     return opf(ppc, ppopt)

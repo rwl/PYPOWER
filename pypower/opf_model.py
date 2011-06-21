@@ -784,9 +784,16 @@ class opf_model(object):
 #        for k in range(self.lin["NS"]):
 #            nnzA = nnzA + nnz(self.lin["data"].A.(self.lin.order{k}))
 
-        A = lil_matrix((self.lin["N"], self.var["N"]))
-        u = Inf * ones(self.lin["N"])
-        l = -u
+        if self.lin["N"]:
+            A = lil_matrix((self.lin["N"], self.var["N"]))
+            u = Inf * ones(self.lin["N"])
+            l = -u
+        else:
+            A = None
+            u = array([])
+            l = array([])
+
+            return A, l, u
 
         ## fill in each piece
         for k in range(self.lin["NS"]):

@@ -23,7 +23,7 @@ from pypower.idx_gen import PG, QG, MU_QMIN, MU_PMAX, MU_PMIN
 from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, MU_ANGMIN, MU_ANGMAX
 
 from pypower.ext2int import ext2int
-from pypower.opf_args import opf_args
+from pypower.opf_args import opf_args2
 from pypower.opf_setup import opf_setup
 from pypower.opf_execute import opf_execute
 from int2ext import int2ext
@@ -159,7 +159,7 @@ def opf(*args):
     t0 = time()         ## start timer
 
     ## process input arguments
-    ppc, ppopt = opf_args(*args)
+    ppc, ppopt = opf_args2(*args)
 
     ## add zero columns to bus, gen, branch for multipliers, etc if needed
     nb   = shape(ppc['bus'])[0]    ## number of buses

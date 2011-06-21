@@ -106,7 +106,7 @@ def opf_setup(ppc, ppopt):
 
     ## create (read-only) copies of individual fields for convenience
     baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, ppopt, \
-        N, fparm, H, Cw, z0, zl, zu, userfcn, areas = opf_args(ppc, ppopt, want_ppc=False)
+        N, fparm, H, Cw, z0, zl, zu, userfcn, areas = opf_args(ppc, ppopt)
 
     ## warn if there is more than one reference bus
     refs = find(bus[:, BUS_TYPE] == REF)

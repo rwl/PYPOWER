@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, ones, zeros, Inf, r_, ix_, argsort, arange
+from numpy import array, ones, zeros, Inf, r_, ix_, argsort, arange, dot
 
 from scipy.io import loadmat
 from scipy.sparse import spdiags, csr_matrix as sparse
@@ -57,7 +57,7 @@ def t_opf_pips(quiet=False):
     t0 = 'PIPS : '
     ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
                    PDIPM_COMPTOL=1e-8, PDIPM_COSTTOL=1e-9)
-    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=verbose, OPF_ALG=560)
+    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=0, OPF_ALG=560)
 
     ## set up indices
     ib_data     = range(BUS_AREA + 1) + range(BASE_KV, VMIN)
@@ -77,7 +77,7 @@ def t_opf_pips(quiet=False):
     bus_soln = soln9_opf['bus_soln']
     gen_soln = soln9_opf['gen_soln']
     branch_soln = soln9_opf['branch_soln']
-    f_soln = soln9_opf['f_soln']
+    f_soln = soln9_opf['f_soln'][0]
 
     ## run OPF
     t = t0
@@ -125,7 +125,7 @@ def t_opf_pips(quiet=False):
     bus_soln = soln9_opf_Plim['bus_soln']
     gen_soln = soln9_opf_Plim['gen_soln']
     branch_soln = soln9_opf_Plim['branch_soln']
-    f_soln = soln9_opf_Plim['f_soln']
+    f_soln = soln9_opf_Plim['f_soln'][0]
 
     ## run OPF with active power line limits
     t = ''.join([t0, '(P line lim) : '])
@@ -169,11 +169,11 @@ def t_opf_pips(quiet=False):
 #    qgbas    = pgend;     qgend    = qgbas + ng
     nxyz = 2 * nb + 2 * ng
     N = sparse((ppc['baseMVA'] * ones(ng), (arange(ng), arange(pgbas, pgend))), (ng, nxyz))
-    fparm = ones(ng) * array([[1, 0, 0, 1]])
+    fparm = ones((ng, 1)) * array([[1, 0, 0, 1]])
     ix = argsort(ppc['gen'][:, 0])
     H = 2 * spdiags(ppc['gencost'][ix, 4], 0, ng, ng, 'csr')
     Cw = ppc['gencost'][ix, 5]
-    ppc.gencost[:, 4:7] = 0
+    ppc['gencost'][:, 4:7] = 0
 
     ## run OPF with quadratic gen costs moved to generalized costs
     t = ''.join([t0, 'w/quadratic generalized gen cost : '])
@@ -202,7 +202,7 @@ def t_opf_pips(quiet=False):
     bus_soln = soln9_opf_extras1['bus_soln']
     gen_soln = soln9_opf_extras1['gen_soln']
     branch_soln = soln9_opf_extras1['branch_soln']
-    f_soln = soln9_opf_extras1['f_soln']
+    f_soln = soln9_opf_extras1['f_soln'][0]
 
     row = [0, 0, 1, 1]
     col = [9, 24, 9, 24]
@@ -245,7 +245,7 @@ def t_opf_pips(quiet=False):
     bus_soln = soln9_opf_PQcap['bus_soln']
     gen_soln = soln9_opf_PQcap['gen_soln']
     branch_soln = soln9_opf_PQcap['branch_soln']
-    f_soln = soln9_opf_PQcap['f_soln']
+    f_soln = soln9_opf_PQcap['f_soln'][0]
 
     ## run OPF with capability curves
     t = ''.join([t0, 'w/capability curves : '])
@@ -275,7 +275,7 @@ def t_opf_pips(quiet=False):
     bus_soln = soln9_opf_ang['bus_soln']
     gen_soln = soln9_opf_ang['gen_soln']
     branch_soln = soln9_opf_ang['branch_soln']
-    f_soln = soln9_opf_ang['f_soln']
+    f_soln = soln9_opf_ang['f_soln'][0]
 
     ## run OPF with angle difference limits
     t = ''.join([t0, 'w/angle difference limits : '])
@@ -302,7 +302,7 @@ def t_opf_pips(quiet=False):
     bus_soln = soln9_opf['bus_soln']
     gen_soln = soln9_opf['gen_soln']
     branch_soln = soln9_opf['branch_soln']
-    f_soln = soln9_opf['f_soln']
+    f_soln = soln9_opf['f_soln'][0]
 
     ## run OPF with ignored angle difference limits
     t = ''.join([t0, 'w/ignored angle difference limits : '])

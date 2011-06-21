@@ -75,7 +75,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             ppopt = ppoption()   ## use default options
         else:
             ppopt = gen
-        if ppopt['OUT_ALL'] == 0 and ppopt['OUT_RAW'] == 0:
+        if (ppopt['OUT_ALL'] == 0) and (ppopt['OUT_RAW'] == 0):
             return     ## nothin' to see here, bail out now
         if bus is None:
             fd = stdout         ## print to stdout by default
@@ -450,7 +450,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     if isOPF:
         ctol = ppopt['OPF_VIOLATION']   ## constraint violation tolerance
         ## voltage constraints
-        if not isDC & (OUT_V_LIM == 2 | (OUT_V_LIM == 1 &
+        if (not isDC) & (OUT_V_LIM == 2 | (OUT_V_LIM == 1 &
                              (any(bus[:, VM] < bus[:, VMIN] + ctol) |
                               any(bus[:, VM] > bus[:, VMAX] - ctol) |
                               any(bus[:, MU_VMIN] > ptol) |

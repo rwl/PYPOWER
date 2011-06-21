@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from sys import stderr
+from sys import stdout, stderr
 
 from ppoption import ppoption
 from opf import opf
@@ -46,7 +46,7 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
                 printpf(r, fd, ppopt)
                 fd.close()
 
-    printpf(r, ppopt=ppopt)
+    printpf(r, stdout, ppopt)
 
     ## save solved case
     if solvedcase:

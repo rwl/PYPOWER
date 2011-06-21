@@ -23,10 +23,7 @@ from ppoption import ppoption
 from loadcase import loadcase
 
 
-def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
-             gencost=None, Au=None, lbu=None, ubu=None, ppopt=None, N=None,
-             fparm=None, H=None, Cw=None, z0=None, zl=None, zu=None,
-             want_ppc=True):
+def opf_args(*args):
     """Parses and initializes OPF input arguments.
 
     Returns the full set of initialized OPF input arguments, filling in
@@ -86,13 +83,14 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    nargin = len([arg for arg in [baseMVA, bus, gen, branch, areas, gencost,
-                                  Au, lbu, ubu, ppopt, N, fparm, H, Cw,
-                                  z0, zl, zu] if arg is not None])
+#    nargin = len([arg for arg in [baseMVA, bus, gen, branch, areas, gencost,
+#                                  Au, lbu, ubu, ppopt, N, fparm, H, Cw,
+#                                  z0, zl, zu] if arg is not None])
+    nargin = len(args)
 
     userfcn = array([])
     ## passing filename or dict
-    if isinstance(baseMVA, basestring) or isinstance(baseMVA, dict):
+    if isinstance(args[0], basestring) or isinstance(args[0], dict):
         # ----opf( baseMVA,     bus,   gen, branch, areas, gencost,    Au, lbu,  ubu, ppopt,  N, fparm, H, Cw, z0, zl, zu)
         # 12  opf(casefile,      Au,   lbu,    ubu, ppopt,       N, fparm,    H,  Cw,    z0, zl,    zu)
         # 9   opf(casefile,      Au,   lbu,    ubu, ppopt,       N, fparm,    H,  Cw)
@@ -102,8 +100,9 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
         # 2   opf(casefile,   ppopt)
         # 1   opf(casefile)
         if nargin in [1, 2, 3, 4, 5, 9, 12]:
-            casefile = baseMVA
+            casefile = args[0]
             if nargin == 12:
+                baseMVA, bus, gen, branch, areas, gencost, Au, lbu,  ubu, ppopt,  N, fparm = args
                 zu    = fparm
                 zl    = N
                 z0    = ppopt
@@ -116,6 +115,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 lbu   = gen
                 Au    = bus
             elif nargin == 9:
+                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu = args
                 zu    = array([])
                 zl    = array([])
                 z0    = array([])
@@ -128,6 +128,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 lbu   = gen
                 Au    = bus
             elif nargin == 5:
+                baseMVA, bus, gen, branch, areas = args
                 zu    = array([])
                 zl    = array([])
                 z0    = array([])
@@ -140,6 +141,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 lbu   = gen
                 Au    = bus
             elif nargin == 4:
+                baseMVA, bus, gen, branch = args
                 zu    = array([])
                 zl    = array([])
                 z0    = array([])
@@ -152,6 +154,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 lbu   = gen
                 Au    = bus
             elif nargin == 3:
+                baseMVA, bus, gen = args
                 userfcn = bus
                 zu    = array([])
                 zl    = array([])
@@ -165,6 +168,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 lbu   = array([])
                 Au    = None
             elif nargin == 2:
+                baseMVA, bus = args
                 zu    = array([])
                 zl    = array([])
                 z0    = array([])
@@ -200,9 +204,9 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
             areas = array([])
         if (Au is None or len(Au) == 0) and 'A' in ppc:
             Au, lbu, ubu = ppc["A"], ppc["l"], ppc["u"]
-        if (N is None or len(N) == 0) and 'N' in ppc:  ## these two must go together
+        if N is None and 'N' in ppc:  ## these two must go together
             N, Cw = ppc["N"], ppc["Cw"]
-        if (H is None or len(H) == 0) and 'H' in ppc:  ## will default to zeros
+        if H is None and 'H' in ppc:  ## will default to zeros
             H = ppc["H"]
         if (fparm is None or len(fparm) == 0) and 'fparm' in ppc:  ## will default to [1 0 0 1]
             fparm = ppc["fparm"]
@@ -224,11 +228,15 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
         # 7   opf(baseMVA, bus, gen, branch, areas, gencost, ppopt)
         # 6   opf(baseMVA, bus, gen, branch, areas, gencost)
         if nargin in [6, 7, 8, 9, 10, 14, 17]:
-            if nargin == 14:
+            if nargin == 17:
+                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt,  N, fparm, H, Cw, z0, zl, zu = args
+            elif nargin == 14:
+                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt,  N, fparm, H, Cw = args
                 zu = array([])
                 zl = array([])
                 z0 = array([])
             elif nargin == 10:
+                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt = args
                 zu = array([])
                 zl = array([])
                 z0 = array([])
@@ -237,6 +245,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 fparm = array([])
                 N = None
             elif nargin == 9:
+                baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu = args
                 zu = array([])
                 zl = array([])
                 z0 = array([])
@@ -246,6 +255,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 N = None
                 ppopt = ppoption()
             elif nargin == 8:
+                baseMVA, bus, gen, branch, areas, gencost, userfcn, ppopt = args
                 zu = array([])
                 zl = array([])
                 z0 = array([])
@@ -257,6 +267,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 lbu = array([])
                 Au = None
             elif nargin == 7:
+                baseMVA, bus, gen, branch, areas, gencost, ppopt = args
                 zu = array([])
                 zl = array([])
                 z0 = array([])
@@ -268,6 +279,7 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
                 lbu = array([])
                 Au = None
             elif nargin == 6:
+                baseMVA, bus, gen, branch, areas, gencost = args
                 zu = array([])
                 zl = array([])
                 z0 = array([])
@@ -282,27 +294,21 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
         else:
             stderr.write('opf_args: Incorrect input arg order, number or type\n')
 
-        if want_ppc:
-            ppc = {  'baseMVA': baseMVA,
-                     'bus': bus,
-                     'gen': gen,
-                     'branch': branch,
-                     'gencost': gencost  }
-
     nw = N.shape[0] if N is not None else 0
     if nw:
         if Cw.shape[0] != nw:
             stderr.write('opf_args.m: dimension mismatch between N and Cw in '
                          'generalized cost parameters\n')
-        if any(fparm) and fparm.shape[0] != nw:
+        if len(fparm) > 0 and fparm.shape[0] != nw:
             stderr.write('opf_args.m: dimension mismatch between N and fparm '
                          'in generalized cost parameters\n')
-        if any(H) and (H.shape[0] != nw | H.shape[0] != nw):
+        if (H is not None) and (H.shape[0] != nw | H.shape[0] != nw):
             stderr.write('opf_args.m: dimension mismatch between N and H in '
                          'generalized cost parameters\n')
-        if Au.shape[0] > 0 and N.shape[1] != Au.shape[1]:
-            stderr.write('opf_args.m: A and N must have the same number of '
-                         'columns\n')
+        if Au is not None:
+            if Au.shape[0] > 0 and N.shape[1] != Au.shape[1]:
+                stderr.write('opf_args.m: A and N must have the same number '
+                             'of columns\n')
         ## make sure N and H are sparse
         if not issparse(N):
             stderr.write('opf_args.m: N must be sparse in generalized cost '
@@ -314,27 +320,42 @@ def opf_args(baseMVA, bus=None, gen=None, branch=None, areas=None,
         stderr.write('opf_args.m: Au must be sparse\n')
     if ppopt == None or len(ppopt) == 0:
         ppopt = ppoption()
-    if want_ppc:
-        if areas is not None and len(areas) > 0:
-            ppc["areas"] = areas
-        if lbu is not None and len(lbu) > 0:
-            ppc["A"], ppc["l"], ppc["u"] = Au, lbu, ubu
-        if Cw is not None and len(Cw) > 0:
-            ppc["N"], ppc["Cw"] = N, Cw
-            if len(fparm) > 0:
-                ppc["fparm"] = fparm
-            #if len(H) > 0:
-            ppc["H"] = H
-        if z0 is not None and len(z0) > 0:
-            ppc["z0"] = z0
-        if zl is not None and len(zl) > 0:
-            ppc["zl"] = zl
-        if zu is not None and len(zu) > 0:
-            ppc["zu"] = zu
-        if userfcn is not None and len(userfcn) > 0:
-            ppc["userfcn"] = userfcn
 
-        return ppc, ppopt
-    else:
-        return baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, \
-            ppopt, N, fparm, H, Cw, z0, zl, zu, userfcn, areas
+    return baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, \
+        ppopt, N, fparm, H, Cw, z0, zl, zu, userfcn, areas
+
+
+def opf_args2(*args):
+    """Parses and initializes OPF input arguments.
+
+    @see: U{http://www.pserc.cornell.edu/matpower/}
+    """
+    baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, \
+        ppopt, N, fparm, H, Cw, z0, zl, zu, userfcn, areas = opf_args(*args)
+
+    ppc = {  'baseMVA': baseMVA,
+             'bus': bus,
+             'gen': gen,
+             'branch': branch,
+             'gencost': gencost  }
+
+    if areas is not None and len(areas) > 0:
+        ppc["areas"] = areas
+    if lbu is not None and len(lbu) > 0:
+        ppc["A"], ppc["l"], ppc["u"] = Au, lbu, ubu
+    if Cw is not None and len(Cw) > 0:
+        ppc["N"], ppc["Cw"] = N, Cw
+        if len(fparm) > 0:
+            ppc["fparm"] = fparm
+        #if len(H) > 0:
+        ppc["H"] = H
+    if z0 is not None and len(z0) > 0:
+        ppc["z0"] = z0
+    if zl is not None and len(zl) > 0:
+        ppc["zl"] = zl
+    if zu is not None and len(zu) > 0:
+        ppc["zu"] = zu
+    if userfcn is not None and len(userfcn) > 0:
+        ppc["userfcn"] = userfcn
+
+    return ppc, ppopt
