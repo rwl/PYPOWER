@@ -55,7 +55,7 @@ def opf_execute(om, ppopt):
 
     if verbose > 0:
         v = ppver('all')
-        stdout.write('\nMATPOWER Version %s, %s\n' % (v['Version'], v['Date']))
+        stdout.write('\nMATPOWER Version %s, %s' % (v['Version'], v['Date']))
 
     ##-----  run DC OPF solver  -----
     if dc:

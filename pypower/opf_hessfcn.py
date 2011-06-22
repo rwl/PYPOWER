@@ -138,21 +138,21 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
         iND = r_[iLT, iEQ, iGT]           ## rows that are Not in the Dead region
         iL = find(dd == 1)                ## rows using linear function
         iQ = find(dd == 2)                ## rows using quadratic function
-        LL = sparse((ones(nw), (iL, iL)), (nw, nw))
-        QQ = sparse((ones(nw), (iQ, iQ)), (nw, nw))
-        kbar = sparse((r_[  ones(len(iLT)),
-                            zeros(len(iEQ)),
-                           -ones(len(iGT))], (iND, iND)), nw, nw) * kk
+        LL = sparse((ones(len(iL)), (iL, iL)), (nw, nw))
+        QQ = sparse((ones(len(iQ)), (iQ, iQ)), (nw, nw))
+        kbar = sparse((r_[ones(len(iLT)), zeros(len(iEQ)), -ones(len(iGT))],
+                       (iND, iND)), (nw, nw)) * kk
         rr = r + kbar                  ## apply non-dead zone shift
         M = sparse((mm[iND], (iND, iND)), (nw, nw))  ## dead zone or scale
-        diagrr = sparse((rr, arange(nw), arange(nw)), (nw, nw))
+        diagrr = sparse((rr, (arange(nw), arange(nw))), (nw, nw))
 
         ## linear rows multiplied by rr(i), quadratic rows by rr(i)^2
         w = M * (LL + QQ * diagrr) * rr
         HwC = H * w + Cw
         AA = N.T * M * (LL + 2 * QQ * diagrr)
+
         d2f = d2f + AA * H * AA.T + 2 * N.T * M * QQ * \
-                sparse((HwC, arange(nw), arange(nw)), (nw, nw)) * N
+                sparse((HwC, (arange(nw), arange(nw))), (nw, nw)) * N
     d2f = d2f * cost_mult
 
     ##----- evaluate Hessian of power balance constraints -----

@@ -52,25 +52,25 @@ def t_opf_pips(quiet=False):
     t_begin(num_tests, quiet)
 
     casefile = 't_case9_opf'
-    verbose = not quiet
+    verbose = 0#not quiet
 
     t0 = 'PIPS : '
     ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
                    PDIPM_COMPTOL=1e-8, PDIPM_COSTTOL=1e-9)
-    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=0, OPF_ALG=560)
+    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=verbose, OPF_ALG=560)
 
     ## set up indices
-    ib_data     = range(BUS_AREA + 1) + range(BASE_KV, VMIN)
-    ib_voltage  = range(VM, VA + 1)
-    ib_lam      = range(LAM_P, LAM_Q + 1)
-    ib_mu       = range(MU_VMAX, MU_VMIN + 1)
-    ig_data     = [GEN_BUS, QMAX, QMIN] + range(MBASE, APF + 1)
-    ig_disp     = [PG, QG, VG]
-    ig_mu       = range(MU_PMAX, MU_QMIN + 1)
-    ibr_data    = range(ANGMAX)
-    ibr_flow    = range(PF, QT + 1)
-    ibr_mu      = [MU_SF, MU_ST]
-    ibr_angmu   = [MU_ANGMIN, MU_ANGMAX]
+    ib_data     = r_[arange(BUS_AREA + 1), arange(BASE_KV, VMIN + 1)]
+    ib_voltage  = arange(VM, VA + 1)
+    ib_lam      = arange(LAM_P, LAM_Q + 1)
+    ib_mu       = arange(MU_VMAX, MU_VMIN + 1)
+    ig_data     = r_[[GEN_BUS, QMAX, QMIN], arange(MBASE, APF + 1)]
+    ig_disp     = array([PG, QG, VG])
+    ig_mu       = arange(MU_PMAX, MU_QMIN + 1)
+    ibr_data    = arange(ANGMAX + 1)
+    ibr_flow    = arange(PF, QT + 1)
+    ibr_mu      = array([MU_SF, MU_ST])
+    ibr_angmu   = array([MU_ANGMIN, MU_ANGMAX])
 
     ## get solved AC power flow case from MAT-file
     soln9_opf = loadmat('soln9_opf.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln

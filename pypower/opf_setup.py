@@ -253,8 +253,8 @@ def opf_setup(ppc, ppopt):
             user_cost['kk'] = fparm[:, 2]
             user_cost['mm'] = fparm[:, 3]
 
-        if len(H) > 0:
-            user_cost['H'] = H
+#        if len(H) > 0:
+        user_cost['H'] = H
 
         om.add_costs('usr', user_cost, user_vars)
 

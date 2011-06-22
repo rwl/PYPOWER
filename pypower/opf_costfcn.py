@@ -83,26 +83,25 @@ def opf_costfcn(x, om, return_hessian=False):
     ## generalized cost term
     if any(N):
         nw = N.shape[0]
-        r = N * x - rh                  ## Nx - rhat
-        iLT = find(r < -kk)          ## below dead zone
-        iEQ = find(r == 0 & kk == 0) ## dead zone doesn't exist
-        iGT = find(r > kk)           ## above dead zone
-        iND = r_[iLT, iEQ, iGT]         ## rows that are Not in the Dead region
+        r = N * x - rh                   ## Nx - rhat
+        iLT = find(r < -kk)              ## below dead zone
+        iEQ = find((r == 0) & (kk == 0)) ## dead zone doesn't exist
+        iGT = find(r > kk)               ## above dead zone
+        iND = r_[iLT, iEQ, iGT]          ## rows that are Not in the Dead region
         iL = find(dd == 1)           ## rows using linear function
         iQ = find(dd == 2)           ## rows using quadratic function
-        LL = sparse((1, (iL, iL)), (nw, nw))
-        QQ = sparse((1, (iQ, iQ)), (nw, nw))
-        kbar = sparse((r_[ones((len(iLT), 1)),
-                          zeros((len(iEQ), 1)),
-                          -ones((len(iGT), 1))], (iND, iND)), (nw, nw)) * kk
+        LL = sparse((ones(len(iL)), (iL, iL)), (nw, nw))
+        QQ = sparse((ones(len(iQ)), (iQ, iQ)), (nw, nw))
+        kbar = sparse((r_[ones(len(iLT)), zeros(len(iEQ)), -ones(len(iGT))],
+                       (iND, iND)), (nw, nw)) * kk
         rr = r + kbar                  ## apply non-dead zone shift
-        M = sparse((mm(iND), (iND, iND)), (nw, nw))  ## dead zone or scale
-        diagrr = sparse((rr, (range(nw), range(nw))), (nw, nw))
+        M = sparse((mm[iND], (iND, iND)), (nw, nw))  ## dead zone or scale
+        diagrr = sparse((rr, (arange(nw), arange(nw))), (nw, nw))
 
         ## linear rows multiplied by rr(i), quadratic rows by rr(i)^2
         w = M * (LL + QQ * diagrr) * rr
 
-        f = f + (w.T * H * w) / 2 + Cw.T * w
+        f = f + dot(w * H, w) / 2 + dot(Cw, w)
 
     ##----- evaluate cost gradient -----
     ## index ranges

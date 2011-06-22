@@ -16,7 +16,7 @@
 
 from sys import stderr
 
-from numpy import array, zeros, ones, Inf, copy, r_
+from numpy import array, zeros, ones, Inf, dot, arange, r_
 from numpy import flatnonzero as find
 from scipy.sparse import lil_matrix, csr_matrix as sparse
 
@@ -99,7 +99,7 @@ class opf_model(object):
                 'H': {},    ##               "
                 'Cw': {},   ##               "
                 'dd': {},   ##               "
-                'rr': {},   ##               "
+                'rh': {},   ##               "
                 'kk': {},   ##               "
                 'mm': {},   ##               "
                 'vs': {}    ## list of variable sets that define xx for this cost block, where the N for this block multiplies xx'
@@ -306,7 +306,7 @@ class opf_model(object):
         """
         ## prevent duplicate named cost sets
         if name in self.cost["idx"]["N"]:
-            stderr.write('opf_model.add_costs: cost set named ''%s'' already exists\n' % name)
+            stderr.write('opf_model.add_costs: cost set named \'%s\' already exists\n' % name)
 
         if varsets is None:
             varsets = []
@@ -330,19 +330,19 @@ class opf_model(object):
         if cp["Cw"].shape[0] != nw:
             stderr.write('opf_model.add_costs: number of rows of Cw (%d x %d) and N (%d x %d) must match\n' % (cp["Cw"].shape[0], nw, nx))
 
-        if 'H' in cp & (cp["H"].shape[0] != nw | cp["H"].shape[1] != nw):
+        if ('H' in cp) & ((cp["H"].shape[0] != nw) | (cp["H"].shape[1] != nw)):
             stderr.write('opf_model.add_costs: both dimensions of H (%d x %d) must match the number of rows in N (%d x %d)\n' % (cp["H"].shape, nw, nx))
 
-        if 'dd' in cp & cp["dd"].shape[0] != nw:
+        if ('dd' in cp) & (cp["dd"].shape[0] != nw):
             stderr.write('opf_model.add_costs: number of rows of dd (%d x %d) and N (%d x %d) must match\n' % (cp["dd"].shape, nw, nx))
 
-        if 'rh' in cp & cp["rh"].shape[0] != nw:
+        if ('rh' in cp) & (cp["rh"].shape[0] != nw):
             stderr.write('opf_model.add_costs: number of rows of rh (%d x %d) and N (%d x %d) must match\n' % (cp["rh"].shape, nw, nx))
 
-        if 'kk' in cp & cp["kk"].shape[0] != nw:
+        if ('kk' in cp) & (cp["kk"].shape[0] != nw):
             stderr.write('opf_model.add_costs: number of rows of kk (%d x %d) and N (%d x %d) must match\n' % (cp["kk"].shape, nw, nx))
 
-        if 'mm' in cp & cp["mm"].shape[0] != nw:
+        if ('mm' in cp) & (cp["mm"].shape[0] != nw):
             stderr.write('opf_model.add_costs: number of rows of mm (%d x %d) and N (%d x %d) must match\n' % (cp["mm"].shape, nw, nx))
 
         ## add info about this user cost set
@@ -368,11 +368,11 @@ class opf_model(object):
             self.cost["data"]["mm"]["name"] = cp["mm"]
 
         ## update number of vars and var sets
-        self.cost["N"]  = self.cost["idx"]["iN"]["name"]
+        self.cost["N"]  = self.cost["idx"]["iN"][name]
         self.cost["NS"] = self.cost["NS"] + 1
 
         ## put name in ordered list of var sets
-        self.cost["order"][self.cost["NS"]] = name
+        self.cost["order"].append(name)
 
 
     def add_vars(self, name, N, v0=None, vl=None, vu=None):
@@ -437,8 +437,8 @@ class opf_model(object):
 #                nnzH = nnzH + nnz(self.cost["data"]["H"][name])
 
         if nw:
-            N = sparse((nw, self.var["N"]))
-            H = sparse((nw, nw))            ## default => no quadratic term
+            N = lil_matrix((nw, self.var["N"]))
+            H = lil_matrix((nw, nw))            ## default => no quadratic term
         else:
             ## FIXME Zero dimensional sparse matrices
             N = zeros((nw, self.var["N"]))
@@ -460,10 +460,10 @@ class opf_model(object):
                 vsl = self.cost["data"]["vs"][name]    ## var set list
                 kN = 0                                 ## initialize last col of Nk used
                 for v in vsl:
-                    j1 = self.var["idx"]["i1"][v]    ## starting column in N
-                    jN = self.var["idx"]["iN"][v]    ## ing column in N
-                    k1 = kN + 1                      ## starting column in Nk
-                    kN = kN + self.var["idx"]["N"][v]## ing column in Nk
+                    j1 = self.var["idx"]["i1"][v]     ## starting column in N
+                    jN = self.var["idx"]["iN"][v]     ## ing column in N
+                    k1 = kN                           ## starting column in Nk
+                    kN = kN + self.var["idx"]["N"][v] ## ing column in Nk
                     N[i1:iN, j1:jN] = Nk[:, k1:kN]
 
                 Cw[i1:iN] = self.cost["data"]["Cw"][name]
@@ -535,101 +535,31 @@ class opf_model(object):
         else:
             cp = self.get_cost_params(name)
 
-        N, Cw, H, dd, rh, kk, mm = cp["N"], cp["Cw"], cp["H"], cp["dd"], cp["rh"], cp["kk"], cp["mm"]
+        N, Cw, H, dd, rh, kk, mm = \
+            cp["N"], cp["Cw"], cp["H"], cp["dd"], cp["rh"], cp["kk"], cp["mm"]
         nw = N.shape[0]
         r = N * x - rh                 ## Nx - rhat
         iLT = find(r < -kk)            ## below dead zone
-        iEQ = find(r == 0 & kk == 0)   ## dead zone doesn't exist
+        iEQ = find((r == 0) & (kk == 0))   ## dead zone doesn't exist
         iGT = find(r > kk)             ## above dead zone
         iND = r_[iLT, iEQ, iGT]        ## rows that are Not in the Dead region
         iL = find(dd == 1)             ## rows using linear function
         iQ = find(dd == 2)             ## rows using quadratic function
-        LL = sparse((1, (iL, iL)), (nw, nw))
-        QQ = sparse((1, (iQ, iQ)), (nw, nw))
-        kbar = sparse((r_[   ones(len(iLT), 1),
-                             zeros(len(iEQ), 1),
-                             -ones(len(iGT), 1)], (iND, iND)), (nw, nw)) * kk
+        LL = sparse((ones(len(iL)), (iL, iL)), (nw, nw))
+        QQ = sparse((ones(len(iQ)), (iQ, iQ)), (nw, nw))
+        kbar = sparse((r_[   ones(len(iLT)),
+                             zeros(len(iEQ)),
+                             -ones(len(iGT))], (iND, iND)), (nw, nw)) * kk
         rr = r + kbar                  ## apply non-dead zone shift
-        M = sparse((mm(iND), (iND, iND)), (nw, nw))  ## dead zone or scale
-        diagrr = sparse((rr, (range(nw), range(nw))), (nw, nw))
+        M = sparse((mm[iND], (iND, iND)), (nw, nw))  ## dead zone or scale
+        diagrr = sparse((rr, (arange(nw), arange(nw))), (nw, nw))
 
         ## linear rows multiplied by rr(i), quadratic rows by rr(i)^2
         w = M * (LL + QQ * diagrr) * rr
 
-        f = (w.T * H * w) / 2 + Cw.T * w
+        f = dot(w * H, w) / 2 + dot(Cw, w)
 
         return f
-
-
-    def display(self):
-        """Displays the object.
-
-        Displays the details of the variables, constraints, costs included in
-        the model.
-        """
-        if self.var["NS"]:
-            print '\n%-22s %5s %8s %8s %8s\n' % ('VARIABLES', 'name', 'i1', 'iN', 'N')
-            print '%-22s %5s %8s %8s %8s\n' % ('=========', '------', '-----', '-----', '------')
-            for k in range(self.var["NS"]):
-                name = self.var["order"][k]
-                idx = self.var["idx"]
-                print '%15d:%12s %8d %8d %8d\n' % (k, name, idx["i1"][name], idx["iN"][name], idx["N"][name])
-
-            print '%15s%31s\n' % ('var["NS"] = %d' % self.var["NS"], 'var["N"] = %d' % self.var["N"])
-            print '\n'
-        else:
-            print '%s  :  <none>\n' % 'VARIABLES'
-
-        if self.nln["NS"]:
-            print '\n%-22s %5s %8s %8s %8s\n' % ('nonlinear CONSTRAINTS', 'name', 'i1', 'iN', 'N')
-            print '%-22s %5s %8s %8s %8s\n' % ('======================', '------', '-----', '-----', '------')
-            for k in range(self.nln["NS"]):
-                name = self.nln["order"][k]
-                idx = self.nln["idx"]
-                print '%15d:%12s %8d %8d %8d\n' % (k, name, idx["i1"][name], idx["iN"][name], idx["N"][name])
-
-            print '%15s%31s\n' % ('nln["NS"] = %d' % self.nln["NS"], 'nln["N"] = %d' % self.nln["N"])
-            print '\n'
-        else:
-            print '%s  :  <none>\n' % 'nonlinear CONSTRAINTS'
-
-        if self.lin["NS"]:
-            print '\n%-22s %5s %8s %8s %8s\n' % ('LINEAR CONSTRAINTS', 'name', 'i1', 'iN', 'N')
-            print '%-22s %5s %8s %8s %8s\n' % ('==================', '------', '-----', '-----', '------')
-            for k in range(self.lin["NS"]):
-                name = self.lin["order"][k]
-                idx = self.lin["idx"]
-                print '%15d:%12s %8d %8d %8d\n' % (k, name, idx["i1"][name], idx["iN"][name], idx["N"][name])
-
-            print '%15s%31s\n' % ('lin["NS"] = %d' % self.lin["NS"], 'lin["N"] = %d' % self.lin["N"])
-            print '\n'
-        else:
-            print '%s  :  <none>\n' % 'LINEAR CONSTRAINTS'
-
-        if self.cost["NS"]:
-            print '\n%-22s %5s %8s %8s %8s\n' % ('COSTS', 'name', 'i1', 'iN', 'N')
-            print '%-22s %5s %8s %8s %8s\n' % ('=====', '------', '-----', '-----', '------')
-            for k in range(self.cost["NS"]):
-                name = self.cost["order"][k]
-                idx = self.cost["idx"]
-                print '%15d:%12s %8d %8d %8d\n' % (k, name, idx["i1"][name], idx["iN"][name], idx["N"][name])
-
-            print '%15s%31s\n' % ('cost["NS"] = %d' % self.cost["NS"], 'cost["N"] = %d' % self.cost["N"])
-            print '\n'
-        else:
-            print '%s  :  <none>\n' % 'COSTS'
-
-        print '  mpc = '
-        if len(self.ppc) > 0:
-            print '\n'
-
-        print self.ppc
-
-        print '  userdata = '
-        if len(self.user_data) > 0:
-            print '\n'
-
-        print self.user_data
 
 
     def get_cost_params(self, name=None):

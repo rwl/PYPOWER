@@ -21,7 +21,7 @@ from copy import deepcopy
 from numpy import array, copy, zeros, argsort, arange, concatenate
 from numpy import flatnonzero as find
 
-from scipy.sparse import csr_matrix as sparse
+from scipy.sparse import issparse, vstack, hstack, csr_matrix as sparse
 
 from idx_bus import PQ, PV, REF, NONE, BUS_I, BUS_TYPE
 from idx_gen import GEN_BUS, PG, QG, QMAX, QMIN, VG, MBASE, GEN_STATUS
@@ -269,7 +269,16 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
                 if n > b:                ## the rest
                     v = get_reorder(val, arange(b, n), dim)
                     new_v.append(v)
-                val = concatenate(new_v, dim)
+
+                if issparse(new_v[0]):
+                    if dim == 0:
+                        vstack(new_v, 'csr')
+                    elif dim == 1:
+                        hstack(new_v, 'csr')
+                    else:
+                        raise ValueError, 'dim (%d) may be 0 or 1' % dim
+                else:
+                    val = concatenate(new_v, dim)
             return val
 
     return ppc
