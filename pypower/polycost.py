@@ -56,8 +56,9 @@ def polycost(gencost, Pg, der=0):
         else:
             c = zeros((ng, 1))
             break
-        for k in range(1, maxN - d):
-            c[:, k] = k * c[:, k]
+
+        for k in range(2, maxN - d + 1):
+            c[:, k-1] = c[:, k-1] * k
 
     ## evaluate polynomial
     if len(c) == 0:
