@@ -41,7 +41,7 @@ def test_pypower(verbose=False):
     tests.append('t_pf')
 
     tests.append('t_opf_pips')
-#    tests.append('t_opf_pips_sc')
+    tests.append('t_opf_pips_sc')
 
 #    try:
 #        import pyipopt  #@UnusedImport

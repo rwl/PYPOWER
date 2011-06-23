@@ -483,11 +483,11 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
                 L1 = f1 + dot(lam, g1) + dot(mu, h1 + z) - gamma * sum(log(z))
 
                 if opt["verbose"] > 2:
-                    print "   %3d            %10.f" % (-j, norm(dx1))
+                    print "   %3d            %10.5f" % (-j, norm(dx1))
 
                 rho = (L1 - L) / (dot(Lx, dx1) + 0.5 * dot(dx1, Lxx * dx1))
 
-                if rho > rho_min and rho < rho_max:
+                if (rho > rho_min) and (rho < rho_max):
                     break
                 else:
                     alpha = alpha / 2.0
@@ -585,8 +585,8 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
                 break
             f0 = f
 
-#            if opt["step_control"]:
-#                L = f + dot(lam, g) + dot(mu * (h + z)) - gamma * sum(log(z))
+            if opt["step_control"]:
+                L = f + dot(lam, g) + dot(mu, (h + z)) - gamma * sum(log(z))
 
     if opt["verbose"]:
         if not converged:
