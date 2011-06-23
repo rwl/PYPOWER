@@ -15,7 +15,7 @@
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
 from numpy import array, ones, zeros, arange, r_, dot, flatnonzero as find
-from scipy.sparse import csr_matrix as sparse
+from scipy.sparse import issparse, csr_matrix as sparse
 
 from idx_cost import MODEL, POLYNOMIAL
 
@@ -81,7 +81,7 @@ def opf_costfcn(x, om, return_hessian=False):
         ccost = zeros(nxyz)
 
     ## generalized cost term
-    if any(N):
+    if issparse(N) and N.nnz > 0:
         nw = N.shape[0]
         r = N * x - rh                   ## Nx - rhat
         iLT = find(r < -kk)              ## below dead zone
@@ -119,7 +119,7 @@ def opf_costfcn(x, om, return_hessian=False):
     df = df + ccost  # The linear cost row is additive wrt any nonlinear cost.
 
     ## generalized cost term
-    if any(N):
+    if issparse(N) and N.nnz > 0:
         HwC = H * w + Cw
         AA = N.T * M * (LL + 2 * QQ * diagrr)
         df = df + AA * HwC

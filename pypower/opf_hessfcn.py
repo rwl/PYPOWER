@@ -15,7 +15,7 @@
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
 from numpy import array, zeros, ones, exp, arange, r_, flatnonzero as find
-from scipy.sparse import vstack, hstack, csr_matrix as sparse
+from scipy.sparse import vstack, hstack, issparse, csr_matrix as sparse
 
 from idx_gen import PG, QG
 from idx_brch import F_BUS, T_BUS
@@ -129,7 +129,7 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
     d2f = sparse((r_[d2f_dPg2, d2f_dQg2], (i, i)), (nxyz, nxyz))
 
     ## generalized cost
-    if any(N):
+    if issparse(N) and N.nnz > 0:
         nw = N.shape[0]
         r = N * x - rh                    ## Nx - rhat
         iLT = find(r < -kk)               ## below dead zone

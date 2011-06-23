@@ -202,7 +202,7 @@ def opf_args(*args):
             areas = ppc['areas']
         else:
             areas = array([])
-        if (Au is None or len(Au) == 0) and 'A' in ppc:
+        if Au is None and 'A' in ppc:
             Au, lbu, ubu = ppc["A"], ppc["l"], ppc["u"]
         if N is None and 'N' in ppc:  ## these two must go together
             N, Cw = ppc["N"], ppc["Cw"]

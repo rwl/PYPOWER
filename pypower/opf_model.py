@@ -436,13 +436,9 @@ class opf_model(object):
 #            if name in self.cost["data"]["H"]:
 #                nnzH = nnzH + nnz(self.cost["data"]["H"][name])
 
-        if nw:
-            N = lil_matrix((nw, self.var["N"]))
-            H = lil_matrix((nw, nw))            ## default => no quadratic term
-        else:
-            ## FIXME Zero dimensional sparse matrices
-            N = zeros((nw, self.var["N"]))
-            H = zeros((nw, nw))
+        ## FIXME Zero dimensional sparse matrices
+        N = zeros((nw, self.var["N"]))
+        H = zeros((nw, nw))  ## default => no quadratic term
 
         Cw = zeros(nw)
         dd = ones(nw)                        ## default => linear
@@ -464,11 +460,11 @@ class opf_model(object):
                     jN = self.var["idx"]["iN"][v]     ## ing column in N
                     k1 = kN                           ## starting column in Nk
                     kN = kN + self.var["idx"]["N"][v] ## ing column in Nk
-                    N[i1:iN, j1:jN] = Nk[:, k1:kN]
+                    N[i1:iN, j1:jN] = Nk[:, k1:kN].todense()
 
                 Cw[i1:iN] = self.cost["data"]["Cw"][name]
                 if name in self.cost["data"]["H"]:
-                    H[i1:iN, i1:iN] = self.cost["data"]["H"][name]
+                    H[i1:iN, i1:iN] = self.cost["data"]["H"][name].todense()
 
                 if name in self.cost["data"]["dd"]:
                     dd[i1:iN] = self.cost["data"]["dd"][name]
@@ -481,6 +477,10 @@ class opf_model(object):
 
                 if name in self.cost["data"]["mm"]:
                     mm[i1:iN] = self.cost["data"]["mm"][name]
+
+        if nw:
+            N = sparse(N)
+            H = sparse(H)
 
         ## save in object
         self.cost["params"] = {
