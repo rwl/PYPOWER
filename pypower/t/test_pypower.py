@@ -51,8 +51,8 @@ def test_pypower(verbose=False):
 #        pass
 
     tests.append('t_opf_dc_pips')
-#    tests.append('t_opf_dc_pips_sc')
-#
+    tests.append('t_opf_dc_pips_sc')
+
 #    try:
 #        import mosek  #@UnusedImport
 #        tests.append('t_opf_dc_mosek')
