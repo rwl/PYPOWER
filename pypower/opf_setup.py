@@ -73,22 +73,28 @@ def opf_setup(ppc, ppopt):
         ## reduce A and/or N from AC dimensions to DC dimensions, if needed
         if nusr or nw:
             acc = r_[nb + arange(nb), 2 * nb + ng + arange(ng)]   ## Vm and Qg columns
+
             if nusr and (ppc['A'].shape[1] >= 2*nb + 2*ng):
                 ## make sure there aren't any constraints on Vm or Qg
-                if any(any(ppc['A'][:, acc])):
+                if ppc['A'][:, acc].nnz > 0:
                     stderr.write('opf_setup: attempting to solve DC OPF with user constraints on Vm or Qg\n')
-                    ppc['A'] = delete(ppc['A'], acc, 1)           ## delete Vm and Qg columns
+
+                # FIXME: delete sparse matrix columns
+                bcc = delete(arange(ppc['A'].shape[1]), acc)
+                ppc['A'] = ppc['A'].tolil()[:, bcc].tocsr()           ## delete Vm and Qg columns
 
             if nw and (ppc['N'].shape[1] >= 2*nb + 2*ng):
                 ## make sure there aren't any costs on Vm or Qg
-                if any(any(ppc['N'][:, acc])):
+                if ppc['N'][:, acc].nnz > 0:
                     ii, _ = nonzero(ppc['N'][:, acc])
                     _, ii = unique(ii, return_index=True)    ## indices of w with potential non-zero cost terms from Vm or Qg
                     if any(ppc['Cw'][ii]) | ( ('H' in ppc) & (len(ppc['H']) > 0) &
                             any(any(ppc['H'][:, ii])) ):
                         stderr.write('opf_setup: attempting to solve DC OPF with user costs on Vm or Qg\n')
 
-                ppc['N'] = delete(ppc['N'], acc, 1)               ## delete Vm and Qg columns
+                # FIXME: delete sparse matrix columns
+                bcc = delete(arange(ppc['N'].shape[1]), acc)
+                ppc['N'] = ppc['N'].tolil()[:, bcc].tocsr()               ## delete Vm and Qg columns
 
     ## convert single-block piecewise-linear costs into linear polynomial cost
     pwl1 = find((ppc['gencost'][:, MODEL] == PW_LINEAR) & (ppc['gencost'][:, NCOST] == 2))
@@ -105,8 +111,8 @@ def opf_setup(ppc, ppopt):
         ppc['gencost'][pwl1, COST:COST + 2] = r_[m, b]
 
     ## create (read-only) copies of individual fields for convenience
-    baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, ppopt, \
-        N, fparm, H, Cw, z0, zl, zu, userfcn, areas = opf_args(ppc, ppopt)
+    baseMVA, bus, gen, branch, gencost, _, lbu, ubu, ppopt, \
+            _, fparm, H, Cw, z0, zl, zu, userfcn, _ = opf_args(ppc, ppopt)
 
     ## warn if there is more than one reference bus
     refs = find(bus[:, BUS_TYPE] == REF)

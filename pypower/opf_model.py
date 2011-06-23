@@ -735,15 +735,16 @@ class opf_model(object):
                 iN = self.lin["idx"]["iN"][name]    ## ing row index
                 vsl = self.lin["data"]["vs"][name]  ## var set list
                 kN = 0                              ## initialize last col of Ak used
-                Ai = lil_matrix((self.var["N"], N))   # row based (transpose required)
+                # FIXME: Sparse matrix with fancy indexing
+                Ai = zeros((N, self.var["N"]))
                 for v in vsl:
                     j1 = self.var["idx"]["i1"][v]      ## starting column in A
                     jN = self.var["idx"]["iN"][v]      ## ing column in A
                     k1 = kN                            ## starting column in Ak
                     kN = kN + self.var["idx"]["N"][v]  ## ing column in Ak
-                    Ai[j1:jN, :] = Ak[:, k1:kN].T
+                    Ai[:, j1:jN] = Ak[:, k1:kN].todense()
 
-                A[i1:iN, :] = Ai.T
+                A[i1:iN, :] = Ai
 
                 l[i1:iN] = self.lin["data"]["l"][name]
                 u[i1:iN] = self.lin["data"]["u"][name]

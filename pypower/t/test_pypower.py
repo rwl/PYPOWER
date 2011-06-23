@@ -49,9 +49,9 @@ def test_pypower(verbose=False):
 #        tests.append('t_opf_dc_ipopt')
 #    except ImportError:
 #        pass
-#
-#    tests.append('t_opf_dc_mips')
-#    tests.append('t_opf_dc_mips_sc')
+
+    tests.append('t_opf_dc_pips')
+#    tests.append('t_opf_dc_pips_sc')
 #
 #    try:
 #        import mosek  #@UnusedImport

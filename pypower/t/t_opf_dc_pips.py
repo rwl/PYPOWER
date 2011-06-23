@@ -30,7 +30,7 @@ from pypower.idx_gen import \
     GEN_BUS, QMAX, QMIN, MBASE, APF, PG, QG, VG, MU_PMAX, MU_QMIN
 
 from pypower.idx_brch import \
-    ANGMAX, PF, QT, MU_SF, MU_ST, MU_ANGMAX, MU_ANGMIN
+    ANGMAX, PF, QT, MU_SF, MU_ST
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
@@ -66,7 +66,7 @@ def t_opf_dc_pips(quiet=False):
     ibr_data    = arange(ANGMAX + 1)
     ibr_flow    = arange(PF, QT + 1)
     ibr_mu      = array([MU_SF, MU_ST])
-    ibr_angmu   = array([MU_ANGMIN, MU_ANGMAX])
+    #ibr_angmu   = array([MU_ANGMIN, MU_ANGMAX])
 
     ## get solved DC power flow case from MAT-file
     soln9_dcopf = loadmat('soln9_dcopf.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
@@ -124,12 +124,12 @@ def t_opf_dc_pips(quiet=False):
     row = [0, 0, 0, 1, 1, 1]
     col = [18, 19, 24, 19, 20, 25]
     ppc['A'] = sparse(([-1, 1, -1, 1, -1, -1], (row, col)), (2, 26))
-    ppc['u'] = [0, 0]
-    ppc['l'] = [-Inf, -Inf]
-    ppc['zl'] = [0, 0]
+    ppc['u'] = array([0, 0])
+    ppc['l'] = array([-Inf, -Inf])
+    ppc['zl'] = array([0, 0])
 
     ppc['N'] = sparse(([1, 1], ([0, 1], [24, 25])), (2, 26))   ## new z variables only
-    ppc['fparm'] = ones((2, 1)) * [1, 0, 0, 1]           ## w = r = z
+    ppc['fparm'] = ones((2, 1)) * array([[1, 0, 0, 1]])        ## w = r = z
     ppc['H'] = sparse((2, 2))                            ## no quadratic term
     ppc['Cw'] = array([1000, 1])
 
@@ -145,8 +145,8 @@ def t_opf_dc_pips(quiet=False):
     ## with A and N sized for DC opf
     ppc = loadcase(casefile)
     ppc['A'] = sparse(([1, 1], ([0, 0], [9, 10])), (1, 14))   ## Pg1 + Pg2
-    ppc['u'] = Inf
-    ppc['l'] = 600
+    ppc['u'] = array([Inf])
+    ppc['l'] = array([600])
     r = rundcopf(ppc, ppopt)
     t_ok(not r['success'], [t, 'no success'])
 

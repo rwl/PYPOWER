@@ -102,8 +102,8 @@ def dcopf_solver(om, ppopt, out_opt=None):
     nb = bus.shape[0]              ## number of buses
     nl = branch.shape[0]           ## number of branches
     nw = N.shape[0]                ## number of general cost vars, w
-    ny = om.getN('var', 'y')      ## number of piece-wise linear costs
-    nxyz = om.getN('var')        ## total number of control vars of all types
+    ny = om.getN('var', 'y')       ## number of piece-wise linear costs
+    nxyz = om.getN('var')          ## total number of control vars of all types
 
     ## linear constraints & variable bounds
     A, l, u = om.linear_constraints()
@@ -118,7 +118,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
     any_pwl = int(ny > 0)
     if any_pwl:
         # Sum of y vars.
-        Npwl = sparse((ones(ny), (zeros(ny), arange(vv["i1"]["y"], vv["iN"]["y"]))))
+        Npwl = sparse((ones(ny), (zeros(ny), arange(vv["i1"]["y"], vv["iN"]["y"]))), (1, nxyz))
         Hpwl = sparse((1, 1))
         Cpwl = array([1])
         fparm_pwl = array([[1, 0, 0, 1]])
