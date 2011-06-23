@@ -105,7 +105,7 @@ def opf_execute(om, ppopt):
             results['gen'][:, VG] = results['bus'][results['gen'][:, GEN_BUS].astype(int), VM]
 
             ## gen PQ capability curve multipliers
-            if ll['N']['PQh'] > 0 | ll['N']['PQl'] > 0:
+            if (ll['N']['PQh'] > 0) | (ll['N']['PQl'] > 0):
                 mu_PQh = results['mu']['lin']['l'][ll['i1']['PQh']:ll['iN']['PQh']] - results['mu']['lin']['u'][ll['i1']['PQh']:ll['iN']['PQh']]
                 mu_PQl = results['mu']['lin']['l'][ll['i1']['PQl']:ll['iN']['PQl']] - results['mu']['lin']['u'][ll['i1']['PQl']:ll['iN']['PQl']]
                 Apqdata = om.userdata('Apqdata')

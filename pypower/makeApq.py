@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, linalg, zeros, arange, Inf, r_
+from numpy import array, linalg, zeros, arange, Inf, r_, c_
 from numpy import flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
@@ -53,16 +53,16 @@ def makeApq(baseMVA, gen):
     ## use normalized coefficient rows so multipliers have right scaling
     ## in $$/pu
     if npqh > 0:
-        data["h"] = r_[gen[ipqh, QC1MAX] - gen[ipqh, QC2MAX],
+        data["h"] = c_[gen[ipqh, QC1MAX] - gen[ipqh, QC2MAX],
                        gen[ipqh, PC2] - gen[ipqh, PC1]]
         ubpqh = data["h"][:, 0] * gen[ipqh, PC1] + \
                 data["h"][:, 1] * gen[ipqh, QC1MAX]
         for i in range(npqh):
-            tmp = linalg.norm(data["h"][i, :], Inf)
+            tmp = linalg.norm(data["h"][i, :])
             data["h"][i, :] = data["h"][i, :] / tmp
             ubpqh[i] = ubpqh[i] / tmp
-        Apqh = sparse((data["h"][:],
-                       (r_[range(npqh), range(npqh)], r_[ipqh, ipqh+ng])),
+        Apqh = sparse((data["h"].flatten('F'),
+                       (r_[arange(npqh), arange(npqh)], r_[ipqh, ipqh+ng])),
                       (npqh, 2*ng))
         ubpqh = ubpqh / baseMVA
     else:
@@ -72,15 +72,15 @@ def makeApq(baseMVA, gen):
 
     ## similarly Apql
     if npql > 0:
-        data["l"] = r_[gen[ipql, QC2MIN] - gen[ipql, QC1MIN],
+        data["l"] = c_[gen[ipql, QC2MIN] - gen[ipql, QC1MIN],
                        gen[ipql, PC1] - gen[ipql, PC2]]
         ubpql = data["l"][:, 0] * gen[ipql, PC1] + \
                 data["l"][:, 1] * gen[ipql, QC1MIN]
         for i in range(npql):
-            tmp = linalg.norm(data["l"][i, :], Inf)
+            tmp = linalg.norm(data["l"][i, :])
             data["l"][i, :] = data["l"][i, :] / tmp
             ubpql[i] = ubpql[i] / tmp
-        Apql = sparse((data["l"][:],
+        Apql = sparse((data["l"].flatten('F'),
                        (r_[arange(npql), arange(npql)], r_[ipql, ipql+ng])),
                       (npql, 2*ng))
         ubpql = ubpql / baseMVA

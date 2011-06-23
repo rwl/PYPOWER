@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, ones, zeros, Inf, r_, ix_, argsort, arange, dot
+from numpy import array, ones, zeros, Inf, r_, ix_, argsort, arange
 
 from scipy.io import loadmat
 from scipy.sparse import spdiags, csr_matrix as sparse
@@ -213,7 +213,7 @@ def t_opf_pips(quiet=False):
     N = sparse(([1], ([0], [24])), (1, 25))    ## new z variable only
     fparm = array([[1, 0, 0, 1]])              ## w = r = z
     H = sparse((1, 1))                ## no quadratic term
-    Cw = 100
+    Cw = array([100.0])
 
     t = ''.join([t0, 'w/extra constraints & costs 1 : '])
     r = opf(casefile, A, l, u, ppopt, N, fparm, H, Cw)
@@ -268,7 +268,7 @@ def t_opf_pips(quiet=False):
     ##-----  test OPF with angle difference limits  -----
     ppc = loadcase('t_case9_opfv2')
     ## remove capability curves
-    ppc.gen[ix_(arange(1, 3), [PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX])] = zeros((2, 6))
+    ppc['gen'][ix_(arange(1, 3), [PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX])] = zeros((2, 6))
 
     ## get solved AC power flow case from MAT-file
     soln9_opf_ang = loadmat('soln9_opf_ang.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln

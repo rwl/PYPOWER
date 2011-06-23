@@ -31,13 +31,17 @@ from pypower.t.t_ok import t_ok
 
 ## unconstrained banana function
 ## from MATLAB Optimization Toolbox's bandem.m
-def f2(x):
+def f2(x, return_hessian=False):
     a = 100
     f = a * (x[1] - x[0]**2)**2 + (1 - x[0])**2
     df = array([
         4 * a * (x[0]**3 - x[0] * x[1]) + 2 * x[0] - 2,
         2 * a * (x[1] - x[0]**2)
     ])
+
+    if not return_hessian:
+        return f, df
+
     d2f = 4 * a * sparse([
         [3 * x[0]**2 - x[1] + 1. / (2 * a), -x[0]],
         [                           -x[0],   0.5]
@@ -47,7 +51,7 @@ def f2(x):
 
 ## unconstrained 3-d quadratic
 ## from http://www.akiti.ca/QuadProgEx0Constr.html
-def f3(x):
+def f3(x, return_hessian=False):
     H = sparse([
         [ 5, -2, -1],
         [-2,  4,  3],
@@ -56,13 +60,15 @@ def f3(x):
     c = array([2, -35, -47], float)
     f = 0.5 * dot(x * H, x) + dot(c, x) + 5
     df = H * x + c
+    if not return_hessian:
+        return f, df
     d2f = H
     return f, df, d2f
 
 
 ## constrained 4-d QP
 ## from http://www.jmu.edu/docs/sasdoc/sashtml/iml/chap8/sect12.htm
-def f4(x):
+def f4(x, return_hessian=False):
     H = sparse([
         [1003.1, 4.3, 6.3,  5.9],
         [   4.3, 2.2, 2.1,  3.9],
@@ -72,16 +78,20 @@ def f4(x):
     c = zeros(4)
     f = 0.5 * dot(x * H, x) + dot(c, x)
     df = H * x + c
+    if not return_hessian:
+        return f, df
     d2f = H
     return f, df, d2f
 
 
 ## constrained 2-d nonlinear
 ## from http://en.wikipedia.org/wiki/Nonlinear_programming#2-dimensional_example
-def f5(x):
+def f5(x, return_hessian=False):
     c = -array([1.0, 1.0])
     f = dot(c, x)
     df = c
+    if not return_hessian:
+        return f, df
     d2f = sparse((2, 2))
     return f, df, d2f
 
@@ -102,9 +112,11 @@ def hess5(x, lam, cost_mult):
 
 ## constrained 3-d nonlinear
 ## from http://en.wikipedia.org/wiki/Nonlinear_programming#3-dimensional_example
-def f6(x):
+def f6(x, return_hessian=False):
     f = -x[0] * x[1] - x[1] * x[2]
     df = -array([x[1], x[0] + x[2], x[1]])
+    if not return_hessian:
+        return f, df
     d2f = -sparse([[0, 1, 0],
                    [1, 0, 1],
                    [0, 1, 0]], dtype=float)
@@ -134,12 +146,14 @@ def hess6(x, lam, cost_mult=1):
 
 ## constrained 4-d nonlinear
 ## Hock & Schittkowski test problem #71
-def f7(x):
+def f7(x, return_hessian=False):
     f = x[0] * x[3] * sum(x[:3]) + x[2]
     df = array([ x[0] * x[3] + x[3] * sum(x[:3]),
                  x[0] * x[3],
                  x[0] * x[3] + 1,
                  x[0] * sum(x[:3]) ])
+    if not return_hessian:
+        return f, df
     d2f = sparse([
         [2 * x[3],               x[3], x[3], 2 * x[0] + x[1] + x[2]],
         [                  x[3],  0.0,  0.0,                   x[0]],
@@ -158,7 +172,7 @@ def gh7(x):
 def hess7(x, lam, sigma=1):
     lmbda = asscalar( lam['eqnonlin'] )
     mu    = asscalar( lam['ineqnonlin'] )
-    _, _, d2f = f7(x)
+    _, _, d2f = f7(x, True)
 
     Lxx = sigma * d2f + lmbda * 2 * speye(4, 4) - \
         mu * sparse([

@@ -46,7 +46,7 @@ def update_mupq(baseMVA, gen, mu_PQh, mu_PQl, data):
     muPmin = gen[:, MU_PMIN]
     if len(mu_PQh) > 0:
         #gen[:, [MU_PMIN, MU_PMAX, MU_QMIN, MU_QMAX]]
-        k = 1
+        k = 0
         for i in ipqh:
             if muPmax[i] > 0:
                 gen[i, MU_PMAX] = gen[i, MU_PMAX] - mu_PQh[k] * Apqhdata[k, 0] / baseMVA
@@ -64,7 +64,7 @@ def update_mupq(baseMVA, gen, mu_PQh, mu_PQl, data):
 
     if len(mu_PQl) > 0:
         #gen[:, [MU_PMIN, MU_PMAX, MU_QMIN, MU_QMAX]]
-        k = 1
+        k = 0
         for i in ipql:
             if muPmax[i] > 0:
                 gen[i, MU_PMAX] = gen[i, MU_PMAX] - mu_PQl[k] * Apqldata[k, 0] / baseMVA

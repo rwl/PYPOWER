@@ -485,7 +485,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
                 if opt["verbose"] > 2:
                     print "   %3d            %10.f" % (-j, norm(dx1))
 
-                rho = (L1 - L) / (dot(Lx, dx1) + 0.5 * dot(dot(dx1, Lxx), dx1))
+                rho = (L1 - L) / (dot(Lx, dx1) + 0.5 * dot(dx1, Lxx * dx1))
 
                 if rho > rho_min and rho < rho_max:
                     break

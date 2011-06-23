@@ -170,7 +170,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     ## so we must fix multipliers
     muSf = zeros(nl)
     muSt = zeros(nl)
-    if il.any():
+    if len(il) > 0:
         muSf[il] = \
             2 * lmbda["ineqnonlin"][:nl2] * branch[il, RATE_A] / baseMVA
         muSt[il] = \
@@ -183,6 +183,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     gen[:, MU_PMIN]  = lmbda["lower"][vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
     gen[:, MU_QMAX]  = lmbda["upper"][vv["i1"]["Qg"]:vv["iN"]["Qg"]] / baseMVA
     gen[:, MU_QMIN]  = lmbda["lower"][vv["i1"]["Qg"]:vv["iN"]["Qg"]] / baseMVA
+
     bus[:, LAM_P] = \
         lmbda["eqnonlin"][nn["i1"]["Pmis"]:nn["iN"]["Pmis"]] / baseMVA
     bus[:, LAM_Q] = \

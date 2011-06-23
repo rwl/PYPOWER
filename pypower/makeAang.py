@@ -43,17 +43,17 @@ def makeAang(baseMVA, branch, nb, ppopt):
         uang  = array([])
         iang  = array([])
     else:
-        iang = find(((branch[:, ANGMIN] > -360) & (branch[:, ANGMIN] > -360)) |
-                    ((branch[:, ANGMAX] < 360) & (branch[:, ANGMAX] < 360)))
+        iang = find(((branch[:, ANGMIN] != 0) & (branch[:, ANGMIN] > -360)) |
+                    ((branch[:, ANGMAX] != 0) & (branch[:, ANGMAX] <  360)))
         iangl = find(branch[iang, ANGMIN])
         iangh = find(branch[iang, ANGMAX])
         nang = len(iang)
 
         if nang > 0:
-            ii = arange(nang) + arange(nang)
+            ii = r_[arange(nang), arange(nang)]
             jj = r_[branch[iang, F_BUS], branch[iang, T_BUS]]
             Aang = sparse((r_[ones(nang), -ones(nang)],
-                           (ii, jj)), nang, nb)
+                           (ii, jj)), (nang, nb))
             uang = Inf * ones(nang)
             lang = -uang
             lang[iangl] = branch[iang[iangl], ANGMIN] * pi / 180
