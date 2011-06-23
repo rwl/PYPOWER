@@ -96,7 +96,7 @@ def opf_execute(om, ppopt):
         else:
             stderr.write('opf_execute: OPF_ALG %d is not a valid algorithm code\n' % alg)
 
-    if ('output' not in raw) or ('alg' not in raw['output']) or (len(raw['output']['alg']) == 0):
+    if ('output' not in raw) or ('alg' not in raw['output']):
         raw['output']['alg'] = alg
 
     if success:

@@ -16,11 +16,11 @@
 
 from sys import stdout, stderr
 
-from numpy import array, shape, any, delete, unique, arange, nonzero, pi, \
+from numpy import array, any, delete, unique, arange, nonzero, pi, \
     r_, c_, ones, Inf
 from numpy import flatnonzero as find
 
-from scipy.sparse import csr_matrix as sparse
+from scipy.sparse import hstack, csr_matrix as sparse
 
 from pypower.pqcost import pqcost
 from pypower.opf_args import opf_args
@@ -53,39 +53,39 @@ def opf_setup(ppc, ppopt):
     verbose = ppopt['VERBOSE']
 
     ## data dimensions
-    nb = shape(ppc['bus'])[0]    ## number of buses
-    nl = shape(ppc['branch'])[0] ## number of branches
-    ng = shape(ppc['gen'])[0]    ## number of dispatchable injections
+    nb = ppc['bus'].shape[0]    ## number of buses
+    nl = ppc['branch'].shape[0] ## number of branches
+    ng = ppc['gen'].shape[0]    ## number of dispatchable injections
     if 'A' in ppc:
-        nusr = shape(ppc['A'])[0]    ## number of linear user constraints
+        nusr = ppc['A'].shape[0]    ## number of linear user constraints
     else:
         nusr = 0
 
     if 'N' in ppc:
-        nw = shape(ppc['N'])[0]      ## number of general cost vars, w
+        nw = ppc['N'].shape[0]      ## number of general cost vars, w
     else:
         nw = 0
 
     if dc:
         ## ignore reactive costs for DC
-        ppc['gencost'] = pqcost(ppc['gencost'], ng)
+        ppc['gencost'], _ = pqcost(ppc['gencost'], ng)
 
         ## reduce A and/or N from AC dimensions to DC dimensions, if needed
         if nusr or nw:
             acc = r_[nb + arange(nb), 2 * nb + ng + arange(ng)]   ## Vm and Qg columns
-            if nusr and shape(ppc['A'])[1] >= 2*nb + 2*ng:
+            if nusr and (ppc['A'].shape[1] >= 2*nb + 2*ng):
                 ## make sure there aren't any constraints on Vm or Qg
                 if any(any(ppc['A'][:, acc])):
                     stderr.write('opf_setup: attempting to solve DC OPF with user constraints on Vm or Qg\n')
                     ppc['A'] = delete(ppc['A'], acc, 1)           ## delete Vm and Qg columns
 
-            if nw and shape(ppc['N'])[1] >= 2*nb + 2*ng:
+            if nw and (ppc['N'].shape[1] >= 2*nb + 2*ng):
                 ## make sure there aren't any costs on Vm or Qg
                 if any(any(ppc['N'][:, acc])):
-                    ii, jj = nonzero(ppc['N'][:, acc])
+                    ii, _ = nonzero(ppc['N'][:, acc])
                     _, ii = unique(ii, return_index=True)    ## indices of w with potential non-zero cost terms from Vm or Qg
-                    if any(ppc['Cw'][ii]) | ('H' in ppc & len(ppc['H']) > 0 &
-                    any(any(ppc['H'][:, ii]))):
+                    if any(ppc['Cw'][ii]) | ( ('H' in ppc) & (len(ppc['H']) > 0) &
+                            any(any(ppc['H'][:, ii])) ):
                         stderr.write('opf_setup: attempting to solve DC OPF with user costs on Vm or Qg\n')
 
                 ppc['N'] = delete(ppc['N'], acc, 1)               ## delete Vm and Qg columns
@@ -137,12 +137,12 @@ def opf_setup(ppc, ppopt):
 
         ## power mismatch constraints
         B, Bf, Pbusinj, Pfinj = makeBdc(baseMVA, bus, branch)
-        neg_Cg = sparse((-1, (gen[:, GEN_BUS], arange(ng))), (nb, ng))   ## Pbus w.r.t. Pg
-        Amis = c_[B, neg_Cg]
+        neg_Cg = sparse((-ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))   ## Pbus w.r.t. Pg
+        Amis = hstack([B, neg_Cg], 'csr')
         bmis = -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj
 
         ## branch flow constraints
-        il = find(branch[:, RATE_A] != 0 & branch[:, RATE_A] < 1e10)
+        il = find((branch[:, RATE_A] != 0) & (branch[:, RATE_A] < 1e10))
         nl2 = len(il)         ## number of constrained lines
         lpf = -Inf * ones(nl2)
         upf = branch[il, RATE_A] / baseMVA - Pfinj[il]
@@ -181,7 +181,7 @@ def opf_setup(ppc, ppopt):
         by = array([])
     else:
         ipwl = find(gencost[:, MODEL] == PW_LINEAR)  ## piece-wise linear costs
-        ny = shape(ipwl)[0]   ## number of piece-wise linear cost vars
+        ny = ipwl.shape[0]   ## number of piece-wise linear cost vars
         Ay, by = makeAy(baseMVA, ng, gencost, 1, q1, 1+ng+nq)
 
     if any((gencost[:, MODEL] != POLYNOMIAL) & (gencost[:, MODEL] != PW_LINEAR)):
@@ -190,13 +190,13 @@ def opf_setup(ppc, ppopt):
     ## more problem dimensions
     nx = nb+nv + ng+nq;  ## number of standard OPF control variables
     if nusr:
-        nz = shape(ppc['A'])[1] - nx  ## number of user z variables
+        nz = ppc['A'].shape[1] - nx  ## number of user z variables
         if nz < 0:
             stderr.write('opf_setup: user supplied A matrix must have at least %d columns.\n' % nx)
     else:
         nz = 0               ## number of user z variables
         if nw:               ## still need to check number of columns of N
-            if shape(ppc['N'])[1] != nx:
+            if ppc['N'].shape[1] != nx:
                 stderr.write('opf_setup: user supplied N matrix must have %d columns.\n' % nx)
 
     ## construct OPF model object

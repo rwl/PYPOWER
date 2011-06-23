@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, ones, Inf
+from numpy import array, ones, Inf, arange, r_
 
 from scipy.io import loadmat
 from scipy.sparse import csr_matrix as sparse
@@ -48,7 +48,7 @@ def t_opf_dc_pips(quiet=False):
     t_begin(num_tests, quiet)
 
     casefile = 't_case9_opf'
-    verbose = not quiet
+    verbose = 0#not quiet
 
     t0 = 'DC OPF (PIPS): '
     ppopt = ppoption(VERBOSE=verbose, OUT_ALL=0, OPF_ALG_DC=200)
@@ -56,28 +56,30 @@ def t_opf_dc_pips(quiet=False):
     ## run DC OPF
 
     ## set up indices
-    ib_data     = range(BUS_AREA + 1) + range(BASE_KV, VMIN)
-    ib_voltage  = range(VM, VA + 1)
-    ib_lam      = range(LAM_P, LAM_Q + 1)
-    ib_mu       = range(MU_VMAX, MU_VMIN + 1)
-    ig_data     = [GEN_BUS, QMAX, QMIN] + range(MBASE, APF + 1)
-    ig_disp     = [PG, QG, VG]
-    ig_mu       = range(MU_PMAX, MU_QMIN + 1)
-    ibr_data    = range(ANGMAX)
-    ibr_flow    = range(PF, QT + 1)
-    ibr_mu      = [MU_SF, MU_ST]
-    ibr_angmu   = [MU_ANGMIN, MU_ANGMAX]
+    ib_data     = r_[arange(BUS_AREA + 1), arange(BASE_KV, VMIN + 1)]
+    ib_voltage  = arange(VM, VA + 1)
+    ib_lam      = arange(LAM_P, LAM_Q + 1)
+    ib_mu       = arange(MU_VMAX, MU_VMIN + 1)
+    ig_data     = r_[[GEN_BUS, QMAX, QMIN], arange(MBASE, APF + 1)]
+    ig_disp     = array([PG, QG, VG])
+    ig_mu       = arange(MU_PMAX, MU_QMIN + 1)
+    ibr_data    = arange(ANGMAX + 1)
+    ibr_flow    = arange(PF, QT + 1)
+    ibr_mu      = array([MU_SF, MU_ST])
+    ibr_angmu   = array([MU_ANGMIN, MU_ANGMAX])
 
     ## get solved DC power flow case from MAT-file
-    soln9_dcopf = loadmat('soln9_dcopf')       ## defines bus_soln, gen_soln, branch_soln, f_soln
+    soln9_dcopf = loadmat('soln9_dcopf.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_dcopf['bus_soln']
     gen_soln = soln9_dcopf['gen_soln']
     branch_soln = soln9_dcopf['branch_soln']
-    f_soln = soln9_dcopf['f_soln']
+    f_soln = soln9_dcopf['f_soln'][0]
 
     ## run OPF
     t = t0
-    _, bus, gen, _, branch, f, success, _ = rundcopf(casefile, ppopt)
+    r = rundcopf(casefile, ppopt)
+    bus, gen, branch, f, success = \
+            r['bus'], r['gen'], r['branch'], r['f'], r['success']
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -99,21 +101,21 @@ def t_opf_dc_pips(quiet=False):
     ppc = loadcase(casefile)
     row = [0, 0, 0, 1, 1, 1]
     col = [9, 10, 12, 10, 11, 13]
-    ppc.A = sparse(([-1, 1, -1, 1, -1, -1], (row, col)), (2, 14))
-    ppc.u = [0, 0]
-    ppc.l = [-Inf, -Inf]
-    ppc.zl = [0, 0]
+    ppc['A'] = sparse(([-1, 1, -1, 1, -1, -1], (row, col)), (2, 14))
+    ppc['u'] = array([0, 0])
+    ppc['l'] = array([-Inf, -Inf])
+    ppc['zl'] = array([0, 0])
 
-    ppc.N = sparse(([1, 1], ([0, 1], [12, 13])), (2, 14))   ## new z variables only
-    ppc.fparm = ones((2, 1)) * [1, 0, 0, 1]           ## w = r = z
-    ppc.H = sparse((2, 2))                            ## no quadratic term
-    ppc.Cw = array([1000, 1])
+    ppc['N'] = sparse(([1, 1], ([0, 1], [12, 13])), (2, 14))   ## new z variables only
+    ppc['fparm'] = ones((2, 1)) * array([[1, 0, 0, 1]])           ## w = r = z
+    ppc['H'] = sparse((2, 2))                            ## no quadratic term
+    ppc['Cw'] = array([1000, 1])
 
-    t = [t0, 'w/extra constraints & costs 1 : ']
-    r, success = rundcopf(ppc, ppopt)
-    t_ok(success, [t, 'success'])
-    t_is(r.gen[0, PG], 116.15974, 4, [t, 'Pg1 = 116.15974'])
-    t_is(r.gen[1, PG], 116.15974, 4, [t, 'Pg2 = 116.15974'])
+    t = ''.join([t0, 'w/extra constraints & costs 1 : '])
+    r = rundcopf(ppc, ppopt)
+    t_ok(r['success'], [t, 'success'])
+    t_is(r['gen'][0, PG], 116.15974, 4, [t, 'Pg1 = 116.15974'])
+    t_is(r['gen'][1, PG], 116.15974, 4, [t, 'Pg2 = 116.15974'])
     t_is(r['var']['val']['z'], [0, 0.3348], 4, [t, 'user vars'])
     t_is(r['cost']['usr'], 0.3348, 3, [t, 'user costs'])
 
@@ -121,31 +123,35 @@ def t_opf_dc_pips(quiet=False):
     ppc = loadcase(casefile)
     row = [0, 0, 0, 1, 1, 1]
     col = [18, 19, 24, 19, 20, 25]
-    ppc.A = sparse(([-1, 1, -1, 1, -1, -1], (row, col)), (2, 26))
-    ppc.u = [0, 0]
-    ppc.l = [-Inf, -Inf]
-    ppc.zl = [0, 0]
+    ppc['A'] = sparse(([-1, 1, -1, 1, -1, -1], (row, col)), (2, 26))
+    ppc['u'] = [0, 0]
+    ppc['l'] = [-Inf, -Inf]
+    ppc['zl'] = [0, 0]
 
-    ppc.N = sparse(([1, 1], ([0, 1], [24, 25])), (2, 26))   ## new z variables only
-    ppc.fparm = ones((2, 1)) * [1, 0, 0, 1]           ## w = r = z
-    ppc.H = sparse((2, 2))                            ## no quadratic term
-    ppc.Cw = array([1000, 1])
+    ppc['N'] = sparse(([1, 1], ([0, 1], [24, 25])), (2, 26))   ## new z variables only
+    ppc['fparm'] = ones((2, 1)) * [1, 0, 0, 1]           ## w = r = z
+    ppc['H'] = sparse((2, 2))                            ## no quadratic term
+    ppc['Cw'] = array([1000, 1])
 
-    t = [t0, 'w/extra constraints & costs 2 : ']
-    r, success = rundcopf(ppc, ppopt)
-    t_ok(success, [t, 'success'])
-    t_is(r.gen[0, PG], 116.15974, 4, [t, 'Pg1 = 116.15974'])
-    t_is(r.gen[1, PG], 116.15974, 4, [t, 'Pg2 = 116.15974'])
+    t = ''.join([t0, 'w/extra constraints & costs 2 : '])
+    r = rundcopf(ppc, ppopt)
+    t_ok(r['success'], [t, 'success'])
+    t_is(r['gen'][0, PG], 116.15974, 4, [t, 'Pg1 = 116.15974'])
+    t_is(r['gen'][1, PG], 116.15974, 4, [t, 'Pg2 = 116.15974'])
     t_is(r['var']['val']['z'], [0, 0.3348], 4, [t, 'user vars'])
     t_is(r['cost']['usr'], 0.3348, 3, [t, 'user costs'])
 
-    t = [t0, 'infeasible : ']
+    t = ''.join([t0, 'infeasible : '])
     ## with A and N sized for DC opf
     ppc = loadcase(casefile)
-    ppc.A = sparse(([1, 1], ([0, 0], [9, 10])), (1, 14))   ## Pg1 + Pg2
-    ppc.u = Inf
-    ppc.l = 600
-    r, success = rundcopf(ppc, ppopt)
-    t_ok(not success, [t, 'no success'])
+    ppc['A'] = sparse(([1, 1], ([0, 0], [9, 10])), (1, 14))   ## Pg1 + Pg2
+    ppc['u'] = Inf
+    ppc['l'] = 600
+    r = rundcopf(ppc, ppopt)
+    t_ok(not r['success'], [t, 'no success'])
 
-    t_end
+    t_end()
+
+
+if __name__ == '__main__':
+    t_opf_dc_pips(quiet=False)

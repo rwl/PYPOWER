@@ -14,20 +14,28 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
-from numpy import array, zeros, ones, nonzero, any, diag, r_, pi, Inf, isnan
-from scipy.sparse import csr_matrix, vstack, hstack
+from copy import deepcopy
 
-from idx_bus import *
-from idx_gen import *
-from idx_brch import *
-from idx_cost import *
+from numpy import \
+    array, zeros, ones, any, diag, r_, pi, Inf, isnan, arange, c_, dot
 
-from qps_pips import qps_pips
-from util import sub2ind
+from numpy import flatnonzero as find
 
-logger = logging.getLogger(__name__)
+from scipy.sparse import vstack, hstack, csr_matrix as sparse
+
+from idx_bus import BUS_TYPE, REF, VA, LAM_P, LAM_Q, MU_VMAX, MU_VMIN
+from idx_gen import PG, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
+from idx_brch import PF, PT, QF, QT, RATE_A, MU_SF, MU_ST
+from idx_cost import MODEL, POLYNOMIAL, PW_LINEAR, NCOST, COST
+
+from pypower.util import sub2ind
+from pypower.ipopt_options import ipopt_options
+from pypower.cplex_options import cplex_options
+from pypower.mosek_options import mosek_options
+from pypower.qps_pypower import qps_pypower
+
 
 def dcopf_solver(om, ppopt, out_opt=None):
     """Solves a DC optimal power flow.
@@ -71,8 +79,8 @@ def dcopf_solver(om, ppopt, out_opt=None):
         out_opt = {}
 
     ## options
-    verbose = ppopt[31]    ## VERBOSE
-    alg     = ppopt[26]    ## OPF_ALG_DC
+    verbose = ppopt['VERBOSE']
+    alg     = ppopt['OPF_ALG_DC']
 
     if alg == 0:
         alg = 200  # Use PIPS
@@ -83,14 +91,14 @@ def dcopf_solver(om, ppopt, out_opt=None):
         ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"], ppc["gencost"]
     cp = om.get_cost_params()
     N, H, Cw = cp["N"], cp["H"], cp["Cw"]
-    fparm = array([cp["dd"], cp["rh"], cp["kk"], cp["mm"]])
+    fparm = array(c_[cp["dd"], cp["rh"], cp["kk"], cp["mm"]])
     Bf = om.userdata('Bf')
     Pfinj = om.userdata('Pfinj')
-    vv, ll = om.get_idx()
+    vv, ll, _, _ = om.get_idx()
 
     ## problem dimensions
-    ipol = nonzero(gencost[:, MODEL] == POLYNOMIAL) ## polynomial costs
-    ipwl = nonzero(gencost[:, MODEL] == PW_LINEAR)  ## piece-wise linear costs
+    ipol = find(gencost[:, MODEL] == POLYNOMIAL) ## polynomial costs
+    ipwl = find(gencost[:, MODEL] == PW_LINEAR)  ## piece-wise linear costs
     nb = bus.shape[0]              ## number of buses
     nl = branch.shape[0]           ## number of branches
     nw = N.shape[0]                ## number of general cost vars, w
@@ -107,11 +115,11 @@ def dcopf_solver(om, ppopt, out_opt=None):
     ## will be building on the (optionally present) user supplied parameters.
 
     ## piece-wise linear costs
-    any_pwl = ny > 0
+    any_pwl = int(ny > 0)
     if any_pwl:
         # Sum of y vars.
-        Npwl = csr_matrix((ones(ny), (zeros(ny), range(vv["i1"]["y"], vv["iN"]["y"]))))
-        Hpwl = csr_matrix((1, 1))
+        Npwl = sparse((ones(ny), (zeros(ny), arange(vv["i1"]["y"], vv["iN"]["y"]))))
+        Hpwl = sparse((1, 1))
         Cpwl = array([1])
         fparm_pwl = array([[1, 0, 0, 1]])
     else:
@@ -122,88 +130,97 @@ def dcopf_solver(om, ppopt, out_opt=None):
 
     ## quadratic costs
     npol = len(ipol)
-    if any(nonzero(gencost[ipol, NCOST] > 3)):
-        logger.error('DC opf cannot handle polynomial costs with higher '
-                     'than quadratic order.')
-    iqdr = nonzero(gencost[ipol, NCOST] == 3)
-    ilin = nonzero(gencost[ipol, NCOST] == 2)
+    if any(find(gencost[ipol, NCOST] > 3)):
+        stderr.write('DC opf cannot handle polynomial costs with higher '
+                     'than quadratic order.\n')
+    iqdr = find(gencost[ipol, NCOST] == 3)
+    ilin = find(gencost[ipol, NCOST] == 2)
     polycf = zeros((npol, 3))         ## quadratic coeffs for Pg
-    if any(iqdr):
-        polycf[iqdr, :] = gencost[ipol[iqdr], COST:COST+2]
-    polycf[ilin, 2:3] = gencost[ipol[ilin], COST:COST+1]
-    polycf = polycf * diag([ baseMVA**2, baseMVA, 1])     ## convert to p.u.
-    Npol = csr_matrix((ones(npol), # Pg vars
-                       (range(npol), vv["i1"]["Pg"] + ipol)), (npol, nxyz))
-    Hpol = csr_matrix((2 * polycf[:, 0],
-                       (range(npol), range(npol))), (npol, npol))
+    if len(iqdr) > 0:
+        polycf[iqdr, :] = gencost[ipol[iqdr], COST:COST + 3]
+    polycf[ilin, 1:3] = gencost[ipol[ilin], COST:COST + 2]
+    polycf = dot(polycf, diag([ baseMVA**2, baseMVA, 1]))     ## convert to p.u.
+    Npol = sparse((ones(npol), # Pg vars
+                       (arange(npol), vv["i1"]["Pg"] + ipol)), (npol, nxyz))
+    Hpol = sparse((2 * polycf[:, 0],
+                       (arange(npol), arange(npol))), (npol, npol))
     Cpol = polycf[:, 1]
-    fparm_pol = ones(npol) * array([[1, 0, 0, 1]])
+    fparm_pol = ones((npol, 1)) * array([[1, 0, 0, 1]])
 
     ## combine with user costs
-    NN = vstack([n for n in [Npwl, Npol, N] if n is not None], "csr")
+    NN = vstack([n for n in [Npwl, Npol, N] if n is not None and n.shape[0] > 0], "csr")
     # FIXME: Zero dimension sparse matrices.
-    if (Hpwl is not None) and (Hpol is not None):
-        Hpwl = hstack([Hpwl, csr_matrix((any_pwl, npol + nw))])
-        Hpol = hstack([csr_matrix((npol, any_pwl)), Hpol, csr_matrix((npol, nw))])
-    if H is not None:
-        H = hstack([csr_matrix((nw, any_pwl + npol)), H])
-    HHw = vstack([h for h in [Hpwl, Hpol, H] if h is not None], "csr")
+    if (Hpwl is not None) and any_pwl and (npol + nw):
+        Hpwl = hstack([Hpwl, sparse((any_pwl, npol + nw))])
+    if Hpol is not None:
+        if any_pwl and npol:
+            Hpol = hstack([sparse((npol, any_pwl)), Hpol])
+        if npol and nw:
+            Hpol = hstack([Hpol, sparse((npol, nw))])
+    if (H is not None) and nw and (any_pwl + npol):
+        H = hstack([sparse((nw, any_pwl + npol)), H])
+    HHw = vstack([h for h in [Hpwl, Hpol, H] if h is not None and h.shape[0] > 0], "csr")
     CCw = r_[Cpwl, Cpol, Cw]
     ffparm = r_[fparm_pwl, fparm_pol, fparm]
 
     ## transform quadratic coefficients for w into coefficients for X
     nnw = any_pwl + npol + nw
-    M = csr_matrix((ffparm[:, 3], (range(nnw), range(nnw))))
+    M = sparse((ffparm[:, 3], (range(nnw), range(nnw))))
     MR = M * ffparm[:, 1]
     HMR = HHw * MR
     MN = M * NN
     HH = MN.T * HHw * MN
     CC = MN.T * (CCw - HMR)
-    C0 = 1./2. * MR.T * HMR + sum(polycf[:, 2]) # Constant term of cost.
+    C0 = 0.5 * dot(MR, HMR) + sum(polycf[:, 2])  # Constant term of cost.
 
     ## set up input for QP solver
     opt = {'alg': alg, 'verbose': verbose}
-    if alg == 200 or alg == 250:
+    if (alg == 200) or (alg == 250):
         ## try to select an interior initial point
-        Varefs = bus[bus[:, BUS_TYPE] == REF, VA] * (pi / 180)
+        Varefs = bus[bus[:, BUS_TYPE] == REF, VA] * (pi / 180.0)
 
-        lb, ub = xmin, xmax;
+        lb, ub = xmin.copy(), xmax.copy()
         lb[xmin == -Inf] = -1e10   ## replace Inf with numerical proxies
         ub[xmax ==  Inf] =  1e10
         x0 = (lb + ub) / 2;
         # angles set to first reference angle
-        x0[vv["i1"]["Va"]:vv["iN"]["Va"]] = Varefs[1]
+        x0[vv["i1"]["Va"]:vv["iN"]["Va"]] = Varefs[0]
         if ny > 0:
-            ipwl = nonzero(gencost[:, MODEL] == PW_LINEAR)
+            ipwl = find(gencost[:, MODEL] == PW_LINEAR)
             # largest y-value in CCV data
-            c = gencost[sub2ind(gencost.shape, ipwl,
+            c = gencost.flatten('F')[sub2ind(gencost.shape, ipwl,
                                 NCOST + 2 * gencost[ipwl, NCOST])]
             x0[vv["i1"]["y"]:vv["iN"]["y"]] = max(c) + 0.1 * abs(max(c))
 
         ## set up options
-        feastol = ppopt[81]    ## PDIPM_FEASTOL
-        gradtol = ppopt[82]    ## PDIPM_GRADTOL
-        comptol = ppopt[83]    ## PDIPM_COMPTOL
-        costtol = ppopt[84]    ## PDIPM_COSTTOL
-        max_it  = ppopt[85]    ## PDIPM_MAX_IT
-        max_red = ppopt[86]    ## SCPDIPM_RED_IT
+        feastol = ppopt['PDIPM_FEASTOL']
+        gradtol = ppopt['PDIPM_GRADTOL']
+        comptol = ppopt['PDIPM_COMPTOL']
+        costtol = ppopt['PDIPM_COSTTOL']
+        max_it  = ppopt['PDIPM_MAX_IT']
+        max_red = ppopt['SCPDIPM_RED_IT']
         if feastol == 0:
-            feastol = ppopt[16]    ## = OPF_VIOLATION by default
-        opt["mips_opt"] = {  'feastol': feastol,
+            feastol = ppopt['OPF_VIOLATION']    ## = OPF_VIOLATION by default
+        opt["pips_opt"] = {  'feastol': feastol,
                              'gradtol': gradtol,
                              'comptol': comptol,
                              'costtol': costtol,
                              'max_it':  max_it,
                              'max_red': max_red,
                              'cost_mult': 1  }
+    elif alg == 400:
+        opt['ipopt_opt'] = ipopt_options([], ppopt)
+    elif alg == 500:
+        opt['cplex_opt'] = cplex_options([], ppopt)
+    elif alg == 600:
+        opt['mosek_opt'] = mosek_options([], ppopt)
     else:
         raise ValueError, "Unrecognised solver [%d]." % alg
 
     ##-----  run opf  -----
     x, f, info, output, lmbda = \
-        qps_pips(HH, CC, A, l, u, xmin, xmax, x0, opt)
+            qps_pypower(HH, CC, A, l, u, xmin, xmax, x0, opt)
     success = (info == 1)
-
 
     ##-----  calculate return values  -----
     if not any(isnan(x)):
@@ -217,7 +234,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
         gen[:, PG] = Pg * baseMVA
 
         ## compute branch flows
-        branch[:, [QF, QT]] = zeros(nl, 2)
+        branch[:, [QF, QT]] = zeros((nl, 2))
         branch[:, PF] = (Bf * Va + Pfinj) * baseMVA
         branch[:, PT] = -branch[:, PF]
 
@@ -228,7 +245,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
     muUB = lmbda["upper"]
 
     ## update Lagrange multipliers
-    il = nonzero(branch[:, RATE_A] != 0 & branch[:, RATE_A] < 1e10)
+    il = find((branch[:, RATE_A] != 0) & (branch[:, RATE_A] < 1e10))
     bus[:, [LAM_P, LAM_Q, MU_VMIN, MU_VMAX]] = zeros((nb, 4))
     gen[:, [MU_PMIN, MU_PMAX, MU_QMIN, MU_QMAX]] = zeros((gen.shape[0], 4))
     branch[:, [MU_SF, MU_ST]] = zeros((nl, 2))
@@ -239,16 +256,16 @@ def dcopf_solver(om, ppopt, out_opt=None):
     gen[:, MU_PMIN]     = muLB[vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
     gen[:, MU_PMAX]     = muUB[vv["i1"]["Pg"]:vv["iN"]["Pg"]] / baseMVA
 
-    pimul = r_[ # FIXME: column stack
+    pimul = r_[
       mu_l - mu_u,
-     -ones(ny>0, 1), ## dummy entry corresponding to linear cost row in A
+     -ones((ny > 0)), ## dummy entry corresponding to linear cost row in A
       muLB - muUB
     ]
 
     mu = { 'var': {'l': muLB, 'u': muUB},
            'lin': {'l': mu_l, 'u': mu_u} }
 
-    results = ppc # FIXME: copy
+    results = deepcopy(ppc)
     results["bus"], results["branch"], results["gen"], \
         results["om"], results["x"], results["mu"], results["f"] = \
             bus, branch, gen, om, x, mu, f

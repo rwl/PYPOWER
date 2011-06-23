@@ -16,8 +16,6 @@
 
 import sys
 
-from numpy import array
-
 from pypower.qps_pips import qps_pips
 from pypower.qps_ipopt import qps_ipopt
 from pypower.qps_cplex import qps_cplex

@@ -14,11 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
-from numpy import array
+from numpy import array, arange
 
-logger = logging.getLogger(__name__)
 
 def pqcost(gencost, ng, on=None):
     """Splits the gencost variable into two pieces if costs are given for Qg.
@@ -33,7 +32,7 @@ def pqcost(gencost, ng, on=None):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if on is None:
-        on = range(ng)
+        on = arange(ng)
 
     if gencost.shape[0] == ng:
         pcost = gencost[on, :]
@@ -42,6 +41,6 @@ def pqcost(gencost, ng, on=None):
         pcost = gencost[on, :]
         qcost = gencost[on + ng, :]
     else:
-        logger.error('pqcost: gencost has wrong number of rows')
+        stderr.write('pqcost: gencost has wrong number of rows\n')
 
     return pcost, qcost

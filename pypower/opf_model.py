@@ -585,7 +585,7 @@ class opf_model(object):
 
         if name is not None:
             if self.getN('cost', name):
-                idx = range(self.cost["idx"]["i1"][name], self.cost["idx"]["iN"][name])
+                idx = arange(self.cost["idx"]["i1"][name], self.cost["idx"]["iN"][name])
                 cp["N"]  = cp["N"][idx, :]
                 cp["Cw"] = cp["Cw"][idx]
                 cp["H"]  = cp["H"][idx, :]
