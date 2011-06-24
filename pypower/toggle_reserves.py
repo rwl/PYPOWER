@@ -92,7 +92,7 @@ def toggle_reserves(ppc, on_off):
     return ppc
 
 
-def userfcn_reserves_ext2int(ppc, args):
+def userfcn_reserves_ext2int(ppc, *args):
     """This is the 'ext2int' stage userfcn callback that prepares the input
     data for the formulation stage. It expects to find a 'reserves' field
     in ppc as described above. The optional args are not currently used.
@@ -149,7 +149,7 @@ def userfcn_reserves_ext2int(ppc, args):
     return ppc
 
 
-def userfcn_reserves_formulation(om, args):
+def userfcn_reserves_formulation(om, *args):
     """This is the 'formulation' stage userfcn callback that defines the
     user costs and constraints for fixed reserves. It expects to find
     a 'reserves' field in the ppc stored in om, as described above.
@@ -197,7 +197,7 @@ def userfcn_reserves_formulation(om, args):
     return om
 
 
-def userfcn_reserves_int2ext(results, args):
+def userfcn_reserves_int2ext(results, *args):
     """This is the 'int2ext' stage userfcn callback that converts everything
     back to external indexing and packages up the results. It expects to
     find a 'reserves' field in the results struct as described for ppc
@@ -272,7 +272,7 @@ def userfcn_reserves_int2ext(results, args):
     return results
 
 
-def userfcn_reserves_printpf(results, fd, ppopt, args):
+def userfcn_reserves_printpf(results, fd, ppopt, *args):
     """This is the 'printpf' stage userfcn callback that pretty-prints the
     results. It expects a results struct, a file descriptor and a PYPOWER
     options vector. The optional args are not currently used.
@@ -353,7 +353,7 @@ def userfcn_reserves_printpf(results, fd, ppopt, args):
     return results
 
 
-def userfcn_reserves_savecase(ppc, fd, prefix, args):
+def userfcn_reserves_savecase(ppc, fd, prefix, *args):
     """This is the 'savecase' stage userfcn callback that prints the M-file
     code to save the 'reserves' field in the case file. It expects a
     PYPOWER case dict (ppc), a file descriptor and variable prefix
