@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2011 Richard Lincoln <r.w.lincoln@gmail.com>
+# Copyright (C) 2010-2011 Richard Lincoln
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -13,23 +13,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import os
+from os.path import abspath, dirname, join
 from setuptools import setup, find_packages
 
-# Read the long description from the README.
-thisdir = os.path.abspath(os.path.dirname(__file__))
-f = open(os.path.join(thisdir, "README"))
+thisdir = abspath(dirname(__file__))
+f = open(join(thisdir, "README"))
 kwds = {"long_description": f.read()}
 f.close()
 
+entry_points = [
+    'pf = pypower.main:pf',
+    'dcpf = pypower.main:dcpf',
+    'opf = pypower.main:opf',
+    'dcopf = pypower.main:dcopf',
+    'uopf = pypower.main:uopf',
+    'duopf = pypower.main:duopf',
+    'opf_w_res = pypower.main:opf_w_res'
+]
+
 setup(name="PYPOWER",
-      version="0.1.1",
+      version="4.0.0",
       description="Solves power flow and optimal power flow problems",
       author="Richard Lincoln",
       author_email="r.w.lincoln@gmail.com",
       url="http://rwl.github.com/PYPOWER",
 #      install_requires=["numpy", "scipy"],
-      entry_points={"console_scripts": ["pypower = pypower.main:main"]},
+      entry_points={"console_scripts": entry_points},
       license="GPLv3",
       include_package_data=False,
       packages=find_packages(),

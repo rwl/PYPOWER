@@ -15,15 +15,22 @@
 
 import sys
 
-from os.path import dirname, join
-
 from optparse import OptionParser, OptionGroup, OptionValueError
 
+
 from pypower.ppver import ppver
-from pypower.ppoption import ppoption, PF_OPTIONS, OPF_OPTIONS, OUTPUT_OPTIONS
+
+from pypower.ppoption import \
+    ppoption, PF_OPTIONS, OPF_OPTIONS, OUTPUT_OPTIONS, PDIPM_OPTIONS
+
 from pypower.runpf import runpf
+from pypower.rundcpf import rundcpf
 from pypower.runopf import runopf
+from pypower.rundcopf import rundcopf
 from pypower.runuopf import runuopf
+from pypower.runduopf import runduopf
+from pypower.runopf_w_res import runopf_w_res
+
 
 TYPE_MAP = {bool: 'choice', float: 'float', int: 'int'}
 
@@ -32,6 +39,7 @@ NEGATIVE = ('False', 'No', 'false', 'no', '0', 'N', 'n')
 
 CASES = ('case4gs', 'case6ww', 'case9', 'case9Q', 'case14', 'case24_ieee_rts',
     'case30', 'case30Q', 'case30pwl', 'case39', 'case57', 'case118', 'case300')
+
 
 def option_callback(option, opt, value, parser, *args, **kw_args):
     if isinstance(value, str):
@@ -71,83 +79,106 @@ def add_options(group, options, *callback_args, **callback_kwargs):
         group.add_option(long_opt, **kw_args)
 
 
-def main():
+def parse_options(opf=False):
+    """Parse command line options.
+
+    @param opf: Include OPF options?
+    """
+    v = ppver('all')
+    parser = OptionParser(
+        usage="""usage: %prog [casedata] [options] [fname] [solvedcase]
+
+If 'casedata' is provided it specifies the name of the input data file
+containing the case data. The default value is 'case9'. If 'fname' is given
+the pretty printed output will be appended to the file. If 'solvedcase' is
+specified the solved case will be written to a case file in PYPOWER format
+with the specified name. If solvedcase ends with '.mat' it saves the case as
+a MAT-file otherwise it saves it as a Python file.""",
+        version='PYPOWER (%%prog) Version %s, %s' % (v["Version"], v["Date"])
+    )
+
+    pf_options = OptionGroup(parser, 'Power Flow Options')
+    output_options = OptionGroup(parser, 'Output Options')
+
     ppopt = ppoption()
-
-    parser = OptionParser(usage='usage: %prog [options] [casefile]',
-                          version='%%prog %s' % (ppver()['Version']))
-
-    parser.add_option('-t', '--type',
-            type='choice',
-            choices=('pf', 'opf', 'udopf'),
-            default='pf',
-            metavar="PROBLEM_TYPE",
-            help='Power flow is run by default. '
-            'To run an optimal power flow set this option to "opf" '
-            'or to "udopf" to solve using the unit-decommitment heuristic.')
-
-    parser.add_option('-c', '--casedata',
-            default=CASES[2],
-            type='choice',
-            choices=CASES,
-            metavar="CASEDATA",
-            help='Built-in case to solve. Ignored if casefile is specified. ('
-            +', '.join(CASES)
-            +') [default: %default]')
-
-    parser.add_option('--fname',
-            metavar="FNAME",
-            default='',
-            help='If FNAME is specified the pretty printed output will be '
-            'appended to the file with the specified name, otherwise the '
-            'output is written to stdout.')
-
-    parser.add_option('--solvedcase',
-            metavar="SOLVEDCASE",
-            default='',
-            help='If SOLVEDCASE is specified the solved case will be written '
-            'to a case file in PYPOWER format with the specified name. If '
-            'SOLVEDCASE ends with \'.mat\' the case is saved as a MAT-file '
-            'otherwise it saves it as a Python file.')
-
-    pf_options = OptionGroup(parser, "Power Flow Options")
-    opf_options = OptionGroup(parser, "OPF Options")
-    output_options = OptionGroup(parser, "Output Options")
-
     add_options(pf_options, PF_OPTIONS, ppopt)
-    add_options(opf_options, OPF_OPTIONS, ppopt)
     add_options(output_options, OUTPUT_OPTIONS, ppopt)
 
     parser.add_option_group(pf_options)
-    parser.add_option_group(opf_options)
     parser.add_option_group(output_options)
 
-    options, args = parser.parse_args()
+    if opf:
+        opf_options = OptionGroup(parser, 'OPF Options')
+        pdipm_options = OptionGroup(parser, 'PDIPM Options')
 
-    if len(args) == 0:
-#        casedata = join(dirname(__file__), options.casedata)
-        casedata = options.casedata
-    elif len(args) == 1:
-        casedata = args[0]
-    else:
-        sys.stderr.write('too many arguments')
+        add_options(opf_options, OPF_OPTIONS, ppopt)
+        add_options(pdipm_options, PDIPM_OPTIONS, ppopt)
+
+        parser.add_option_group(opf_options)
+        parser.add_option_group(pdipm_options)
+
+    _, args = parser.parse_args()
+
+    casedata, fname, solvedcase = 'case9', '', ''
+
+    nargs = len(args)
+    if nargs > 3:
         parser.print_help()
-        return 2
+        sys.exit(2)
+    elif nargs == 3:
+        casedata, fname, solvedcase = args
+    elif nargs == 2:
+        casedata, fname, = args
+    elif nargs == 1:
+        casedata = args[0]
 
-    fname = options.fname
-    solvedcase = options.solvedcase
+    return casedata, ppopt, fname, solvedcase
 
-    if options.type == 'pf':
-        _, success = runpf(casedata, ppopt, fname, solvedcase)
-    elif options.type == 'opf':
-        _, success = runopf(casedata, ppopt, fname, solvedcase)
-    elif options.type == 'udopf':
-        _, success = runuopf(casedata, ppopt, fname, solvedcase)
-    else:
-        raise OptionValueError
 
-    return 0 if success else 2
+def exit(success):
+    sys.exit(0 if success else 2)
+
+
+def pf():
+    casedata, ppopt, fname, solvedcase = parse_options()
+    _, success = runpf(casedata, ppopt, fname, solvedcase)
+    exit(success)
+
+
+def dcpf():
+    casedata, ppopt, fname, solvedcase = parse_options()
+    r = rundcpf(casedata, ppopt, fname, solvedcase)
+    exit(r['success'])
+
+
+def opf():
+    casedata, ppopt, fname, solvedcase = parse_options(True)
+    r = runopf(casedata, ppopt, fname, solvedcase)
+    exit(r['success'])
+
+
+def dcopf():
+    casedata, ppopt, fname, solvedcase = parse_options(True)
+    r = rundcopf(casedata, ppopt, fname, solvedcase)
+    exit(r['success'])
+
+
+def uopf():
+    casedata, ppopt, fname, solvedcase = parse_options(True)
+    r = runuopf(casedata, ppopt, fname, solvedcase)
+    exit(r['success'])
+
+
+def duopf():
+    casedata, ppopt, fname, solvedcase = parse_options(True)
+    r = runduopf(casedata, ppopt, fname, solvedcase)
+    exit(r['success'])
+
+def opf_w_res():
+    casedata, ppopt, fname, solvedcase = parse_options(True)
+    r = runopf_w_res(casedata, ppopt, fname, solvedcase)
+    exit(r['success'])
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    opf()

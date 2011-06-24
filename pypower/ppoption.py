@@ -114,7 +114,7 @@ OUTPUT_OPTIONS = [
 in results['raw'] (in keys g, dg, df, d2f))''')
 ]
 
-PIPS_OPTIONS = [
+PDIPM_OPTIONS = [
     ('pdipm_feastol', 0, '''feasibility (equality) tolerance
 for Primal-Dual Interior Points Methods, set
 to value of OPF_VIOLATION by default'''),
@@ -202,7 +202,7 @@ def ppoption(ppopt=None, **kw_args):
 #        20     # 86 - SCPDIPM_RED_IT
     }
 
-    options = PF_OPTIONS + OPF_OPTIONS + OUTPUT_OPTIONS + PIPS_OPTIONS
+    options = PF_OPTIONS + OPF_OPTIONS + OUTPUT_OPTIONS + PDIPM_OPTIONS
 
     for name, default, _ in options:
         default_ppopt[name.upper()] = default
