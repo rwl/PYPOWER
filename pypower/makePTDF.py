@@ -14,16 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
-from numpy import zeros, nonzero
+from numpy import zeros, arange, isscalar, dot, divide, ix_, flatnonzero as find
+
+from numpy.linalg import inv, lstsq, solve
 
 from idx_bus import BUS_TYPE, REF, BUS_I
 from makeBdc import makeBdc
 
-logger = logging.getLogger(__name__)
 
-def makePTDF(baseMVA, bus, branch, slack):
+def makePTDF(baseMVA, bus, branch, slack=None):
     """Builds the DC PTDF matrix for a given choice of slack.
     Returns the DC PTDF
     matrix for a given choice of slack. The matrix is nbr x nb, where
@@ -41,43 +42,43 @@ def makePTDF(baseMVA, bus, branch, slack):
     """
     ## use reference bus for slack by default
     if slack is None:
-        slack = nonzero(bus[:, BUS_TYPE] == REF)
+        slack = find(bus[:, BUS_TYPE] == REF)
         slack = slack[0]
 
     ## set the slack bus to be used to compute initial PTDF
-    if len(slack) == 1:
+    if isscalar(slack):
         slack_bus = slack
     else:
         slack_bus = 0      ## use bus 1 for temp slack bus
 
     nb = bus.shape[0]
     nbr = branch.shape[0]
-    noref   = range(1, nb)      ## use bus 1 for voltage angle reference
-    noslack = nonzero(range(nb) != slack_bus)
+    noref = arange(1, nb)      ## use bus 1 for voltage angle reference
+    noslack = find(arange(nb) != slack_bus)
 
     ## check that bus numbers are equal to indices to bus (one set of bus numbers)
-    if any(bus[:, BUS_I] != range(nb)):
-        logger.error('makePTDF: buses must be numbered consecutively in '
-                     'bus matrix')
+    if any(bus[:, BUS_I] != arange(nb)):
+        stderr.write('makePTDF: buses must be numbered consecutively')
 
     ## compute PTDF for single slack_bus
-    Bbus, Bf, Pbusinj, Pfinj = makeBdc(baseMVA, bus, branch)
+    Bbus, Bf, _, _ = makeBdc(baseMVA, bus, branch)
+    Bbus, Bf = Bbus.todense(), Bf.todense()
     H = zeros((nbr, nb))
-    H[:, noslack] = (Bf[:, noref] / Bbus[noslack, noref]).todense()
-            ##    = full(Bf(:, noref) * inv(Bbus(noslack, noref)))
+    H[:, noslack] = solve( Bbus[ix_(noslack, noref)].T, Bf[:, noref].T ).T
+    #             = Bf[:, noref] * inv(Bbus[ix_(noslack, noref)])
 
     ## distribute slack, if requested
-    if len(slack) != 1:
-        if slack.shape[1] == 1:  ## slack is a vector of weights
+    if not isscalar(slack):
+        if len(slack.shape) == 1:  ## slack is a vector of weights
             slack = slack / sum(slack)   ## normalize weights
 
             ## conceptually, we want to do ...
-            ##    H = H * (eye(nb,nb) - slack * ones(1, nb))
+            ##    H = H * (eye(nb, nb) - slack * ones((1, nb)))
             ## ... we just do it more efficiently
-            v = H * slack
+            v = dot(H, slack)
             for k in range(nb):
                 H[:, k] = H[:, k] - v
         else:
-            H = H * slack
+            H = dot(H, slack)
 
     return H

@@ -63,7 +63,19 @@ as follows, (see the User's Manual for more details)
 2 - current magnitude (limit in MVA at 1 p.u. voltage'''),
 
     ('opf_ignore_ang_lim', False, 'ignore angle difference limits for '
-     'branches even if specified')
+     'branches even if specified'),
+
+    ('opf_alg_dc', 0, '''solver to use for DC OPF:
+0 - choose default solver based on availability in the
+    following order, 600, 500, 200.
+200 - PIPS, Python Interior Point Solver
+      primal/dual interior point method,
+250 - PIPS-sc, step-controlled variant of PIPS
+400 - IPOPT, requires pyipopt interface to IPOPT solver
+      available from: https://projects.coin-or.org/Ipopt/
+500 - CPLEX, requires Python interface to CPLEX solver
+600 - MOSEK, requires Python interface to MOSEK solver
+      available from: http://www.mosek.com/''')
 ]
 
 OUTPUT_OPTIONS = [
