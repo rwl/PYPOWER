@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from pypower.util import feval
+
+
 def ipopt_options(overrides=None, ppopt=None):
     """Sets options for IPOPT.
 
@@ -155,10 +158,6 @@ def ipopt_options(overrides=None, ppopt=None):
             opt[names[k]] = overrides[names[k]]
 
     return opt
-
-
-def feval(funcName, *args, **kw_args):
-    return eval(funcName)(*args, **kw_args)
 
 
 #--------------------------  Options Documentation  --------------------------

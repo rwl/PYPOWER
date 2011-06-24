@@ -23,3 +23,10 @@ def sub2ind(shape, I, J, row_major=False):
         ind = (J % shape[1]) * shape[0] + (I % shape[0])
 
     return ind.astype(int)
+
+
+def feval(func, *args, **kw_args):
+    """Evaluates the function C{func} using positional arguments C{args}
+    and keyword arguments C{kw_args}.
+    """
+    return eval(func)(*args, **kw_args)

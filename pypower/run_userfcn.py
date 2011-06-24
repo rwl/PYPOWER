@@ -1,3 +1,4 @@
+# Copyright (C) 2009-2011 Power System Engineering Research Center
 # Copyright (C) 2010-2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
@@ -13,5 +14,38 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from pypower.util import feval
+
+
 def run_userfcn(userfcn, stage, *args):
-    pass
+    """Runs the userfcn callbacks for a given stage.
+
+    @param userfcn: the 'userfcn' field of ppc, populated by L{add_userfcn}
+    @param stage: the name of the callback stage begin executed
+    (additional arguments) some stages require additional arguments.
+
+    Example:
+        ppc = om.get_mpc()
+        om = run_userfcn(ppc['userfcn'], 'formulation', om)
+
+    @see: C{add_userfcn}, C{remove_userfcn}, C{toggle_reserves},
+          C{toggle_iflims}, C{runopf_w_res}.
+    @see: U{http://www.pserc.cornell.edu/matpower/}
+    """
+    rv = args[0]
+    if (len(userfcn) > 0) and (stage in userfcn):
+        for k in range(len(userfcn[stage])):
+            if 'args' in userfcn[stage][k]:
+                args = userfcn[stage][k]['args']
+            else:
+                args = []
+
+            if stage in ['ext2int', 'formulation', 'int2ext']:
+                # ppc     = userfcn_*_ext2int(ppc, args)
+                # om      = userfcn_*_formulation(om, args)
+                # results = userfcn_*_int2ext(results, args)
+                rv = feval(userfcn[stage][k]['fcn'], rv, args)
+            elif stage in ['printpf', 'savecase']:
+                # results = userfcn_*_printpf(results, fd, ppopt, args)
+                # ppc     = userfcn_*_savecase(mpc, fd, prefix, args)
+                rv = feval(userfcn[stage][k]['fcn'], rv, args[1], args[2], args)

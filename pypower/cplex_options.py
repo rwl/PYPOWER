@@ -20,6 +20,8 @@ except ImportError:
 #    print "CPLEX not available"
     pass
 
+from pypower.util import feval
+
 
 def cplex_options(overrides=None, ppopt=None):
     """Sets options for CPLEX.
@@ -144,10 +146,6 @@ def cplex_options(overrides=None, ppopt=None):
                 opt[names[k]] = overrides[names[k]]
 
     return opt
-
-
-def feval(funcName, *args, **kw_args):
-    return eval(funcName)(*args, **kw_args)
 
 
 #--------------------------  Default Options Struct  --------------------------

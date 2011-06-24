@@ -20,6 +20,8 @@ except ImportError:
 #    print "MOSEK not available"
     pass
 
+from pypower.util import feval
+
 
 def mosek_options(overrides=None, ppopt=None):
     """Sets options for MOSEK.
@@ -154,7 +156,3 @@ def mosek_options(overrides=None, ppopt=None):
         names = overrides.keys()
         for k in range(len(names)):
             opt[names[k]] = overrides[names[k]]
-
-
-def feval(funcName, *args, **kw_args):
-    return eval(funcName)(*args, **kw_args)

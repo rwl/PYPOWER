@@ -16,27 +16,31 @@
 
 from numpy import array
 
-def case30():
+
+def t_case30_userfcns():
     """Power flow data for 30 bus, 6 gen case w/reserves & iflims.
     Please see L{caseformat} for details on the case file format.
 
     Same as case30.py, but with fixed reserve and interface flow limit data.
-    The reserve data is defined in the fields of mpc.reserves and the
-    interface flow limit data in mpc.if at the bottom of the file.
+    The reserve data is defined in the fields of ppc.reserves and the
+    interface flow limit data in ppc.if at the bottom of the file.
 
     @rtype: dict
     @return: Power flow data for 30 bus, 6 gen case w/reserves & iflims.
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-    version = '2'
+    ppc = {}
+
+    ## PYPOWER Case Format : Version 2
+    ppc['version'] = '2'
 
     ##-----  Power Flow Data  -----##
     ## system MVA base
-    baseMVA = 100.0
+    ppc['baseMVA'] = 100.0
 
     ## bus data
     # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin
-    bus = array([
+    ppc['bus'] = array([
         [1,  3, 0, 0, 0, 0, 1, 1, 0, 135, 1, 1.05, 0.95],
         [2,  2, 21.7, 12.7, 0, 0, 1, 1, 0, 135, 1, 1.1, 0.95],
         [3,  1, 2.4, 1.2, 0, 0, 1, 1, 0, 135, 1, 1.05, 0.95],
@@ -72,7 +76,7 @@ def case30():
     ## generator data
     # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
     # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
-    gen = array([
+    ppc['gen'] = array([
         [1,  23.54, 0, 150,  -20, 1, 100, 1, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [2,  60.97, 0, 60,   -20, 1, 100, 1, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [22, 21.59, 0, 62.5, -15, 1, 100, 1, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -83,7 +87,7 @@ def case30():
 
     ## branch data
     # fbus, tbus, r, x, b, rateA, rateB, rateC, ratio, angle, status, angmin, angmax
-    branch = array([
+    ppc['branch'] = array([
         [1,  2,  0.02, 0.06, 0.03, 130, 130, 130, 0, 0, 1, -360, 360],
         [1,  3,  0.05, 0.19, 0.02, 130, 130, 130, 0, 0, 1, -360, 360],
         [2,  4,  0.06, 0.17, 0.02, 65, 65, 65, 0, 0, 1, -360, 360],
@@ -130,7 +134,7 @@ def case30():
     ##-----  OPF Data  -----##
     ## area data
     # area refbus
-    areas = array([
+    ppc['areas'] = array([
         [1, 8],
         [2, 23],
         [3, 26],
@@ -139,7 +143,7 @@ def case30():
     ## generator cost data
     # 1 startup shutdown n x1 y1 ... xn yn
     # 2 startup shutdown n c(n-1) ... c0
-    gencost = array([
+    ppc['gencost'] = array([
         [2, 0, 0, 3, 0.02, 2, 0],
         [2, 0, 0, 3, 0.0175, 1.75, 0],
         [2, 0, 0, 3, 0.0625, 1, 0],
@@ -149,32 +153,32 @@ def case30():
     ])
 
     ##-----  Reserve Data  -----##
-    reserves = reserves_data()
+    ppc['reserves'] = {}
 
     ## reserve zones, element i, j is 1 if gen j is in zone i, 0 otherwise
-    reserves.zones = array([
+    ppc['reserves']['zones'] = array([
         [1, 1, 1, 1, 1, 1],
         [0, 0, 0, 0, 1, 1]
-    ])
+    ], float)
 
     ## reserve requirements for each zone in MW
-    reserves.req = array([60, 20])
+    ppc['reserves']['req'] = array([60, 20], float)
 
     ## reserve costs in $/MW for each gen that belongs to at least 1 zone
     ## (same order as gens, but skipping any gen that does not belong to any zone)
-    reserves.cost = array([1.9, 2, 3, 4, 5, 5.5])
+    ppc['reserves']['cost'] = array([1.9, 2, 3, 4, 5, 5.5])
     #ppc.reserves.cost = array([6, 5, 4, 3, 2, 1])
 
     ## OPTIONAL max reserve quantities for each gen that belongs to at least 1 zone
     ## (same order as gens, but skipping any gen that does not belong to any zone)
-    reserves.qty = array([25, 25, 25, 25, 25, 25])
+    ppc['reserves']['qty'] = array([25, 25, 25, 25, 25, 25], float)
 
 
     ##-----  Interface Flow Limit Data  -----##
-    iface = iface_data()
+    ppc['if'] = {}
 
     #    ifnum    branchidx (negative defines opposite direction)
-    iface.map = array([
+    ppc['if']['map'] = array([
         [1, -12], ## 1 : area 1 imports
         [1, -14],
         [1, -15],
@@ -189,14 +193,14 @@ def case30():
         [3, -26],
         [3,  32],
         [3,  36]
-    ])
+    ], float)
 
     ## DC model flow limits in MW
     ## (negative and positive directions can be different)
     #    ifnum    lower    upper
-    iface.lims = array([
+    ppc['if']['lims'] = array([
         [1, -15, 25], ## area 1 imports
         [2, -10, 20] ## area 2 imports
-    ])
+    ], float)
 
-    return case(version, baseMVA, bus, gen, branch, areas, gencost, reserves, iface)
+    return ppc
