@@ -16,7 +16,7 @@
 
 from time import time
 
-from numpy import zeros, c_, shape
+from numpy import zeros, c_, shape, ix_
 
 from pypower.idx_bus import MU_VMIN
 from pypower.idx_gen import PG, QG, MU_QMIN, MU_PMAX, MU_PMIN
@@ -188,10 +188,10 @@ def opf(*args):
 
     ## zero out result fields of out-of-service gens & branches
     if len(results['order']['gen']['status']['off']) > 0:
-        results['gen'][results['order']['gen']['status']['off'], [PG, QG, MU_PMAX, MU_PMIN]] = 0
+        results['gen'][ ix_(results['order']['gen']['status']['off'], [PG, QG, MU_PMAX, MU_PMIN]) ] = 0
 
     if len(results['order']['branch']['status']['off']) > 0:
-        results['branch'][results['order']['branch']['status']['off'], [PF, QF, PT, QT, MU_SF, MU_ST, MU_ANGMIN, MU_ANGMAX]] = 0
+        results['branch'][ ix_(results['order']['branch']['status']['off'], [PF, QF, PT, QT, MU_SF, MU_ST, MU_ANGMIN, MU_ANGMAX]) ] = 0
 
     ##-----  finish preparing output  -----
     et = time() - t0      ## compute elapsed time

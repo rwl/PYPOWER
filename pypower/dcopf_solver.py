@@ -138,12 +138,17 @@ def dcopf_solver(om, ppopt, out_opt=None):
     polycf = zeros((npol, 3))         ## quadratic coeffs for Pg
     if len(iqdr) > 0:
         polycf[iqdr, :] = gencost[ipol[iqdr], COST:COST + 3]
-    polycf[ilin, 1:3] = gencost[ipol[ilin], COST:COST + 2]
+    if npol:
+        polycf[ilin, 1:3] = gencost[ipol[ilin], COST:COST + 2]
     polycf = dot(polycf, diag([ baseMVA**2, baseMVA, 1]))     ## convert to p.u.
-    Npol = sparse((ones(npol), # Pg vars
-                       (arange(npol), vv["i1"]["Pg"] + ipol)), (npol, nxyz))
-    Hpol = sparse((2 * polycf[:, 0],
-                       (arange(npol), arange(npol))), (npol, npol))
+    if npol:
+        Npol = sparse((ones(npol), (arange(npol), vv["i1"]["Pg"] + ipol)),
+                      (npol, nxyz))  # Pg vars
+        Hpol = sparse((2 * polycf[:, 0], (arange(npol), arange(npol))),
+                      (npol, npol))
+    else:
+        Npol = None
+        Hpol = None
     Cpol = polycf[:, 1]
     fparm_pol = ones((npol, 1)) * array([[1, 0, 0, 1]])
 

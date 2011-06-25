@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import ones, diag, eye, r_
-from scipy.sparse import csr_matrix
+from numpy import ones, diag, eye, r_, arange
+from scipy.sparse import csr_matrix as sparse
 
 from idx_brch import F_BUS, T_BUS
+
 
 def makeLODF(branch, PTDF):
     """Builds the line outage distribution factor matrix.
@@ -35,12 +36,12 @@ def makeLODF(branch, PTDF):
     nl, nb = PTDF.shape
     f = branch[:, F_BUS]
     t = branch[:, T_BUS]
-    Cft = csr_matrix(([ones(nl, 1) -ones(nl, 1)],
-                      (r_[f, t], r_[range(nl), range(nl)])), (nb, nl))
+    Cft = sparse((r_[ones(nl), -ones(nl)],
+                      (r_[f, t], r_[arange(nl), arange(nl)])), (nb, nl))
 
     H = PTDF * Cft
     h = diag(H, 0)
-    LODF = H / (ones((nl, nl)) - ones(nl) * h.T)
-    LODF = LODF - diag(diag(LODF)) - eye(nl)
+    LODF = H / (ones((nl, nl)) - ones((nl, 1)) * h.T)
+    LODF = LODF - diag(diag(LODF)) - eye(nl, nl)
 
     return LODF

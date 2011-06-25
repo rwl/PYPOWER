@@ -14,13 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from numpy import arange, r_
+
 from pypower.loadcase import loadcase
 from pypower.ppoption import ppoption
 from pypower.rundcopf import rundcopf
-from pypower.ext2int import ext2int
+from pypower.ext2int import ext2int1
 from pypower.makePTDF import makePTDF
 from pypower.makeLODF import makeLODF
 from pypower.rundcpf import rundcpf
+
+from pypower.idx_brch import BR_STATUS, PF
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
@@ -36,19 +40,20 @@ def t_makeLODF(quiet=False):
     t_begin(ntests, quiet)
 
     casefile = 't_auction_case'
-    verbose = not quiet
+    verbose = 0#not quiet
 
     ## load case
     ppc = loadcase(casefile)
-    ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
-    baseMVA, bus, gen, gencost, branch, f, success, et = rundcopf(ppc, ppopt)
-    i2e, bus, gen, branch = ext2int(bus, gen, branch)
+    ppopt = ppoption(VERBOSE=verbose, OUT_ALL=0)
+    r = rundcopf(ppc, ppopt)
+    baseMVA, bus, gen, branch = r['baseMVA'], r['bus'], r['gen'], r['branch']
+    _, bus, gen, branch = ext2int1(bus, gen, branch)
 
     ## compute injections and flows
-    F0  = branch.Pf.copy()
+    F0  = branch[:, PF]
 
     ## create some PTDF matrices
-    H = makePTDF(baseMVA, bus, branch, 0)  # TODO Check zero based indexing
+    H = makePTDF(baseMVA, bus, branch, 0)
 
     ## create some PTDF matrices
     try:
@@ -57,16 +62,23 @@ def t_makeLODF(quiet=False):
         pass
 
     ## take out non-essential lines one-by-one and see what happens
-    ppc.bus = bus.copy()
-    ppc.gen = gen.copy()
-    branch0 = branch.copy()
-    outages = range(12) + range(13, 15) + range(16, 18) + [20] + range(26, 33) + range(34, 41)
+    ppc['bus'] = bus
+    ppc['gen'] = gen
+    branch0 = branch
+    outages = r_[arange(12), arange(13, 15), arange(16, 18),
+                 [19], arange(26, 33), arange(34, 41)]
     for k in outages:
-        ppc.branch = branch0.copy()
-        ppc.status[k] = 0
-        baseMVA, bus, gen, branch, success, et = rundcpf(ppc, ppopt)
-        F = branch.Pf.copy()
+        ppc['branch'] = branch0.copy()
+        ppc['branch'][k, BR_STATUS] = 0
+        r, _ = rundcpf(ppc, ppopt)
+        baseMVA, bus, gen, branch = \
+                r['baseMVA'], r['bus'], r['gen'], r['branch']
+        F = branch[:, PF]
 
-        t_is(LODF[:, k], (F - F0) / F0[k], 6, 'LODF(:, %d)' % k)
+        t_is(LODF[:, k], (F - F0) / F0[k], 6, 'LODF[:, %d]' % k)
 
     t_end()
+
+
+if __name__ == '__main__':
+    t_makeLODF(quiet=False)
