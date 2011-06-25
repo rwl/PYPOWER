@@ -14,21 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+from sys import stderr
 
-from numpy import zeros, ones
+from numpy import zeros, ones, array, arange
 from numpy import flatnonzero as find
 
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix as sparse
 
 from isload import isload
 
 from idx_bus import PD, QD, BUS_AREA, BUS_I
 from idx_gen import QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
 
-logger = logging.getLogger(__name__)
 
-def total_load(bus, gen, load_zone, which_type='BOTH'):
+def total_load(bus, gen=None, load_zone=None, which_type=None):
     """ Returns vector of total load in each load zone.
 
     @param bus: standard BUS matrix with nb rows, where the fixed active
@@ -56,25 +55,30 @@ def total_load(bus, gen, load_zone, which_type='BOTH'):
     """
     nb = bus.shape[0]       ## number of buses
 
+    if gen is None:
+        gen = array([])
+    if load_zone is None:
+        load_zone = array([], int)
+
     ## fill out and check which_type
     if len(gen) == 0:
         which_type = 'FIXED'
 
-    if len(which_type) == 0 and len(gen) > 0:
+    if (which_type == None) and (len(gen) > 0):
         which_type = 'BOTH'     ## 'FIXED', 'DISPATCHABLE' or 'BOTH'
 
-    if which_type[0] != 'F' and which_type[0] != 'D' and which_type[0] != 'B':
-        logger.error("total_load: which_type should be 'FIXED, 'DISPATCHABLE or 'BOTH'")
+    if (which_type[0] != 'F') and (which_type[0] != 'D') and (which_type[0] != 'B'):
+        stderr.write("total_load: which_type should be 'FIXED, 'DISPATCHABLE or 'BOTH'\n")
 
     want_Q      = True
-    want_fixed  = (which_type[0] == 'B' | which_type[0] == 'F')
-    want_disp   = (which_type[0] == 'B' | which_type[0] == 'D')
+    want_fixed  = (which_type[0] == 'B') | (which_type[0] == 'F')
+    want_disp   = (which_type[0] == 'B') | (which_type[0] == 'D')
 
     ## initialize load_zone
-    if isinstance(load_zone, basestring) & load_zone == 'all':
-        load_zone = ones(nb)           ## make a single zone of all buses
+    if isinstance(load_zone, basestring) & (load_zone == 'all'):
+        load_zone = ones(nb, int)                  ## make a single zone of all buses
     elif len(load_zone) == 0:
-        load_zone = bus[:, BUS_AREA]   ## use areas defined in bus data as zones
+        load_zone = bus[:, BUS_AREA].astype(int)   ## use areas defined in bus data as zones
 
     nz = max(load_zone)    ## number of load zones
 
@@ -91,20 +95,21 @@ def total_load(bus, gen, load_zone, which_type='BOTH'):
     ## dispatchable load at each bus
     if want_disp:            ## need dispatchable
         ng = gen.shape[0]
-        is_ld = isload(gen) & gen[:, GEN_STATUS] > 0
+        is_ld = isload(gen) & (gen[:, GEN_STATUS] > 0)
         ld = find(is_ld)
 
         ## create map of external bus numbers to bus indices
-        i2e = bus[:, BUS_I]
-        e2i = csr_matrix((max(i2e), 1))
-        e2i[i2e] = range(nb)
+        i2e = bus[:, BUS_I].astype(int)
+        e2i = zeros(max(i2e) + 1)
+        e2i[i2e] = arange(nb)
 
-        Cld = csr_matrix((is_ld, (e2i[gen[: GEN_BUS]], range(ng))), (nb, ng))
+        gbus = gen[:, GEN_BUS].astype(int)
+        Cld = sparse((is_ld, (e2i[gbus], arange(ng))), (nb, ng))
         Pdd = -Cld * gen[:, PMIN]      ## real power
         if want_Q:
             Q = zeros(ng)
             Q[ld] = (gen[ld, QMIN] == 0) * gen[ld, QMAX] + \
-                    (gen(ld, QMAX) == 0) * gen[ld, QMIN]
+                    (gen[ld, QMAX] == 0) * gen[ld, QMIN]
             Qdd = -Cld * Q             ## reactive power
     else:
         Pdd = zeros(nb)
@@ -116,10 +121,10 @@ def total_load(bus, gen, load_zone, which_type='BOTH'):
     if want_Q:
         Qd = zeros(nz)
 
-    for k in range(nz):
-        idx = find( load_zone == k )
-        Pd[k] = sum(Pdf[idx]) + sum(Pdd[idx])
+    for k in range(1, nz + 1):
+        idx = find(load_zone == k)
+        Pd[k - 1] = sum(Pdf[idx]) + sum(Pdd[idx])
         if want_Q:
-            Qd[k] = sum(Qdf[idx]) + sum(Qdd[idx])
+            Qd[k - 1] = sum(Qdf[idx]) + sum(Qdd[idx])
 
     return Pd, Qd
