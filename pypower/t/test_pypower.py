@@ -58,14 +58,14 @@ def test_pypower(verbose=False):
 #        tests.append('t_opf_dc_mosek')
 #    except ImportError:
 #        pass
-#
+
 #    tests.append('t_opf_userfcns')
 #    tests.append('t_runopf_w_res')
     tests.append('t_makePTDF')
     tests.append('t_makeLODF')
     tests.append('t_total_load')
-#    tests.append('t_scale_load')
-#
+    tests.append('t_scale_load')
+
 #    ## smartmarket tests
 #    tests.append('t_off2case')
 #    tests.append('t_auction_mips')

@@ -18,7 +18,7 @@ from numpy import array, zeros, in1d, vstack, flatnonzero as find
 
 from pypower.loadcase import loadcase
 from pypower.isload import isload
-from pypower.scale_load import scale_load
+from pypower.scale_load import scale_load, ScalingError
 
 from pypower.idx_bus import PD, QD, BUS_AREA
 from pypower.idx_gen import GEN_BUS, QG, PMIN, QMIN, QMAX
@@ -81,7 +81,9 @@ def t_scale_load(quiet=False):
     t_is(sum(bus[:, PD]), load * total['fixed']['p'], 8, [t, 'total fixed P'])
     t_is(sum(bus[:, QD]), load * total['fixed']['q'], 8, [t, 'total fixed Q'])
     opt = {'which': 'FIXED'}
+
     bus, gen = scale_load(load, ppc['bus'], ppc['gen'], None, opt)
+
     t_is(sum(bus[:, PD]), load * total['fixed']['p'], 8, [t, 'total fixed P'])
     t_is(sum(bus[:, QD]), load * total['fixed']['q'], 8, [t, 'total fixed Q'])
     t_is(-sum(gen[ld, PMIN]), total['disp']['p'], 8, [t, 'total disp P'])
@@ -137,7 +139,7 @@ def t_scale_load(quiet=False):
     t_is(-sum(gen[ld, QMAX]), total['disp']['qmax'], 8, [t, 'total disp Qmax'])
 
     ##-----  single load zone, one scale quantity  -----
-    load = array([200])
+    load = array([200.0])
     t = 'all fixed loads (PQ) => total = 200 : '
     opt = {'scale': 'QUANTITY'}
     bus, _ = scale_load(load, ppc['bus'], None, None, opt)
@@ -276,7 +278,7 @@ def t_scale_load(quiet=False):
 
     ##-----  3 zones, area scale quantities  -----
     t = 'area fixed loads (PQ) => total = [100 80 60] : '
-    load = array([100, 80, 60])
+    load = array([100, 80, 60], float)
     opt = {'scale': 'QUANTITY'}
     bus, _ = scale_load(load, ppc['bus'], None, None, opt)
     for k in range(len(load)):
@@ -293,7 +295,7 @@ def t_scale_load(quiet=False):
         t_is(-sum(gen[lda[k], QMAX]), area[k]['disp']['qmax'], 8, '%s area %d disp Qmax' % (t, k))
 
     t = 'area fixed loads (P) => total = [100 80 60] : '
-    load = array([100, 80, 60])
+    load = array([100, 80, 60], float)
     opt = {'scale': 'QUANTITY', 'pq': 'P'}
     bus, _ = scale_load(load, ppc['bus'], None, None, opt)
     for k in range(len(load)):
@@ -330,18 +332,18 @@ def t_scale_load(quiet=False):
         t_is(-sum(gen[lda[k], QMAX]), area[k]['disp']['qmax'], 8, '%s area %d disp Qmax' % (t, k))
 
     t = 'area disp loads (PQ) => total = [100 80 60] : throws expected exception'
-    load = array([100, 80, 60])
+    load = array([100, 80, 60], float)
     opt = {'scale': 'QUANTITY', 'which': 'DISPATCHABLE'}
     err = 0
     try:
         bus, gen = scale_load(load, ppc['bus'], ppc['gen'], None, opt)
-    except Exception, e:
+    except ScalingError, e:
         expected = 'scale_load: impossible to make zone 2 load equal 80 by scaling non-existent dispatchable load'
         err = expected not in str(e)
     t_ok(err, t)
 
     t = 'area disp loads (PQ) => total = [100 74.3941 60] : '
-    load = array([100, area[1]['fixed']['p'], 60])
+    load = array([100, area[1]['fixed']['p'], 60], float)
     opt = {'scale': 'QUANTITY', 'which': 'DISPATCHABLE'}
     bus, gen = scale_load(load, ppc['bus'], ppc['gen'], None, opt)
     for k in range(len(load)):
@@ -369,7 +371,7 @@ def t_scale_load(quiet=False):
     t = 'explicit single load zone'
     load_zone = zeros(ppc['bus'].shape[0])
     load_zone[[2, 3]] = 1
-    load = array([2])
+    load = array([2.0])
     bus, gen = scale_load(load, ppc['bus'], ppc['gen'], load_zone)
     Pd = ppc['bus'][:, PD]
     Pd[[2, 3]] = load * Pd[[2, 3]]
@@ -383,7 +385,7 @@ def t_scale_load(quiet=False):
     load = array([2, 0.5])
     bus, gen = scale_load(load, ppc['bus'], ppc['gen'], load_zone)
     Pd = ppc['bus'][:, PD]
-    Pd[[3, 4]] = load[0] * Pd[[3, 4]]
+    Pd[[2, 3]] = load[0] * Pd[[2, 3]]
     Pd[[6, 7]] = load[1] * Pd[[6, 7]]
     t_is( bus[:, PD], Pd, 8, t)
 

@@ -82,8 +82,11 @@ def scale_load(load, bus, gen=None, load_zone=None, opt=None):
     nb = bus.shape[0]   ## number of buses
 
     ##-----  process inputs  -----
+    bus = bus.copy()
     if gen is None:
         gen = array([])
+    else:
+        gen = gen.copy()
     if load_zone is None:
         load_zone = array([], int)
     if opt is None:
@@ -104,7 +107,7 @@ def scale_load(load, bus, gen=None, load_zone=None, opt=None):
         stderr.write("scale_load: opt.which should be 'FIXED, 'DISPATCHABLE or 'BOTH'\n")
     if (opt["scale"][0] != 'F') and (opt["scale"][0] != 'Q'):
         stderr.write("scale_load: opt.scale should be 'FACTOR or 'QUANTITY'\n")
-    if (len(gen) > 0) and (opt["which"][0] != 'F'):
+    if (len(gen) == 0) and (opt["which"][0] != 'F'):
         stderr.write('scale_load: need gen matrix to scale dispatchable loads\n')
 
     ## create dispatchable load connection matrix
@@ -122,7 +125,7 @@ def scale_load(load, bus, gen=None, load_zone=None, opt=None):
         Cld = sparse((is_ld, (e2i[gbus], arange(ng))), (nb, ng))
     else:
         ng = 0
-        ld = array([])
+        ld = array([], int)
 
     if len(load_zone) == 0:
         if len(load) == 1:        ## make a single zone of all load buses
@@ -158,21 +161,21 @@ def scale_load(load, bus, gen=None, load_zone=None, opt=None):
                 elif load[k] == total:
                     scale[k] = 1
                 else:
-                    stderr.write('scale_load: impossible to make zone %d load equal %g by scaling non-existent loads\n' % (k, load[k]))
+                    raise ScalingError('scale_load: impossible to make zone %d load equal %g by scaling non-existent loads\n' % (k, load[k]))
             elif opt["which"][0] == 'F':    ## 'FIXED'
                 if fixed != 0:
                     scale[k] = (load[k] - dispatchable) / fixed
                 elif load[k] == dispatchable:
                     scale[k] = 1
                 else:
-                    stderr.write('scale_load: impossible to make zone %d load equal %g by scaling non-existent fixed load\n' % (k, load[k]))
+                    raise ScalingError('scale_load: impossible to make zone %d load equal %g by scaling non-existent fixed load\n' % (k, load[k]))
             elif opt["which"][0] == 'D':    ## 'DISPATCHABLE'
                 if dispatchable != 0:
                     scale[k] = (load[k] - fixed) / dispatchable
                 elif load[k] == fixed:
                     scale[k] = 1
                 else:
-                    stderr.write('scale_load: impossible to make zone %d load equal %g by scaling non-existent dispatchable load\n' % (k, load[k]))
+                    raise ScalingError('scale_load: impossible to make zone %d load equal %g by scaling non-existent dispatchable load\n' % (k, load[k]))
 
     ##-----  do the scaling  -----
     ## fixed loads
@@ -187,7 +190,8 @@ def scale_load(load, bus, gen=None, load_zone=None, opt=None):
     if opt["which"][0] != 'F':      ## includes 'DISPATCHABLE', not 'FIXED' only
         for k in range(len(scale)):
             idx = find(load_zone == k + 1)
-            i = find( in1d(gen[ld, GEN_BUS], idx) )
+            gbus = gen[ld, GEN_BUS].astype(int)
+            i = find( in1d(e2i[gbus], idx) )
             ig = ld[i]
 
             gen[ix_(ig, [PG, PMIN])] = gen[ix_(ig, [PG, PMIN])] * scale[k]
@@ -195,3 +199,7 @@ def scale_load(load, bus, gen=None, load_zone=None, opt=None):
                 gen[ix_(ig, [QG, QMIN, QMAX])] = gen[ix_(ig, [QG, QMIN, QMAX])] * scale[k]
 
     return bus, gen
+
+
+class ScalingError(Exception):
+    pass
