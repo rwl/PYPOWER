@@ -333,11 +333,13 @@ def opf_args2(*args):
     baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, \
         ppopt, N, fparm, H, Cw, z0, zl, zu, userfcn, areas = opf_args(*args)
 
-    ppc = {  'baseMVA': baseMVA,
-             'bus': bus,
-             'gen': gen,
-             'branch': branch,
-             'gencost': gencost  }
+    ppc = args[0] if isinstance(args[0], dict) else {}
+
+    ppc['baseMVA'] = baseMVA
+    ppc['bus'] = bus
+    ppc['gen'] = gen
+    ppc['branch'] = branch
+    ppc['gencost'] = gencost
 
     if areas is not None and len(areas) > 0:
         ppc["areas"] = areas

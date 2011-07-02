@@ -18,7 +18,7 @@ from sys import stderr
 
 from pprint import pprint
 
-from numpy import zeros, ones, arange, Inf, flatnonzero as find
+from numpy import zeros, ones, arange, Inf, any, flatnonzero as find
 
 from scipy.sparse import eye as speye
 from scipy.sparse import csr_matrix as sparse
@@ -103,7 +103,7 @@ def userfcn_reserves_ext2int(ppc, *args):
     ng0 = o['ext']['gen'].shape[0]  ## number of original gens (+ disp loads)
     nrz = r['req'].shape[0]         ## number of reserve zones
     if nrz > 1:
-        ppc['reserves']['rgens'] = any(r['zones'])  ## mask of gens available to provide reserves
+        ppc['reserves']['rgens'] = any(r['zones'], 0)  ## mask of gens available to provide reserves
     else:
         ppc['reserves']['rgens'] = r['zones']
 
@@ -139,8 +139,8 @@ def userfcn_reserves_ext2int(ppc, *args):
         ppc = ext2int(ppc, ['reserves', 'qty'], 'gen')
 
     ppc = ext2int(ppc, ['reserves', 'cost'], 'gen')
-    ppc = ext2int(ppc, ['reserves', 'zones'], 'gen', 2)
-    ppc = ext2int(ppc, ['reserves', 'rgens'], 'gen', 2)
+    ppc = ext2int(ppc, ['reserves', 'zones'], 'gen', 1)
+    ppc = ext2int(ppc, ['reserves', 'rgens'], 'gen', 1)
 
     ## save indices of gens available to provide reserves
     ppc['order']['ext']['reserves']['igr'] = igr               ## external indexing
@@ -180,8 +180,8 @@ def userfcn_reserves_formulation(om, *args):
     Rmax = Rmax / ppc['baseMVA']
 
     ## constraints
-    I = speye(ngr)                     ## identity matrix
-    Ar = hstack([sparse((ones(ngr), (arange(ngr), igr)), (ngr, ng)), I])
+    I = speye(ngr, ngr, format='csr')                     ## identity matrix
+    Ar = hstack([sparse((ones(ngr), (arange(ngr), igr)), (ngr, ng)), I], 'csr')
     ur = ppc['gen'][igr, PMAX] / ppc['baseMVA']
     lreq = r['req'] / ppc['baseMVA']
 
@@ -189,10 +189,10 @@ def userfcn_reserves_formulation(om, *args):
     Cw = r['cost'][igr] * ppc['baseMVA']     ## per unit cost coefficients
 
     ## add them to the model
-    om = om.add_vars('R', ngr, [], Rmin, Rmax)
-    om = om.add_constraints('Pg_plus_R', Ar, [], ur, ['Pg', 'R'])
-    om = om.add_constraints('Rreq', r.zones[:, igr], lreq, [], ['R'])
-    om = om.add_costs('Rcost', {'N': I, 'Cw': Cw}, ['R'])
+    om.add_vars('R', ngr, [], Rmin, Rmax)
+    om.add_constraints('Pg_plus_R', Ar, [], ur, ['Pg', 'R'])
+    om.add_constraints('Rreq', sparse( r['zones'][:, igr] ), lreq, [], ['R'])
+    om.add_costs('Rcost', {'N': I, 'Cw': Cw}, ['R'])
 
     return om
 
@@ -219,8 +219,8 @@ def userfcn_reserves_int2ext(results, *args):
         results = int2ext(results, ['reserves', 'qty'], 'gen')
 
     results = int2ext(results, ['reserves', 'cost'], 'gen')
-    results = int2ext(results, ['reserves', 'zones'], 'gen', 2)
-    results = int2ext(results, ['reserves', 'rgens'], 'gen', 2)
+    results = int2ext(results, ['reserves', 'zones'], 'gen', 1)
+    results = int2ext(results, ['reserves', 'rgens'], 'gen', 1)
     results['order']['int']['reserves']['igr'] = results['reserves']['igr']  ## save internal version
     results['reserves']['igr'] = results['order']['ext']['reserves']['igr']  ## use external version
     r = results['reserves']       ## update

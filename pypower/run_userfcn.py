@@ -44,8 +44,10 @@ def run_userfcn(userfcn, stage, *args):
                 # ppc     = userfcn_*_ext2int(ppc, args)
                 # om      = userfcn_*_formulation(om, args)
                 # results = userfcn_*_int2ext(results, args)
-                rv = feval(userfcn[stage][k]['fcn'], rv, args)
+                rv = userfcn[stage][k]['fcn'](rv, args)
             elif stage in ['printpf', 'savecase']:
                 # results = userfcn_*_printpf(results, fd, ppopt, args)
                 # ppc     = userfcn_*_savecase(mpc, fd, prefix, args)
                 rv = feval(userfcn[stage][k]['fcn'], rv, args[1], args[2], args)
+
+    return rv

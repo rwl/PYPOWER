@@ -226,7 +226,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
 
             ## execute userfcn callbacks for 'ext2int' stage
             if 'userfcn' in ppc:
-                ppc = run_userfcn(ppc.userfcn, 'ext2int', ppc)
+                ppc = run_userfcn(ppc['userfcn'], 'ext2int', ppc)
     else:                    ## convert extra data
         if isinstance(val_or_field, str) or isinstance(val_or_field, list):
             ## field

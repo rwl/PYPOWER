@@ -38,7 +38,7 @@ def t_opf_userfcns(quiet=False):
     """
     t_begin(38, quiet)
 
-    casefile = 't_case30_userfcns';
+    casefile = 't_case30_userfcns'
     verbose = not quiet
 
     ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
@@ -128,3 +128,7 @@ def t_opf_userfcns(quiet=False):
     # r['iface']['mu']['u']
 
     t_end()
+
+
+if __name__ == '__main__':
+    t_opf_userfcns(quiet=False)

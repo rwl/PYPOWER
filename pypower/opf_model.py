@@ -330,20 +330,25 @@ class opf_model(object):
         if cp["Cw"].shape[0] != nw:
             stderr.write('opf_model.add_costs: number of rows of Cw (%d x %d) and N (%d x %d) must match\n' % (cp["Cw"].shape[0], nw, nx))
 
-        if ('H' in cp) & ((cp["H"].shape[0] != nw) | (cp["H"].shape[1] != nw)):
-            stderr.write('opf_model.add_costs: both dimensions of H (%d x %d) must match the number of rows in N (%d x %d)\n' % (cp["H"].shape, nw, nx))
+        if 'H' in cp:
+            if (cp["H"].shape[0] != nw) | (cp["H"].shape[1] != nw):
+                stderr.write('opf_model.add_costs: both dimensions of H (%d x %d) must match the number of rows in N (%d x %d)\n' % (cp["H"].shape, nw, nx))
 
-        if ('dd' in cp) & (cp["dd"].shape[0] != nw):
-            stderr.write('opf_model.add_costs: number of rows of dd (%d x %d) and N (%d x %d) must match\n' % (cp["dd"].shape, nw, nx))
+        if 'dd' in cp:
+            if cp["dd"].shape[0] != nw:
+                stderr.write('opf_model.add_costs: number of rows of dd (%d x %d) and N (%d x %d) must match\n' % (cp["dd"].shape, nw, nx))
 
-        if ('rh' in cp) & (cp["rh"].shape[0] != nw):
-            stderr.write('opf_model.add_costs: number of rows of rh (%d x %d) and N (%d x %d) must match\n' % (cp["rh"].shape, nw, nx))
+        if 'rh' in cp:
+            if cp["rh"].shape[0] != nw:
+                stderr.write('opf_model.add_costs: number of rows of rh (%d x %d) and N (%d x %d) must match\n' % (cp["rh"].shape, nw, nx))
 
-        if ('kk' in cp) & (cp["kk"].shape[0] != nw):
-            stderr.write('opf_model.add_costs: number of rows of kk (%d x %d) and N (%d x %d) must match\n' % (cp["kk"].shape, nw, nx))
+        if 'kk' in cp:
+            if cp["kk"].shape[0] != nw:
+                stderr.write('opf_model.add_costs: number of rows of kk (%d x %d) and N (%d x %d) must match\n' % (cp["kk"].shape, nw, nx))
 
-        if ('mm' in cp) & (cp["mm"].shape[0] != nw):
-            stderr.write('opf_model.add_costs: number of rows of mm (%d x %d) and N (%d x %d) must match\n' % (cp["mm"].shape, nw, nx))
+        if 'mm' in cp:
+            if cp["mm"].shape[0] != nw:
+                stderr.write('opf_model.add_costs: number of rows of mm (%d x %d) and N (%d x %d) must match\n' % (cp["mm"].shape, nw, nx))
 
         ## add info about this user cost set
         self.cost["idx"]["i1"][name]  = self.cost["N"] #+ 1     ## starting index
