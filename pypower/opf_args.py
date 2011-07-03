@@ -294,7 +294,11 @@ def opf_args(*args):
         else:
             stderr.write('opf_args: Incorrect input arg order, number or type\n')
 
-    nw = N.shape[0] if N is not None else 0
+    if N is not None:
+        nw = N.shape[0]
+    else:
+        nw = 0
+
     if nw:
         if Cw.shape[0] != nw:
             stderr.write('opf_args.m: dimension mismatch between N and Cw in '

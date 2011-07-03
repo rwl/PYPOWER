@@ -90,7 +90,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = deepcopy(ppc)
-    if ordering is None:  # nargin == 1
+    if val_or_field is None:  # nargin == 1
         first = 'order' not in ppc
         if first or ppc["order"]["state"] == 'e':
             ## initialize order

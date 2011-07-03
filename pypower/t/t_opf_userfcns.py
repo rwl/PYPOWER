@@ -39,7 +39,7 @@ def t_opf_userfcns(quiet=False):
     t_begin(38, quiet)
 
     casefile = 't_case30_userfcns'
-    verbose = not quiet
+    verbose = 0#not quiet
 
     ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
                      PDIPM_COMPTOL=1e-8, PDIPM_COSTTOL=1e-9)
@@ -55,64 +55,64 @@ def t_opf_userfcns(quiet=False):
     t_ok(r['success'], [t, 'success'])
     t_is(r['reserves']['R'], [25, 15, 0, 0, 19.3906, 0.6094], 4, [t, 'reserves.R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 4, [t, 'reserves.prc'])
-    t_is(r['reserves']['mu.Pmax'], [0, 0, 0, 0, 0.5, 0], 4, [t, 'reserves.mu.Pmax'])
+    t_is(r['reserves']['mu']['Pmax'], [0, 0, 0, 0, 0.5, 0], 4, [t, 'reserves.mu.Pmax'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 4, [t, 'reserves.mu.l'])
     t_is(r['reserves']['mu']['u'], [0.1, 0, 0, 0, 0, 0], 4, [t, 'reserves.mu.u'])
-    t_ok('P' not in r['iface'], [t, 'no iflims'])
+    t_ok('P' not in r['if'], [t, 'no iflims'])
     t_is(r['reserves']['totalcost'], 177.8047, 4, [t, 'totalcost'])
 
-    t = 'toggle_reserves(ppc, ''off'') : ';
+    t = 'toggle_reserves(ppc, \'off\') : ';
     ppc = toggle_reserves(ppc, 'off')
     r = runopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
     t_ok('R' not in r['reserves'], [t, 'no reserves'])
-    t_ok('P' not in r['iface'], [t, 'no iflims'])
+    t_ok('P' not in r['if'], [t, 'no iflims'])
 
-    t = 'interface flow lims (DC) : ';
+    t = 'interface flow lims (DC) : '
     ppc = loadcase(casefile)
     ppc = toggle_iflims(ppc, 'on')
     r = rundcopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
-    t_is(r['iface']['P'], [-15, 20], 4, [t, 'if.P'])
-    t_is(r['iface']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
-    t_is(r['iface']['mu']['u'], [0, 13.2573], 4, [t, 'if.mu.u'])
+    t_is(r['if']['P'], [-15, 20], 4, [t, 'if.P'])
+    t_is(r['if']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
+    t_is(r['if']['mu']['u'], [0, 13.2573], 4, [t, 'if.mu.u'])
     t_is(r['branch'][13, PF], 8.244, 3, [t, 'flow in branch 14'])
     t_ok('R' not in r['reserves'], [t, 'no reserves'])
 
-    t = 'reserves + interface flow lims (DC) : ';
+    t = 'reserves + interface flow lims (DC) : '
     ppc = loadcase(casefile)
     ppc = toggle_reserves(ppc, 'on')
     ppc = toggle_iflims(ppc, 'on')
     r = rundcopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
-    t_is(r['iface']['P'], [-15, 20], 4, [t, 'if.P'])
-    t_is(r['iface']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
-    t_is(r['iface']['mu']['u'], [0, 38.2573], 4, [t, 'if.mu.u'])
+    t_is(r['if']['P'], [-15, 20], 4, [t, 'if.P'])
+    t_is(r['if']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
+    t_is(r['if']['mu']['u'], [0, 38.2573], 4, [t, 'if.mu.u'])
     t_is(r['reserves']['R'], [25, 15, 0, 0, 16.9, 3.1], 4, [t, 'reserves.R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 4, [t, 'reserves.prc'])
-    t_is(r['reserves']['mu.Pmax'], [0, 0, 0, 0, 0.5, 0], 4, [t, 'reserves.mu.Pmax'])
+    t_is(r['reserves']['mu']['Pmax'], [0, 0, 0, 0, 0.5, 0], 4, [t, 'reserves.mu.Pmax'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 4, [t, 'reserves.mu.l'])
     t_is(r['reserves']['mu']['u'], [0.1, 0, 0, 0, 0, 0], 4, [t, 'reserves.mu.u'])
     t_is(r['reserves']['totalcost'], 179.05, 4, [t, 'totalcost'])
 
-    t = 'interface flow lims (AC) : ';
+    t = 'interface flow lims (AC) : '
     ppc = toggle_reserves(ppc, 'off')
     r = runopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
-    t_is(r['iface']['P'], [-9.101, 21.432], 3, [t, 'if.P'])
-    t_is(r['iface']['mu']['l'], [0, 0], 4, [t, 'if.mu.l'])
-    t_is(r['iface']['mu']['u'], [0, 10.198], 3, [t, 'if.mu.u'])
+    t_is(r['if']['P'], [-9.101, 21.432], 3, [t, 'if.P'])
+    t_is(r['if']['mu']['l'], [0, 0], 4, [t, 'if.mu.l'])
+    t_is(r['if']['mu']['u'], [0, 10.198], 3, [t, 'if.mu.u'])
     t_ok('R' not in r['reserves'], [t, 'no reserves'])
 
-    t = 'interface flow lims (line out) : ';
+    t = 'interface flow lims (line out) : '
     ppc = loadcase(casefile)
     ppc = toggle_iflims(ppc, 'on')
-    ppc.branch[11, BR_STATUS] = 0      ## take out line 6-10
+    ppc['branch'][11, BR_STATUS] = 0      ## take out line 6-10
     r = rundcopf(ppc, ppopt)
     t_ok(r['success'], [t, 'success'])
-    t_is(r['iface']['P'], [-15, 20], 4, [t, 'if.P'])
-    t_is(r['iface']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
-    t_is(r['iface']['mu']['u'], [0, 13.2573], 4, [t, 'if.mu.u'])
+    t_is(r['if']['P'], [-15, 20], 4, [t, 'if.P'])
+    t_is(r['if']['mu']['l'], [4.8427, 0], 4, [t, 'if.mu.l'])
+    t_is(r['if']['mu']['u'], [0, 13.2573], 4, [t, 'if.mu.u'])
     t_is(r['branch'][13, PF], 10.814, 3, [t, 'flow in branch 14'])
     t_ok('R' not in r['reserves'], [t, 'no reserves'])
 
@@ -123,9 +123,9 @@ def t_opf_userfcns(quiet=False):
     # r['reserves']['mu']['u']
     # r['reserves']['totalcost']
     #
-    # r['iface']['P']
-    # r['iface']['mu']['l']
-    # r['iface']['mu']['u']
+    # r['if']['P']
+    # r['if']['mu']['l']
+    # r['if']['mu']['u']
 
     t_end()
 

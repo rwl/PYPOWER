@@ -28,7 +28,7 @@ def remove_userfcn(ppc, stage, fcn):
     """
     n = len(ppc['userfcn'][stage])
 
-    for k in range(n, -1, -1):
+    for k in range(n - 1, -1, -1):
         if ppc['userfcn'][stage][k]['fcn'] == fcn:
             del ppc['userfcn'][stage][k]
             break

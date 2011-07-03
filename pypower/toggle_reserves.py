@@ -216,11 +216,11 @@ def userfcn_reserves_int2ext(results, *args):
     ##-----  convert stuff back to external indexing  -----
     ## convert all reserve parameters (zones, costs, qty, rgens)
     if 'qty' in r:
-        results = int2ext(results, ['reserves', 'qty'], 'gen')
+        results = int2ext(results, ['reserves', 'qty'], ordering='gen')
 
-    results = int2ext(results, ['reserves', 'cost'], 'gen')
-    results = int2ext(results, ['reserves', 'zones'], 'gen', 1)
-    results = int2ext(results, ['reserves', 'rgens'], 'gen', 1)
+    results = int2ext(results, ['reserves', 'cost'], ordering='gen')
+    results = int2ext(results, ['reserves', 'zones'], ordering='gen', dim=1)
+    results = int2ext(results, ['reserves', 'rgens'], ordering='gen', dim=1)
     results['order']['int']['reserves']['igr'] = results['reserves']['igr']  ## save internal version
     results['reserves']['igr'] = results['order']['ext']['reserves']['igr']  ## use external version
     r = results['reserves']       ## update
@@ -252,6 +252,8 @@ def userfcn_reserves_int2ext(results, *args):
     results['reserves']['R']       = int2ext(results, R, z, 'gen')
     results['reserves']['Rmin']    = int2ext(results, Rmin, z, 'gen')
     results['reserves']['Rmax']    = int2ext(results, Rmax, z, 'gen')
+    if 'mu' not in results['reserves']:
+        results['reserves']['mu'] = {}
     results['reserves']['mu']['l']    = int2ext(results, mu_l, z, 'gen')
     results['reserves']['mu']['u']    = int2ext(results, mu_u, z, 'gen')
     results['reserves']['mu']['Pmax'] = int2ext(results, mu_Pmax, z, 'gen')

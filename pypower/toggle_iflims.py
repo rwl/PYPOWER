@@ -18,9 +18,9 @@ from sys import stderr
 
 from pprint import pprint
 
-from numpy import zeros, arange, unique, sign, delete
+from numpy import zeros, arange, unique, sign, delete, flatnonzero as find
 
-from scipy.sparse import csr_matrix as sparse
+from scipy.sparse import lil_matrix, csr_matrix as sparse
 
 from pypower.add_userfcn import add_userfcn
 from pypower.remove_userfcn import remove_userfcn
@@ -83,6 +83,8 @@ def toggle_iflims(ppc, on_off):
     else:
         stderr.write('toggle_iflims: 2nd argument must be either \'on\' or \'off\'')
 
+    return ppc
+
 
 def userfcn_iflims_ext2int(ppc, *args):
     """This is the 'ext2int' stage userfcn callback that prepares the input
@@ -100,11 +102,12 @@ def userfcn_iflims_ext2int(ppc, *args):
 
     ##-----  convert stuff to internal indexing  -----
     e2i = zeros(nl0)
-    e2i[o['branch']['status']['on']] = arange(nl);  ## ext->int branch index mapping
+    e2i[o['branch']['status']['on']] = arange(nl)  ## ext->int branch index mapping
     d = sign(ifmap[:, 1])
-    br = abs(ifmap[:, 1])
+    br = abs(ifmap[:, 1]).astype(int)
     ifmap[:, 1] = d * e2i[br]
-    ifmap = delete(ifmap, ifmap[:, 1] == 0, 0)  ## delete branches that are out
+
+    ifmap = delete(ifmap, find(ifmap[:, 1] == 0), 0)  ## delete branches that are out
 
     ppc['if']['map'] = ifmap
 
@@ -130,7 +133,7 @@ def userfcn_iflims_formulation(om, *args):
     ## form constraints
     ifidx = unique(iflims[:, 0])   ## interface number list
     nifs = len(ifidx)              ## number of interfaces
-    Aif = sparse((nifs, n))
+    Aif = lil_matrix((nifs, n))
     lif = zeros(nifs)
     uif = zeros(nifs)
     for k in range(nifs):
@@ -142,7 +145,7 @@ def userfcn_iflims_formulation(om, *args):
         d = sign(br)
         br = abs(br)
         Ak = sparse((1, n))              ## Ak = sum( d(i) * Bf(i, :) )
-        bk = 0                         ## bk = sum( d(i) * Pfinj(i) )
+        bk = 0                           ## bk = sum( d(i) * Pfinj(i) )
         for i in range(len(br)):
             Ak = Ak + d[i] * Bf[br[i], :]
             bk = bk + d[i] * Pfinj[br[i]]
@@ -183,6 +186,8 @@ def userfcn_iflims_int2ext(results, *args):
         br = abs(br)
         results['if']['P'][k] = sum( d * results['branch'][br, PF] )
 
+    if 'mu' not in results['if']:
+        results['if']['mu'] = {}
     results['if']['mu']['l'] = results['lin']['mu']['l']['iflims']
     results['if']['mu']['u'] = results['lin']['mu']['u']['iflims']
 

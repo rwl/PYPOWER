@@ -16,7 +16,6 @@
 
 from sys import stderr
 
-
 def add_userfcn(ppc, stage, fcn, args=None, allow_multiple=False):
     """Appends a userfcn to the list to be called for a case.
 
@@ -104,17 +103,17 @@ def add_userfcn(ppc, stage, fcn, args=None, allow_multiple=False):
     n = 0
     if 'userfcn' in ppc:
         if stage in ppc['userfcn']:
-            n = len(ppc['userfcn'][stage]) + 1
+            n = len(ppc['userfcn'][stage]) #+ 1
             if not allow_multiple:
-                for k in range(n - 1):
+                for k in range(n):
                     if ppc['userfcn'][stage][k]['fcn'] == fcn:
                         stderr.write('add_userfcn: the function \'%s\' has already been added\n' % fcn.func_name)
         else:
-            ppc['userfcn'][stage] = {n: {}}
+            ppc['userfcn'][stage] = []
     else:
-        ppc['userfcn'] = {stage: {n: {}}}
+        ppc['userfcn'] = {stage: []}
 
-    ppc['userfcn'][stage][n]['fcn'] = fcn
+    ppc['userfcn'][stage].append({'fcn': fcn})
     if len(args) > 0:
         ppc['userfcn'][stage][n]['args'] = args
 

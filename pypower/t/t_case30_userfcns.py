@@ -179,21 +179,21 @@ def t_case30_userfcns():
 
     #    ifnum    branchidx (negative defines opposite direction)
     ppc['if']['map'] = array([
-        [1, -12], ## 1 : area 1 imports
+        [1, -11], ## 1 : area 1 imports
+        [1, -13],
         [1, -14],
-        [1, -15],
-        [1, -36],
-        [2,  15], ## 2 : area 2 imports
+        [1, -35],
+        [2,  14], ## 2 : area 2 imports
+        [2,  24],
         [2,  25],
-        [2,  26],
-        [2, -32],
-        [3,  12], ## 3 : area 3 imports
-        [3,  14],
+        [2, -31],
+        [3,  11], ## 3 : area 3 imports
+        [3,  13],
+        [3, -24],
         [3, -25],
-        [3, -26],
-        [3,  32],
-        [3,  36]
-    ], float)
+        [3,  31],
+        [3,  35]
+    ], int)
 
     ## DC model flow limits in MW
     ## (negative and positive directions can be different)

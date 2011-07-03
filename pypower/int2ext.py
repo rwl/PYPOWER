@@ -87,7 +87,7 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = deepcopy(ppc)
-    if ordering is None: # nargin == 1
+    if val_or_field is None: # nargin == 1
         if 'order' not in ppc:
             sys.stderr.write('int2ext: ppc does not have the "order" field '
                 'require for conversion back to external numbering.\n')

@@ -59,7 +59,7 @@ def test_pypower(verbose=False):
 #    except ImportError:
 #        pass
 
-#    tests.append('t_opf_userfcns')
+    tests.append('t_opf_userfcns')
 #    tests.append('t_runopf_w_res')
     tests.append('t_makePTDF')
     tests.append('t_makeLODF')

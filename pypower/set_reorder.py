@@ -25,6 +25,7 @@ def set_reorder(A, B, idx, dim=0):
     @see: L{get_reorder}
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """
+    A = A.copy()
     ndims = ndim(A)
     if ndims ==  1:
         A[idx] = B
