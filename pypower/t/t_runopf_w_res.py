@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from numpy import delete
+
 from pypower.ppoption import ppoption
 from pypower.loadcase import loadcase
 from pypower.runopf_w_res import runopf_w_res
@@ -22,8 +24,8 @@ from pypower.idx_gen import GEN_STATUS, RAMP_10
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
-from pypower.t.t_ok import t_ok
 from pypower.t.t_end import t_end
+
 
 def t_runopf_w_res(quiet=False):
     """Tests C{runopf_w_res} and the associated callbacks.
@@ -32,7 +34,7 @@ def t_runopf_w_res(quiet=False):
     """
     t_begin(46, quiet)
 
-    verbose = not quiet
+    verbose = 0#not quiet
 
     casefile = 't_case30_userfcns'
 
@@ -55,8 +57,8 @@ def t_runopf_w_res(quiet=False):
     t = 'gen 5 no reserves : ';
     ppc = loadcase(casefile)
     ppc['reserves']['zones'][:, 4] = 0
-    ppc['reserves']['cost'][4] = []
-    ppc['reserves']['qty'][4] = []
+    ppc['reserves']['cost'] = delete(ppc['reserves']['cost'], 4)
+    ppc['reserves']['qty'] = delete(ppc['reserves']['qty'], 4)
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 20], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 0, 3.5], 6, [t, 'prc'])
@@ -70,12 +72,12 @@ def t_runopf_w_res(quiet=False):
     t = 'extra offline gen : ';
     ppc = loadcase(casefile)
     idx = range(3) +[4]+ range(3, 6)
-    ppc.gen = ppc.gen[idx, :]
-    ppc.gencost = ppc.gencost[idx, :]
+    ppc['gen'] = ppc['gen'][idx, :]
+    ppc['gencost'] = ppc['gencost'][idx, :]
     ppc['reserves']['zones'] = ppc['reserves']['zones'][:, idx]
     ppc['reserves']['cost'] = ppc['reserves']['cost'][idx]
     ppc['reserves']['qty'] = ppc['reserves']['qty'][idx]
-    ppc.gen[3, GEN_STATUS] = 0
+    ppc['gen'][3, GEN_STATUS] = 0
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 19.3906, 0.6094], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 3.5, 2, 3.5, 3.5], 6, [t, 'prc'])
@@ -89,15 +91,15 @@ def t_runopf_w_res(quiet=False):
     t = 'both extra & gen 6 no res : ';
     ppc = loadcase(casefile)
     idx = range(3) +[4]+ range(3, 6)
-    ppc.gen = ppc.gen[idx, :]
-    ppc.gencost = ppc.gencost[idx, :]
+    ppc['gen'] = ppc['gen'][idx, :]
+    ppc['gencost'] = ppc['gencost'][idx, :]
     ppc['reserves']['zones'] = ppc['reserves']['zones'][:, idx]
     ppc['reserves']['cost'] = ppc['reserves']['cost'][idx]
     ppc['reserves']['qty'] = ppc['reserves']['qty'][idx]
-    ppc.gen[3, GEN_STATUS] = 0
+    ppc['gen'][3, GEN_STATUS] = 0
     ppc['reserves']['zones'][:, 5] = 0
-    ppc['reserves']['cost'][5] = []
-    ppc['reserves']['qty'][5] = []
+    ppc['reserves']['cost'] = delete(ppc['reserves']['cost'], 5)
+    ppc['reserves']['qty'] = delete(ppc['reserves']['qty'], 5)
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 0, 20], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 3.5, 2, 0, 3.5], 6, [t, 'prc'])
@@ -123,7 +125,7 @@ def t_runopf_w_res(quiet=False):
     t = 'RAMP_10, no qty (Rmax) : ';
     ppc = loadcase(casefile)
     del ppc['reserves']['qty']
-    ppc.gen[0, RAMP_10] = 25
+    ppc['gen'][0, RAMP_10] = 25
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 19.3906, 0.6094], 4, [t, 'R'])
     t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 6, [t, 'prc'])
@@ -134,3 +136,7 @@ def t_runopf_w_res(quiet=False):
     t_is(r['reserves']['totalcost'], 177.8047, 4, [t, 'totalcost'])
 
     t_end()
+
+
+if __name__ == '__main__':
+    t_runopf_w_res(quiet=False)

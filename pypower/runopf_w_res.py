@@ -68,7 +68,7 @@ def runopf_w_res(*args):
     ppc = loadcase(args[0])
     ppc = toggle_reserves(ppc, 'on')
 
-    r = runopf(ppc, args[1:])
-    r[0] = toggle_reserves(r[0], 'off')
+    r = runopf(ppc, *args[1:])
+    r = toggle_reserves(r, 'off')
 
     return r

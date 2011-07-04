@@ -117,12 +117,15 @@ def userfcn_reserves_ext2int(ppc, *args):
     if (r['cost'].shape[0] != ng0) & (r['cost'].shape[0] != ngr):
         stderr.write('userfcn_reserves_ext2int: the number of rows in ppc[\'reserves\'][\'cost\'] (%d) must equal the total number of generators (%d) or the number of generators able to provide reserves (%d)\n' % (r['cost'].shape[0], ng0, ngr))
 
-    if ('qty' in r) & (r['qty'].shape[0] != r['cost'].shape[0]):
-        stderr.write('userfcn_reserves_ext2int: ppc[\'reserves\'][\'cost\'] (%d x 1) and ppc[\'reserves\'][\'qty\'] (%d x 1) must be the same dimension\n' % (r['cost'].shape[0], r['qty'].shape[0]))
+    if 'qty' in r:
+        if r['qty'].shape[0] != r['cost'].shape[0]:
+            stderr.write('userfcn_reserves_ext2int: ppc[\'reserves\'][\'cost\'] (%d x 1) and ppc[\'reserves\'][\'qty\'] (%d x 1) must be the same dimension\n' % (r['cost'].shape[0], r['qty'].shape[0]))
 
 
     ## convert both cost and qty from ngr x 1 to full ng x 1 vectors if necessary
     if r['cost'].shape[0] < ng0:
+        if 'original' not in ppc['reserves']:
+            ppc['reserves']['original'] = {}
         ppc['reserves']['original']['cost'] = r['cost'].copy()    ## save original
         cost = zeros(ng0)
         cost[igr] = r['cost']

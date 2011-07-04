@@ -60,7 +60,7 @@ def test_pypower(verbose=False):
 #        pass
 
     tests.append('t_opf_userfcns')
-#    tests.append('t_runopf_w_res')
+    tests.append('t_runopf_w_res')
     tests.append('t_makePTDF')
     tests.append('t_makeLODF')
     tests.append('t_total_load')
