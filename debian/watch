@@ -1,3 +1,0 @@
-# watch control file for uscan
-version=3
-http://github.com/rwl/PYPOWER/downloads/pypower-(.*)\.tar\.gz debian uupdate
