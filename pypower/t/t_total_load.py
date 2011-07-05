@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from numpy import array, zeros, r_, in1d, vstack, flatnonzero as find
 
 from pypower.loadcase import loadcase
@@ -37,7 +39,7 @@ def t_total_load(quiet=False):
 
     t_begin(n_tests, quiet)
 
-    ppc = loadcase('t_auction_case')
+    ppc = loadcase(join(dirname(__file__), 't_auction_case'))
     ppc['gen'][7, GEN_BUS] = 2    ## multiple d. loads per area, same bus as gen
     ppc['gen'][7, [QG, QMIN, QMAX]] = array([3, 0, 3])
     ## put it load before gen in matrix

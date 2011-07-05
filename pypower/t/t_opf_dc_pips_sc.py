@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from numpy import array, ones, Inf, arange, r_
 
 from scipy.io import loadmat
@@ -47,7 +49,8 @@ def t_opf_dc_pips_sc(quiet=False):
 
     t_begin(num_tests, quiet)
 
-    casefile = 't_case9_opf'
+    tdir = dirname(__file__)
+    casefile = join(tdir, 't_case9_opf')
     verbose = 0#not quiet
 
     t0 = 'DC OPF (PIPS-sc): '
@@ -69,7 +72,8 @@ def t_opf_dc_pips_sc(quiet=False):
     #ibr_angmu   = array([MU_ANGMIN, MU_ANGMAX])
 
     ## get solved DC power flow case from MAT-file
-    soln9_dcopf = loadmat('soln9_dcopf.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
+    soln9_dcopf = loadmat(join(tdir, 'soln9_dcopf.mat'), struct_as_record=True)
+    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_dcopf['bus_soln']
     gen_soln = soln9_dcopf['gen_soln']
     branch_soln = soln9_dcopf['branch_soln']

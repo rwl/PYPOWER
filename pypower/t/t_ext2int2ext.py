@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from numpy import ones, delete, c_, r_
 
 from pypower.loadcase import loadcase
@@ -24,6 +26,9 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_end import t_end
 from pypower.t.t_is import t_is
 
+from pypower.t.t_case_ext import t_case_ext
+from pypower.t.t_case_int import t_case_int
+
 
 def t_ext2int2ext(quiet=False):
     """Tests C{ext2int} and C{int2ext}.
@@ -32,10 +37,12 @@ def t_ext2int2ext(quiet=False):
     """
     t_begin(85, quiet)
 
+    tdir = dirname(__file__)
+
     ##-----  ppc = ext2int/int2ext(ppc)  -----
     t = 'ppc = ext2int(ppc) : '
-    ppce = loadcase('t_case_ext')
-    ppci = loadcase('t_case_int')
+    ppce = loadcase(t_case_ext())
+    ppci = loadcase(t_case_int())
     ppc = ext2int(ppce)
     t_is(ppc['bus'], ppci['bus'], 12, [t, 'bus'])
     t_is(ppc['branch'], ppci['branch'], 12, [t, 'branch'])
@@ -259,8 +266,8 @@ def t_ext2int2ext(quiet=False):
 
     ##-----  more ppc = ext2int/int2ext(ppc)  -----
     t = 'ppc = ext2int(ppc) - bus/gen/branch only : '
-    ppce = loadcase('t_case_ext')
-    ppci = loadcase('t_case_int')
+    ppce = loadcase(t_case_ext())
+    ppci = loadcase(t_case_int())
     del ppce['gencost']
     del ppce['areas']
     del ppce['A']
@@ -275,8 +282,8 @@ def t_ext2int2ext(quiet=False):
     t_is(ppc['gen'], ppci['gen'], 12, [t, 'gen'])
 
     t = 'ppc = ext2int(ppc) - no areas/A : '
-    ppce = loadcase('t_case_ext')
-    ppci = loadcase('t_case_int')
+    ppce = loadcase(t_case_ext())
+    ppci = loadcase(t_case_int())
     del ppce['areas']
     del ppce['A']
     del ppci['areas']
@@ -289,8 +296,8 @@ def t_ext2int2ext(quiet=False):
     t_is(ppc['N'], ppci['N'], 12, [t, 'N'])
 
     t = 'ppc = ext2int(ppc) - Qg cost, no N : '
-    ppce = loadcase('t_case_ext')
-    ppci = loadcase('t_case_int')
+    ppce = loadcase(t_case_ext())
+    ppci = loadcase(t_case_int())
     del ppce['N']
     del ppci['N']
     ppce['gencost'] = c_[ppce['gencost'], ppce['gencost']]
@@ -304,8 +311,8 @@ def t_ext2int2ext(quiet=False):
     t_is(ppc['A'], ppci['A'], 12, [t, 'A'])
 
     t = 'ppc = ext2int(ppc) - A, N are DC sized : '
-    ppce = loadcase('t_case_ext')
-    ppci = loadcase('t_case_int')
+    ppce = loadcase(t_case_ext())
+    ppci = loadcase(t_case_int())
     eVmQgcols = range(10, 20) + range(24, 28)
     iVmQgcols = range(9, 18) + range(21, 24)
     ppce['A'] = delete(ppce['A'], eVmQgcols, 1)

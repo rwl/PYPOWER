@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from numpy import array, ones, zeros, Inf, r_, ix_, argsort, arange
 
 from scipy.io import loadmat
@@ -51,7 +53,8 @@ def t_opf_pips_sc(quiet=False):
 
     t_begin(num_tests, quiet)
 
-    casefile = 't_case9_opf'
+    tdir = dirname(__file__)
+    casefile = join(tdir, 't_case9_opf')
     verbose = 0#not quiet
 
     t0 = 'PIPS-sc : '
@@ -73,7 +76,8 @@ def t_opf_pips_sc(quiet=False):
     ibr_angmu   = array([MU_ANGMIN, MU_ANGMAX])
 
     ## get solved AC power flow case from MAT-file
-    soln9_opf = loadmat('soln9_opf.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
+    soln9_opf = loadmat(join(tdir, 'soln9_opf.mat'), struct_as_record=True)
+    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf['bus_soln']
     gen_soln = soln9_opf['gen_soln']
     branch_soln = soln9_opf['branch_soln']
@@ -121,7 +125,8 @@ def t_opf_pips_sc(quiet=False):
     t_is(r['x'], xr, 8, [t, 'check on raw x returned from OPF'])
 
     ## get solved AC power flow case from MAT-file
-    soln9_opf_Plim = loadmat('soln9_opf_Plim.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
+    soln9_opf_Plim = loadmat(join(tdir, 'soln9_opf_Plim.mat'), struct_as_record=True)
+    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf_Plim['bus_soln']
     gen_soln = soln9_opf_Plim['gen_soln']
     branch_soln = soln9_opf_Plim['branch_soln']
@@ -198,7 +203,8 @@ def t_opf_pips_sc(quiet=False):
     ## single new z variable constrained to be greater than or equal to
     ## deviation from 1 pu voltage at bus 1, linear cost on this z
     ## get solved AC power flow case from MAT-file
-    soln9_opf_extras1 = loadmat('soln9_opf_extras1.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
+    soln9_opf_extras1 = loadmat(join(tdir, 'soln9_opf_extras1.mat'), struct_as_record=True)
+    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf_extras1['bus_soln']
     gen_soln = soln9_opf_extras1['gen_soln']
     branch_soln = soln9_opf_extras1['branch_soln']
@@ -213,7 +219,7 @@ def t_opf_pips_sc(quiet=False):
     N = sparse(([1], ([0], [24])), (1, 25))    ## new z variable only
     fparm = array([[1, 0, 0, 1]])              ## w = r = z
     H = sparse((1, 1))                ## no quadratic term
-    Cw = array([100])
+    Cw = array([100.0])
 
     t = ''.join([t0, 'w/extra constraints & costs 1 : '])
     r = opf(casefile, A, l, u, ppopt, N, fparm, H, Cw)
@@ -235,13 +241,14 @@ def t_opf_pips_sc(quiet=False):
     t_is(r['cost']['usr'], 2.5419, 4, [t, 'user cost'])
 
     ##-----  test OPF with capability curves  -----
-    ppc = loadcase('t_case9_opfv2')
+    ppc = loadcase(join(tdir, 't_case9_opfv2'))
     ## remove angle diff limits
     ppc['branch'][0, ANGMAX] = 360
     ppc['branch'][8, ANGMIN] = -360
 
     ## get solved AC power flow case from MAT-file
-    soln9_opf_PQcap = loadmat('soln9_opf_PQcap.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
+    soln9_opf_PQcap = loadmat(join(tdir, 'soln9_opf_PQcap.mat'), struct_as_record=True)
+    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf_PQcap['bus_soln']
     gen_soln = soln9_opf_PQcap['gen_soln']
     branch_soln = soln9_opf_PQcap['branch_soln']
@@ -266,12 +273,14 @@ def t_opf_pips_sc(quiet=False):
     t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
 
     ##-----  test OPF with angle difference limits  -----
-    ppc = loadcase('t_case9_opfv2')
+    ppc = loadcase(join(tdir, 't_case9_opfv2'))
     ## remove capability curves
-    ppc['gen'][ix_(arange(1, 3), [PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX])] = zeros((2, 6))
+    ppc['gen'][ix_(arange(1, 3),
+                   [PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX])] = zeros((2, 6))
 
     ## get solved AC power flow case from MAT-file
-    soln9_opf_ang = loadmat('soln9_opf_ang.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
+    soln9_opf_ang = loadmat(join(tdir, 'soln9_opf_ang.mat'), struct_as_record=True)
+    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf_ang['bus_soln']
     gen_soln = soln9_opf_ang['gen_soln']
     branch_soln = soln9_opf_ang['branch_soln']
@@ -298,7 +307,8 @@ def t_opf_pips_sc(quiet=False):
 
     ##-----  test OPF with ignored angle difference limits  -----
     ## get solved AC power flow case from MAT-file
-    soln9_opf = loadmat('soln9_opf.mat', struct_as_record=True)       ## defines bus_soln, gen_soln, branch_soln, f_soln
+    soln9_opf = loadmat(join(tdir, 'soln9_opf.mat'), struct_as_record=True)
+    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf['bus_soln']
     gen_soln = soln9_opf['gen_soln']
     branch_soln = soln9_opf['branch_soln']
@@ -311,7 +321,7 @@ def t_opf_pips_sc(quiet=False):
     bus, gen, branch, f, success = \
             r['bus'], r['gen'], r['branch'], r['f'], r['success']
     ## ang limits are not in this solution data, so let's remove them
-    branch[0, ANGMAX] = 360
+    branch[0, ANGMAX] =  360
     branch[8, ANGMIN] = -360
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])

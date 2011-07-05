@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from pypower.ppoption import ppoption
 from pypower.loadcase import loadcase
 from pypower.toggle_reserves import toggle_reserves
@@ -38,7 +40,8 @@ def t_opf_userfcns(quiet=False):
     """
     t_begin(38, quiet)
 
-    casefile = 't_case30_userfcns'
+    tdir = dirname(__file__)
+    casefile = join(tdir, 't_case30_userfcns')
     verbose = 0#not quiet
 
     ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,

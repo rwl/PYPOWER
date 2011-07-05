@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from numpy import array, r_
 
 from scipy.io import loadmat
@@ -38,14 +40,15 @@ def t_pf(quiet=False):
     """
     t_begin(25, quiet)
 
-    casefile = 't_case9_pf'
+    tdir = dirname(__file__)
+    casefile = join(tdir, 't_case9_pf')
     verbose = not quiet
 
     ppopt = ppoption(VERBOSE=verbose, OUT_ALL=0)
 
     ## get solved AC power flow case from MAT-file
     ## defines bus_soln, gen_soln, branch_soln
-    soln9_pf = loadmat('soln9_pf.mat', struct_as_record=False)
+    soln9_pf = loadmat(join(tdir, 'soln9_pf.mat'), struct_as_record=False)
     bus_soln = soln9_pf['bus_soln']
     gen_soln = soln9_pf['gen_soln']
     branch_soln = soln9_pf['branch_soln']
@@ -92,7 +95,7 @@ def t_pf(quiet=False):
 
     ## get solved AC power flow case from MAT-file
     ## defines bus_soln, gen_soln, branch_soln
-    soln9_dcpf = loadmat('soln9_dcpf.mat', struct_as_record=False)
+    soln9_dcpf = loadmat(join(tdir, 'soln9_dcpf.mat'), struct_as_record=False)
     bus_soln = soln9_dcpf['bus_soln']
     gen_soln = soln9_dcpf['gen_soln']
     branch_soln = soln9_dcpf['branch_soln']

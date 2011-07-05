@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from numpy import arange, r_
 
 from pypower.loadcase import loadcase
@@ -39,7 +41,8 @@ def t_makeLODF(quiet=False):
     ntests = 31
     t_begin(ntests, quiet)
 
-    casefile = 't_auction_case'
+    tdir = dirname(__file__)
+    casefile = join(tdir, 't_auction_case')
     verbose = 0#not quiet
 
     ## load case

@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from numpy import delete
 
 from pypower.ppoption import ppoption
@@ -36,7 +38,8 @@ def t_runopf_w_res(quiet=False):
 
     verbose = 0#not quiet
 
-    casefile = 't_case30_userfcns'
+    tdir = dirname(__file__)
+    casefile = join(tdir, 't_case30_userfcns')
 
     ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
                      PDIPM_COMPTOL=1e-8, PDIPM_COSTTOL=1e-9)

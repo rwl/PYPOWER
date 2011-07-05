@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import dirname, join
+
 from numpy import ones, zeros, eye, arange, dot, matrix, flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
@@ -39,7 +41,8 @@ def t_makePTDF(quiet=False):
     ntests = 24
     t_begin(ntests, quiet)
 
-    casefile = 't_case9_opf'
+    tdir = dirname(__file__)
+    casefile = join(tdir, 't_case9_opf')
     verbose = 0#not quiet
 
     ## load case

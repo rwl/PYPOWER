@@ -16,6 +16,8 @@
 
 import os
 
+from os.path import dirname, join
+
 from numpy import zeros
 
 from scipy.io import savemat
@@ -27,10 +29,10 @@ from pypower.runpf import runpf
 from pypower.idx_gen import PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX
 from pypower.idx_brch import ANGMAX, ANGMIN
 
-from pypower.t.t_case9_pf import t_case9_pf        #@UnusedImport
-from pypower.t.t_case9_pfv2 import t_case9_pfv2    #@UnusedImport
-from pypower.t.t_case9_opf import t_case9_opf      #@UnusedImport
-from pypower.t.t_case9_opfv2 import t_case9_opfv2  #@UnusedImport
+from pypower.t.t_case9_pf import t_case9_pf
+from pypower.t.t_case9_pfv2 import t_case9_pfv2
+from pypower.t.t_case9_opf import t_case9_opf
+from pypower.t.t_case9_opfv2 import t_case9_opfv2
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
@@ -46,23 +48,24 @@ def t_loadcase(quiet=False):
     t_begin(240, quiet)
 
     ## compare result of loading from M-file file to result of using data matrices
-    casefile = 't_case9_opf'
-    matfile  = 't_pkl9_opf'
-    pfcasefile = 't_case9_pf'
-    pfmatfile  = 't_mat9_pf'
-    casefilev2 = 't_case9_opfv2'
-    matfilev2  = 't_mat9_opfv2'
-    pfcasefilev2 = 't_case9_pfv2'
-    pfmatfilev2  = 't_mat9_pfv2'
+    tdir = dirname(__file__)
+    casefile = join(tdir, 't_case9_opf')
+    matfile  = join(tdir, 't_mat9_opf')
+    pfcasefile = join(tdir, 't_case9_pf')
+    pfmatfile  = join(tdir, 't_mat9_pf')
+    casefilev2 = join(tdir, 't_case9_opfv2')
+    matfilev2  = join(tdir, 't_mat9_opfv2')
+    pfcasefilev2 = join(tdir, 't_case9_pfv2')
+    pfmatfilev2  = join(tdir, 't_mat9_pfv2')
 
     ## read version 1 OPF data matrices
-    baseMVA, bus, gen, branch, areas, gencost = eval(casefile + '()')
+    baseMVA, bus, gen, branch, areas, gencost = t_case9_opf()
     ## save as .mat file
     savemat(matfile + '.mat', {'baseMVA': baseMVA, 'bus': bus, 'gen': gen,
             'branch': branch, 'areas': areas, 'gencost': gencost}, oned_as='row')
 
     ## read version 2 OPF data matrices
-    ppc = eval(casefilev2 + '()')
+    ppc = t_case9_opfv2()
     ## save as .mat file
     savemat(matfilev2 + '.mat', {'ppc': ppc}, oned_as='column')
 
@@ -167,7 +170,7 @@ def t_loadcase(quiet=False):
     baseMVA, bus, gen, branch, areas, gencost = tmp1
 
     t = 'loadcase(opf_struct_v1) (no version): '
-    baseMVA1, bus1, gen1, branch1, areas1, gencost1 = eval(casefile + '()')
+    baseMVA1, bus1, gen1, branch1, areas1, gencost1 = t_case9_opf()
     c = {}
     c['baseMVA']   = baseMVA1
     c['bus']       = bus1.copy()
@@ -312,7 +315,7 @@ def t_loadcase(quiet=False):
     baseMVA, bus, gen, branch, areas, gencost = tmp1
 
     t = 'ppc = loadcase(opf_struct_v1) (no version): '
-    baseMVA1, bus1, gen1, branch1, areas1, gencost1 = eval(casefile + '()')
+    baseMVA1, bus1, gen1, branch1, areas1, gencost1 = t_case9_opf()
     c = {}
     c['baseMVA']   = baseMVA1
     c['bus']       = bus1.copy()
@@ -377,13 +380,13 @@ def t_loadcase(quiet=False):
 
 
     ## read version 1 PF data matrices
-    baseMVA, bus, gen, branch = eval(pfcasefile + '()')
+    baseMVA, bus, gen, branch = t_case9_pf()
     savemat(pfmatfile + '.mat',
         {'baseMVA': baseMVA, 'bus': bus, 'gen': gen, 'branch': branch},
         oned_as='column')
 
     ## read version 2 PF data matrices
-    ppc = eval(pfcasefilev2 + '()')
+    ppc = t_case9_pfv2()
     tmp = (ppc['baseMVA'], ppc['bus'].copy(),
            ppc['gen'].copy(), ppc['branch'].copy())
     baseMVA, bus, gen, branch = tmp
@@ -456,7 +459,7 @@ def t_loadcase(quiet=False):
     t_is(branch1,   branch,     12, [t, 'branch'])
 
     t = 'loadcase(pf_struct_v1) (no version): '
-    baseMVA1, bus1, gen1, branch1 = eval(pfcasefile + '()')
+    baseMVA1, bus1, gen1, branch1 = t_case9_pf()
     c = {}
     c['baseMVA']   = baseMVA1
     c['bus']       = bus1.copy()
@@ -552,7 +555,7 @@ def t_loadcase(quiet=False):
     t_is(ppc1['branch'],   branch,     12, [t, 'branch'])
 
     t = 'ppc = loadcase(pf_struct_v1) (no version): '
-    baseMVA1, bus1, gen1, branch1 = eval(pfcasefile + '()')
+    baseMVA1, bus1, gen1, branch1 = t_case9_pf()
     c = {}
     c['baseMVA']   = baseMVA1
     c['bus']       = bus1.copy()

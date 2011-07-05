@@ -34,7 +34,7 @@ def t_run_tests(test_names, verbose=False):
     """
     ## figure out padding for printing
     if not verbose:
-        length = zeros(len(test_names))
+        length = zeros(len(test_names), int)
         for k in range(len(test_names)):
             length[k] = len(test_names[k])
         maxlen = max(length)
@@ -69,6 +69,7 @@ def t_run_tests(test_names, verbose=False):
         skip_cnt        = skip_cnt      + TestGlobals.t_skip_cnt
 
     s = ''
+    status = 0
     if verbose:
         s += '\n\n----------  Summary  ----------\n'
 
@@ -76,13 +77,18 @@ def t_run_tests(test_names, verbose=False):
         if skip_cnt:
             s += 'All tests successful (%d passed, %d skipped of %d)' % \
                 (ok_cnt, skip_cnt, num_of_tests)
+            status = 0
         else:
             s += 'All tests successful (%d of %d)' % (ok_cnt, num_of_tests)
+            status = 0
     else:
         s += 'Ran %d of %d tests: %d passed, %d failed' % \
             (counter, num_of_tests, ok_cnt, not_ok_cnt)
         if skip_cnt:
             s += ', %d skipped' % skip_cnt
+        status = 1
 
     s += '\nElapsed time %.2f seconds.\n' % (time() - t0)
     sys.stdout.write(s)
+
+    return status

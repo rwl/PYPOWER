@@ -17,7 +17,9 @@
 import sys
 import logging
 
-from os.path import basename, splitext, exists
+from os import chdir, getcwd
+
+from os.path import basename, splitext, exists, dirname, join
 
 from copy import deepcopy
 
@@ -26,8 +28,10 @@ from numpy import array, zeros, ones, c_
 from scipy.io import loadmat
 
 from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, APF
-
 from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
+
+from pypower.util import feval
+
 
 def loadcase(casefile,
         return_as_obj=True, expect_gencost=True, expect_areas=True):
@@ -67,6 +71,7 @@ def loadcase(casefile,
         # check for explicit extension
         if casefile.endswith(('.py', '.mat')):
             rootname, extension = splitext(casefile)
+            fname = basename(rootname)
         else:
             # set extension if not specified explicitly
             rootname = casefile
@@ -76,6 +81,7 @@ def loadcase(casefile,
                 extension = '.py'
             else:
                 info = 2
+            fname = basename(rootname)
 
         lasterr = ''
 
@@ -108,11 +114,10 @@ def loadcase(casefile,
                     lasterr = str(e)
             elif extension == '.py':      ## from Python file
                 try:
-                    __import__(rootname)
-                    mod = sys.modules[rootname]  #@PydevCodeAnalysisIgnore
+                    execfile(rootname + extension)
 
                     try:                      ## assume it returns an object
-                        s = eval('mod.%s()' % rootname)
+                        s = eval(fname)()
                     except ValueError, e:
                         info = 4
                         lasterr = str(e)
@@ -122,35 +127,36 @@ def loadcase(casefile,
                         s['version'] = '1'
                         if expect_gencost:
                             try:
-                                s['baseMVA'], s['bus'], s['gen'], s['branch'], s['areas'], \
-                                    s['gencost'] = eval('mod.%s()' % rootname)
+                                s['baseMVA'], s['bus'], s['gen'], s['branch'], \
+                                s['areas'], s['gencost'] = eval(fname)()
                             except IOError, e:
                                 info = 4
                                 lasterr = str(e)
                         else:
                             if return_as_obj:
                                 try:
-                                    s['baseMVA'], s['bus'], s['gen'], s['branch'], \
-                                        s['areas'], s['gencost'] = \
-                                            eval('mod.%s()' % rootname)
+                                    s['baseMVA'], s['bus'], s['gen'], \
+                                        s['branch'], s['areas'], \
+                                        s['gencost'] = eval(fname)()
                                 except ValueError, e:
                                     try:
-                                        s['baseMVA'], s['bus'], s['gen'], s['branch'] = \
-                                            eval('mod.%s()' % rootname)
+                                        s['baseMVA'], s['bus'], s['gen'], \
+                                            s['branch'] = eval(fname)()
                                     except ValueError, e:
                                         info = 4
                                         lasterr = str(e)
                             else:
                                 try:
-                                    s['baseMVA'], s['bus'], s['gen'], s['branch'] = \
-                                        eval('mod.%s()' % rootname)
+                                    s['baseMVA'], s['bus'], s['gen'], \
+                                        s['branch'] = eval(fname)()
                                 except ValueError, e:
                                     info = 4
                                     lasterr = str(e)
 
-                except ImportError, e:
+                except IOError, e:
                     info = 4
                     lasterr = str(e)
+
 
                 if info == 4 and exists(rootname + '.py'):
                     info = 5
@@ -208,7 +214,7 @@ def loadcase(casefile,
         elif info == 3:
             sys.stderr.write('Specified MAT file does not exist\n')
         elif info == 4:
-            sys.stderr.write('Specified M file does not exist\n')
+            sys.stderr.write('Specified Python file does not exist\n')
         elif info == 5:
             sys.stderr.write('Syntax error or undefined data '
                              'matrix(ices) in the file\n')
