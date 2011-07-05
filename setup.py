@@ -23,11 +23,8 @@ f.close()
 
 entry_points = [
     'pf = pypower.main:pf',
-    'dcpf = pypower.main:dcpf',
     'opf = pypower.main:opf',
-    'dcopf = pypower.main:dcopf',
     'uopf = pypower.main:uopf',
-    'duopf = pypower.main:duopf',
     'opf_w_res = pypower.main:opf_w_res'
 ]
 

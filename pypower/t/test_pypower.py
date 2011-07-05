@@ -71,7 +71,52 @@ def test_pypower(verbose=False):
 #    tests.append('t_auction_mips')
 #    tests.append('t_runmarket')
 
-    t_run_tests(tests, verbose)
+    return t_run_tests(tests, verbose)
+
+
+def test_pf(verbose=False):
+    tests = []
+
+    tests.append('t_loadcase')
+    tests.append('t_ext2int2ext')
+    tests.append('t_jacobian')
+    tests.append('t_pf')
+
+    return t_run_tests(tests, verbose)
+
+
+def test_opf(verbose=False, *others):
+    tests = []
+
+    tests.append('t_loadcase')
+    tests.append('t_ext2int2ext')
+    tests.append('t_hessian')
+    tests.append('t_totcost')
+    tests.append('t_modcost')
+    tests.append('t_hasPQcap')
+
+    tests.append('t_qps_pypower')
+
+    tests.append('t_opf_dc_pips')
+    tests.append('t_opf_dc_pips_sc')
+
+    tests.append('t_pips')
+
+    tests.append('t_opf_pips')
+    tests.append('t_opf_pips_sc')
+
+    tests.append('t_makePTDF')
+    tests.append('t_makeLODF')
+    tests.append('t_total_load')
+    tests.append('t_scale_load')
+
+    tests.extend(others)
+
+    return t_run_tests(tests, verbose)
+
+
+def test_opf_w_res(verbose=False):
+    return test_opf(verbose, ['t_runopf_w_res'])
 
 
 if __name__ == '__main__':
