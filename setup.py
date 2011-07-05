@@ -16,8 +16,8 @@
 from os.path import abspath, dirname, join
 from setuptools import setup, find_packages
 
-thisdir = abspath(dirname(__file__))
-f = open(join(thisdir, "README"))
+cwd = abspath(dirname(__file__))
+f = open(join(cwd, "README"))
 kwds = {"long_description": f.read()}
 f.close()
 
