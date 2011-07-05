@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, zeros, r_, flatnonzero as find
+from numpy import array, zeros, ix_, r_, c_, flatnonzero as find
 
 from pypower.isload import isload
 from pypower.idx_cost import NCOST
@@ -57,114 +57,111 @@ def t_off2case(quiet=False):
     ], float)
 
     t = 'isload()'
-    t_is(isload(gen0), array([0, 0, 1, 0, 1]), 8, t)
+    t_is(isload(gen0), array([0, 0, 1, 0, 1], bool), 8, t)
 
-    G = find( isload(gen0) == 0 )
-    L = find( isload(gen0) )
+    G = find( ~isload(gen0) )
+    L = find(  isload(gen0) )
     nGL = len(G) + len(L)
 
     t = 'P offers only';
     offers = {'P': {}}
-    offers['P']['qty'] = array([25, 26, 27], float)
-    offers['P']['prc'] = array([10, 50, 100], float)
+    offers['P']['qty'] = array([[25], [26], [27]], float)
+    offers['P']['prc'] = array([[10], [50], [100]], float)
     gen, gencost = off2case(gen0, gencost0, offers)
 
     gen1 = gen0.copy()
-    gen1[G, PMAX] = offers['P']['qty']
+    gen1[G, PMAX] = offers['P']['qty'].flatten()
     gen1[L, GEN_STATUS] = 0
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0.copy()
-    gencost1[G, range(NCOST, NCOST + 8)] = array([
+    gencost1[ix_(G, range(NCOST, NCOST + 9))] = c_[array([
         [2, 0, 0, 25,  250],
         [2, 0, 0, 26, 1300],
         [2, 0, 0, 27, 2700],
-        zeros((3, 4))
-    ])
+    ]), zeros((3, 4))]
 
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
-    offers['P']['qty'] = array([25, 26, 0,  27, 0])
-    offers['P']['prc'] = array([10, 50, 0, 100, 0])
+    offers['P']['qty'] = array([[25], [26], [0], [27],  [0]], float)
+    offers['P']['prc'] = array([[10], [50], [0], [100], [0]], float)
     gen, gencost = off2case(gen0, gencost0, offers)
     t_is( gen, gen1, 8, [t, ' (all rows in offer) - gen'] )
     t_is( gencost, gencost1, 8, [t, ' (all rows in offer) - gencost'] )
 
     t = 'P offers only (GEN_STATUS=0 for 0 qty offer)';
-    offers['P']['qty'] = array([ 0, 26,  27])
-    offers['P']['prc'] = array([10, 50, 100])
+    offers['P']['qty'] = array([ [0], [26],  [27]], float)
+    offers['P']['prc'] = array([[10], [50], [100]], float)
     gen, gencost = off2case(gen0, gencost0, offers)
 
     gen1 = gen0.copy()
-    gen1[G[1:3], PMAX] = offers['P']['qty'][1:3]
+    gen1[G[1:3], PMAX] = offers['P']['qty'].flatten()[1:3]
     gen1[G[0], GEN_STATUS] = 0
     gen1[L, GEN_STATUS] = 0
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0.copy()
-    gencost1[G[1:3], NCOST:NCOST + 8] = array([
+    gencost1[ix_(G[1:3], range(NCOST, NCOST + 9))] = c_[array([
         [2, 0, 0, 26, 1300],
-        [2, 0, 0, 27, 2700],
-        zeros((2, 4))
-    ])
+        [2, 0, 0, 27, 2700]
+    ]), zeros((2, 4))]
 
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
     t = 'P offers, lim[\'P\'][\'max_offer\']';
-    offers['P']['qty'] = array([25, 26, 27], float)
-    offers['P']['prc'] = array([10, 50, 100], float)
+    offers['P']['qty'] = array([[25], [26], [27]], float)
+    offers['P']['prc'] = array([[10], [50], [100]], float)
     lim = {'P': {'max_offer': 75}}
     gen, gencost = off2case(gen0, gencost0, offers, lim=lim)
 
     gen1 = gen0.copy()
-    gen1[G[:2], PMAX] = offers['P']['qty'][:2, :]
+    gen1[G[:2], PMAX] = offers['P']['qty'].flatten()[:2, :]
     gen1[r_[G[2], L], GEN_STATUS] = 0
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0.copy()
-    gencost1[G[:2], NCOST:NCOST + 8] = array([
+    gencost1[ix_(G[:2], range(NCOST, NCOST + 9))] = c_[array([
         [2, 0, 0, 25,  250],
-        [2, 0, 0, 26, 1300],
-        zeros(2,4)
-    ])
+        [2, 0, 0, 26, 1300]
+    ]), zeros((2, 4))]
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
     t = 'P offers & P bids';
-    bids = {'P': {'qty': array([20, 28], float),
-                  'prc': array([100, 10], float)}}
+    bids = {'P': {'qty': array([ [20], [28]], float),
+                  'prc': array([[100], [10]], float)}}
     gen, gencost = off2case(gen0, gencost0, offers, bids)
 
     gen1 = gen0.copy()
     gen1[G, PMAX] = offers['P']['qty']
-    gen1[L, [PMIN, QMIN, QMAX]] = array([
+    gen1[ix_(L, [PMIN, QMIN, QMAX])] = array([
         [-20, -10, 0],
         [-28,   0, 7]
     ])
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0[:, :8].copy()
-    gencost1[G, NCOST:NCOST + 4] = array([
+    gencost1[ix_(G, range(NCOST, NCOST + 4))] = array([
         [2, 0, 0, 25,  250],
         [2, 0, 0, 26, 1300],
         [2, 0, 0, 27, 2700]
     ])
-    gencost1[L, NCOST:NCOST + 4] = array([
+    gencost1[ix_(L, range(NCOST, NCOST + 4))] = array([
         [2, -20, -2000, 0, 0],
         [2, -28,  -280, 0, 0]
     ])
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
     t = 'P offers & P bids (all rows in bid)';
-    bids['P']['qty'] = array([0, 0,  20, 0, 28], float)
-    bids['P']['prc'] = array([0, 0, 100, 0, 10], float)
+    bids['P']['qty'] = array([[0], [0],  [20], [0], [28]], float)
+    bids['P']['prc'] = array([[0], [0], [100], [0], [10]], float)
     gen, gencost = off2case(gen0, gencost0, offers, bids)
 
     t_is( gen, gen1, 8, [t, ' - gen'] )
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
     t = 'P offers & P bids (GEN_STATUS=0 for 0 qty bid)';
-    bids['P']['qty'] = array([  0, 28], float)
-    bids['P']['prc'] = array([100, 10], float)
+    bids['P']['qty'] = array([  [0], [28]], float)
+    bids['P']['prc'] = array([[100], [10]], float)
     gen, gencost = off2case(gen0, gencost0, offers, bids)
 
     gen1 = gen0.copy()
@@ -174,50 +171,47 @@ def t_off2case(quiet=False):
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0.copy()
-    gencost1[G, NCOST:NCOST + 8] = array([
+    gencost1[ix_(G, range(NCOST, NCOST + 9))] = c_[array([
         [2, 0, 0, 25, 250],
         [2, 0, 0, 26, 1300],
-        [2, 0, 0, 27, 2700],
-        zeros((3, 4))
-    ])
-    gencost1[L[1], NCOST:NCOST + 8] = array([
-        [2, -28, -280, 0, 0],
-        zeros((1, 4))
-    ])
+        [2, 0, 0, 27, 2700]
+    ]), zeros((3, 4))]
+    gencost1[L[1], NCOST:NCOST + 8] = c_[array([
+        [2, -28, -280, 0, 0]
+    ]), zeros((1, 4))]
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
     t = 'P offers & P bids (1 gen with both)';
     gen2 = gen0.copy()
     gen2[1, PMIN] = -5
-    bids['P']['qty'] = array([0,  3,  20, 0, 28])
-    bids['P']['prc'] = array([0, 50, 100, 0, 10])
+    bids['P']['qty'] = array([[0],  [3],  [20], [0], [28]], float)
+    bids['P']['prc'] = array([[0], [50], [100], [0], [10]], float)
     gen, gencost = off2case(gen2, gencost0, offers, bids)
 
     gen1 = gen2.copy()
     gen1[G, PMAX] = offers['P']['qty']
-    gen1[1, PMIN] = -sum(bids['P']['qty'][1, :])
-    gen1[L, [PMIN, QMIN, QMAX]] = array([
+    gen1[1, PMIN] = -sum( bids['P']['qty'][1, :] )
+    gen1[ix_(L, [PMIN, QMIN, QMAX])] = array([
         [-20, -10, 0],
         [-28,   0, 7]
     ])
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0[:, :10].copy()
-    gencost1[G, NCOST:NCOST + 6] = array([
+    gencost1[ix_(G, range(NCOST, NCOST + 7))] = array([
         [2,  0,    0, 25,  250,  0,    0],
         [3, -3, -150,  0,    0, 26, 1300],
         [2,  0,    0, 27, 2700,  0,    0]
     ])
-    gencost1[L, NCOST:NCOST + 6] = array([
+    gencost1[ix_(L, range(NCOST, NCOST + 7))] = c_[array([
         [2, -20, -2000, 0, 0],
-        [2, -28,  -280, 0, 0],
-        zeros((2, 2))
-    ])
+        [2, -28,  -280, 0, 0]
+    ]), zeros((2, 2))]
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
     t = 'P offers & P bids, lim[\'P\'][\'max_offer\']/[\'min_bid\']'
-    bids['P']['qty'] = array([20,  28], float)
-    bids['P']['prc'] = array([100, 10], float)
+    bids['P']['qty'] = array([[20],  [28]], float)
+    bids['P']['prc'] = array([[100], [10]], float)
     lim['P']['min_bid'] = 50.0
     gen, gencost = off2case(gen0, gencost0, offers, bids, lim)
 
@@ -228,12 +222,11 @@ def t_off2case(quiet=False):
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0.copy()
-    gencost1[G[:2], NCOST:NCOST + 8] = array([
+    gencost1[ix_(G[:2], range(NCOST, NCOST + 9))] = c_[array([
         [2, 0, 0, 25,  250],
-        [2, 0, 0, 26, 1300],
-        zeros((2, 4))
-    ])
-    gencost1[L[0], NCOST:NCOST + 8] = array([2, -20, -2000, 0, 0, 0, 0, 0, 0])
+        [2, 0, 0, 26, 1300]
+    ]), zeros((2, 4))]
+    gencost1[L[0], NCOST:NCOST + 9] = array([2, -20, -2000, 0, 0, 0, 0, 0, 0])
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
     t = 'P offers & P bids, lim[\'P\'][\'max_offer\']/[\'min_bid\'], multi-block'
@@ -245,19 +238,19 @@ def t_off2case(quiet=False):
 
     gen1 = gen0.copy()
     gen1[G, PMAX] = array([10, 50, 25])
-    gen1[L, [PMIN, QMIN, QMAX]] = array([
+    gen1[ix_(L, [PMIN, QMIN, QMAX])] = array([
         [-30, -15, 0],
         [-12,   0, 3]
     ])
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0[:, :10].copy()
-    gencost1[G, NCOST:NCOST + 6] = array([
+    gencost1[ix_(G, range(NCOST, NCOST + 7))] = array([
         [2, 0, 0, 10,  100, 0,     0],
         [3, 0, 0, 20,  500, 50, 2450],
         [2, 0, 0, 25, 1250, 0,     0]
     ])
-    gencost1[L, NCOST:NCOST + 6] = array([
+    gencost1[ix_(L, range(NCOST, NCOST + 7))] = array([
         [3, -30, -2600, -20, -2000, 0, 0],
         [2, -12,  -840,   0,     0, 0, 0]
     ])
@@ -281,10 +274,10 @@ def t_off2case(quiet=False):
     ], float)
 
     t = 'PQ offers only';
-    offers['P']['qty'] = array([25, 26, 27], float)
-    offers['P']['prc'] = array([10, 50, 100], float)
-    offers['Q']['qty'] = array([10, 20, 30], float)
-    offers['Q']['prc'] = array([10, 5, 1], float)
+    offers['P']['qty'] = array([[25], [26],  [27]], float)
+    offers['P']['prc'] = array([[10], [50], [100]], float)
+    offers['Q']['qty'] = array([[10], [20],  [30]], float)
+    offers['Q']['prc'] = array([[10],  [5],   [1]], float)
     gen, gencost = off2case(gen0, gencost0, offers)
 
     gen1 = gen0.copy()
@@ -295,18 +288,16 @@ def t_off2case(quiet=False):
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0.copy()
-    gencost1[G, NCOST:NCOST + 8] = array([
+    gencost1[ix_(G, range(NCOST, NCOST + 9))] = c_[array([
         [2, 0, 0, 25,  250],
         [2, 0, 0, 26, 1300],
-        [2, 0, 0, 27, 2700],
-        zeros((3, 4))
-    ])
-    gencost1[G + nGL - 1, NCOST:NCOST + 8] = array([
+        [2, 0, 0, 27, 2700]
+    ]), zeros((3, 4))]
+    gencost1[ix_(G + nGL - 1, range(NCOST, NCOST + 9))] = c_[array([
         [2, 0, 0, 10, 100],
         [2, 0, 0, 20, 100],
-        [2, 0, 0, 30,  30],
-        zeros((3, 4))
-    ])
+        [2, 0, 0, 30,  30]
+    ]), zeros((3, 4))]
 
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
@@ -334,7 +325,7 @@ def t_off2case(quiet=False):
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0[:, :12].copy()
-    gencost1[:, NCOST - 1:NCOST + 8] = array([
+    gencost1[:, NCOST - 1:NCOST + 9] = array([
         [2,   0,     0,  10,   100,   0,    0,  0,    0],
         [3,   0,     0,  20,   500,  50, 2450,  0,    0],
         [3, -30, -2600, -20, -2000,   0,    0,  0,    0],
@@ -357,20 +348,20 @@ def t_off2case(quiet=False):
     gen1[0, [PMIN, PMAX, QMIN, QMAX]] = array([0, 0, -15, 10])
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
-    gencost1[0, NCOST:NCOST + 8] = gencost0[0, NCOST:NCOST + 8]
+    gencost1[0, NCOST:NCOST + 9] = gencost0[0, NCOST:NCOST + 9]
     t_is( gencost, gencost1, 8, [t, ' - gencost'] )
 
     t = 'PQ offers & PQ bids, for gen, no Q, no shutdown';
     offers['P']['qty'] = array([[10, 40], [20, 30], [25, 25]], float)
     offers['Q']['qty'] = array([[ 5,  5], [ 0, 10], [15, 15]], float)
-    bids['Q']['qty'] = array([15, 0, 15, 15, 0])
+    bids['Q']['qty'] = array([15, 0, 15, 15, 0], float)
     gen, gencost = off2case(gen0, gencost0, offers, bids, lim)
 
     gen1[0, [PMIN, PMAX, QMIN, QMAX]] = array([10, 10, -15, 10])    ## restore original
     gen1[1, [PMIN, PMAX, QMIN, QMAX]] = array([12, 50,   0,  0])
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
-    gencost1[[0, 1, 6], NCOST:NCOST + 8] = array([
+    gencost1[ix_([0, 1, 6], range(NCOST, NCOST + 9))] = array([
         [2, 0, 0, 10, 100,  0,    0, 0, 0],
         [3, 0, 0, 20, 500, 50, 2450, 0, 0],
         [2, 0, 0,  0,   0,  0,    0, 0, 0]
@@ -400,8 +391,8 @@ def t_off2case(quiet=False):
     ])
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
-    gencost1 = gencost0[:, 0:12]
-    gencost1[:, NCOST:NCOST + 8] = array([
+    gencost1 = gencost0[:, :12].copy()
+    gencost1[:, NCOST:NCOST + 9] = array([
         [2,   0,     0,  10,  100,   0,    0,  0,    0],
         [3,   0,     0,  20,  500,  50, 2450,  0,    0],
         [2, -10, -1000,   0,    0,   0,    0,  0,    0],
@@ -430,7 +421,7 @@ def t_off2case(quiet=False):
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0[:, :12].copy()
-    gencost1[:, NCOST - 1:NCOST + 8] = array([
+    gencost1[:, NCOST - 1:NCOST + 9] = array([
         [2,   0,     0, 10,  100,  0,    0,  0,   0],
         [3,   0,     0, 20,  500, 50, 2450,  0,   0],
         [2, -10, -1000,  0,    0,  0,    0,  0,   0],
@@ -468,7 +459,7 @@ def t_off2case(quiet=False):
     t_is( gen, gen1, 8, [t, ' - gen'] )
 
     gencost1 = gencost0[:, :12].copy()
-    gencost1[:, NCOST - 1:NCOST + 8] = array([
+    gencost1[:, NCOST - 1:NCOST + 9] = array([
         [2,   0,   0,  10,  100,   0,    0,  0,    0],
         [3,   0,   0,  20,  500,  50, 2450,  0,    0],
         [4, -30,   0, -20, 1000, -10, 2000,  0, 3000],
