@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+from sys import stdout
 
 import logging
 
@@ -111,11 +111,11 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     t0 = time()
     if verbose > 0:
         v = ppver('all')
-        sys.stdout.write('\nPYPOWER Version %s, %s' % (v["Version"], v["Date"]))
+        stdout.write('\nPYPOWER Version %s, %s' % (v["Version"], v["Date"]))
 
     if dc:                               # DC formulation
         if verbose:
-            sys.stdout.write(' -- DC Power Flow\n')
+            stdout.write(' -- DC Power Flow\n')
 
         ## initial state
         Va0 = bus[:, VA] * (pi / 180)
@@ -145,7 +145,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         success = 1
     else:                                ## AC formulation
         if verbose > 0:
-            sys.stdout.write(' -- AC Power Flow ')    ## solver name and \n added later
+            stdout.write(' -- AC Power Flow ')    ## solver name and \n added later
 
         ## initial state
         # V0    = ones(bus.shape[0])            ## flat start
@@ -169,12 +169,12 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
             ## run the power flow
             alg = ppopt["PF_ALG"]
             if alg == 1:
-                V, success, iterations = newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt)
+                V, success, _ = newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt)
             elif alg == 2 or alg == 3:
                 Bp, Bpp = makeB(baseMVA, bus, branch, alg)
-                V, success, iterations = fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt)
+                V, success, _ = fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt)
             elif alg == 4:
-                V, success, iterations = gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt)
+                V, success, _ = gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt)
             else:
                 logger.error('Only Newton''s method, fast-decoupled, and '
                              'Gauss-Seidel power flow algorithms currently '
@@ -280,7 +280,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
                 printpf(results, fd, ppopt)
                 fd.close()
 
-    printpf(results, 1, ppopt)
+    printpf(results, stdout, ppopt)
 
     ## save solved case
     if solvedcase:

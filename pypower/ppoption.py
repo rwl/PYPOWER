@@ -42,15 +42,15 @@ True  - use DC formulation, ignore AC algorithm options''')
 OPF_OPTIONS = [
     ('opf_alg', 0, '''algorithm to use for OPF:
 0 - choose best default solver available in the
-    following order, 500, 540, 520 then 100/200
+following order, 500, 540, 520 then 100/200
 Otherwise the first digit specifies the problem
 formulation and the second specifies the solver,
 as follows, (see the User's Manual for more details)
 500 - generalized formulation, MINOS,
 540 - generalized formulation, MIPS
-      primal/dual interior point method,
+primal/dual interior point method,
 545 - generalized formulation (except CCV), SC-MIPS
-      step-controlled primal/dual interior point method'''),
+step-controlled primal/dual interior point method'''),
 
     ('opf_poly2pwl_pts', 10, 'number of evaluation points to use when '
      'converting from polynomial to piece-wise linear costs)'),
@@ -67,15 +67,15 @@ as follows, (see the User's Manual for more details)
 
     ('opf_alg_dc', 0, '''solver to use for DC OPF:
 0 - choose default solver based on availability in the
-    following order, 600, 500, 200.
+following order, 600, 500, 200.
 200 - PIPS, Python Interior Point Solver
-      primal/dual interior point method,
+primal/dual interior point method,
 250 - PIPS-sc, step-controlled variant of PIPS
 400 - IPOPT, requires pyipopt interface to IPOPT solver
-      available from: https://projects.coin-or.org/Ipopt/
+available from: https://projects.coin-or.org/Ipopt/
 500 - CPLEX, requires Python interface to CPLEX solver
 600 - MOSEK, requires Python interface to MOSEK solver
-      available from: http://www.mosek.com/''')
+available from: http://www.mosek.com/''')
 ]
 
 OUTPUT_OPTIONS = [
