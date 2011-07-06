@@ -14,16 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Checks for dispatchable loads.
+"""
+
 from idx_gen import PMAX, PMIN
+
 
 def isload(gen):
     """Checks for dispatchable loads.
 
     Returns a column vector of 1's and 0's. The 1's correspond to rows of the
-    GEN matrix which represent dispatchable loads. The current test is
-    Pmin < 0 AND Pmax == 0. This may need to be revised to allow sensible
+    C{gen} matrix which represent dispatchable loads. The current test is
+    C{Pmin < 0 and Pmax == 0}. This may need to be revised to allow sensible
     specification of both elastic demand and pumped storage units.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     return (gen[:, PMIN] < 0) & (gen[:, PMAX] == 0)

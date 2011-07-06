@@ -14,9 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Executes the OPF specified by an OPF model object.
+"""
+
 from sys import stdout, stderr
 
-from numpy import array, arange, pi, zeros, r_, c_
+from numpy import array, arange, pi, zeros, r_
 
 from pypower.ppver import ppver
 from pypower.dcopf_solver import dcopf_solver
@@ -35,11 +38,10 @@ from pypower.idx_brch import MU_ANGMIN, MU_ANGMAX
 def opf_execute(om, ppopt):
     """Executes the OPF specified by an OPF model object.
 
-    RESULTS are returned with internal indexing, all equipment
+    C{results} are returned with internal indexing, all equipment
     in-service, etc.
 
-    @see: C{opf}, C{opf_setup}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: L{opf}, L{opf_setup}
     """
     ##-----  setup  -----
     ## options

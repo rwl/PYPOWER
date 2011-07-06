@@ -14,12 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Solves the power flow using a full Newton's method.
+"""
+
 import sys
 
-from numpy import array, angle, exp, linalg, multiply, conj, r_, ix_, Inf
+from numpy import array, angle, exp, linalg, conj, r_, Inf
 
 from scipy.sparse import hstack, vstack
-from scipy.sparse.linalg import spsolve, splu
+from scipy.sparse.linalg import spsolve
 
 from dSbus_dV import dSbus_dV
 from ppoption import ppoption
@@ -28,22 +31,21 @@ from ppoption import ppoption
 def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     """Solves the power flow using a full Newton's method.
 
-    solves for bus voltages given the full system admittance matrix (for
+    Solves for bus voltages given the full system admittance matrix (for
     all buses), the complex bus power injection vector (for all buses),
     the initial vector of complex bus voltages, and column vectors with
     the lists of bus indices for the swing bus, PV buses, and PQ buses,
     respectively. The bus voltage vector contains the set point for
     generator (including ref bus) buses, and the reference angle of the
     swing bus, as well as an initial guess for remaining magnitudes and
-    angles. MPOPT is a MATPOWER options vector which can be used to
+    angles. C{ppopt} is a PYPOWER options vector which can be used to
     set the termination tolerance, maximum number of iterations, and
-    output options (see MPOPTION for details). Uses default options if
+    output options (see L{ppoption} for details). Uses default options if
     this parameter is not given. Returns the final complex voltages, a
     flag which indicates whether it converged or not, and the number of
     iterations performed.
 
     @see: L{runpf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
     if ppopt is None:

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Evaluates Hessian of Lagrangian for AC OPF.
+"""
+
 from numpy import array, zeros, ones, exp, arange, r_, flatnonzero as find
 from scipy.sparse import vstack, hstack, issparse, csr_matrix as sparse
 
@@ -30,47 +33,37 @@ from d2ASbr_dV2 import d2ASbr_dV2
 from opf_costfcn import opf_costfcn
 from opf_consfcn import opf_consfcn
 
+
 def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
     """Evaluates Hessian of Lagrangian for AC OPF.
 
     Hessian evaluation function for AC optimal power flow, suitable
-    for use with MIPS or FMINCON's interior-point algorithm.
+    for use with L{pips}.
 
-    @type x: array
     @param x: optimization vector
-    @type lmbda: dict
-    @param lmbda:
-         - C{eqnonlin} : Lagrange multipliers on power balance equations
-         - C{ineqnonlin} : Kuhn-Tucker multipliers on constrained branch flows
-    @type om: opf_model
+    @param lmbda: C{eqnonlin} - Lagrange multipliers on power balance
+    equations. C{ineqnonlin} - Kuhn-Tucker multipliers on constrained
+    branch flows.
     @param om: OPF model object
-    @type Ybus: spmatrix
     @param Ybus: bus admittance matrix
-    @type Yf: spmatrix
     @param Yf: admittance matrix for "from" end of constrained branches
-    @type: Yt: spmatrix
     @param: admittance matrix for "to" end of constrained branches
-    @type ppopt: dict
     @param ppopt: PYPOWER options vector
-    @type il: array
     @param il: (optional) vector of branch indices corresponding to
-               branches with flow limits (all others are assumed to be
-               unconstrained). The default is [1:nl] (all branches).
-               YF and YT contain only the rows corresponding to IL.
-    @type cost_mult: float
+    branches with flow limits (all others are assumed to be unconstrained).
+    The default is C{range(nl)} (all branches). C{Yf} and C{Yt} contain
+    only the rows corresponding to C{il}.
     @param cost_mult: (optional) Scale factor to be applied to the cost
-                      (default = 1).
+    (default = 1).
 
-    @rtype: spmatrix
     @return: Hessian of the Lagrangian.
 
-    Examples:
+    Examples::
         Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt)
         Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il)
         Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il, cost_mult)
 
     @see: L{opf_costfcn}, L{opf_consfcn}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ##----- initialize -----
     ## unpack data

@@ -14,22 +14,25 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import ones, zeros, copy, imag
+"""Builds the FDPF matrices, B prime and B double prime.
+"""
+
+from numpy import ones, zeros, copy
 
 from idx_bus import BS
 from idx_brch import BR_B, BR_R, TAP, SHIFT
 
 from makeYbus import makeYbus
 
+
 def makeB(baseMVA, bus, branch, alg):
     """Builds the FDPF matrices, B prime and B double prime.
 
     Returns the two matrices B prime and B double prime used in the fast
-    decoupled power flow. Does appropriate conversions to p.u. ALG is the
-    value of the PF_ALG option specifying the power flow algorithm.
+    decoupled power flow. Does appropriate conversions to p.u. C{alg} is the
+    value of the C{PF_ALG} option specifying the power flow algorithm.
 
     @see: L{fdpf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## constants
     nb = bus.shape[0]          ## number of buses

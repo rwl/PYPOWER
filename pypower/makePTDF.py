@@ -14,11 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Builds the DC PTDF matrix for a given choice of slack.
+"""
+
 from sys import stderr
 
-from numpy import zeros, arange, isscalar, dot, divide, ix_, flatnonzero as find
+from numpy import zeros, arange, isscalar, dot, ix_, flatnonzero as find
 
-from numpy.linalg import inv, lstsq, solve
+from numpy.linalg import solve
 
 from idx_bus import BUS_TYPE, REF, BUS_I
 from makeBdc import makeBdc
@@ -26,19 +29,19 @@ from makeBdc import makeBdc
 
 def makePTDF(baseMVA, bus, branch, slack=None):
     """Builds the DC PTDF matrix for a given choice of slack.
-    Returns the DC PTDF
-    matrix for a given choice of slack. The matrix is nbr x nb, where
-    nbr is the number of branches and nb is the number of buses. The SLACK
-    can be a scalar (single slack bus) or an nb x 1 column vector of
-    weights specifying the proportion of the slack taken up at each bus.
-    If the SLACK is not specified the reference bus is used by default.
 
-    For convenience, SLACK can also be an nb x nb matrix, where each
+    Returns the DC PTDF matrix for a given choice of slack. The matrix is
+    C{nbr x nb}, where C{nbr} is the number of branches and C{nb} is the
+    number of buses. The C{slack} can be a scalar (single slack bus) or an
+    C{nb x 1} column vector of weights specifying the proportion of the
+    slack taken up at each bus. If the C{slack} is not specified the
+    reference bus is used by default.
+
+    For convenience, C{slack} can also be an C{nb x nb} matrix, where each
     column specifies how the slack should be handled for injections
     at that bus.
 
     @see: L{makeLODF}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## use reference bus for slack by default
     if slack is None:

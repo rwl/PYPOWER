@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Construct linear constraints for constant power factor var loads.
+"""
+
 from sys import stderr
 
 from numpy import array, zeros, arange, sin, cos, arctan2, r_
@@ -29,13 +32,11 @@ def makeAvl(baseMVA, gen):
     """Construct linear constraints for constant power factor var loads.
 
     Constructs parameters for the following linear constraint enforcing a
-    constant power factor constraint for dispatchable loads.
+    constant power factor constraint for dispatchable loads::
 
-         LVL <= AVL * [Pg Qg] <= UVL
+         lvl <= Avl * [Pg, Qg] <= uvl
 
-    IVL is the vector of indices of generators representing variable loads.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    C{ivl} is the vector of indices of generators representing variable loads.
     """
     ## data dimensions
     ng = gen.shape[0]      ## number of dispatchable injections

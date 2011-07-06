@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Implements the OPF model object used to encapsulate a given OPF
+problem formulation.
+"""
+
 from sys import stderr
 
 from numpy import array, zeros, ones, Inf, dot, arange, r_
@@ -27,8 +31,6 @@ class opf_model(object):
     variables, constraints and costs in named blocks, keeping track of the
     ordering and indexing of the blocks as variables, constraints and costs
     are added to the problem.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
 
     def __init__(self, ppc):
@@ -111,6 +113,8 @@ class opf_model(object):
 
 
     def __repr__(self):
+        """String representation of the object.
+        """
         s = ''
         if self.var['NS']:
             s += '\n%-22s %5s %8s %8s %8s\n' % ('VARIABLES', 'name', 'i1', 'iN', 'N')
@@ -182,16 +186,16 @@ class opf_model(object):
     def add_constraints(self, name, AorN, l, u=None, varsets=None):
         """Adds a set of constraints to the model.
 
-        Linear constraints are of the form L <= A * x <= U, where
-        x is a vector made of of the vars specified in VARSETS (in
-        the order given). This allows the A matrix to be defined only
+        Linear constraints are of the form C{l <= A * x <= u}, where
+        C{x} is a vector made of of the vars specified in C{varsets} (in
+        the order given). This allows the C{A} matrix to be defined only
         in terms of the relevant variables without the need to manually
-        create a lot of zero columns. If VARSETS is empty, x is taken
-        to be the full vector of all optimization variables. If L or
-        U are empty, they are assumed to be appropriately sized vectors
-        of -Inf and Inf, respectively.
+        create a lot of zero columns. If C{varsets} is empty, C{x} is taken
+        to be the full vector of all optimization variables. If C{l} or
+        C{u} are empty, they are assumed to be appropriately sized vectors
+        of C{-Inf} and C{Inf}, respectively.
 
-        For nonlinear constraints, the 3rd argument, N, is the number
+        For nonlinear constraints, the 3rd argument, C{N}, is the number
         of constraints in the set. Currently, this is used internally
         by PYPOWER, but there is no way for the user to specify
         additional nonlinear constraints.
@@ -264,21 +268,22 @@ class opf_model(object):
         """Adds a set of user costs to the model.
 
         Adds a named block of user-defined costs to the model. Each set is
-        defined by the CP struct described below. All user-defined sets of
+        defined by the C{cp} dict described below. All user-defined sets of
         costs are combined together into a single set of cost parameters in
-        a single CP struct by BULD_COST_PARAMS. This full aggregate set of
-        cost parameters can be retreived from the model by GET_COST_PARAMS.
+        a single C{cp} dict by L{build_cost_params}. This full aggregate set of
+        cost parameters can be retrieved from the model by L{get_cost_params}.
 
-        Let x refer to the vector formed by combining the specified VARSETS,
-        and f_u(x, CP) be the cost at x corresponding to the cost parameters
-        contained in CP, where CP is a struct with the following fields:
+        Let C{x} refer to the vector formed by combining the specified
+        C{varsets}, and C{f_u(x, cp)} be the cost at C{x} corresponding to the
+        cost parameters contained in C{cp}, where C{cp} is a dict with the
+        following fields::
             N      - nw x nx sparse matrix
             Cw     - nw x 1 vector
             H      - nw x nw sparse matrix (optional, all zeros by default)
             dd, mm - nw x 1 vectors (optional, all ones by default)
             rh, kk - nw x 1 vectors (optional, all zeros by default)
 
-        These parameters are used as follows to compute f_u(x, CP)
+        These parameters are used as follows to compute C{f_u(x, CP)}::
 
             R  = N*x - rh
 
@@ -384,11 +389,11 @@ class opf_model(object):
         """ Adds a set of variables to the model.
 
         Adds a set of variables to the model, where N is the number of
-        variables in the set, V0 is the initial value of those variables,
-        and VL and VU are the lower and upper bounds on the variables.
+        variables in the set, C{v0} is the initial value of those variables,
+        and C{vl} and C{vu} are the lower and upper bounds on the variables.
         The defaults for the last three arguments, which are optional,
-        are for all values to be initialized to zero (V0 = 0) and unbounded
-        (VL = -Inf, VU = Inf).
+        are for all values to be initialized to zero (C{v0 = 0}) and unbounded
+        (C{VL = -Inf, VU = Inf}).
         """
         ## prevent duplicate named var sets
         if name in self.var["idx"]["N"]:
@@ -425,11 +430,11 @@ class opf_model(object):
         """Builds and saves the full generalized cost parameters.
 
         Builds the full set of cost parameters from the individual named
-        sub-sets added via ADD_COST. Skips the building process if it has
+        sub-sets added via L{add_cost}. Skips the building process if it has
         already been done, unless a second input argument is present.
 
-        These cost parameters can be retrieved by calling GET_COST_PARAMS
-        and the user-defined costs evaluated by calling COMPUTE_COST.
+        These cost parameters can be retrieved by calling L{get_cost_params}
+        and the user-defined costs evaluated by calling L{compute_cost}.
         """
         ## initialize parameters
         nw = self.cost["N"]
@@ -497,19 +502,19 @@ class opf_model(object):
 
         Computes the value of a user defined cost, either for all user
         defined costs or for a named set of costs. Requires calling
-        BUILD_COST_PARAMS first to build the full set of parameters.
+        L{build_cost_params} first to build the full set of parameters.
 
-        Let X be the full set of optimization variables and F_U(X, CP) be the
-        user-defined cost at X, corresponding to the set of cost parameters in
-        the CP struct returned by GET_COST_PARAMS, where CP is a struct with the
-        following fields:
+        Let C{x} be the full set of optimization variables and C{f_u(x, cp)} be
+        the user-defined cost at C{x}, corresponding to the set of cost
+        parameters in the C{cp} dict returned by L{get_cost_params}, where
+        C{cp} is a dict with the following fields::
             N      - nw x nx sparse matrix
             Cw     - nw x 1 vector
             H      - nw x nw sparse matrix (optional, all zeros by default)
             dd, mm - nw x 1 vectors (optional, all ones by default)
             rh, kk - nw x 1 vectors (optional, all zeros by default)
 
-        These parameters are used as follows to compute F_U(X, CP)
+        These parameters are used as follows to compute C{f_u(x, cp)}::
 
             R  = N*x - rh
 
@@ -570,13 +575,14 @@ class opf_model(object):
     def get_cost_params(self, name=None):
         """Returns the cost parameter struct for user-defined costs.
 
-        Requires calling BUILD_COST_PARAMS first to build the full set of
+        Requires calling L{build_cost_params} first to build the full set of
         parameters. Returns the full cost parameter struct for all user-defined
-        costs that incorporates all of the named cost sets added via ADD_COSTS,
-        or, if a name is provided it returns the cost struct corresponding to
-        the named set of cost rows (N still has full number of columns).
+        costs that incorporates all of the named cost sets added via
+        L{add_costs}, or, if a name is provided it returns the cost dict
+        corresponding to the named set of cost rows (C{N} still has full number
+        of columns).
 
-        The cost parameters are returned in a dict with the following fields:
+        The cost parameters are returned in a dict with the following fields::
             N      - nw x nx sparse matrix
             Cw     - nw x 1 vector
             H      - nw x nw sparse matrix (optional, all zeros by default)
@@ -605,35 +611,35 @@ class opf_model(object):
     def get_idx(self):
         """ Returns the idx struct for vars, lin/nln constraints, costs.
 
-        Returns a structure for each with the beginning and ing
+        Returns a structure for each with the beginning and ending
         index value and the number of elements for each named block.
-        The 'i1' field (that's a one) is a struct with all of the
-        starting indices, 'iN' contains all the ing indices and
-        'N' contains all the sizes. Each is a struct whose fields are
+        The 'i1' field (that's a one) is a dict with all of the
+        starting indices, 'iN' contains all the ending indices and
+        'N' contains all the sizes. Each is a dict whose keys are
         the named blocks.
 
-        Examples:
+        Examples::
             [vv, ll, nn] = get_idx(om)
 
-            For a variable block named 'z' we have ...
-                vv.i1.z - starting index for 'z' in optimization vector x
-                vv.iN.z - ing index for 'z' in optimization vector x
+        For a variable block named 'z' we have::
+                vv['i1']['z'] - starting index for 'z' in optimization vector x
+                vv['iN']['z'] - ending index for 'z' in optimization vector x
                 vv["N"]    - number of elements in 'z'
 
-            To extract a 'z' variable from x:
-                z = x(vv.i1.z:vv.iN.z)
+        To extract a 'z' variable from x::
+                z = x(vv['i1']['z']:vv['iN']['z'])
 
-            To extract the multipliers on a linear constraint set
-            named 'foo', where mu_l and mu_u are the full set of
-            linear constraint multipliers:
-                mu_l_foo = mu_l(ll.i1.foo:ll.iN.foo)
-                mu_u_foo = mu_u(ll.i1.foo:ll.iN.foo)
+        To extract the multipliers on a linear constraint set
+        named 'foo', where mu_l and mu_u are the full set of
+        linear constraint multipliers::
+                mu_l_foo = mu_l(ll['i1']['foo']:ll['iN']['foo'])
+                mu_u_foo = mu_u(ll['i1']['foo']:ll['iN']['foo'])
 
-            The number of nonlinear constraints in a set named 'bar':
+        The number of nonlinear constraints in a set named 'bar'::
                 nbar = nn["N"].bar
-              (note: the following is preferable ...
+        (note: the following is preferable ::
                 nbar = getN(om, 'nln', 'bar')
-              ... if you haven't already called get_idx to get nn.)
+        ... if you haven't already called L{get_idx} to get C{nn}.)
         """
         vv = self.var["idx"]
         ll = self.lin["idx"]
@@ -655,7 +661,7 @@ class opf_model(object):
         Returns either the total number of variables/constraints/cost rows
         or the number corresponding to a specified named block.
 
-        Examples:
+        Examples::
             N = getN(om, 'var')         : total number of variables
             N = getN(om, 'lin')         : total number of linear constraints
             N = getN(om, 'nln')         : total number of nonlinear constraints
@@ -678,10 +684,10 @@ class opf_model(object):
     def getv(self, name=None):
         """Returns initial value, lower bound and upper bound for opt variables.
 
-        Returns the Returns value, lower bound and upper bound for the full
+        Returns the initial value, lower bound and upper bound for the full
         optimization variable vector, or for a specific named variable set.
 
-        Examples:
+        Examples::
             x, xmin, xmax = getv(om)
             Pg, Pmin, Pmax = getv(om, 'Pg')
         """
@@ -709,7 +715,7 @@ class opf_model(object):
         """Builds and returns the full set of linear constraints.
 
         Builds the full set of linear constraints based on those added by
-        ADD_CONSTRAINTS.
+        L{add_constraints}::
 
             L <= A * x <= U
         """

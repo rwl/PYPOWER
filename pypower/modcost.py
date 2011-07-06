@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Modifies generator costs by shifting or scaling (F or X).
+"""
+
 import sys
 
 from numpy import zeros, ones, arange, dot, cumsum, flatnonzero as find
@@ -31,13 +34,11 @@ def modcost(gencost, alpha, modtype='SCALE_F'):
     of polynomial or piecewise linear costs.
 
     C{modtype} takes one of the 4 possible values (let F_alpha(X) denote the
-    the modified function):
+    the modified function)::
         SCALE_F (default) : F_alpha(X)         == F(X) * ALPHA
         SCALE_X           : F_alpha(X * ALPHA) == F(X)
         SHIFT_F           : F_alpha(X)         == F(X) + ALPHA
         SHIFT_X           : F_alpha(X + ALPHA) == F(X)
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     gencost = gencost.copy()
 
@@ -80,14 +81,12 @@ def polyshift(c, a):
     coefficients are given in the column vector C{c}.
 
     Example: For any polynomial with C{n} coefficients in C[c}, and any values
-    for C{x} and shift C{a}, the C{f - f0} should be zero.
+    for C{x} and shift C{a}, the C{f - f0} should be zero::
         x = rand
         a = rand
         c = rand(n, 1);
         f0 = polyval(c, x)
         f  = polyval(polyshift(c, a), x+a)
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     n = len(c)
     d = zeros(c.shape)

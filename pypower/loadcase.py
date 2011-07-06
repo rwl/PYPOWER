@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Loads a PYPOWER case dictionary.
+"""
+
 import sys
-import logging
 
-from os import chdir, getcwd
-
-from os.path import basename, splitext, exists, dirname, join
+from os.path import basename, splitext, exists
 
 from copy import deepcopy
 
@@ -30,35 +30,31 @@ from scipy.io import loadmat
 from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, APF
 from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
 
-from pypower.util import feval
-
 
 def loadcase(casefile,
         return_as_obj=True, expect_gencost=True, expect_areas=True):
-    """ Returns the individual data matrices or an object containing them
-    as members.
+    """Returns the individual data matrices or an dict containing them
+    as values.
 
-    Here casefile is either a dict containing the keys baseMVA, bus,
-    gen, branch, areas, gencost, or a string containing the name of the
-    file. If casefile contains the extension '.mat' or '.py', then the
-    explicit file is searched. If casefile containts no extension, then
-    C{loadcase} looks for a '.mat' file first, then for a '.py' file.  If the
+    Here C{casefile} is either a dict containing the keys C{baseMVA}, C{bus},
+    C{gen}, C{branch}, C{areas}, C{gencost}, or a string containing the name
+    of the file. If C{casefile} contains the extension '.mat' or '.py', then
+    the explicit file is searched. If C{casefile} containts no extension, then
+    L{loadcase} looks for a '.mat' file first, then for a '.py' file.  If the
     file does not exist or doesn't define all matrices, the function returns
     an exit code as follows:
 
-        0:  all variables successfully defined
-        1:  input argument is not a string or struct
-        2:  specified extension-less file name does not exist in search path
-        3:  specified .mat file does not exist in search path
-        4:  specified .py file does not exist in search path
-        5:  specified file fails to define all matrices or contains syntax
+        0.  all variables successfully defined
+        1.  input argument is not a string or dict
+        2.  specified extension-less file name does not exist
+        3.  specified .mat file does not exist
+        4.  specified .py file does not exist
+        5.  specified file fails to define all matrices or contains syntax
             error
 
     If the input data is not a dict containing a 'version' key, it is
     assumed to be a PYPOWER case file in version 1 format, and will be
     converted to version 2 format.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if return_as_obj == True:
         expect_gencost = False

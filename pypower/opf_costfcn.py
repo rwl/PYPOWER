@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Evaluates objective function, gradient and Hessian for OPF.
+"""
+
 from numpy import array, ones, zeros, arange, r_, dot, flatnonzero as find
 from scipy.sparse import issparse, csr_matrix as sparse
 
@@ -27,18 +30,15 @@ def opf_costfcn(x, om, return_hessian=False):
     """Evaluates objective function, gradient and Hessian for OPF.
 
     Objective function evaluation routine for AC optimal power flow,
-    suitable for use with MIPS or FMINCON. Computes objective function value,
+    suitable for use with L{pips}. Computes objective function value,
     gradient and Hessian.
 
-    @type x: array
     @param x: optimization vector
-    @type om: opf_model
     @param om: OPF model object
 
-    @return:
-      F   : value of objective function
-      DF  : (optional) gradient of objective function (column vector)
-      D2F : (optional) Hessian of objective function (sparse matrix)
+    @return: C{F} - value of objective function. C{df} - (optional) gradient
+    of objective function (column vector). C{d2f} - (optional) Hessian of
+    objective function (sparse matrix).
 
     @see: L{opf_consfcn}, L{opf_hessfcn}
     """

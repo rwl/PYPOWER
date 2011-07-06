@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Construct constraints for branch angle difference limits.
+"""
+
 from numpy import array, ones, zeros, r_, Inf, pi, arange
 from numpy import flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
@@ -25,14 +28,12 @@ def makeAang(baseMVA, branch, nb, ppopt):
     """Construct constraints for branch angle difference limits.
 
     Constructs the parameters for the following linear constraint limiting
-    the voltage angle differences across branches, where Va is the vector
-    of bus voltage angles. NB is the number of buses.
+    the voltage angle differences across branches, where C{Va} is the vector
+    of bus voltage angles. C{nb} is the number of buses::
 
-        LANG <= AANG * Va <= UANG
+        lang <= Aang * Va <= uang
 
-    IANG is the vector of indices of branches with angle difference limits.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    C{iang} is the vector of indices of branches with angle difference limits.
     """
     ## options
     ignore_ang_lim = ppopt['OPF_IGNORE_ANG_LIM']

@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, linalg, zeros, arange, Inf, r_, c_
+"""Construct linear constraints for generator capability curves.
+"""
+
+from numpy import array, linalg, zeros, arange, r_, c_
 from numpy import flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
@@ -28,14 +31,20 @@ def makeApq(baseMVA, gen):
 
     Constructs the parameters for the following linear constraints
     implementing trapezoidal generator capability curves, where
-    Pg and Qg are the real and reactive generator injections.
+    C{Pg} and C{Qg} are the real and reactive generator injections::
 
-    APQH * [Pg Qg] <= UBPQH
-    APQL * [Pg Qg] <= UBPQL
+        Apqh * [Pg, Qg] <= ubpqh
+        Apql * [Pg, Qg] <= ubpql
 
-    DATA constains additional information as shown below.
+    C{data} constains additional information as shown below.
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    Example::
+        Apqh, ubpqh, Apql, ubpql, data = makeApq(baseMVA, gen)
+
+        data['h']      [Qc1max-Qc2max, Pc2-Pc1]
+        data['l']      [Qc2min-Qc1min, Pc1-Pc2]
+        data['ipqh']   indices of gens with general PQ cap curves (upper)
+        data['ipql']   indices of gens with general PQ cap curves (lower)
     """
     data = {}
     ## data dimensions

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Solves AC optimal power flow using IPOPT.
+"""
+
 from numpy import array, ones, zeros, shape, Inf, pi, exp, conj, r_, arange, tril
 from numpy import flatnonzero as find
 
@@ -39,41 +42,40 @@ from pypower.pips import pips
 from pypower.util import sub2ind
 from pypower.ipopt_options import ipopt_options
 
+
 def ipoptopf_solver(om, ppopt):
     """Solves AC optimal power flow using IPOPT.
 
     Inputs are an OPF model object and a PYPOWER options vector.
 
-    Outputs are a RESULTS struct, SUCCESS flag and RAW output struct.
+    Outputs are a C{results} dict, C{success} flag and C{raw} output dict.
 
-    RESULTS is a MATPOWER case struct (ppc) with the usual baseMVA, bus
-    branch, gen, gencost fields, along with the following additional
+    C{results} is a PYPOWER case dict (ppc) with the usual C{baseMVA}, C{bus}
+    C{branch}, C{gen}, C{gencost} fields, along with the following additional
     fields:
-        .order      see 'help ext2int' for details of this field
-        .x          final value of optimization variables (internal order)
-        .f          final objective function value
-        .mu         shadow prices on ...
-            .var
-                .l  lower bounds on variables
-                .u  upper bounds on variables
-            .nln
-                .l  lower bounds on nonlinear constraints
-                .u  upper bounds on nonlinear constraints
-            .lin
-                .l  lower bounds on linear constraints
-                .u  upper bounds on linear constraints
+        - C{order}      see 'help ext2int' for details of this field
+        - C{x}          final value of optimization variables (internal order)
+        - C{f}          final objective function value
+        - C{mu}         shadow prices on ...
+            - C{var}
+                - C{l}  lower bounds on variables
+                - C{u}  upper bounds on variables
+            - C{nln}
+                - C{l}  lower bounds on nonlinear constraints
+                - C{u}  upper bounds on nonlinear constraints
+            - C{lin}
+                - C{l}  lower bounds on linear constraints
+                - C{u}  upper bounds on linear constraints
 
-    SUCCESS     1 if solver converged successfully, 0 otherwise
+    C{success} is C{True} if solver converged successfully, C{False} otherwise
 
-    RAW         raw output in form returned by MINOS
-        .xr     final value of optimization variables
-        .pimul  constraint multipliers
-        .info   solver specific termination code
-        .output solver specific output information
+    C{raw} is a raw output dict in form returned by MINOS
+        - C{xr}     final value of optimization variables
+        - C{pimul}  constraint multipliers
+        - C{info}   solver specific termination code
+        - C{output} solver specific output information
 
-    @see: C{opf}, C{pips}
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: L{opf}, L{pips}
     """
     ## options
     verbose = ppopt['VERBOSE']

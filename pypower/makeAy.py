@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Make the A matrix and RHS for the CCV formulation.
+"""
+
 from numpy import array, diff, any, zeros, r_, flatnonzero as find
 #from scipy.sparse import csr_matrix as sparse
 from scipy.sparse import lil_matrix as sparse
@@ -24,23 +27,21 @@ from idx_cost import MODEL, PW_LINEAR, NCOST, COST
 def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     """Make the A matrix and RHS for the CCV formulation.
 
-    Constructs the parameters for linear "basin constraints" on Pg, Qg
-    and Y used by the CCV cost formulation, expressed as
+    Constructs the parameters for linear "basin constraints" on C{Pg}, C{Qg}
+    and C{Y} used by the CCV cost formulation, expressed as::
 
-         AY * X <= BY
+         Ay * x <= by
 
-    where X is the vector of optimization variables. The starting index
-    within the X vector for the active, reactive sources and the Y
-    variables should be provided in arguments PGBAS, QGBAS, YBAS. The
-    number of generators is NG.
+    where C{x} is the vector of optimization variables. The starting index
+    within the C{x} vector for the active, reactive sources and the C{y}
+    variables should be provided in arguments C{pgbas}, C{qgbas}, C{ybas}.
+    The number of generators is C{ng}.
 
     Assumptions: All generators are in-service.  Filter any generators
-    that are offline from the GENCOST matrix before calling MAKEAY.
-    Efficiency depends on Qg variables being after Pg variables, and
-    the Y variables must be the last variables within the vector X for
-    the dimensions of the resulting AY to be conformable with X.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    that are offline from the C{gencost} matrix before calling L{makeAy}.
+    Efficiency depends on C{Qg} variables being after C{Pg} variables, and
+    the C{y} variables must be the last variables within the vector C{x} for
+    the dimensions of the resulting C{Ay} to be conformable with C{x}.
     """
     ## find all pwl cost rows in gencost, either real or reactive
     iycost = find(gencost[:, MODEL] == PW_LINEAR)

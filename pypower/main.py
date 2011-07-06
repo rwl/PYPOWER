@@ -13,6 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Main entry-points for PYPOWER.
+"""
+
 import sys
 
 from optparse import OptionParser, OptionGroup, OptionValueError

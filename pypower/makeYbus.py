@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+"""Builds the bus admittance matrix and branch admittance matrices.
+"""
+
+from sys import stderr
 
 from numpy import ones, conj, nonzero, any, exp, pi, r_
 from scipy.sparse import csr_matrix
@@ -22,19 +25,17 @@ from scipy.sparse import csr_matrix
 from idx_bus import BUS_I, GS, BS
 from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, BR_STATUS, SHIFT, TAP
 
-logger = logging.getLogger(__name__)
 
 def makeYbus(baseMVA, bus, branch):
     """Builds the bus admittance matrix and branch admittance matrices.
 
-    Returns the full
-    bus admittance matrix (i.e. for all buses) and the matrices YF and YT
-    which, when multiplied by a complex voltage vector, yield the vector
-    currents injected into each line from the "from" and "to" buses
-    respectively of each line. Does appropriate conversions to p.u.
+    Returns the full bus admittance matrix (i.e. for all buses) and the
+    matrices C{Yf} and C{Yt} which, when multiplied by a complex voltage
+    vector, yield the vector currents injected into each line from the
+    "from" and "to" buses respectively of each line. Does appropriate
+    conversions to p.u.
 
     @see: L{makeSbus}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## constants
     nb = bus.shape[0]          ## number of buses
@@ -42,7 +43,7 @@ def makeYbus(baseMVA, bus, branch):
 
     ## check that bus numbers are equal to indices to bus (one set of bus nums)
     if any(bus[:, BUS_I] != range(nb)):
-        logger.error('buses must appear in order by bus number')
+        stderr.write('buses must appear in order by bus number\n')
 
     ## for each branch, compute the elements of the branch admittance matrix where
     ##

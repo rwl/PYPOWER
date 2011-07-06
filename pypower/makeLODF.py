@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Builds the line outage distribution factor matrix.
+"""
+
 from numpy import ones, diag, eye, r_, arange
 from scipy.sparse import csr_matrix as sparse
 
@@ -24,14 +27,13 @@ def makeLODF(branch, PTDF):
     """Builds the line outage distribution factor matrix.
 
     Returns the DC line outage distribution factor matrix for a given PTDF.
-    The matrix is nbr x nbr, where nbr is the number of branches.
+    The matrix is C{nbr x nbr}, where C{nbr} is the number of branches.
 
-    Example:
+    Example::
         H = makePTDF(baseMVA, bus, branch)
         LODF = makeLODF(branch, H)
 
     @see: L{makePTDF}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     nl, nb = PTDF.shape
     f = branch[:, F_BUS]

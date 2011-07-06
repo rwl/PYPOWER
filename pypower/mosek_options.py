@@ -27,36 +27,37 @@ def mosek_options(overrides=None, ppopt=None):
     """Sets options for MOSEK.
 
     Inputs are all optional, second argument must be either a string
-    (FNAME) or a vector (ppopt):
+    (C{fname}) or a dict (C{ppopt}):
 
-        OVERRIDES - struct containing values to override the defaults
-        FNAME - name of user-supplied function called after default
-            options are set to modify them. Calling syntax is:
-                MODIFIED_OPT = FNAME(DEFAULT_OPT)
-        ppopt - MATPOWER options vector, uses the following entries:
-            OPF_VIOLATION (16)  - used to set opt.MSK_DPAR_INTPNT_TOL_PFEAS
-            VERBOSE (31)        - not currently used here
-            MOSEK_MAX_IT (112)  - used to set opt.MSK_IPAR_INTPNT_MAX_ITERATIONS
-            MOSEK_GAP_TOL (113) - used to set opt.MSK_DPAR_INTPNT_TOL_REL_GAP
-            MOSEK_MAX_TIME (114) - used to set opt.MSK_DPAR_OPTIMIZER_MAX_TIME
-            MOSEK_NUM_THREADS (115) - used to set opt.MSK_IPAR_INTPNT_NUM_THREADS
-            MOSEK_OPT (116)     - user option file, if ppopt(116) is non-zero
-                non-zero it is apped to 'mosek_user_options_' to form
-                the name of a user-supplied function used as FNAME
-                described above, except with calling syntax:
-                    MODIFIED_OPT = FNAME(DEFAULT_OPT, ppopt)
+        - C{overrides}
+            - dict containing values to override the defaults
+            - C{fname} name of user-supplied function called after default
+            options are set to modify them. Calling syntax is::
+                modified_opt = fname(default_opt)
+        - C{ppopt} PYPOWER options vector, uses the following entries:
+            - C{OPF_VIOLATION} used to set opt.MSK_DPAR_INTPNT_TOL_PFEAS
+            - C{VERBOSE} not currently used here
+            - C{MOSEK_MAX_IT} used to set opt.MSK_IPAR_INTPNT_MAX_ITERATIONS
+            - C{MOSEK_GAP_TOL} used to set opt.MSK_DPAR_INTPNT_TOL_REL_GAP
+            - C{MOSEK_MAX_TIME} used to set opt.MSK_DPAR_OPTIMIZER_MAX_TIME
+            - C{MOSEK_NUM_THREADS} used to set opt.MSK_IPAR_INTPNT_NUM_THREADS
+            - C{MOSEK_OPT} user option file, if ppopt['MOSEK_OPT'] is non-zero
+            non-zero it is apped to 'mosek_user_options_' to form
+            the name of a user-supplied function used as C{fname}
+            described above, except with calling syntax::
+                modified_opt = fname(default_opt, ppopt)
 
     Output is a param dict to pass to MOSEKOPT.
 
     Example:
 
-    If PPOPT(116) = 3, then after setting the default MOSEK options,
-    MOSEK_OPTIONS will execute the following user-defined function
-    to allow option overrides:
+    If PPOPT['MOSEK_OPT'] = 3, then after setting the default MOSEK options,
+    L{modek_options} will execute the following user-defined function
+    to allow option overrides::
 
         opt = mosek_user_options_3(opt, ppopt)
 
-    The contents of mosek_user_options_3.m, could be something like:
+    The contents of mosek_user_options_3.py, could be something like::
 
         def mosek_user_options_3(opt, ppopt):
             opt = {}
@@ -68,11 +69,9 @@ def mosek_options(overrides=None, ppopt=None):
     optimization toolbox for MATLAB manaul" for
     details on the available options.
 
-        U{http://www.mosek.com/documentation/}
+    U{http://www.mosek.com/documentation/}
 
-    @see C{mosekopt}, C{ppoption}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: C{mosekopt}, L{ppoption}.
     """
     ##-----  initialization and arg handling  -----
     ## defaults

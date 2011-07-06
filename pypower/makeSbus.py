@@ -14,21 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Builds the vector of complex bus power injections.
+"""
+
 from numpy import ones, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
 from idx_bus import PD, QD
 from idx_gen import GEN_BUS, PG, QG, GEN_STATUS
 
+
 def makeSbus(baseMVA, bus, gen):
     """Builds the vector of complex bus power injections.
 
-    Returns the vector of complex bus
-    power injections, that is, generation minus load. Power is expressed
-    in per unit.
+    Returns the vector of complex bus power injections, that is, generation
+    minus load. Power is expressed in per unit.
 
     @see: L{makeYbus}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## generator info
     on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?

@@ -14,56 +14,58 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Sets options for IPOPT.
+"""
+
 from pypower.util import feval
 
 
 def ipopt_options(overrides=None, ppopt=None):
     """Sets options for IPOPT.
 
-    Sets the values for the options.ipopt struct normally passed to
+    Sets the values for the options.ipopt dict normally passed to
     IPOPT.
 
     Inputs are all optional, second argument must be either a string
-    (FNAME) or a vector (ppopt):
+    (C{fname}) or a dict (C{ppopt}):
 
-        OVERRIDES - struct containing values to override the defaults
-        FNAME - name of user-supplied function called after default
-            options are set to modify them. Calling syntax is:
-                    MODIFIED_OPT = FNAME(DEFAULT_OPT);
-        ppopt - MATPOWER options vector, used to set print_level
-        ppopt - MATPOWER options vector, uses the following entries:
-            OPF_VIOLATION (16)  - used to set opt.constr_viol_tol
-            VERBOSE (31)        - used to opt.print_level
-            IPOPT_OPT (60)      - user option file, if ppopt(60) is
-                non-zero it is appended to 'ipopt_user_options_' to form
-                the name of a user-supplied function used as FNAME
-                described above, except with calling syntax:
-                    MODIFIED_OPT = FNAME(DEFAULT_OPT, ppopt);
+        - C{overrides}
+            - dict containing values to override the defaults
+            - C{fname} name of user-supplied function called after default
+            options are set to modify them. Calling syntax is::
+                modified_opt = fname(default_opt)
+        - C{ppopt} PYPOWER options vector, uses the following entries:
+            - C{OPF_VIOLATION} used to set opt['constr_viol_tol']
+            - C{VERBOSE}       used to opt['print_level']
+            - C{IPOPT_OPT}     user option file, if ppopt['IPOPT_OPT'] is
+            non-zero it is appended to 'ipopt_user_options_' to form
+            the name of a user-supplied function used as C{fname}
+            described above, except with calling syntax::
+                modified_opt = fname(default_opt ppopt)
 
-    Output is an options.ipopt struct to pass to IPOPT.
+    Output is an options.ipopt dict to pass to IPOPT.
 
-    Example:
-
-    If ppopt(60) = 3, then after setting the default IPOPT options,
-    IPOPT_OPTIONS will execute the following user-defined function
-    to allow option overrides:
+    Example: If ppopt['IPOPT_OPT'] = 3, then after setting the default IPOPT
+    options, L{ipopt_options} will execute the following user-defined function
+    to allow option overrides::
 
         opt = ipopt_user_options_3(opt, ppopt);
 
-    The contents of ipopt_user_options_3.m, could be something like:
+    The contents of ipopt_user_options_3.py, could be something like::
 
-        function opt = ipopt_user_options_3(opt, ppopt)
-        opt.nlp_scaling_method = 'none';
-        opt.max_iter           = 500;
-        opt.derivative_test    = 'first-order';
+        def ipopt_user_options_3(opt, ppopt):
+            opt = {}
+            opt['nlp_scaling_method'] = 'none'
+            opt['max_iter']           = 500
+            opt['derivative_test']    = 'first-order'
+            return opt
 
     See the options reference section in the IPOPT documentation for
     details on the available options.
 
-        U{http://www.coin-or.org/Ipopt/documentation/}
+    U{http://www.coin-or.org/Ipopt/documentation/}
 
-    @see: C{pyipopt}, C{ppoption}.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: C{pyipopt}, L{ppoption}
     """
     ##-----  initialization and arg handling  -----
     ## defaults

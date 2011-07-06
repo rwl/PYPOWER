@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Parses and initializes OPF input arguments.
+"""
+
 from sys import stderr
 
 from numpy import array
@@ -30,7 +33,7 @@ def opf_args(*args):
     default values for missing arguments. See Examples below for the
     possible calling syntax options.
 
-       Input arguments options:
+    Input arguments options::
 
         opf_args(ppc)
         opf_args(ppc, ppopt)
@@ -51,37 +54,36 @@ def opf_args(*args):
                                     ppopt, N, fparm, H, Cw, z0, zl, zu)
 
     The data for the problem can be specified in one of three ways:
-    (1) a string (ppc) containing the file name of a MATPOWER case
+      1. a string (ppc) containing the file name of a PYPOWER case
       which defines the data matrices baseMVA, bus, gen, branch, and
       gencost (areas is not used at all, it is only included for
       backward compatibility of the API).
-    (2) a struct (ppc) containing the data matrices as fields.
-    (3) the individual data matrices themselves.
+      2. a dict (ppc) containing the data matrices as fields.
+      3. the individual data matrices themselves.
 
-    The optional user parameters for user constraints (A, l, u), user costs
-    (N, fparm, H, Cw), user variable initializer (z0), and user variable
-    limits (zl, zu) can also be specified as fields in a case struct,
+    The optional user parameters for user constraints (C{A, l, u}), user costs
+    (C{N, fparm, H, Cw}), user variable initializer (z0), and user variable
+    limits (C{zl, zu}) can also be specified as fields in a case dict,
     either passed in directly or defined in a case file referenced by name.
 
-    When specified, A, l, u represent additional linear constraints on the
-    optimization variables, l <= A*[x z] <= u. If the user specifies an A
-    matrix that has more columns than the number of "x" (OPF) variables,
-    then there are extra linearly constrained "z" variables. For an
+    When specified, C{A, l, u} represent additional linear constraints on the
+    optimization variables, C{l <= A*[x z] <= u}. If the user specifies an C{A}
+    matrix that has more columns than the number of "C{x}" (OPF) variables,
+    then there are extra linearly constrained "C{z}" variables. For an
     explanation of the formulation used and instructions for forming the
-    A matrix, see the manual.
+    C{A} matrix, see the MATPOWER manual.
 
     A generalized cost on all variables can be applied if input arguments
-    N, fparm, H and Cw are specified.  First, a linear transformation
-    of the optimization variables is defined by means of r = N * [x z].
-    Then, to each element of r a function is applied as encoded in the
-    fparm matrix (see manual). If the resulting vector is named w,
-    then H and Cw define a quadratic cost on w: (1/2)*w'*H*w + Cw * w .
-    H and N should be sparse matrices and H should also be symmetric.
+    C{N}, C{fparm}, C{H} and C{Cw} are specified.  First, a linear
+    transformation of the optimization variables is defined by means of
+    C{r = N * [x z]}. Then, to each element of r a function is applied as
+    encoded in the C{fparm} matrix (see Matpower manual). If the resulting
+    vector is named C{w}, then C{H} and C{Cw} define a quadratic cost on
+    C{w}: C{(1/2)*w'*H*w + Cw * w}.
+    C{H} and C{N} should be sparse matrices and C{H} should also be symmetric.
 
-    The optional ppopt vector specifies MATPOWER options. See ppoption
+    The optional C{ppopt} vector specifies PYPOWER options. See L{ppoption}
     for details and default values.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
 #    nargin = len([arg for arg in [baseMVA, bus, gen, branch, areas, gencost,
 #                                  Au, lbu, ubu, ppopt, N, fparm, H, Cw,
@@ -331,8 +333,6 @@ def opf_args(*args):
 
 def opf_args2(*args):
     """Parses and initializes OPF input arguments.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     baseMVA, bus, gen, branch, gencost, Au, lbu, ubu, \
         ppopt, N, fparm, H, Cw, z0, zl, zu, userfcn, areas = opf_args(*args)

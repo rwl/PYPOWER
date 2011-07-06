@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Evaluates nonlinear constraints and their Jacobian for OPF.
+"""
+
 from numpy import zeros, ones, conj, exp, r_, Inf, arange
 
 from scipy.sparse import lil_matrix, vstack, hstack, csr_matrix as sparse
@@ -32,39 +35,27 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, ppopt, il=None, *args):
     """Evaluates nonlinear constraints and their Jacobian for OPF.
 
     Constraint evaluation function for AC optimal power flow, suitable
-    for use with MIPS or FMINCON. Computes constraint vectors and their
-    gradients.
+    for use with L{pips}. Computes constraint vectors and their gradients.
 
-    @type x: array
     @param x: optimization vector
-    @type om: L{opf_model}
     @param om: OPF model object
-    @type Ybus: spmatrix
     @param Ybus: bus admittance matrix
-    @type Yf: spmatrix
     @param Yf: admittance matrix for "from" end of constrained branches
-    @type Yt: spmatrix
     @param Yt: admittance matrix for "to" end of constrained branches
-    @type ppopt: dict
     @param ppopt: PYPOWER options vector
-    @type il: array
     @param il: (optional) vector of branch indices corresponding to
-               branches with flow limits (all others are assumed to be
-               unconstrained). The default is [0:nl] (all branches).
-               C{Yf} and C{Yt} contain only the rows corresponding to C{il}.
+    branches with flow limits (all others are assumed to be
+    unconstrained). The default is C{range(nl)} (all branches).
+    C{Yf} and C{Yt} contain only the rows corresponding to C{il}.
 
-    @return :
-        H  : vector of inequality constraint values (flow limits)
-             limit^2 - flow^2, where the flow can be apparent power
-             real power or current, depending on value of
-             OPF_FLOW_LIM in MPOPT (only for constrained lines)
-        G  : vector of equality constraint values (power balances)
-        DH : (optional) inequality constraint gradients, column j is
-             gradient of H(j)
-        DG : (optional) equality constraint gradients
+    @return: C{h} - vector of inequality constraint values (flow limits)
+    limit^2 - flow^2, where the flow can be apparent power real power or
+    current, depending on value of C{OPF_FLOW_LIM} in C{ppopt} (only for
+    constrained lines). C{g} - vector of equality constraint values (power
+    balances). C{dh} - (optional) inequality constraint gradients, column
+    j is gradient of h(j). C{dg} - (optional) equality constraint gradients.
 
     @see: L{opf_costfcn}, L{opf_hessfcn}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ##----- initialize -----
 

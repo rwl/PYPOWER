@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+"""Builds the B matrices and phase shift injections for DC power flow.
+"""
+
+from sys import stderr
 
 from numpy import ones, r_, pi, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
@@ -22,22 +25,20 @@ from scipy.sparse import csr_matrix as sparse
 from idx_bus import BUS_I
 from idx_brch import F_BUS, T_BUS, BR_X, TAP, SHIFT, BR_STATUS
 
-logger = logging.getLogger(__name__)
 
 def makeBdc(baseMVA, bus, branch):
     """Builds the B matrices and phase shift injections for DC power flow.
 
     Returns the B matrices and phase shift injection vectors needed for a
     DC power flow.
-    The bus real power injections are related to bus voltage angles by
-        P = BBUS * Va + PBUSINJ
+    The bus real power injections are related to bus voltage angles by::
+        P = Bbus * Va + PBusinj
     The real power flows at the from end the lines are related to the bus
-    voltage angles by
-        Pf = BF * Va + PFINJ
+    voltage angles by::
+        Pf = Bf * Va + Pfinj
     Does appropriate conversions to p.u.
 
     @see: L{dcpf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## constants
     nb = bus.shape[0]          ## number of buses
@@ -45,8 +46,8 @@ def makeBdc(baseMVA, bus, branch):
 
     ## check that bus numbers are equal to indices to bus (one set of bus nums)
     if any(bus[:, BUS_I] != range(nb)):
-        logger.error('makeBdc: buses must be numbered consecutively in '
-                     'bus matrix')
+        stderr.write('makeBdc: buses must be numbered consecutively in '
+                     'bus matrix\n')
 
     ## for each branch, compute the elements of the branch B matrix and the phase
     ## shift "quiescent" injections, where
