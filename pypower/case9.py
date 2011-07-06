@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for 9 bus, 3 generator case.
+"""
+
 from numpy import array
 
 def case9():
@@ -22,9 +25,7 @@ def case9():
 
     Based on data from Joe H. Chow's book, p. 70.
 
-    @rtype: dict
     @return: Power flow data for 9 bus, 3 generator case.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

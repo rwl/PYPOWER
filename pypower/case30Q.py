@@ -14,18 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Case 30 with costs for reactive generation.
+"""
+
 from numpy import array
 
 def case30Q():
     """Case 30 with costs for reactive generation.
     Please see L{caseformat} for details on the case file format.
 
-    Identical to case30.m, with the addition of non-zero costs for
+    Identical to L{case30}, with the addition of non-zero costs for
     reactive power.
 
-    @rtype: dict
     @return: Case 30 with costs for reactive generation.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

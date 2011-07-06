@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for IEEE 57 bus test case.
+"""
+
 from numpy import array
 
 def case57():
@@ -23,17 +26,15 @@ def case57():
     This data was converted from IEEE Common Data Format
     (ieee57cdf.txt) on 20-Sep-2004 by cdf2matp, rev. 1.11
 
-
     Converted from IEEE CDF file from:
-        U{http://www.ee.washington.edu/research/pstca/}
+    U{http://www.ee.washington.edu/research/pstca/}
 
-    Manually modified Qmax, Qmin on generator 1 to 200, -140, respectively.
+    Manually modified C{Qmax}, C{Qmin} on generator 1 to 200, -140,
+    respectively.
 
-   08/25/93 UW ARCHIVE           100.0  1961 W IEEE 57 Bus Test Case
+    08/25/93 UW ARCHIVE           100.0  1961 W IEEE 57 Bus Test Case
 
-    @rtype: dict
     @return: Power flow data for IEEE 57 bus test case.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

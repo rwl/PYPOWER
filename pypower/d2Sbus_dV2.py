@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Computes 2nd derivatives of power injection w.r.t. voltage.
+"""
+
 from numpy import ones, conj, arange
 from scipy.sparse import csr_matrix as sparse
 
@@ -22,21 +25,18 @@ def d2Sbus_dV2(Ybus, V, lam):
     """Computes 2nd derivatives of power injection w.r.t. voltage.
 
     Returns 4 matrices containing the partial derivatives w.r.t. voltage angle
-    and magnitude of the product of a vector LAM with the 1st partial
+    and magnitude of the product of a vector C{lam} with the 1st partial
     derivatives of the complex bus power injections. Takes sparse bus
-    admittance matrix C{Ybus}, voltage vector C{V} and C{nb} x 1 vector of
+    admittance matrix C{Ybus}, voltage vector C{V} and C{nb x 1} vector of
     multipliers C{lam}. Output matrices are sparse.
 
     For more details on the derivations behind the derivative code used
     in PYPOWER information, see:
 
-    [TN2]  R. D. Zimmerman, "AC Power Flows, Generalized OPF Costs and
-           their Derivatives using Complex Matrix Notation", MATPOWER
-           Technical Note 2, February 2010.
-              http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf
-
-    @return: The 2nd derivatives of power injection w.r.t. voltage.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    [TN2]  R. D. Zimmerman, I{"AC Power Flows, Generalized OPF Costs and
+    their Derivatives using Complex Matrix Notation"}, MATPOWER
+    Technical Note 2, February 2010.
+    U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
     """
     nb = len(V)
     ib = arange(nb)

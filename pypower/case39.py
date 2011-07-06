@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for 39 bus New England system.
+"""
+
 from numpy import array
 
 def case39():
@@ -23,15 +26,15 @@ def case39():
     Data taken from [1] with the following modifications/additions:
 
         - renumbered gen buses consecutively (as in [2] and [4])
-        - added Pmin = 0 for all gens
-        - added Qmin, Qmax for gens at 31 & 39 (copied from gen at 35)
-        - added Vg based on V in bus data (missing for bus 39)
-        - added Vg, Pg, Pd, Qd at bus 39 from [2] (same in [4])
-        - added Pmax at bus 39: Pmax = Pg + 100
+        - added C{Pmin = 0} for all gens
+        - added C{Qmin}, C{Qmax} for gens at 31 & 39 (copied from gen at 35)
+        - added C{Vg} based on C{V} in bus data (missing for bus 39)
+        - added C{Vg, Pg, Pd, Qd} at bus 39 from [2] (same in [4])
+        - added C{Pmax} at bus 39: C{Pmax = Pg + 100}
         - added line flow limits and area data from [4]
-        - added voltage limits, Vmax = 1.06, Vmin = 0.94
+        - added voltage limits, C{Vmax = 1.06, Vmin = 0.94}
         - added identical quadratic generator costs
-        - increased Pmax for gen at bus 34 from 308 to 508
+        - increased C{Pmax} for gen at bus 34 from 308 to 508
           (assumed typo in [1], makes initial solved case feasible)
         - re-solved power flow
 
@@ -39,7 +42,7 @@ def case39():
         - Bus 39, its generator and 2 connecting lines were added
           (by authors of [1]) to represent the interconnection with
           the rest of the eastern interconnect, and did not include
-          Vg, Pg, Qg, Pd, Qd, Pmin, Pmax, Qmin or Qmax.
+          C{Vg, Pg, Qg, Pd, Qd, Pmin, Pmax, Qmin} or C{Qmax}.
         - As the swing bus, bus 31 did not include and Q limits.
         - The voltages, etc in [1] appear to be quite close to the
           power flow solution of the case before adding bus 39 with
@@ -50,45 +53,48 @@ def case39():
           binding Q limits at buses 34 & 37, so the corresponding
           voltages have probably deviated from their original setpoints.
         - The generator locations and types are as follows:
-            1   30      hydro
-            2   31      nuke01
-            3   32      nuke02
-            4   33      fossil02
-            5   34      fossil01
-            6   35      nuke03
-            7   36      fossil04
-            8   37      nuke04
-            9   38      nuke05
-            10  39      interconnection to rest of US/Canada
+            - 1   30      hydro
+            - 2   31      nuke01
+            - 3   32      nuke02
+            - 4   33      fossil02
+            - 5   34      fossil01
+            - 6   35      nuke03
+            - 7   36      fossil04
+            - 8   37      nuke04
+            - 9   38      nuke05
+            - 10  39      interconnection to rest of US/Canada
 
     This is a solved power flow case, but it includes the following
     violations:
-        - Pmax violated at bus 31: Pg = 677.87, Pmax = 646
-       - Qmin violated at bus 37: Qg = -1.37,  Qmin = 0
+        - C{Pmax} violated at bus 31: C{Pg = 677.87, Pmax = 646}
+        - C{Qmin} violated at bus 37: C{Qg = -1.37,  Qmin = 0}
 
     References:
-    [1] G. W. Bills, et.al., "On-Line Stability Analysis Study"
-        RP90-1 Report for the Edison Electric Institute, October 12, 1970,
-        pp. 1-20 - 1-35.
-        prepared by E. M. Gulachenski - New England Electric System
-                    J. M. Undrill     - General Electric Co.
-        "generally representative of the New England 345 KV system, but is
-         not an exact or complete model of any past, present or projected
-         configuration of the actual New England 345 KV system.
-    [2] M. A. Pai, Energy Function Analysis for Power System Stability,
-        Kluwer Academic Publishers, Boston, 1989.
-        (references [3] as source of data)
-    [3] Athay, T.; Podmore, R.; Virmani, S., "A Practical Method for the
-        Direct Analysis of Transient Stability," IEEE Transactions on Power
-        Apparatus and Systems , vol.PAS-98, no.2, pp.573-584, March 1979.
-        URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4113518&isnumber=4113486
-        (references [1] as source of data)
-    [4] Data included with TC Calculator at http://www.pserc.cornell.edu/tcc/
-        for 39-bus system.
 
-    @rtype: dict
+    [1] G. W. Bills, et.al., I{"On-Line Stability Analysis Study"}
+    RP90-1 Report for the Edison Electric Institute, October 12, 1970,
+    pp. 1-20 - 1-35.
+    prepared by
+      - E. M. Gulachenski - New England Electric System
+      - J. M. Undrill     - General Electric Co.
+    "...generally representative of the New England 345 KV system, but is
+    not an exact or complete model of any past, present or projected
+    configuration of the actual New England 345 KV system."
+
+    [2] M. A. Pai, I{Energy Function Analysis for Power System Stability},
+    Kluwer Academic Publishers, Boston, 1989.
+    (references [3] as source of data)
+
+    [3] Athay, T.; Podmore, R.; Virmani, S., I{"A Practical Method for the
+    Direct Analysis of Transient Stability,"} IEEE Transactions on Power
+    Apparatus and Systems , vol.PAS-98, no.2, pp.573-584, March 1979.
+    U{http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4113518&isnumber=4113486}
+    (references [1] as source of data)
+
+    [4] Data included with TC Calculator at
+    U{http://www.pserc.cornell.edu/tcc/} for 39-bus system.
+
     @return: Power flow data for 39 bus New England system.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

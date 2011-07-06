@@ -14,17 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Case 30 with piece-wise linear generator costs.
+"""
+
 from numpy import array
 
 def case30pwl():
     """Case 30 with piece-wise linear generator costs.
     Please see L{caseformat} for details on the case file format.
 
-    Identical to case30.py, except with piece-wise linear generator costs.
+    Identical to L{case30}, except with piece-wise linear generator costs.
 
-    @rtype: dict
     @return: Case 30 with piece-wise linear generator costs.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

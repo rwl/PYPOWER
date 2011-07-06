@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for IEEE 118 bus test case.
+"""
+
 from numpy import array
 
 def case118():
@@ -25,15 +28,14 @@ def case118():
     See end of file for warnings generated during conversion.
 
     Converted from IEEE CDF file from:
-        U{http://www.ee.washington.edu/research/pstca/}
+    U{http://www.ee.washington.edu/research/pstca/}
+
     With baseKV data take from the PSAP format file from the same site,
     added manually on 10-Mar-2006.
 
     08/25/93 UW ARCHIVE           100.0  1961 W IEEE 118 Bus Test Case
 
-    @rtype: dict
     @return: Power flow data for IEEE 118 bus test case.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

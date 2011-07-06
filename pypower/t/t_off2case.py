@@ -20,10 +20,9 @@ from pypower.isload import isload
 from pypower.idx_cost import NCOST
 from pypower.idx_gen import QMAX, QMIN, GEN_STATUS, PMIN, PMAX, QG
 
-from pypower.extras.smartmarket.off2case import off2case
-
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
+from pypower.t.t_skip import t_skip
 from pypower.t.t_end import t_end
 
 
@@ -55,6 +54,12 @@ def t_off2case(quiet=False):
         [1, 0,   0, 4,   0, 0,  12, 240,   36, 1200, 60, 2400],
         [1, 0,  50, 4, -30, 0, -20, 1000, -10, 2000,  0, 3000]
     ], float)
+
+    try:
+        from pypower.extras.smartmarket import off2case
+    except ImportError:
+        t_skip(n_tests, 'smartmarket code not available')
+        return
 
     t = 'isload()'
     t_is(isload(gen0), array([0, 0, 1, 0, 1], bool), 8, t)

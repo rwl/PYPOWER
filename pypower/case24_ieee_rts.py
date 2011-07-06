@@ -14,34 +14,34 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for the IEEE Reliability Test System.
+"""
+
 from numpy import array
 
 def case24_ieee_rts():
-    """Power flow data for the IEEE RELIABILITY TEST SYSTEM.
+    """Power flow data for the IEEE Reliability Test System.
     Please see L{caseformat} for details on the case file format.
 
-    This system data is from the IEEE RELIABILITY TEST SYSTEM, see
+    This system data is from the IEEE Reliability Test System, see
 
     IEEE Reliability Test System Task Force of the Applications of
-    Probability Methods Subcommittee, "IEEE reliability test system,"
+    Probability Methods Subcommittee, I{"IEEE reliability test system,"}
     IEEE Transactions on Power Apparatus and Systems, Vol. 98, No. 6,
     Nov./Dec. 1979, pp. 2047-2054.
 
     IEEE Reliability Test System Task Force of Applications of
-    Probability Methods Subcommittee, "IEEE reliability test system-96,"
+    Probability Methods Subcommittee, I{"IEEE reliability test system-96,"}
     IEEE Transactions on Power Systems, Vol. 14, No. 3, Aug. 1999,
     pp. 1010-1020.
 
     Cost data is from Web site run by Georgia Tech Power Systems Control
     and Automation Laboratory:
-
-        U{http://pscal.ece.gatech.edu/testsys/index.html}
+    U{http://pscal.ece.gatech.edu/testsys/index.html}
 
     MATPOWER case file data provided by Bruce Wollenberg.
 
-    @rtype: dict
     @return: Power flow data for the IEEE RELIABILITY TEST SYSTEM.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

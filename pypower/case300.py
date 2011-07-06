@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for IEEE 300 bus test case.
+"""
+
 from numpy import array
 
 def case300():
@@ -25,13 +28,11 @@ def case300():
     See end of file for warnings generated during conversion.
 
     Converted from IEEE CDF file from:
-        U{http://www.ee.washington.edu/research/pstca/}
+    U{http://www.ee.washington.edu/research/pstca/}
 
     13/05/91 CYME INTERNATIONAL    100.0 1991 S IEEE 300-BUS TEST SYSTEM
 
-    @rtype: dict
     @return: Power flow data for IEEE 300 bus test case.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

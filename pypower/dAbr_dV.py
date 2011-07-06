@@ -14,7 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Partial derivatives of squared flow magnitudes w.r.t voltage.
+"""
+
 from scipy.sparse import csr_matrix
+
 
 def dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St):
     """Partial derivatives of squared flow magnitudes w.r.t voltage.
@@ -27,7 +31,7 @@ def dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St):
     following explains the expressions used to form the matrices:
 
     Let Af refer to the square of the apparent power at the "from" end of
-    each branch,
+    each branch::
 
         Af = abs(Sf)**2
            = Sf .* conj(Sf)
@@ -35,13 +39,13 @@ def dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St):
 
     then ...
 
-    Partial w.r.t real power,
+    Partial w.r.t real power::
         dAf/dPf = 2 * diag(Pf)
 
-    Partial w.r.t reactive power,
+    Partial w.r.t reactive power::
         dAf/dQf = 2 * diag(Qf)
 
-    Partial w.r.t Vm & Va
+    Partial w.r.t Vm & Va::
         dAf/dVm = dAf/dPf * dPf/dVm + dAf/dQf * dQf/dVm
         dAf/dVa = dAf/dPf * dPf/dVa + dAf/dQf * dQf/dVa
 
@@ -50,17 +54,16 @@ def dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St):
     For more details on the derivations behind the derivative code used
     in PYPOWER information, see:
 
-    [TN2]  R. D. Zimmerman, "AC Power Flows, Generalized OPF Costs and
-           their Derivatives using Complex Matrix Notation", MATPOWER
-           Technical Note 2, February 2010.
-              http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf
+    [TN2]  R. D. Zimmerman, I{"AC Power Flows, Generalized OPF Costs and
+    their Derivatives using Complex Matrix Notation"}, MATPOWER
+    Technical Note 2, February 2010.
+    U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
 
     @return: The partial derivatives of the squared flow magnitudes w.r.t
              voltage magnitude and voltage angle given the flows and flow
              sensitivities. Flows could be complex current or complex or
              real power.
     @see: L{dIbr_dV}, L{dSbr_dV}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     il = range(len(Sf))
 

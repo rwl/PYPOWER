@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for 6 bus, 3 gen case from Wood & Wollenberg.
+"""
+
 from numpy import array
 
 def case6ww():
@@ -21,12 +24,10 @@ def case6ww():
     Please see L{caseformat} for details on the case file format.
 
     This is the 6 bus example from pp. 104, 112, 119, 123-124, 549 of
-    "Power Generation, Operation, and Control, 2nd Edition",
+    I{"Power Generation, Operation, and Control, 2nd Edition"},
     by Allen. J. Wood and Bruce F. Wollenberg, John Wiley & Sons, NY, Jan 1996.
 
-    @rtype: dict
     @return: Power flow data for 6 bus, 3 gen case from Wood & Wollenberg.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

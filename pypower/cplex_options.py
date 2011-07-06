@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Sets options for CPLEX.
+"""
+
 try:
     from cplex import cplexoptimset
 except ImportError:
@@ -26,40 +29,23 @@ from pypower.util import feval
 def cplex_options(overrides=None, ppopt=None):
     """Sets options for CPLEX.
 
-    Sets the values for the options struct normally passed to
-    CPLEXOPTIMSET.
+    Sets the values for the options dict normally passed to
+    C{cplexoptimset}.
 
     Inputs are all optional, second argument must be either a string
-    (FNAME) or a vector (ppopt):
+    (C{fname}) or a dict (C{ppopt}):
 
-        OVERRIDES - struct containing values to override the defaults
-        FNAME - name of user-supplied function called after default
-            options are set to modify them. Calling syntax is:
-                    MODIFIED_OPT = FNAME(DEFAULT_OPT)
-        PPOPT - MATPOWER options vector, uses the following entries:
-            OPF_VIOLATION (16)  - used to set opt.simplex.tolerances.feasibility
-            VERBOSE (31)        - used to set opt.barrier.display,
-                opt.conflict.display, opt.mip.display, opt.sifting.display,
-                opt.simplex.display, opt.tune.display
-            CPLEX_LPMETHOD (95) - used to set opt.lpmethod
-            CPLEX_QPMETHOD (96) - used to set opt.qpmethod
-            CPLEX_OPT (97)      - user option file, if ppopt(97) is non-zero
-                non-zero it is apped to 'cplex_user_options_' to form
-                the name of a user-supplied function used as FNAME
-                described above, except with calling syntax:
-                    MODIFIED_OPT = FNAME(DEFAULT_OPT, ppopt)
-
-    Output is an options struct to pass to CPLEXOPTIMSET.
+    Output is an options dict to pass to C{cplexoptimset}.
 
     Example:
 
-    If PPOPT(97) = 3, then after setting the default CPLEX options,
+    If C{ppopt['CPLEX_OPT'] = 3}, then after setting the default CPLEX options,
     CPLEX_OPTIONS will execute the following user-defined function
-    to allow option overrides:
+    to allow option overrides::
 
         opt = cplex_user_options_3(opt, ppopt)
 
-    The contents of cplex_user_options_3.py, could be something like:
+    The contents of cplex_user_options_3.py, could be something like::
 
         def cplex_user_options_3(opt, ppopt):
             opt = {}
@@ -68,14 +54,32 @@ def cplex_options(overrides=None, ppopt=None):
             opt['timelimit']        = 10000
             return opt
 
-    For details on the available options, see the "Parameters Reference
-    Manual" section of the CPLEX documentation at:
+    For details on the available options, see the I{"Parameters Reference
+    Manual"} section of the CPLEX documentation at:
+    U{http://publib.boulder.ibm.com/infocenter/cosinfoc/v12r2/}
 
-        U{http://publib.boulder.ibm.com/infocenter/cosinfoc/v12r2/}
+    @param overrides:
+      - dict containing values to override the defaults
+      - fname: name of user-supplied function called after default
+        options are set to modify them. Calling syntax is::
 
-    @see: C{cplexlp}, C{cplexqp}, C{ppoption}.
+            modified_opt = fname(default_opt)
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @param ppopt: PYPOWER options vector, uses the following entries:
+      - OPF_VIOLATION - used to set opt.simplex.tolerances.feasibility
+      - VERBOSE - used to set opt.barrier.display,
+        opt.conflict.display, opt.mip.display, opt.sifting.display,
+        opt.simplex.display, opt.tune.display
+      - CPLEX_LPMETHOD - used to set opt.lpmethod
+      - CPLEX_QPMETHOD - used to set opt.qpmethod
+      - CPLEX_OPT      - user option file, if ppopt['CPLEX_OPT'] is non-zero
+        non-zero it is appended to 'cplex_user_options_' to form
+        the name of a user-supplied function used as C{fname}
+        described above, except with calling syntax::
+
+            modified_opt = fname(default_opt, ppopt)
+
+    @see: L{cplexlp}, L{cplexqp}, L{ppoption}.
     """
     ##-----  initialization and arg handling  -----
     ## defaults

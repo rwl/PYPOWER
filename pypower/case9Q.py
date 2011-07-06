@@ -14,18 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for 9 bus, 3 generator case.
+"""
+
 from numpy import array
 
 def case9Q():
     """Power flow data for 9 bus, 3 generator case.
     Please see L{caseformat} for details on the case file format.
 
-    Identical to case9.py, with the addition of non-zero costs for
+    Identical to L{case9}, with the addition of non-zero costs for
     reactive power.
 
-    @rtype: dict
     @return: Power flow data for 9 bus, 3 generator case.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

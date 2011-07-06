@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for IEEE 14 bus test case.
+"""
+
 from numpy import array
 
 def case14():
@@ -24,13 +27,11 @@ def case14():
     (ieee14cdf.txt) on 20-Sep-2004 by cdf2matp, rev. 1.11
 
     Converted from IEEE CDF file from:
-        U{http://www.ee.washington.edu/research/pstca/}
+    U{http://www.ee.washington.edu/research/pstca/}
 
     08/19/93 UW ARCHIVE           100.0  1962 W IEEE 14 Bus Test Case
 
-    @rtype: dict
     @return: Power flow data for IEEE 14 bus test case.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

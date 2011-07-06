@@ -14,18 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for 4 bus, 2 gen case from Grainger & Stevenson.
+"""
+
 from numpy import array
 
 def case4gs():
     """Power flow data for 4 bus, 2 gen case from Grainger & Stevenson.
     Please see L{caseformat} for details on the case file format.
 
-    This is the 4 bus example from pp. 337-338 of "Power System Analysis",
+    This is the 4 bus example from pp. 337-338 of I{"Power System Analysis"},
     by John Grainger, Jr., William Stevenson, McGraw-Hill, 1994.
 
-    @rtype: dict
     @return: Power flow data for 4 bus, 2 gen case from Grainger & Stevenson.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {"version": '2'}
 

@@ -17,7 +17,7 @@ import sys
 
 from optparse import OptionParser, OptionGroup, OptionValueError
 
-from pypower import \
+from pypower.api import \
     ppver, ppoption, runpf, runopf, runuopf, runopf_w_res, case9
 
 from pypower.ppoption import \

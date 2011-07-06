@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Builds index lists of each type of bus.
+"""
+
 from numpy import ones, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
@@ -21,19 +24,15 @@ from idx_bus import BUS_TYPE, REF, PV, PQ
 from idx_gen import GEN_BUS, GEN_STATUS
 
 def bustypes(bus, gen):
-    """Builds index lists of each type of bus (REF, PV, PQ).
+    """Builds index lists of each type of bus (C{REF}, C{PV}, C{PQ}).
 
-    Generators with "out-of-service" status are treated as PQ buses with
-    zero generation (regardless of Pg/Qg values in gen). Expects BUS and
-    GEN have been converted to use internal consecutive bus numbering.
+    Generators with "out-of-service" status are treated as L{PQ} buses with
+    zero generation (regardless of C{Pg}/C{Qg} values in gen). Expects C{bus}
+    and C{gen} have been converted to use internal consecutive bus numbering.
 
-    @type bus: array
-    @param bus: Bus data.
-    @type gen: array
-    @param gen: Generator data.
-    @rtype: tuple
-    @return: Index lists of each type of bus.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @param bus: bus data
+    @param gen: generator data
+    @return: index lists of each bus type
     """
     # get generator status
     nb = bus.shape[0]
