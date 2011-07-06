@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Converts internal to external bus numbering.
+"""
+
 import sys
 
 from copy import deepcopy
@@ -36,55 +39,57 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
     This function performs several different tasks, depending on the
     arguments passed.
 
-    1.  ppc = INT2EXT(ppc)
+        1.  C{ppc = int2ext(ppc)}
 
-    If the input is a single MATPOWER case struct, then it restores all
-    buses, generators and branches that were removed because of being
-    isolated or off-line, and reverts to the original generator ordering
-    and original bus numbering. This requires that the 'order' field
-    created by EXT2INT be in place.
+        If the input is a single PYPOWER case dict, then it restores all
+        buses, generators and branches that were removed because of being
+        isolated or off-line, and reverts to the original generator ordering
+        and original bus numbering. This requires that the 'order' key
+        created by L{ext2int} be in place.
 
-    Example:
-        ppc = int2ext(ppc)
+        Example::
+            ppc = int2ext(ppc)
 
-    2.  VAL = INT2EXT(ppc, VAL, OLDVAL, ORDERING)
-        VAL = INT2EXT(ppc, VAL, OLDVAL, ORDERING, DIM)
-        ppc = INT2EXT(ppc, FIELD, ORDERING)
-        ppc = INT2EXT(ppc, FIELD, ORDERING, DIM)
+        2.  C{val = int2ext(ppc, val, oldval, ordering)}
 
-    For a case struct using internal indexing, this function can be
-    used to convert other data structures as well by passing in 2 to 4
-    extra parameters in addition to the case struct. If the values passed
-    in the 2nd argument (VAL) is a column vector, it will be converted
-    according to the ordering specified by the 4th argument (ORDERING,
-    described below). If VAL is an n-dimensional matrix, then the
-    optional 5th argument (DIM, default = 0) can be used to specify
-    which dimension to reorder. The 3rd argument (OLDVAL) is used to
-    initialize the return value before converting VAL to external
-    indexing. In particular, any data corresponding to off-line gens
-    or branches or isolated buses or any connected gens or branches
-    will be taken from OLDVAL, with VAL supplying the rest of the
-    returned data.
+        C{val = int2ext(ppc, val, oldval, ordering, dim)}
 
-    If the 2nd argument is a string or cell array of strings, it
-    specifies a field in the case struct whose value should be
-    converted as described above. In this case, the corresponding
-    OLDVAL is taken from where it was stored by EXT2INT in
-    ppc["order"].EXT and the updated case struct is returned.
-    If FIELD is a cell array of strings, they specify nested fields.
+        C{ppc = int2ext(ppc, field, ordering)}
 
-    The ORDERING argument is used to indicate whether the data
-    corresponds to bus-, gen- or branch-ordered data. It can be one
-    of the following three strings: 'bus', 'gen' or 'branch'. For
-    data structures with multiple blocks of data, ordered by bus,
-    gen or branch, they can be converted with a single call by
-    specifying ORDERING as a cell array of strings.
+        C{ppc = int2ext(ppc, field, ordering, dim)}
 
-    Any extra elements, rows, columns, etc. beyond those indicated
-    in ORDERING, are not disturbed.
+        For a case dict using internal indexing, this function can be
+        used to convert other data structures as well by passing in 2 to 4
+        extra parameters in addition to the case dict. If the values passed
+        in the 2nd argument (C{val}) is a column vector, it will be converted
+        according to the ordering specified by the 4th argument (C{ordering},
+        described below). If C{val} is an n-dimensional matrix, then the
+        optional 5th argument (C{dim}, default = 0) can be used to specify
+        which dimension to reorder. The 3rd argument (C{oldval}) is used to
+        initialize the return value before converting C{val} to external
+        indexing. In particular, any data corresponding to off-line gens
+        or branches or isolated buses or any connected gens or branches
+        will be taken from C{oldval}, with C{val} supplying the rest of the
+        returned data.
 
-    @see: ext2int
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+        If the 2nd argument is a string or list of strings, it
+        specifies a field in the case dict whose value should be
+        converted as described above. In this case, the corresponding
+        C{oldval} is taken from where it was stored by L{ext2int} in
+        ppc["order"]["ext"] and the updated case dict is returned.
+        If C{field} is a list of strings, they specify nested fields.
+
+        The C{ordering} argument is used to indicate whether the data
+        corresponds to bus-, gen- or branch-ordered data. It can be one
+        of the following three strings: 'bus', 'gen' or 'branch'. For
+        data structures with multiple blocks of data, ordered by bus,
+        gen or branch, they can be converted with a single call by
+        specifying C{ordering} as a list of strings.
+
+        Any extra elements, rows, columns, etc. beyond those indicated
+        in C{ordering}, are not disturbed.
+
+    @see: L{ext2int}
     """
     ppc = deepcopy(ppc)
     if val_or_field is None: # nargin == 1

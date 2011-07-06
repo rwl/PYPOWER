@@ -14,19 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Converts external to internal indexing.
+"""
+
 import sys
 
 from copy import deepcopy
 
-from numpy import array, copy, zeros, argsort, arange, concatenate
+from numpy import array, zeros, argsort, arange, concatenate
 from numpy import flatnonzero as find
 
 from scipy.sparse import issparse, vstack, hstack, csr_matrix as sparse
 
 from idx_bus import PQ, PV, REF, NONE, BUS_I, BUS_TYPE
-from idx_gen import GEN_BUS, PG, QG, QMAX, QMIN, VG, MBASE, GEN_STATUS
-from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, RATE_A, RATE_B, RATE_C, TAP, SHIFT, BR_STATUS
-from idx_area import AREA_I, PRICE_REF_BUS
+from idx_gen import GEN_BUS, GEN_STATUS
+from idx_brch import F_BUS, T_BUS, BR_STATUS
+from idx_area import PRICE_REF_BUS
 
 from get_reorder import get_reorder
 from run_userfcn import run_userfcn
@@ -38,56 +41,58 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
     This function performs several different tasks, depending on the
     arguments passed.
 
-    1.  ppc = EXT2INT(ppc)
+      1.  C{ppc = ext2int(ppc)}
 
-    If the input is a single MATPOWER case struct, then all isolated
-    buses, off-line generators and branches are removed along with any
-    generators, branches or areas connected to isolated buses. Then the
-    buses are renumbered consecutively, beginning at 1, and the
-    generators are sorted by increasing bus number. All of the related
-    indexing information and the original data matrices are stored in
-    an 'order' field in the struct to be used by INT2EXT to perform
-    the reverse conversions. If the case is already using internal
-    numbering it is returned unchanged.
+      If the input is a single PYPOWER case dict, then all isolated
+      buses, off-line generators and branches are removed along with any
+      generators, branches or areas connected to isolated buses. Then the
+      buses are renumbered consecutively, beginning at 0, and the
+      generators are sorted by increasing bus number. All of the related
+      indexing information and the original data matrices are stored under
+      the 'order' key of the dict to be used by C{int2ext} to perform
+      the reverse conversions. If the case is already using internal
+      numbering it is returned unchanged.
 
-    Example:
-        ppc = ext2int(ppc);
+      Example::
+          ppc = ext2int(ppc);
 
-    2.  VAL = EXT2INT(ppc, VAL, ORDERING)
-        VAL = EXT2INT(ppc, VAL, ORDERING, DIM)
-        ppc = EXT2INT(ppc, FIELD, ORDERING)
-        ppc = EXT2INT(ppc, FIELD, ORDERING, DIM)
+      2.  C{val = ext2int(ppc, val, ordering)}
 
-    When given a case struct that has already been converted to
-    internal indexing, this function can be used to convert other data
-    structures as well by passing in 2 or 3 extra parameters in
-    addition to the case struct. If the value passed in the 2nd
-    argument is a column vector, it will be converted according to the
-    ORDERING specified by the 3rd argument (described below). If VAL
-    is an n-dimensional matrix, then the optional 4th argument (DIM,
-    default = 0) can be used to specify which dimension to reorder.
-    The return value in this case is the value passed in, converted
-    to internal indexing.
+      C{val = ext2int(ppc, val, ordering, dim)}
 
-    If the 2nd argument is a string or cell array of strings, it
-    specifies a field in the case struct whose value should be
-    converted as described above. In this case, the converted value
-    is stored back in the specified field, the original value is
-    saved for later use and the updated case struct is returned.
-    If FIELD is a cell array of strings, they specify nested fields.
+      C{ppc = ext2int(ppc, field, ordering)}
 
-    The 3rd argument, ORDERING, is used to indicate whether the data
-    corresponds to bus-, gen- or branch-ordered data. It can be one
-    of the following three strings: 'bus', 'gen' or 'branch'. For
-    data structures with multiple blocks of data, ordered by bus,
-    gen or branch, they can be converted with a single call by
-    specifying ORDERING as a cell array of strings.
+      C{ppc = ext2int(ppc, field, ordering, dim)}
 
-    Any extra elements, rows, columns, etc. beyond those indicated
-    in ORDERING, are not disturbed.
+      When given a case dict that has already been converted to
+      internal indexing, this function can be used to convert other data
+      structures as well by passing in 2 or 3 extra parameters in
+      addition to the case dict. If the value passed in the 2nd
+      argument is a column vector, it will be converted according to the
+      C{ordering} specified by the 3rd argument (described below). If C{val}
+      is an n-dimensional matrix, then the optional 4th argument (C{dim},
+      default = 0) can be used to specify which dimension to reorder.
+      The return value in this case is the value passed in, converted
+      to internal indexing.
+
+      If the 2nd argument is a string or list of strings, it
+      specifies a field in the case dict whose value should be
+      converted as described above. In this case, the converted value
+      is stored back in the specified field, the original value is
+      saved for later use and the updated case dict is returned.
+      If C{field} is a list of strings, they specify nested fields.
+
+      The 3rd argument, C{ordering}, is used to indicate whether the data
+      corresponds to bus-, gen- or branch-ordered data. It can be one
+      of the following three strings: 'bus', 'gen' or 'branch'. For
+      data structures with multiple blocks of data, ordered by bus,
+      gen or branch, they can be converted with a single call by
+      specifying C{ordering} as a list of strings.
+
+      Any extra elements, rows, columns, etc. beyond those indicated
+      in C{ordering}, are not disturbed.
 
     @see: L{int2ext}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = deepcopy(ppc)
     if val_or_field is None:  # nargin == 1

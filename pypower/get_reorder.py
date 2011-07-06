@@ -14,17 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Indexes a matrix dimension.
+"""
+
 from numpy import ndim
 
 def get_reorder(A, idx, dim=0):
-    """Returns A with one of its dimensions indexed.
+    """Returns A with one of its dimensions indexed::
 
-    B = get_reorder(A, idx, dim)
+        B = get_reorder(A, idx, dim)
 
-    Returns A(:, ..., :, idx, :, ..., :), where dim determines
+    Returns A[:, ..., :, idx, :, ..., :], where dim determines
     in which dimension to place the idx.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ndims = ndim(A)
     if ndims == 1:

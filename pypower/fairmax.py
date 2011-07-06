@@ -14,22 +14,25 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Same as built-in C{max}, except breaks ties randomly.
+"""
+
 from random import random
 from numpy import nonzero, fix
 
+
 def fairmax(x):
-    """Same as built-in MAX, except breaks ties randomly.
+    """Same as built-in C{max}, except breaks ties randomly.
 
-    Takes a vector as an argument and returns
-    the same output as the built-in function MAX with two output
-    parameters, except that where the maximum value occurs at more
-    than one position in the  vector, the index is chosen randomly
-    from these positions as opposed to just choosing the first occurance.
+    Takes a vector as an argument and returns the same output as the
+    built-in function C{max} with two output parameters, except that
+    where the maximum value occurs at more than one position in the
+    vector, the index is chosen randomly from these positions as opposed
+    to just choosing the first occurance.
 
-    @see: L{max}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: C{max}
     """
-    val = max(x);                     ## find max value
+    val = max(x)                      ## find max value
     i   = nonzero(x == val)           ## find all positions where this occurs
     n   = len(i)                      ## number of occurences
     idx = i( fix(n * random()) + 1 )  ## select index randomly among occurances

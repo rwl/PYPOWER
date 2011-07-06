@@ -19,10 +19,8 @@
 The index, name and meaning of each column of the areas matrix is given below:
 
 columns 0-1
- 0  AREA_I           area number
- 1  PRICE_REF_BUS    price reference bus for this area
-
-@see: U{http://www.pserc.cornell.edu/matpower/}
+    0.  C{AREA_I}           area number
+    1.  C{PRICE_REF_BUS}    price reference bus for this area
 """
 
 # define the indices

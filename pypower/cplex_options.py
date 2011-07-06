@@ -79,7 +79,7 @@ def cplex_options(overrides=None, ppopt=None):
 
             modified_opt = fname(default_opt, ppopt)
 
-    @see: L{cplexlp}, L{cplexqp}, L{ppoption}.
+    @see: C{cplexlp}, C{cplexqp}, L{ppoption}.
     """
     ##-----  initialization and arg handling  -----
     ## defaults

@@ -14,9 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Solves the power flow using a Gauss-Seidel method.
+"""
+
 import sys
 
-from numpy import angle, linalg, multiply, conj, r_, Inf, asscalar
+from numpy import linalg, conj, r_, Inf, asscalar
 
 from ppoption import ppoption
 
@@ -24,22 +27,21 @@ from ppoption import ppoption
 def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     """Solves the power flow using a Gauss-Seidel method.
 
-    solves for bus voltages given the full system admittance matrix (for
+    Solves for bus voltages given the full system admittance matrix (for
     all buses), the complex bus power injection vector (for all buses),
     the initial vector of complex bus voltages, and column vectors with
     the lists of bus indices for the swing bus, PV buses, and PQ buses,
     respectively. The bus voltage vector contains the set point for
     generator (including ref bus) buses, and the reference angle of the
     swing bus, as well as an initial guess for remaining magnitudes and
-    angles. MPOPT is a MATPOWER options vector which can be used to
+    angles. C{ppopt} is a PYPOWER options vector which can be used to
     set the termination tolerance, maximum number of iterations, and
-    output options (see MPOPTION for details). Uses default options
+    output options (see C{ppoption} for details). Uses default options
     if this parameter is not given. Returns the final complex voltages,
     a flag which indicates whether it converged or not, and the number
     of iterations performed.
 
-    @see: l{runpf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: L{runpf}
     """
     ## default arguments
     if ppopt is None:
@@ -54,7 +56,7 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     converged = 0
     i = 0
     V = V0.copy()
-    Va = angle(V)
+    #Va = angle(V)
     Vm = abs(V)
 
     ## set up indexing for updating V

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Solves a DC optimal power flow.
+"""
+
 from sys import stderr
 
 from copy import deepcopy
@@ -40,40 +43,39 @@ from pypower.qps_pypower import qps_pypower
 def dcopf_solver(om, ppopt, out_opt=None):
     """Solves a DC optimal power flow.
 
-    Inputs are an OPF model object, a MATPOWER options vector and
-    a struct containing fields (can be empty) for each of the desired
+    Inputs are an OPF model object, a PYPOWER options dict and
+    a dict containing fields (can be empty) for each of the desired
     optional output fields.
 
-    Outputs are a RESULTS struct, SUCCESS flag and RAW output struct.
+    Outputs are a C{results} dict, C{success} flag and C{raw} output dict.
 
-    RESULTS is a MATPOWER case struct (ppc) with the usual baseMVA, bus
+    C{results} is a PYPOWER case dict (ppc) with the usual baseMVA, bus
     branch, gen, gencost fields, along with the following additional
     fields:
-        .order      see 'help ext2int' for details of this field
-        .x          final value of optimization variables (internal order)
-        .f          final objective function value
-        .mu         shadow prices on ...
-            .var
-                .l  lower bounds on variables
-                .u  upper bounds on variables
-            .lin
-                .l  lower bounds on linear constraints
-                .u  upper bounds on linear constraints
-        .g          (optional) constraint values
-        .dg         (optional) constraint 1st derivatives
-        .df         (optional) obj fun 1st derivatives (not yet implemented)
-        .d2f        (optional) obj fun 2nd derivatives (not yet implemented)
+        - C{order}      see 'help ext2int' for details of this field
+        - C{x}          final value of optimization variables (internal order)
+        - C{f}          final objective function value
+        - C{mu}         shadow prices on ...
+            - C{var}
+                - C{l}  lower bounds on variables
+                - C{u}  upper bounds on variables
+            - C{lin}
+                - C{l}  lower bounds on linear constraints
+                - C{u}  upper bounds on linear constraints
+        - C{g}          (optional) constraint values
+        - C{dg}         (optional) constraint 1st derivatives
+        - C{df}         (optional) obj fun 1st derivatives (not yet implemented)
+        - C{d2f}        (optional) obj fun 2nd derivatives (not yet implemented)
 
-    SUCCESS     1 if solver converged successfully, 0 otherwise
+    C{success} is C{True} if solver converged successfully, C{False} otherwise.
 
-    RAW         raw output in form returned by MINOS
-        .xr     final value of optimization variables
-        .pimul  constraint multipliers
-        .info   solver specific termination code
-        .output solver specific output information
+    C{raw} is a raw output dict in form returned by MINOS
+        - C{xr}     final value of optimization variables
+        - C{pimul}  constraint multipliers
+        - C{info}   solver specific termination code
+        - C{output} solver specific output information
 
     @see: L{opf}, L{qps_pypower}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if out_opt is None:
         out_opt = {}

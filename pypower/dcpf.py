@@ -14,20 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Solves a DC power flow.
+"""
+
 from numpy import copy, r_, matrix
 from scipy.sparse.linalg import spsolve
 
+
 def dcpf(B, Pbus, Va0, ref, pv, pq):
-    """ Solves a DC power flow.
+    """Solves a DC power flow.
 
     Solves for the bus voltage angles at all but the reference bus, given the
-    full system B matrix and the vector of bus real power injections, the
+    full system C{B} matrix and the vector of bus real power injections, the
     initial vector of bus voltage angles (in radians), and column vectors with
     the lists of bus indices for the swing bus, PV buses, and PQ buses,
     respectively. Returns a vector of bus voltage angles in radians.
 
     @see: L{rundcpf}, L{runpf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     pvpq = matrix(r_[pv, pq])
 

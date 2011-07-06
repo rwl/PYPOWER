@@ -14,9 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Solves the power flow using a fast decoupled method.
+"""
+
 import sys
 
-from numpy import array, angle, exp, linalg, multiply, conj, r_, Inf
+from numpy import array, angle, exp, linalg, conj, r_, Inf
 from scipy.sparse.linalg import splu
 
 from ppoption import ppoption
@@ -32,15 +35,14 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     for the swing bus, PV buses, and PQ buses, respectively. The bus voltage
     vector contains the set point for generator (including ref bus)
     buses, and the reference angle of the swing bus, as well as an initial
-    guess for remaining magnitudes and angles. MPOPT is a MATPOWER options
+    guess for remaining magnitudes and angles. C{ppopt} is a PYPOWER options
     vector which can be used to set the termination tolerance, maximum
-    number of iterations, and output options (see MPOPTION for details).
+    number of iterations, and output options (see L{ppoption} for details).
     Uses default options if this parameter is not given. Returns the
     final complex voltages, a flag which indicates whether it converged
     or not, and the number of iterations performed.
 
     @see: L{runpf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if ppopt is None:
         ppopt = ppoption()
@@ -58,8 +60,8 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     Vm = abs(V)
 
     ## set up indexing for updating V
-    npv = len(pv)
-    npq = len(pq)
+    #npv = len(pv)
+    #npq = len(pq)
     pvpq = r_[pv, pq]
 
     ## evaluate initial mismatch
