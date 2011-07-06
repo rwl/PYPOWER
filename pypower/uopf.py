@@ -16,7 +16,8 @@
 
 from time import time
 
-from numpy import copy
+from copy import deepcopy
+
 from numpy import flatnonzero as find
 
 from opf_args import opf_args2
@@ -26,10 +27,11 @@ from totcost import totcost
 from fairmax import fairmax
 from opf import opf
 
-from idx_bus import *
-from idx_gen import *
+from idx_bus import PD
+from idx_gen import GEN_STATUS, PG, QG, PMIN, MU_PMIN
 
-def uopf(*args, **kw_args):
+
+def uopf(*args):
     """ Solves combined unit decommitment / optimal power flow.
 
     Solves a combined unit decommitment and optimal power flow for a single
@@ -50,7 +52,7 @@ def uopf(*args, **kw_args):
     t0 = time()                                 ## start timer
 
     ## process input arguments
-    ppc, ppopt = opf_args2(args, kw_args)
+    ppc, ppopt = opf_args2(*args)
 
     ## options
     verbose = ppopt["VERBOSE"]
@@ -60,9 +62,9 @@ def uopf(*args, **kw_args):
     ##-----  do combined unit commitment/optimal power flow  -----
 
     ## check for sum(Pmin) > total load, decommit as necessary
-    on   = find( ppc["gen"][:, GEN_STATUS] > 0 and not isload(ppc["gen"]) )   ## gens in service
-    onld = find( ppc["gen"][:, GEN_STATUS] > 0 and     isload(ppc["gen"]) )   ## disp loads in serv
-    load_capacity = sum(ppc["bus"][:, PD]) - sum(ppc["gen"][onld, PMIN]) ## total load capacity
+    on   = find( (ppc["gen"][:, GEN_STATUS] > 0) & ~isload(ppc["gen"]) )   ## gens in service
+    onld = find( (ppc["gen"][:, GEN_STATUS] > 0) &  isload(ppc["gen"]) )   ## disp loads in serv
+    load_capacity = sum(ppc["bus"][:, PD]) - sum(ppc["gen"][onld, PMIN])   ## total load capacity
     Pmin = ppc["gen"][on, PMIN]
     while sum(Pmin) > load_capacity:
         ## shut down most expensive unit
@@ -77,40 +79,42 @@ def uopf(*args, **kw_args):
         ppc["gen"][i, [PG, QG, GEN_STATUS]] = 0
 
         ## update minimum gen capacity
-        on  = find( ppc["gen"][:, GEN_STATUS] > 0 and not isload(ppc["gen"]) )   ## gens in service
+        on  = find( (ppc["gen"][:, GEN_STATUS] > 0) & ~isload(ppc["gen"]) )   ## gens in service
         Pmin = ppc["gen"][on, PMIN]
 
     ## run initial opf
-    results, success = opf(ppc, ppopt)
+    results = opf(ppc, ppopt)
 
     ## best case so far
-    results1 = copy(results)
+    results1 = deepcopy(results)
 
     ## best case for this stage (ie. with n gens shut down, n=0,1,2 ...)
-    results0 = copy(results1)
-    ppc["bus"] = results0["bus"]     ## use these V as starting point for OPF
+    results0 = deepcopy(results1)
+    ppc["bus"] = results0["bus"].copy()     ## use these V as starting point for OPF
 
     while True:
         ## get candidates for shutdown
-        candidates = find(results0["gen"][:, MU_PMIN] > 0 & results0["gen"][:, PMIN] > 0)
+        candidates = find((results0["gen"][:, MU_PMIN] > 0) & (results0["gen"][:, PMIN] > 0))
         if len(candidates) == 0:
             break
 
-        done = True   ## do not check for further decommitment unless we
-                      ##  see something better during this stage
+        ## do not check for further decommitment unless we
+        ##  see something better during this stage
+        done = True
+
         for k in candidates:
             ## start with best for this stage
-            ppc["gen"] = results0["gen"]
+            ppc["gen"] = results0["gen"].copy()
 
             ## shut down gen k
             ppc["gen"][k, [PG, QG, GEN_STATUS]] = 0
 
             ## run opf
-            results, success = opf(ppc, ppopt)
+            results = opf(ppc, ppopt)
 
             ## something better?
-            if success & results["f"] < results1["f"]:
-                results1 = copy(results)
+            if results['success'] and (results["f"] < results1["f"]):
+                results1 = deepcopy(results)
                 k1 = k
                 done = False   ## make sure we check for further decommitment
 
@@ -122,14 +126,13 @@ def uopf(*args, **kw_args):
             if verbose:
                 print 'Shutting down generator %d.\n' % k1
 
-            results0 = copy(results1)
-            ppc["bus"] = results0["bus"]     ## use these V as starting point for OPF
+            results0 = deepcopy(results1)
+            ppc["bus"] = results0["bus"].copy()     ## use these V as starting point for OPF
 
     ## compute elapsed time
-    et = time - t0
+    et = time() - t0
 
     ## finish preparing output
-    success = results0.success
-    results0.et = et
+    results0['et'] = et
 
-    return results0, success
+    return results0

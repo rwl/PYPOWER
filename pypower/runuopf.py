@@ -32,7 +32,7 @@ def runuopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     ppopt = ppoption(ppopt)
 
     ##-----  run the unit de-commitment / optimal power flow  -----
-    r, success = uopf(casedata, ppopt)
+    r = uopf(casedata, ppopt)
 
     ##-----  output results  -----
     if fname:
@@ -52,4 +52,4 @@ def runuopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     if solvedcase:
         savecase(solvedcase, r)
 
-    return r, success
+    return r
