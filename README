@@ -2,11 +2,12 @@
 Introduction
 ============
 
-PYPOWER is a Python port of MATPOWER_. Current features include:
+PYPOWER is a power flow and Optimal Power Flow (OPF) solver. It is a port of
+MATPOWER_ by PSERC (Cornell) to the Python_ programming language. Current
+features include:
 
-* DC and AC (Newton's method & Fast Decoupled) power flow,
-* DC and AC optimal power flow (OPF), and
-* State estimation.
+* DC and AC (Newton's method & Fast Decoupled) power flow and
+* DC and AC optimal power flow (OPF)
 
 Installation
 ------------
@@ -22,7 +23,7 @@ It can be easy_installed using setuptools_::
 
 Alternatively, download and unpack the tarball and install::
 
-  $ tar zxf pypower-0.1.tar.gz
+  $ tar zxf PYPOWER-4.0.tar.gz
   $ python setup.py install
 
 On UNIX systems, use sudo for the latter command if you need to install the
@@ -32,24 +33,43 @@ scripts to a directory that requires root privileges::
 
 The development Git_ repository can be cloned from GitHub_::
 
-  $ git clone https://github.com/rwl/PYPOWER.git
+  $ git clone http://github.com/rwl/PYPOWER.git
 
 Using PYPOWER
 -------------
 
-Please refer to the `API documentation`_.
+Installing PYPOWER creates ``pf`` and ``opf`` commands. To list the command
+options::
 
-License
--------
+  $ pf -h
 
-PYPOWER is licensed under the `GNU General Public License`_ version 3.
+PYPOWER includes a selection of test cases. For example, to run a power flow
+on the IEEE 14 bus test case::
 
-Credits
--------
+  $ pf -c case14
 
-PYPOWER was translated from MATPOWER_ by Richard Lincoln
-(r.w.lincoln@gmail.com).  MATPOWER_ is maintained by
-Ray Zimmerman at PSERC (Cornell).
+Alternatively, the path to a PYPOWER case data file can be specified.::
+
+  $ pf /path/to/case14.py
+
+The ``opf`` command has the same calling syntax. For example, to solve an OPF
+for the IEEE Reliability Test System and write the solved case to file::
+
+  $ opf -c case24_ieee_rts --solvedcase=rtsout.py
+
+For further information please refer to the http://www.pypower.org/ and the
+`API documentation`_.
+
+License & Copyright
+-------------------
+
+Copyright (C) 1996-2011 Power System Engineering Research Center
+Copyright (C) 2010-2011 Richard Lincoln
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the `GNU General Public License`_ as published
+by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
 
 .. _Python: http://www.python.org
 .. _Setuptools: http://peak.telecommunity.com/DevCenter/setuptools
@@ -57,6 +77,5 @@ Ray Zimmerman at PSERC (Cornell).
 .. _MATPOWER: http://www.pserc.cornell.edu/matpower/
 .. _Git: http://git-scm.com/
 .. _GitHub: http://github.com/rwl/PYPOWER
-.. _iPython: http://ipython.scipy.org
-.. _`GNU General Public License`: http://www.gnu.org/licenses/gpl.txt
-.. _`API documentation`: http://packages.python.org/PYPOWER
+.. _`GNU General Public License`: http://www.gnu.org/licenses/
+.. _`API documentation`: http://www.pypower.org/api
