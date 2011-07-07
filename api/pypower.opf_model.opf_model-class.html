@@ -1,0 +1,1016 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.opf_model.opf_model</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        <a href="pypower.opf_model-module.html">Module&nbsp;opf_model</a> ::
+        Class&nbsp;opf_model
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.opf_model.opf_model-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class opf_model</h1><p class="nomargin-top"><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+object --+
+         |
+        <strong class="uidshort">opf_model</strong>
+</pre>
+
+<hr />
+<p>This class implements the OPF model object used to encapsulate a given
+  OPF problem formulation. It allows for access to optimization variables, 
+  constraints and costs in named blocks, keeping track of the ordering and 
+  indexing of the blocks as variables, constraints and costs are added to 
+  the problem.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ppc</span>)</span><br />
+      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      String representation of the object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.__repr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#add_constraints" class="summary-sig-name">add_constraints</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">AorN</span>,
+        <span class="summary-sig-arg">l</span>,
+        <span class="summary-sig-arg">u</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">varsets</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Adds a set of constraints to the model.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.add_constraints">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#add_costs" class="summary-sig-name">add_costs</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">cp</span>,
+        <span class="summary-sig-arg">varsets</span>)</span><br />
+      Adds a set of user costs to the model.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.add_costs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#add_vars" class="summary-sig-name">add_vars</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">N</span>,
+        <span class="summary-sig-arg">v0</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">vl</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">vu</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Adds a set of variables to the model.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.add_vars">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#build_cost_params" class="summary-sig-name">build_cost_params</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Builds and saves the full generalized cost parameters.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.build_cost_params">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#compute_cost" class="summary-sig-name">compute_cost</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">name</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Computes a user-defined cost.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.compute_cost">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#get_cost_params" class="summary-sig-name">get_cost_params</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Returns the cost parameter struct for user-defined costs.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.get_cost_params">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#get_idx" class="summary-sig-name">get_idx</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns the idx struct for vars, lin/nln constraints, costs.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.get_idx">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ppc"></a><span class="summary-sig-name">get_ppc</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns the PYPOWER case dict.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.get_ppc">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#getN" class="summary-sig-name">getN</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">selector</span>,
+        <span class="summary-sig-arg">name</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Returns the number of variables, constraints or cost rows.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.getN">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#getv" class="summary-sig-name">getv</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Returns initial value, lower bound and upper bound for opt variables.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.getv">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#linear_constraints" class="summary-sig-name">linear_constraints</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Builds and returns the full set of linear constraints.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.linear_constraints">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.opf_model.opf_model-class.html#userdata" class="summary-sig-name">userdata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">val</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Used to save or retrieve values of user data.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.userdata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ppc"></a><span class="summary-name">ppc</span><br />
+      PYPOWER case dict used to build the object.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="var"></a><span class="summary-name">var</span><br />
+      data for optimization variable sets that make up the
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="nln"></a><span class="summary-name">nln</span><br />
+      data for nonlinear constraints that make up the
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="lin"></a><span class="summary-name">lin</span><br />
+      data for linear constraints that make up the
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="cost"></a><span class="summary-name">cost</span><br />
+      data for user-defined costs
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">ppc</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
+  signature</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__repr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__repr__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.__repr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>String representation of the object.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__repr__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_constraints"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_constraints</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">AorN</span>,
+        <span class="sig-arg">l</span>,
+        <span class="sig-arg">u</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">varsets</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.add_constraints">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Adds a set of constraints to the model.</p>
+  <p>Linear constraints are of the form <code>l &lt;= A * x &lt;= u</code>,
+  where <code>x</code> is a vector made of of the vars specified in 
+  <code>varsets</code> (in the order given). This allows the <code>A</code>
+  matrix to be defined only in terms of the relevant variables without the 
+  need to manually create a lot of zero columns. If <code>varsets</code> is
+  empty, <code>x</code> is taken to be the full vector of all optimization 
+  variables. If <code>l</code> or <code>u</code> are empty, they are 
+  assumed to be appropriately sized vectors of <code>-Inf</code> and 
+  <code>Inf</code>, respectively.</p>
+  <p>For nonlinear constraints, the 3rd argument, <code>N</code>, is the 
+  number of constraints in the set. Currently, this is used internally by 
+  PYPOWER, but there is no way for the user to specify additional nonlinear
+  constraints.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_costs"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_costs</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">cp</span>,
+        <span class="sig-arg">varsets</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.add_costs">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Adds a set of user costs to the model.</p>
+  <p>Adds a named block of user-defined costs to the model. Each set is 
+  defined by the <code>cp</code> dict described below. All user-defined 
+  sets of costs are combined together into a single set of cost parameters 
+  in a single <code>cp</code> dict by <a 
+  href="pypower.opf_model.opf_model-class.html#build_cost_params" 
+  class="link">build_cost_params</a>. This full aggregate set of cost 
+  parameters can be retrieved from the model by <a 
+  href="pypower.opf_model.opf_model-class.html#get_cost_params" 
+  class="link">get_cost_params</a>.</p>
+  <p>Let <code>x</code> refer to the vector formed by combining the 
+  specified <code>varsets</code>, and <code>f_u(x, cp)</code> be the cost 
+  at <code>x</code> corresponding to the cost parameters contained in 
+  <code>cp</code>, where <code>cp</code> is a dict with the following 
+  fields:</p>
+<pre class="literalblock">
+   N      - nw x nx sparse matrix
+   Cw     - nw x 1 vector
+   H      - nw x nw sparse matrix (optional, all zeros by default)
+   dd, mm - nw x 1 vectors (optional, all ones by default)
+   rh, kk - nw x 1 vectors (optional, all zeros by default)
+</pre>
+  <p>These parameters are used as follows to compute <code>f_u(x, 
+  CP)</code>:</p>
+<pre class="literalblock">
+   R  = N*x - rh
+
+           /  kk(i),  R(i) &lt; -kk(i)
+   K(i) = &lt;   0,     -kk(i) &lt;= R(i) &lt;= kk(i)
+           \ -kk(i),  R(i) &gt; kk(i)
+
+   RR = R + K
+
+   U(i) =  /  0, -kk(i) &lt;= R(i) &lt;= kk(i)
+           \  1, otherwise
+
+   DDL(i) = /  1, dd(i) = 1
+            \  0, otherwise
+
+   DDQ(i) = /  1, dd(i) = 2
+            \  0, otherwise
+
+   Dl = diag(mm) * diag(U) * diag(DDL)
+   Dq = diag(mm) * diag(U) * diag(DDQ)
+
+   w = (Dl + Dq * diag(RR)) * RR
+
+   f_u(x, CP) = 1/2 * w'*H*w + Cw'*w
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_vars"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_vars</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">N</span>,
+        <span class="sig-arg">v0</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">vl</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">vu</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.add_vars">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Adds a set of variables to the model.</p>
+  <p>Adds a set of variables to the model, where N is the number of 
+  variables in the set, <code>v0</code> is the initial value of those 
+  variables, and <code>vl</code> and <code>vu</code> are the lower and 
+  upper bounds on the variables. The defaults for the last three arguments,
+  which are optional, are for all values to be initialized to zero 
+  (<code>v0 = 0</code>) and unbounded (<code>VL = -Inf, VU = 
+  Inf</code>).</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="build_cost_params"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">build_cost_params</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.build_cost_params">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Builds and saves the full generalized cost parameters.</p>
+  <p>Builds the full set of cost parameters from the individual named 
+  sub-sets added via <a 
+  href="pypower.opf_model.opf_model-class.html#add_costs" 
+  class="link">add_costs</a>. Skips the building process if it has already 
+  been done, unless a second input argument is present.</p>
+  <p>These cost parameters can be retrieved by calling <a 
+  href="pypower.opf_model.opf_model-class.html#get_cost_params" 
+  class="link">get_cost_params</a> and the user-defined costs evaluated by 
+  calling <a href="pypower.opf_model.opf_model-class.html#compute_cost" 
+  class="link">compute_cost</a>.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="compute_cost"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">compute_cost</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">x</span>,
+        <span class="sig-arg">name</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.compute_cost">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Computes a user-defined cost.</p>
+  <p>Computes the value of a user defined cost, either for all user defined
+  costs or for a named set of costs. Requires calling <a 
+  href="pypower.opf_model.opf_model-class.html#build_cost_params" 
+  class="link">build_cost_params</a> first to build the full set of 
+  parameters.</p>
+  <p>Let <code>x</code> be the full set of optimization variables and 
+  <code>f_u(x, cp)</code> be the user-defined cost at <code>x</code>, 
+  corresponding to the set of cost parameters in the <code>cp</code> dict 
+  returned by <a 
+  href="pypower.opf_model.opf_model-class.html#get_cost_params" 
+  class="link">get_cost_params</a>, where <code>cp</code> is a dict with 
+  the following fields:</p>
+<pre class="literalblock">
+   N      - nw x nx sparse matrix
+   Cw     - nw x 1 vector
+   H      - nw x nw sparse matrix (optional, all zeros by default)
+   dd, mm - nw x 1 vectors (optional, all ones by default)
+   rh, kk - nw x 1 vectors (optional, all zeros by default)
+</pre>
+  <p>These parameters are used as follows to compute <code>f_u(x, 
+  cp)</code>:</p>
+<pre class="literalblock">
+   R  = N*x - rh
+
+           /  kk(i),  R(i) &lt; -kk(i)
+   K(i) = &lt;   0,     -kk(i) &lt;= R(i) &lt;= kk(i)
+           \ -kk(i),  R(i) &gt; kk(i)
+
+   RR = R + K
+
+   U(i) =  /  0, -kk(i) &lt;= R(i) &lt;= kk(i)
+           \  1, otherwise
+
+   DDL(i) = /  1, dd(i) = 1
+            \  0, otherwise
+
+   DDQ(i) = /  1, dd(i) = 2
+            \  0, otherwise
+
+   Dl = diag(mm) * diag(U) * diag(DDL)
+   Dq = diag(mm) * diag(U) * diag(DDQ)
+
+   w = (Dl + Dq * diag(RR)) * RR
+
+   F_U(X, CP) = 1/2 * w'*H*w + Cw'*w
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_cost_params"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_cost_params</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.get_cost_params">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the cost parameter struct for user-defined costs.</p>
+  <p>Requires calling <a 
+  href="pypower.opf_model.opf_model-class.html#build_cost_params" 
+  class="link">build_cost_params</a> first to build the full set of 
+  parameters. Returns the full cost parameter struct for all user-defined 
+  costs that incorporates all of the named cost sets added via <a 
+  href="pypower.opf_model.opf_model-class.html#add_costs" 
+  class="link">add_costs</a>, or, if a name is provided it returns the cost
+  dict corresponding to the named set of cost rows (<code>N</code> still 
+  has full number of columns).</p>
+  <p>The cost parameters are returned in a dict with the following 
+  fields:</p>
+<pre class="literalblock">
+   N      - nw x nx sparse matrix
+   Cw     - nw x 1 vector
+   H      - nw x nw sparse matrix (optional, all zeros by default)
+   dd, mm - nw x 1 vectors (optional, all ones by default)
+   rh, kk - nw x 1 vectors (optional, all zeros by default)
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_idx"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_idx</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.get_idx">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the idx struct for vars, lin/nln constraints, costs.</p>
+  <p>Returns a structure for each with the beginning and ending index value
+  and the number of elements for each named block. The 'i1' field (that's a
+  one) is a dict with all of the starting indices, 'iN' contains all the 
+  ending indices and 'N' contains all the sizes. Each is a dict whose keys 
+  are the named blocks.</p>
+  <p>Examples:</p>
+<pre class="literalblock">
+   [vv, ll, nn] = get_idx(om)
+</pre>
+  <p>For a variable block named 'z' we have:</p>
+<pre class="literalblock">
+       vv['i1']['z'] - starting index for 'z' in optimization vector x
+       vv['iN']['z'] - ending index for 'z' in optimization vector x
+       vv[&quot;N&quot;]    - number of elements in 'z'
+</pre>
+  <p>To extract a 'z' variable from x:</p>
+<pre class="literalblock">
+       z = x(vv['i1']['z']:vv['iN']['z'])
+</pre>
+  <p>To extract the multipliers on a linear constraint set named 'foo', 
+  where mu_l and mu_u are the full set of linear constraint 
+  multipliers:</p>
+<pre class="literalblock">
+       mu_l_foo = mu_l(ll['i1']['foo']:ll['iN']['foo'])
+       mu_u_foo = mu_u(ll['i1']['foo']:ll['iN']['foo'])
+</pre>
+  <p>The number of nonlinear constraints in a set named 'bar':</p>
+<pre class="literalblock">
+       nbar = nn[&quot;N&quot;].bar
+</pre>
+  <p>(note: the following is preferable :</p>
+<pre class="literalblock">
+       nbar = getN(om, 'nln', 'bar')
+</pre>
+  <p>... if you haven't already called <a 
+  href="pypower.opf_model.opf_model-class.html#get_idx" 
+  class="link">get_idx</a> to get <code>nn</code>.)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getN"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getN</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">selector</span>,
+        <span class="sig-arg">name</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.getN">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the number of variables, constraints or cost rows.</p>
+  <p>Returns either the total number of variables/constraints/cost rows or 
+  the number corresponding to a specified named block.</p>
+  <p>Examples:</p>
+<pre class="literalblock">
+   N = getN(om, 'var')         : total number of variables
+   N = getN(om, 'lin')         : total number of linear constraints
+   N = getN(om, 'nln')         : total number of nonlinear constraints
+   N = getN(om, 'cost')        : total number of cost rows (in N)
+   N = getN(om, 'var', name)   : number of variables in named set
+   N = getN(om, 'lin', name)   : number of linear constraints in named set
+   N = getN(om, 'nln', name)   : number of nonlinear cons. in named set
+   N = getN(om, 'cost', name)  : number of cost rows (in N) in named set
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getv"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getv</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.getv">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns initial value, lower bound and upper bound for opt 
+  variables.</p>
+  <p>Returns the initial value, lower bound and upper bound for the full 
+  optimization variable vector, or for a specific named variable set.</p>
+  <p>Examples:</p>
+<pre class="literalblock">
+   x, xmin, xmax = getv(om)
+   Pg, Pmin, Pmax = getv(om, 'Pg')
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="linear_constraints"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">linear_constraints</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.linear_constraints">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Builds and returns the full set of linear constraints.</p>
+  <p>Builds the full set of linear constraints based on those added by <a 
+  href="pypower.opf_model.opf_model-class.html#add_constraints" 
+  class="link">add_constraints</a>:</p>
+<pre class="literalblock">
+   L &lt;= A * x &lt;= U
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="userdata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">userdata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">val</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.opf_model-pysrc.html#opf_model.userdata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Used to save or retrieve values of user data.</p>
+  <p>This function allows the user to save any arbitrary data in the object
+  for later use. This can be useful when using a user function to add 
+  variables, constraints, costs, etc. For example, suppose some special 
+  indexing is constructed when adding some variables or constraints. This 
+  indexing data can be stored and used later to &quot;unpack&quot; the 
+  results of the solved case.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:54 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.idx_brch</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        Module&nbsp;idx_brch
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.idx_brch-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module idx_brch</h1><p class="nomargin-top"><span class="codelink"><a href="pypower.idx_brch-pysrc.html">source&nbsp;code</a></span></p>
+<p>Defines constants for named column indices to branch matrix.</p>
+  <p>Some examples of usage, after defining the constants using the line 
+  above, are:</p>
+<pre class="literalblock">
+   branch[3, BR_STATUS] = 0              # take branch 4 out of service
+   Ploss = branch[:, PF] + branch[:, PT] # compute real power loss vector
+</pre>
+  <p>The index, name and meaning of each column of the branch matrix is 
+  given below:</p>
+  <p>columns 0-10 must be included in input matrix (in case file)</p>
+  <ol start="0">
+    <li>
+      <code>F_BUS</code>       from bus number
+    </li>
+    <li>
+      <code>T_BUS</code>       to bus number
+    </li>
+    <li>
+      <code>BR_R</code>        resistance (p.u.)
+    </li>
+    <li>
+      <code>BR_X</code>        reactance (p.u.)
+    </li>
+    <li>
+      <code>BR_B</code>        total line charging susceptance (p.u.)
+    </li>
+    <li>
+      <code>RATE_A</code>      MVA rating A (long term rating)
+    </li>
+    <li>
+      <code>RATE_B</code>      MVA rating B (short term rating)
+    </li>
+    <li>
+      <code>RATE_C</code>      MVA rating C (emergency rating)
+    </li>
+    <li>
+      <code>TAP</code>         transformer off nominal turns ratio
+    </li>
+    <li>
+      <code>SHIFT</code>       transformer phase shift angle (degrees)
+    </li>
+    <li>
+      <code>BR_STATUS</code>   initial branch status, 1 - in service, 0 - 
+      out of service
+    </li>
+    <li>
+      <code>ANGMIN</code>      minimum angle difference, angle(Vf) - 
+      angle(Vt) (degrees)
+    </li>
+    <li>
+      <code>ANGMAX</code>      maximum angle difference, angle(Vf) - 
+      angle(Vt) (degrees)
+    </li>
+  </ol>
+  <p>columns 13-16 are added to matrix after power flow or OPF solution 
+  they are typically not present in the input matrix</p>
+  <ol start="13">
+    <li>
+      <code>PF</code>          real power injected at &quot;from&quot; bus 
+      end (MW)
+    </li>
+    <li>
+      <code>QF</code>          reactive power injected at &quot;from&quot; 
+      bus end (MVAr)
+    </li>
+    <li>
+      <code>PT</code>          real power injected at &quot;to&quot; bus 
+      end (MW)
+    </li>
+    <li>
+      <code>QT</code>          reactive power injected at &quot;to&quot; 
+      bus end (MVAr)
+    </li>
+  </ol>
+  <p>columns 17-18 are added to matrix after OPF solution they are 
+  typically not present in the input matrix</p>
+  <p>(assume OPF objective function has units, <code>u</code>)</p>
+  <ol start="17">
+    <li>
+      <code>MU_SF</code>       Kuhn-Tucker multiplier on MVA limit at 
+      &quot;from&quot; bus (u/MVA)
+    </li>
+    <li>
+      <code>MU_ST</code>       Kuhn-Tucker multiplier on MVA limit at 
+      &quot;to&quot; bus (u/MVA)
+    </li>
+  </ol>
+  <p>columns 19-20 are added to matrix after SCOPF solution they are 
+  typically not present in the input matrix</p>
+  <p>(assume OPF objective function has units, <code>u</code>)</p>
+  <ol start="19">
+    <li>
+      <code>MU_ANGMIN</code>   Kuhn-Tucker multiplier lower angle 
+      difference limit
+    </li>
+    <li>
+      <code>MU_ANGMAX</code>   Kuhn-Tucker multiplier upper angle 
+      difference limit
+    </li>
+  </ol>
+
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="F_BUS"></a><span class="summary-name">F_BUS</span> = <code title="0">0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="T_BUS"></a><span class="summary-name">T_BUS</span> = <code title="1">1</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="BR_R"></a><span class="summary-name">BR_R</span> = <code title="2">2</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="BR_X"></a><span class="summary-name">BR_X</span> = <code title="3">3</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="BR_B"></a><span class="summary-name">BR_B</span> = <code title="4">4</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RATE_A"></a><span class="summary-name">RATE_A</span> = <code title="5">5</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RATE_B"></a><span class="summary-name">RATE_B</span> = <code title="6">6</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RATE_C"></a><span class="summary-name">RATE_C</span> = <code title="7">7</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="TAP"></a><span class="summary-name">TAP</span> = <code title="8">8</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="SHIFT"></a><span class="summary-name">SHIFT</span> = <code title="9">9</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="BR_STATUS"></a><span class="summary-name">BR_STATUS</span> = <code title="10">10</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ANGMIN"></a><span class="summary-name">ANGMIN</span> = <code title="11">11</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ANGMAX"></a><span class="summary-name">ANGMAX</span> = <code title="12">12</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="PF"></a><span class="summary-name">PF</span> = <code title="13">13</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="QF"></a><span class="summary-name">QF</span> = <code title="14">14</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="PT"></a><span class="summary-name">PT</span> = <code title="15">15</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="QT"></a><span class="summary-name">QT</span> = <code title="16">16</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MU_SF"></a><span class="summary-name">MU_SF</span> = <code title="17">17</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MU_ST"></a><span class="summary-name">MU_ST</span> = <code title="18">18</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MU_ANGMIN"></a><span class="summary-name">MU_ANGMIN</span> = <code title="19">19</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MU_ANGMAX"></a><span class="summary-name">MU_ANGMAX</span> = <code title="20">20</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="None">None</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:54 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

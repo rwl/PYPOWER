@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.opf_consfcn</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        Module&nbsp;opf_consfcn
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.opf_consfcn-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pypower.opf_consfcn-module.html">Module pypower.opf_consfcn</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2010-2011 Richard Lincoln</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"># by the Free Software Foundation, either version 3 of the License,</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"># or (at your option) any later version.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"># along with PYPOWER. If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-docstring">"""Evaluates nonlinear constraints and their Jacobian for OPF.</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">numpy</tt> <tt class="py-keyword">import</tt> <tt class="py-name">zeros</tt><tt class="py-op">,</tt> <tt class="py-name">ones</tt><tt class="py-op">,</tt> <tt class="py-name">conj</tt><tt class="py-op">,</tt> <tt class="py-name">exp</tt><tt class="py-op">,</tt> <tt class="py-name">r_</tt><tt class="py-op">,</tt> <tt class="py-name">Inf</tt><tt class="py-op">,</tt> <tt class="py-name">arange</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">scipy</tt><tt class="py-op">.</tt><tt class="py-name">sparse</tt> <tt class="py-keyword">import</tt> <tt class="py-name">lil_matrix</tt><tt class="py-op">,</tt> <tt class="py-name">vstack</tt><tt class="py-op">,</tt> <tt class="py-name">hstack</tt><tt class="py-op">,</tt> <tt class="py-name">csr_matrix</tt> <tt class="py-keyword">as</tt> <tt class="py-name">sparse</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module pypower.idx_gen=pypower.idx_gen-module.html"><a title="pypower.idx_gen" class="py-name" href="#" onclick="return doclink('link-0', 'idx_gen', 'link-0');">idx_gen</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Variable pypower.idx_gen.GEN_BUS=pypower.idx_gen-module.html#GEN_BUS,Variable pypower.savecase.GEN_BUS=pypower.savecase-module.html#GEN_BUS"><a title="pypower.idx_gen.GEN_BUS
+pypower.savecase.GEN_BUS" class="py-name" href="#" onclick="return doclink('link-1', 'GEN_BUS', 'link-1');">GEN_BUS</a></tt><tt class="py-op">,</tt> <tt id="link-2" class="py-name" targets="Variable pypower.idx_gen.PG=pypower.idx_gen-module.html#PG,Variable pypower.savecase.PG=pypower.savecase-module.html#PG"><a title="pypower.idx_gen.PG
+pypower.savecase.PG" class="py-name" href="#" onclick="return doclink('link-2', 'PG', 'link-2');">PG</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Variable pypower.idx_gen.QG=pypower.idx_gen-module.html#QG,Variable pypower.savecase.QG=pypower.savecase-module.html#QG"><a title="pypower.idx_gen.QG
+pypower.savecase.QG" class="py-name" href="#" onclick="return doclink('link-3', 'QG', 'link-3');">QG</a></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Module pypower.idx_brch=pypower.idx_brch-module.html"><a title="pypower.idx_brch" class="py-name" href="#" onclick="return doclink('link-4', 'idx_brch', 'link-4');">idx_brch</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Variable pypower.idx_brch.F_BUS=pypower.idx_brch-module.html#F_BUS,Variable pypower.savecase.F_BUS=pypower.savecase-module.html#F_BUS"><a title="pypower.idx_brch.F_BUS
+pypower.savecase.F_BUS" class="py-name" href="#" onclick="return doclink('link-5', 'F_BUS', 'link-5');">F_BUS</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name" targets="Variable pypower.idx_brch.T_BUS=pypower.idx_brch-module.html#T_BUS,Variable pypower.savecase.T_BUS=pypower.savecase-module.html#T_BUS"><a title="pypower.idx_brch.T_BUS
+pypower.savecase.T_BUS" class="py-name" href="#" onclick="return doclink('link-6', 'T_BUS', 'link-6');">T_BUS</a></tt><tt class="py-op">,</tt> <tt id="link-7" class="py-name" targets="Variable pypower.idx_brch.RATE_A=pypower.idx_brch-module.html#RATE_A,Variable pypower.savecase.RATE_A=pypower.savecase-module.html#RATE_A"><a title="pypower.idx_brch.RATE_A
+pypower.savecase.RATE_A" class="py-name" href="#" onclick="return doclink('link-7', 'RATE_A', 'link-7');">RATE_A</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-8" class="py-name" targets="Module pypower.makeSbus=pypower.makeSbus-module.html,Function pypower.makeSbus.makeSbus()=pypower.makeSbus-module.html#makeSbus"><a title="pypower.makeSbus
+pypower.makeSbus.makeSbus" class="py-name" href="#" onclick="return doclink('link-8', 'makeSbus', 'link-8');">makeSbus</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name"><a title="pypower.makeSbus
+pypower.makeSbus.makeSbus" class="py-name" href="#" onclick="return doclink('link-9', 'makeSbus', 'link-8');">makeSbus</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-10" class="py-name" targets="Module pypower.dSbus_dV=pypower.dSbus_dV-module.html,Function pypower.dSbus_dV.dSbus_dV()=pypower.dSbus_dV-module.html#dSbus_dV"><a title="pypower.dSbus_dV
+pypower.dSbus_dV.dSbus_dV" class="py-name" href="#" onclick="return doclink('link-10', 'dSbus_dV', 'link-10');">dSbus_dV</a></tt> <tt class="py-keyword">import</tt> <tt id="link-11" class="py-name"><a title="pypower.dSbus_dV
+pypower.dSbus_dV.dSbus_dV" class="py-name" href="#" onclick="return doclink('link-11', 'dSbus_dV', 'link-10');">dSbus_dV</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-12" class="py-name" targets="Module pypower.dIbr_dV=pypower.dIbr_dV-module.html,Function pypower.dIbr_dV.dIbr_dV()=pypower.dIbr_dV-module.html#dIbr_dV"><a title="pypower.dIbr_dV
+pypower.dIbr_dV.dIbr_dV" class="py-name" href="#" onclick="return doclink('link-12', 'dIbr_dV', 'link-12');">dIbr_dV</a></tt> <tt class="py-keyword">import</tt> <tt id="link-13" class="py-name"><a title="pypower.dIbr_dV
+pypower.dIbr_dV.dIbr_dV" class="py-name" href="#" onclick="return doclink('link-13', 'dIbr_dV', 'link-12');">dIbr_dV</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-14" class="py-name" targets="Module pypower.dSbr_dV=pypower.dSbr_dV-module.html,Function pypower.dSbr_dV.dSbr_dV()=pypower.dSbr_dV-module.html#dSbr_dV"><a title="pypower.dSbr_dV
+pypower.dSbr_dV.dSbr_dV" class="py-name" href="#" onclick="return doclink('link-14', 'dSbr_dV', 'link-14');">dSbr_dV</a></tt> <tt class="py-keyword">import</tt> <tt id="link-15" class="py-name"><a title="pypower.dSbr_dV
+pypower.dSbr_dV.dSbr_dV" class="py-name" href="#" onclick="return doclink('link-15', 'dSbr_dV', 'link-14');">dSbr_dV</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-16" class="py-name" targets="Module pypower.dAbr_dV=pypower.dAbr_dV-module.html,Function pypower.dAbr_dV.dAbr_dV()=pypower.dAbr_dV-module.html#dAbr_dV"><a title="pypower.dAbr_dV
+pypower.dAbr_dV.dAbr_dV" class="py-name" href="#" onclick="return doclink('link-16', 'dAbr_dV', 'link-16');">dAbr_dV</a></tt> <tt class="py-keyword">import</tt> <tt id="link-17" class="py-name"><a title="pypower.dAbr_dV
+pypower.dAbr_dV.dAbr_dV" class="py-name" href="#" onclick="return doclink('link-17', 'dAbr_dV', 'link-16');">dAbr_dV</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"> </tt>
+<a name="opf_consfcn"></a><div id="opf_consfcn-def"><a name="L34"></a><tt class="py-lineno"> 34</tt> <a class="py-toggle" href="#" id="opf_consfcn-toggle" onclick="return toggle('opf_consfcn');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.opf_consfcn-module.html#opf_consfcn">opf_consfcn</a><tt class="py-op">(</tt><tt class="py-param">x</tt><tt class="py-op">,</tt> <tt class="py-param">om</tt><tt class="py-op">,</tt> <tt class="py-param">Ybus</tt><tt class="py-op">,</tt> <tt class="py-param">Yf</tt><tt class="py-op">,</tt> <tt class="py-param">Yt</tt><tt class="py-op">,</tt> <tt class="py-param">ppopt</tt><tt class="py-op">,</tt> <tt class="py-param">il</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="opf_consfcn-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="opf_consfcn-expanded"><a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">    <tt class="py-docstring">"""Evaluates nonlinear constraints and their Jacobian for OPF.</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-docstring">    Constraint evaluation function for AC optimal power flow, suitable</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring">    for use with L{pips}. Computes constraint vectors and their gradients.</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">    @param x: optimization vector</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">    @param om: OPF model object</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">    @param Ybus: bus admittance matrix</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">    @param Yf: admittance matrix for "from" end of constrained branches</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-docstring">    @param Yt: admittance matrix for "to" end of constrained branches</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-docstring">    @param ppopt: PYPOWER options vector</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-docstring">    @param il: (optional) vector of branch indices corresponding to</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-docstring">    branches with flow limits (all others are assumed to be</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">    unconstrained). The default is C{range(nl)} (all branches).</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring">    C{Yf} and C{Yt} contain only the rows corresponding to C{il}.</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">    @return: C{h} - vector of inequality constraint values (flow limits)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-docstring">    limit^2 - flow^2, where the flow can be apparent power real power or</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt class="py-docstring">    current, depending on value of C{OPF_FLOW_LIM} in C{ppopt} (only for</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring">    constrained lines). C{g} - vector of equality constraint values (power</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-docstring">    balances). C{dh} - (optional) inequality constraint gradients, column</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-docstring">    j is gradient of h(j). C{dg} - (optional) equality constraint gradients.</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-docstring">    @see: L{opf_costfcn}, L{opf_hessfcn}</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">    <tt class="py-comment">##----- initialize -----</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">    <tt class="py-comment">## unpack data</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">    <tt class="py-name">ppc</tt> <tt class="py-op">=</tt> <tt class="py-name">om</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method pypower.opf_model.opf_model.get_ppc()=pypower.opf_model.opf_model-class.html#get_ppc"><a title="pypower.opf_model.opf_model.get_ppc" class="py-name" href="#" onclick="return doclink('link-18', 'get_ppc', 'link-18');">get_ppc</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">    <tt class="py-name">baseMVA</tt><tt class="py-op">,</tt> <tt class="py-name">bus</tt><tt class="py-op">,</tt> <tt class="py-name">gen</tt><tt class="py-op">,</tt> <tt class="py-name">branch</tt> <tt class="py-op">=</tt> \ </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"baseMVA"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"bus"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"branch"</tt><tt class="py-op">]</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">    <tt class="py-name">vv</tt><tt class="py-op">,</tt> <tt class="py-name">_</tt><tt class="py-op">,</tt> <tt class="py-name">_</tt><tt class="py-op">,</tt> <tt class="py-name">_</tt> <tt class="py-op">=</tt> <tt class="py-name">om</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method pypower.opf_model.opf_model.get_idx()=pypower.opf_model.opf_model-class.html#get_idx"><a title="pypower.opf_model.opf_model.get_idx" class="py-name" href="#" onclick="return doclink('link-19', 'get_idx', 'link-19');">get_idx</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">    <tt class="py-comment">## problem dimensions</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">    <tt class="py-name">nb</tt> <tt class="py-op">=</tt> <tt class="py-name">bus</tt><tt class="py-op">.</tt><tt class="py-name">shape</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt>          <tt class="py-comment">## number of buses</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">    <tt class="py-name">nl</tt> <tt class="py-op">=</tt> <tt class="py-name">branch</tt><tt class="py-op">.</tt><tt class="py-name">shape</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt>       <tt class="py-comment">## number of branches</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">    <tt class="py-name">ng</tt> <tt class="py-op">=</tt> <tt class="py-name">gen</tt><tt class="py-op">.</tt><tt class="py-name">shape</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt>          <tt class="py-comment">## number of dispatchable injections</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">    <tt class="py-name">nxyz</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">)</tt>              <tt class="py-comment">## total number of control vars of all types</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">    <tt class="py-comment">## set default constrained lines</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">il</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-name">il</tt> <tt class="py-op">=</tt> <tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">nl</tt><tt class="py-op">)</tt>         <tt class="py-comment">## all lines have limits by default</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">    <tt class="py-name">nl2</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">il</tt><tt class="py-op">)</tt>              <tt class="py-comment">## number of constrained lines</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">    <tt class="py-comment">## grab Pg &amp; Qg</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">    <tt class="py-name">Pg</tt> <tt class="py-op">=</tt> <tt class="py-name">x</tt><tt class="py-op">[</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"i1"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Pg"</tt><tt class="py-op">]</tt><tt class="py-op">:</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"iN"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Pg"</tt><tt class="py-op">]</tt><tt class="py-op">]</tt>  <tt class="py-comment">## active generation in p.u.</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">    <tt class="py-name">Qg</tt> <tt class="py-op">=</tt> <tt class="py-name">x</tt><tt class="py-op">[</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"i1"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Qg"</tt><tt class="py-op">]</tt><tt class="py-op">:</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"iN"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Qg"</tt><tt class="py-op">]</tt><tt class="py-op">]</tt>  <tt class="py-comment">## reactive generation in p.u.</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">    <tt class="py-comment">## put Pg &amp; Qg back in gen</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">    <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-20" class="py-name"><a title="pypower.idx_gen.PG
+pypower.savecase.PG" class="py-name" href="#" onclick="return doclink('link-20', 'PG', 'link-2');">PG</a></tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">Pg</tt> <tt class="py-op">*</tt> <tt class="py-name">baseMVA</tt>  <tt class="py-comment">## active generation in MW</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">    <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-21" class="py-name"><a title="pypower.idx_gen.QG
+pypower.savecase.QG" class="py-name" href="#" onclick="return doclink('link-21', 'QG', 'link-3');">QG</a></tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">Qg</tt> <tt class="py-op">*</tt> <tt class="py-name">baseMVA</tt>  <tt class="py-comment">## reactive generation in MVAr</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">    <tt class="py-comment">## rebuild Sbus</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">    <tt class="py-name">Sbus</tt> <tt class="py-op">=</tt> <tt id="link-22" class="py-name"><a title="pypower.makeSbus
+pypower.makeSbus.makeSbus" class="py-name" href="#" onclick="return doclink('link-22', 'makeSbus', 'link-8');">makeSbus</a></tt><tt class="py-op">(</tt><tt class="py-name">baseMVA</tt><tt class="py-op">,</tt> <tt class="py-name">bus</tt><tt class="py-op">,</tt> <tt class="py-name">gen</tt><tt class="py-op">)</tt> <tt class="py-comment">## net injected power in p.u.</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">    <tt class="py-comment">## ----- evaluate constraints -----</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">    <tt class="py-comment">## reconstruct V</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">    <tt class="py-name">Va</tt> <tt class="py-op">=</tt> <tt class="py-name">x</tt><tt class="py-op">[</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"i1"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Va"</tt><tt class="py-op">]</tt><tt class="py-op">:</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"iN"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Va"</tt><tt class="py-op">]</tt><tt class="py-op">]</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">    <tt class="py-name">Vm</tt> <tt class="py-op">=</tt> <tt class="py-name">x</tt><tt class="py-op">[</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"i1"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Vm"</tt><tt class="py-op">]</tt><tt class="py-op">:</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"iN"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Vm"</tt><tt class="py-op">]</tt><tt class="py-op">]</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">    <tt class="py-name">V</tt> <tt class="py-op">=</tt> <tt class="py-name">Vm</tt> <tt class="py-op">*</tt> <tt class="py-name">exp</tt><tt class="py-op">(</tt><tt class="py-number">1j</tt> <tt class="py-op">*</tt> <tt class="py-name">Va</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">    <tt class="py-comment">## evaluate power flow equations</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">    <tt class="py-name">mis</tt> <tt class="py-op">=</tt> <tt class="py-name">V</tt> <tt class="py-op">*</tt> <tt class="py-name">conj</tt><tt class="py-op">(</tt><tt class="py-name">Ybus</tt> <tt class="py-op">*</tt> <tt class="py-name">V</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">Sbus</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">    <tt class="py-comment">##----- evaluate constraint function values -----</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">    <tt class="py-comment">## first, the equality constraints (power flow)</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">    <tt class="py-name">g</tt> <tt class="py-op">=</tt> <tt class="py-name">r_</tt><tt class="py-op">[</tt> <tt class="py-name">mis</tt><tt class="py-op">.</tt><tt class="py-name">real</tt><tt class="py-op">,</tt>            <tt class="py-comment">## active power mismatch for all buses</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">            <tt class="py-name">mis</tt><tt class="py-op">.</tt><tt class="py-name">imag</tt> <tt class="py-op">]</tt>           <tt class="py-comment">## reactive power mismatch for all buses</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">    <tt class="py-comment">## then, the inequality constraints (branch flow limits)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">nl2</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-name">flow_max</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">branch</tt><tt class="py-op">[</tt><tt class="py-name">il</tt><tt class="py-op">,</tt> <tt id="link-23" class="py-name"><a title="pypower.idx_brch.RATE_A
+pypower.savecase.RATE_A" class="py-name" href="#" onclick="return doclink('link-23', 'RATE_A', 'link-7');">RATE_A</a></tt><tt class="py-op">]</tt> <tt class="py-op">/</tt> <tt class="py-name">baseMVA</tt><tt class="py-op">)</tt><tt class="py-op">**</tt><tt class="py-number">2</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-name">flow_max</tt><tt class="py-op">[</tt><tt class="py-name">flow_max</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">Inf</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ppopt</tt><tt class="py-op">[</tt><tt class="py-string">'OPF_FLOW_LIM'</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">2</tt><tt class="py-op">:</tt>       <tt class="py-comment">## current magnitude limit, |I|</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">            <tt class="py-name">If</tt> <tt class="py-op">=</tt> <tt class="py-name">Yf</tt> <tt class="py-op">*</tt> <tt class="py-name">V</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">            <tt class="py-name">It</tt> <tt class="py-op">=</tt> <tt class="py-name">Yt</tt> <tt class="py-op">*</tt> <tt class="py-name">V</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt class="py-name">r_</tt><tt class="py-op">[</tt> <tt class="py-name">If</tt> <tt class="py-op">*</tt> <tt class="py-name">conj</tt><tt class="py-op">(</tt><tt class="py-name">If</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">flow_max</tt><tt class="py-op">,</tt>     <tt class="py-comment">## branch I limits (from bus)</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">                    <tt class="py-name">It</tt> <tt class="py-op">*</tt> <tt class="py-name">conj</tt><tt class="py-op">(</tt><tt class="py-name">It</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">flow_max</tt> <tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">real</tt>    <tt class="py-comment">## branch I limits (to bus)</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">            <tt class="py-comment">## compute branch power flows</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">            <tt class="py-comment">## complex power injected at "from" bus (p.u.)</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">            <tt class="py-name">Sf</tt> <tt class="py-op">=</tt> <tt class="py-name">V</tt><tt class="py-op">[</tt> <tt class="py-name">branch</tt><tt class="py-op">[</tt><tt class="py-name">il</tt><tt class="py-op">,</tt> <tt id="link-24" class="py-name"><a title="pypower.idx_brch.F_BUS
+pypower.savecase.F_BUS" class="py-name" href="#" onclick="return doclink('link-24', 'F_BUS', 'link-5');">F_BUS</a></tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">astype</tt><tt class="py-op">(</tt><tt class="py-name">int</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt> <tt class="py-op">*</tt> <tt class="py-name">conj</tt><tt class="py-op">(</tt><tt class="py-name">Yf</tt> <tt class="py-op">*</tt> <tt class="py-name">V</tt><tt class="py-op">)</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt class="py-comment">## complex power injected at "to" bus (p.u.)</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">            <tt class="py-name">St</tt> <tt class="py-op">=</tt> <tt class="py-name">V</tt><tt class="py-op">[</tt> <tt class="py-name">branch</tt><tt class="py-op">[</tt><tt class="py-name">il</tt><tt class="py-op">,</tt> <tt id="link-25" class="py-name"><a title="pypower.idx_brch.T_BUS
+pypower.savecase.T_BUS" class="py-name" href="#" onclick="return doclink('link-25', 'T_BUS', 'link-6');">T_BUS</a></tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">astype</tt><tt class="py-op">(</tt><tt class="py-name">int</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt> <tt class="py-op">*</tt> <tt class="py-name">conj</tt><tt class="py-op">(</tt><tt class="py-name">Yt</tt> <tt class="py-op">*</tt> <tt class="py-name">V</tt><tt class="py-op">)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">ppopt</tt><tt class="py-op">[</tt><tt class="py-string">'OPF_FLOW_LIM'</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt>   <tt class="py-comment">## active power limit, P (Pan Wei)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">                <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt class="py-name">r_</tt><tt class="py-op">[</tt> <tt class="py-name">Sf</tt><tt class="py-op">.</tt><tt class="py-name">real</tt><tt class="py-op">**</tt><tt class="py-number">2</tt> <tt class="py-op">-</tt> <tt class="py-name">flow_max</tt><tt class="py-op">,</tt>   <tt class="py-comment">## branch P limits (from bus)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">                        <tt class="py-name">St</tt><tt class="py-op">.</tt><tt class="py-name">real</tt><tt class="py-op">**</tt><tt class="py-number">2</tt> <tt class="py-op">-</tt> <tt class="py-name">flow_max</tt> <tt class="py-op">]</tt>  <tt class="py-comment">## branch P limits (to bus)</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt>                <tt class="py-comment">## apparent power limit, |S|</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">                <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt class="py-name">r_</tt><tt class="py-op">[</tt> <tt class="py-name">Sf</tt> <tt class="py-op">*</tt> <tt class="py-name">conj</tt><tt class="py-op">(</tt><tt class="py-name">Sf</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">flow_max</tt><tt class="py-op">,</tt> <tt class="py-comment">## branch S limits (from bus)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">                        <tt class="py-name">St</tt> <tt class="py-op">*</tt> <tt class="py-name">conj</tt><tt class="py-op">(</tt><tt class="py-name">St</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">flow_max</tt> <tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">real</tt>  <tt class="py-comment">## branch S limits (to bus)</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt class="py-name">zeros</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">    <tt class="py-comment">##----- evaluate partials of constraints -----</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">    <tt class="py-comment">## index ranges</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">    <tt class="py-name">iVa</tt> <tt class="py-op">=</tt> <tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"i1"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Va"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"iN"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Va"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">    <tt class="py-name">iVm</tt> <tt class="py-op">=</tt> <tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"i1"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Vm"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"iN"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Vm"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">    <tt class="py-name">iPg</tt> <tt class="py-op">=</tt> <tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"i1"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Pg"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"iN"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Pg"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">    <tt class="py-name">iQg</tt> <tt class="py-op">=</tt> <tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"i1"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Qg"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">vv</tt><tt class="py-op">[</tt><tt class="py-string">"iN"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-string">"Qg"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">    <tt class="py-name">iVaVmPgQg</tt> <tt class="py-op">=</tt> <tt class="py-name">r_</tt><tt class="py-op">[</tt><tt class="py-name">iVa</tt><tt class="py-op">,</tt> <tt class="py-name">iVm</tt><tt class="py-op">,</tt> <tt class="py-name">iPg</tt><tt class="py-op">,</tt> <tt class="py-name">iQg</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">T</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">    <tt class="py-comment">## compute partials of injected bus powers</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">    <tt class="py-name">dSbus_dVm</tt><tt class="py-op">,</tt> <tt class="py-name">dSbus_dVa</tt> <tt class="py-op">=</tt> <tt id="link-26" class="py-name"><a title="pypower.dSbus_dV
+pypower.dSbus_dV.dSbus_dV" class="py-name" href="#" onclick="return doclink('link-26', 'dSbus_dV', 'link-10');">dSbus_dV</a></tt><tt class="py-op">(</tt><tt class="py-name">Ybus</tt><tt class="py-op">,</tt> <tt class="py-name">V</tt><tt class="py-op">)</tt>           <tt class="py-comment">## w.r.t. V</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">    <tt class="py-comment">## Pbus w.r.t. Pg, Qbus w.r.t. Qg</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">    <tt class="py-name">neg_Cg</tt> <tt class="py-op">=</tt> <tt class="py-name">sparse</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-op">-</tt><tt class="py-name">ones</tt><tt class="py-op">(</tt><tt class="py-name">ng</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-27" class="py-name"><a title="pypower.idx_gen.GEN_BUS
+pypower.savecase.GEN_BUS" class="py-name" href="#" onclick="return doclink('link-27', 'GEN_BUS', 'link-1');">GEN_BUS</a></tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-name">ng</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-name">nb</tt><tt class="py-op">,</tt> <tt class="py-name">ng</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">    <tt class="py-comment">## construct Jacobian of equality constraints (power flow) and transpose it</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">    <tt class="py-name">dg</tt> <tt class="py-op">=</tt> <tt class="py-name">lil_matrix</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-number">2</tt> <tt class="py-op">*</tt> <tt class="py-name">nb</tt><tt class="py-op">,</tt> <tt class="py-name">nxyz</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">    <tt class="py-name">blank</tt> <tt class="py-op">=</tt> <tt class="py-name">sparse</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">nb</tt><tt class="py-op">,</tt> <tt class="py-name">ng</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">    <tt class="py-name">dg</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt class="py-name">iVaVmPgQg</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">vstack</tt><tt class="py-op">(</tt><tt class="py-op">[</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">            <tt class="py-comment">## P mismatch w.r.t Va, Vm, Pg, Qg</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">            <tt class="py-name">hstack</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-name">dSbus_dVa</tt><tt class="py-op">.</tt><tt class="py-name">real</tt><tt class="py-op">,</tt> <tt class="py-name">dSbus_dVm</tt><tt class="py-op">.</tt><tt class="py-name">real</tt><tt class="py-op">,</tt> <tt class="py-name">neg_Cg</tt><tt class="py-op">,</tt> <tt class="py-name">blank</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">            <tt class="py-comment">## Q mismatch w.r.t Va, Vm, Pg, Qg</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">            <tt class="py-name">hstack</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-name">dSbus_dVa</tt><tt class="py-op">.</tt><tt class="py-name">imag</tt><tt class="py-op">,</tt> <tt class="py-name">dSbus_dVm</tt><tt class="py-op">.</tt><tt class="py-name">imag</tt><tt class="py-op">,</tt> <tt class="py-name">blank</tt><tt class="py-op">,</tt> <tt class="py-name">neg_Cg</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">        <tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-string">"csr"</tt><tt class="py-op">)</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">    <tt class="py-name">dg</tt> <tt class="py-op">=</tt> <tt class="py-name">dg</tt><tt class="py-op">.</tt><tt class="py-name">T</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">nl2</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-comment">## compute partials of Flows w.r.t. V</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ppopt</tt><tt class="py-op">[</tt><tt class="py-string">'OPF_FLOW_LIM'</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">2</tt><tt class="py-op">:</tt>     <tt class="py-comment">## current</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">            <tt class="py-name">dFf_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">dFf_dVm</tt><tt class="py-op">,</tt> <tt class="py-name">dFt_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">dFt_dVm</tt><tt class="py-op">,</tt> <tt class="py-name">Ff</tt><tt class="py-op">,</tt> <tt class="py-name">Ft</tt> <tt class="py-op">=</tt> \ </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">                    <tt id="link-28" class="py-name"><a title="pypower.dIbr_dV
+pypower.dIbr_dV.dIbr_dV" class="py-name" href="#" onclick="return doclink('link-28', 'dIbr_dV', 'link-12');">dIbr_dV</a></tt><tt class="py-op">(</tt><tt class="py-name">branch</tt><tt class="py-op">[</tt><tt class="py-name">il</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">Yf</tt><tt class="py-op">,</tt> <tt class="py-name">Yt</tt><tt class="py-op">,</tt> <tt class="py-name">V</tt><tt class="py-op">)</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt>                  <tt class="py-comment">## power</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">            <tt class="py-name">dFf_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">dFf_dVm</tt><tt class="py-op">,</tt> <tt class="py-name">dFt_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">dFt_dVm</tt><tt class="py-op">,</tt> <tt class="py-name">Ff</tt><tt class="py-op">,</tt> <tt class="py-name">Ft</tt> <tt class="py-op">=</tt> \ </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">                    <tt id="link-29" class="py-name"><a title="pypower.dSbr_dV
+pypower.dSbr_dV.dSbr_dV" class="py-name" href="#" onclick="return doclink('link-29', 'dSbr_dV', 'link-14');">dSbr_dV</a></tt><tt class="py-op">(</tt><tt class="py-name">branch</tt><tt class="py-op">[</tt><tt class="py-name">il</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">Yf</tt><tt class="py-op">,</tt> <tt class="py-name">Yt</tt><tt class="py-op">,</tt> <tt class="py-name">V</tt><tt class="py-op">)</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ppopt</tt><tt class="py-op">[</tt><tt class="py-string">'OPF_FLOW_LIM'</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt>     <tt class="py-comment">## real part of flow (active power)</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">            <tt class="py-name">dFf_dVa</tt> <tt class="py-op">=</tt> <tt class="py-name">dFf_dVa</tt><tt class="py-op">.</tt><tt class="py-name">real</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">            <tt class="py-name">dFf_dVm</tt> <tt class="py-op">=</tt> <tt class="py-name">dFf_dVm</tt><tt class="py-op">.</tt><tt class="py-name">real</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">            <tt class="py-name">dFt_dVa</tt> <tt class="py-op">=</tt> <tt class="py-name">dFt_dVa</tt><tt class="py-op">.</tt><tt class="py-name">real</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">            <tt class="py-name">dFt_dVm</tt> <tt class="py-op">=</tt> <tt class="py-name">dFt_dVm</tt><tt class="py-op">.</tt><tt class="py-name">real</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">            <tt class="py-name">Ff</tt> <tt class="py-op">=</tt> <tt class="py-name">Ff</tt><tt class="py-op">.</tt><tt class="py-name">real</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">            <tt class="py-name">Ft</tt> <tt class="py-op">=</tt> <tt class="py-name">Ft</tt><tt class="py-op">.</tt><tt class="py-name">real</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">        <tt class="py-comment">## squared magnitude of flow (of complex power or current, or real power)</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-name">df_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">df_dVm</tt><tt class="py-op">,</tt> <tt class="py-name">dt_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">dt_dVm</tt> <tt class="py-op">=</tt> \ </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">                <tt id="link-30" class="py-name"><a title="pypower.dAbr_dV
+pypower.dAbr_dV.dAbr_dV" class="py-name" href="#" onclick="return doclink('link-30', 'dAbr_dV', 'link-16');">dAbr_dV</a></tt><tt class="py-op">(</tt><tt class="py-name">dFf_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">dFf_dVm</tt><tt class="py-op">,</tt> <tt class="py-name">dFt_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">dFt_dVm</tt><tt class="py-op">,</tt> <tt class="py-name">Ff</tt><tt class="py-op">,</tt> <tt class="py-name">Ft</tt><tt class="py-op">)</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">        <tt class="py-comment">## construct Jacobian of inequality constraints (branch limits)</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-comment">## and transpose it.</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">        <tt class="py-name">dh</tt> <tt class="py-op">=</tt> <tt class="py-name">lil_matrix</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-number">2</tt> <tt class="py-op">*</tt> <tt class="py-name">nl2</tt><tt class="py-op">,</tt> <tt class="py-name">nxyz</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt class="py-name">dh</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt class="py-name">r_</tt><tt class="py-op">[</tt><tt class="py-name">iVa</tt><tt class="py-op">,</tt> <tt class="py-name">iVm</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">T</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">vstack</tt><tt class="py-op">(</tt><tt class="py-op">[</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">                <tt class="py-name">hstack</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-name">df_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">df_dVm</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">,</tt>    <tt class="py-comment">## "from" flow limit</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">                <tt class="py-name">hstack</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-name">dt_dVa</tt><tt class="py-op">,</tt> <tt class="py-name">dt_dVm</tt><tt class="py-op">]</tt><tt class="py-op">)</tt>     <tt class="py-comment">## "to" flow limit</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">            <tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-string">"csr"</tt><tt class="py-op">)</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">        <tt class="py-name">dh</tt> <tt class="py-op">=</tt> <tt class="py-name">dh</tt><tt class="py-op">.</tt><tt class="py-name">T</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">        <tt class="py-name">dh</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">h</tt><tt class="py-op">,</tt> <tt class="py-name">g</tt><tt class="py-op">,</tt> <tt class="py-name">dh</tt><tt class="py-op">,</tt> <tt class="py-name">dg</tt> </tt>
+</div><a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:58 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

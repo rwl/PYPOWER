@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.makeApq</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        Module&nbsp;makeApq
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.makeApq-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pypower.makeApq-module.html">Module pypower.makeApq</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2010-2011 Richard Lincoln</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"># by the Free Software Foundation, either version 3 of the License,</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"># or (at your option) any later version.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"># along with PYPOWER. If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-docstring">"""Construct linear constraints for generator capability curves.</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">numpy</tt> <tt class="py-keyword">import</tt> <tt class="py-name">array</tt><tt class="py-op">,</tt> <tt class="py-name">linalg</tt><tt class="py-op">,</tt> <tt class="py-name">zeros</tt><tt class="py-op">,</tt> <tt class="py-name">arange</tt><tt class="py-op">,</tt> <tt class="py-name">r_</tt><tt class="py-op">,</tt> <tt class="py-name">c_</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">numpy</tt> <tt class="py-keyword">import</tt> <tt class="py-name">flatnonzero</tt> <tt class="py-keyword">as</tt> <tt class="py-name">find</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">scipy</tt><tt class="py-op">.</tt><tt class="py-name">sparse</tt> <tt class="py-keyword">import</tt> <tt class="py-name">csr_matrix</tt> <tt class="py-keyword">as</tt> <tt class="py-name">sparse</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module pypower.idx_gen=pypower.idx_gen-module.html"><a title="pypower.idx_gen" class="py-name" href="#" onclick="return doclink('link-0', 'idx_gen', 'link-0');">idx_gen</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Variable pypower.idx_gen.PC1=pypower.idx_gen-module.html#PC1,Variable pypower.savecase.PC1=pypower.savecase-module.html#PC1"><a title="pypower.idx_gen.PC1
+pypower.savecase.PC1" class="py-name" href="#" onclick="return doclink('link-1', 'PC1', 'link-1');">PC1</a></tt><tt class="py-op">,</tt> <tt id="link-2" class="py-name" targets="Variable pypower.idx_gen.PC2=pypower.idx_gen-module.html#PC2,Variable pypower.savecase.PC2=pypower.savecase-module.html#PC2"><a title="pypower.idx_gen.PC2
+pypower.savecase.PC2" class="py-name" href="#" onclick="return doclink('link-2', 'PC2', 'link-2');">PC2</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Variable pypower.idx_gen.QC1MIN=pypower.idx_gen-module.html#QC1MIN,Variable pypower.savecase.QC1MIN=pypower.savecase-module.html#QC1MIN"><a title="pypower.idx_gen.QC1MIN
+pypower.savecase.QC1MIN" class="py-name" href="#" onclick="return doclink('link-3', 'QC1MIN', 'link-3');">QC1MIN</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Variable pypower.idx_gen.QC1MAX=pypower.idx_gen-module.html#QC1MAX,Variable pypower.savecase.QC1MAX=pypower.savecase-module.html#QC1MAX"><a title="pypower.idx_gen.QC1MAX
+pypower.savecase.QC1MAX" class="py-name" href="#" onclick="return doclink('link-4', 'QC1MAX', 'link-4');">QC1MAX</a></tt><tt class="py-op">,</tt> <tt id="link-5" class="py-name" targets="Variable pypower.idx_gen.QC2MIN=pypower.idx_gen-module.html#QC2MIN,Variable pypower.savecase.QC2MIN=pypower.savecase-module.html#QC2MIN"><a title="pypower.idx_gen.QC2MIN
+pypower.savecase.QC2MIN" class="py-name" href="#" onclick="return doclink('link-5', 'QC2MIN', 'link-5');">QC2MIN</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name" targets="Variable pypower.idx_gen.QC2MAX=pypower.idx_gen-module.html#QC2MAX,Variable pypower.savecase.QC2MAX=pypower.savecase-module.html#QC2MAX"><a title="pypower.idx_gen.QC2MAX
+pypower.savecase.QC2MAX" class="py-name" href="#" onclick="return doclink('link-6', 'QC2MAX', 'link-6');">QC2MAX</a></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-7" class="py-name" targets="Module pypower.hasPQcap=pypower.hasPQcap-module.html,Function pypower.hasPQcap.hasPQcap()=pypower.hasPQcap-module.html#hasPQcap"><a title="pypower.hasPQcap
+pypower.hasPQcap.hasPQcap" class="py-name" href="#" onclick="return doclink('link-7', 'hasPQcap', 'link-7');">hasPQcap</a></tt> <tt class="py-keyword">import</tt> <tt id="link-8" class="py-name"><a title="pypower.hasPQcap
+pypower.hasPQcap.hasPQcap" class="py-name" href="#" onclick="return doclink('link-8', 'hasPQcap', 'link-7');">hasPQcap</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"> </tt>
+<a name="makeApq"></a><div id="makeApq-def"><a name="L29"></a><tt class="py-lineno"> 29</tt> <a class="py-toggle" href="#" id="makeApq-toggle" onclick="return toggle('makeApq');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.makeApq-module.html#makeApq">makeApq</a><tt class="py-op">(</tt><tt class="py-param">baseMVA</tt><tt class="py-op">,</tt> <tt class="py-param">gen</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="makeApq-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="makeApq-expanded"><a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">    <tt class="py-docstring">"""Construct linear constraints for generator capability curves.</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-docstring">    Constructs the parameters for the following linear constraints</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-docstring">    implementing trapezoidal generator capability curves, where</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-docstring">    C{Pg} and C{Qg} are the real and reactive generator injections::</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-docstring">        Apqh * [Pg, Qg] &lt;= ubpqh</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-docstring">        Apql * [Pg, Qg] &lt;= ubpql</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring">    C{data} constains additional information as shown below.</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">    Example::</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">        Apqh, ubpqh, Apql, ubpql, data = makeApq(baseMVA, gen)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-docstring">        data['h']      [Qc1max-Qc2max, Pc2-Pc1]</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-docstring">        data['l']      [Qc2min-Qc1min, Pc1-Pc2]</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-docstring">        data['ipqh']   indices of gens with general PQ cap curves (upper)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-docstring">        data['ipql']   indices of gens with general PQ cap curves (lower)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">    <tt class="py-name">data</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">    <tt class="py-comment">## data dimensions</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">    <tt class="py-name">ng</tt> <tt class="py-op">=</tt> <tt class="py-name">gen</tt><tt class="py-op">.</tt><tt class="py-name">shape</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt>      <tt class="py-comment">## number of dispatchable injections</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">    <tt class="py-comment">## which generators require additional linear constraints</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">    <tt class="py-comment">## (in addition to simple box constraints) on (Pg,Qg) to correctly</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">    <tt class="py-comment">## model their PQ capability curves</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">    <tt class="py-name">ipqh</tt> <tt class="py-op">=</tt> <tt class="py-name">find</tt><tt class="py-op">(</tt> <tt id="link-9" class="py-name"><a title="pypower.hasPQcap
+pypower.hasPQcap.hasPQcap" class="py-name" href="#" onclick="return doclink('link-9', 'hasPQcap', 'link-7');">hasPQcap</a></tt><tt class="py-op">(</tt><tt class="py-name">gen</tt><tt class="py-op">,</tt> <tt class="py-string">'U'</tt><tt class="py-op">)</tt> <tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">    <tt class="py-name">ipql</tt> <tt class="py-op">=</tt> <tt class="py-name">find</tt><tt class="py-op">(</tt> <tt id="link-10" class="py-name"><a title="pypower.hasPQcap
+pypower.hasPQcap.hasPQcap" class="py-name" href="#" onclick="return doclink('link-10', 'hasPQcap', 'link-7');">hasPQcap</a></tt><tt class="py-op">(</tt><tt class="py-name">gen</tt><tt class="py-op">,</tt> <tt class="py-string">'L'</tt><tt class="py-op">)</tt> <tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">    <tt class="py-name">npqh</tt> <tt class="py-op">=</tt> <tt class="py-name">ipqh</tt><tt class="py-op">.</tt><tt class="py-name">shape</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt>   <tt class="py-comment">## number of general PQ capability curves (upper)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">    <tt class="py-name">npql</tt> <tt class="py-op">=</tt> <tt class="py-name">ipql</tt><tt class="py-op">.</tt><tt class="py-name">shape</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt>   <tt class="py-comment">## number of general PQ capability curves (lower)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">    <tt class="py-comment">## make Apqh if there is a need to add general PQ capability curves</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">    <tt class="py-comment">## use normalized coefficient rows so multipliers have right scaling</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">    <tt class="py-comment">## in $$/pu</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">npqh</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"h"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">c_</tt><tt class="py-op">[</tt><tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipqh</tt><tt class="py-op">,</tt> <tt id="link-11" class="py-name"><a title="pypower.idx_gen.QC1MAX
+pypower.savecase.QC1MAX" class="py-name" href="#" onclick="return doclink('link-11', 'QC1MAX', 'link-4');">QC1MAX</a></tt><tt class="py-op">]</tt> <tt class="py-op">-</tt> <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipqh</tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name"><a title="pypower.idx_gen.QC2MAX
+pypower.savecase.QC2MAX" class="py-name" href="#" onclick="return doclink('link-12', 'QC2MAX', 'link-6');">QC2MAX</a></tt><tt class="py-op">]</tt><tt class="py-op">,</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">                       <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipqh</tt><tt class="py-op">,</tt> <tt id="link-13" class="py-name"><a title="pypower.idx_gen.PC2
+pypower.savecase.PC2" class="py-name" href="#" onclick="return doclink('link-13', 'PC2', 'link-2');">PC2</a></tt><tt class="py-op">]</tt> <tt class="py-op">-</tt> <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipqh</tt><tt class="py-op">,</tt> <tt id="link-14" class="py-name"><a title="pypower.idx_gen.PC1
+pypower.savecase.PC1" class="py-name" href="#" onclick="return doclink('link-14', 'PC1', 'link-1');">PC1</a></tt><tt class="py-op">]</tt><tt class="py-op">]</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-name">ubpqh</tt> <tt class="py-op">=</tt> <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"h"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">*</tt> <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipqh</tt><tt class="py-op">,</tt> <tt id="link-15" class="py-name"><a title="pypower.idx_gen.PC1
+pypower.savecase.PC1" class="py-name" href="#" onclick="return doclink('link-15', 'PC1', 'link-1');">PC1</a></tt><tt class="py-op">]</tt> <tt class="py-op">+</tt> \ </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">                <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"h"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">]</tt> <tt class="py-op">*</tt> <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipqh</tt><tt class="py-op">,</tt> <tt id="link-16" class="py-name"><a title="pypower.idx_gen.QC1MAX
+pypower.savecase.QC1MAX" class="py-name" href="#" onclick="return doclink('link-16', 'QC1MAX', 'link-4');">QC1MAX</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-name">npqh</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt class="py-name">tmp</tt> <tt class="py-op">=</tt> <tt class="py-name">linalg</tt><tt class="py-op">.</tt><tt class="py-name">norm</tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"h"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">            <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"h"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"h"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt> <tt class="py-op">/</tt> <tt class="py-name">tmp</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">            <tt class="py-name">ubpqh</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">ubpqh</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">/</tt> <tt class="py-name">tmp</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-name">Apqh</tt> <tt class="py-op">=</tt> <tt class="py-name">sparse</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"h"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">flatten</tt><tt class="py-op">(</tt><tt class="py-string">'F'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">                       <tt class="py-op">(</tt><tt class="py-name">r_</tt><tt class="py-op">[</tt><tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">npqh</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">npqh</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">r_</tt><tt class="py-op">[</tt><tt class="py-name">ipqh</tt><tt class="py-op">,</tt> <tt class="py-name">ipqh</tt><tt class="py-op">+</tt><tt class="py-name">ng</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">                      <tt class="py-op">(</tt><tt class="py-name">npqh</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">*</tt><tt class="py-name">ng</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-name">ubpqh</tt> <tt class="py-op">=</tt> <tt class="py-name">ubpqh</tt> <tt class="py-op">/</tt> <tt class="py-name">baseMVA</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"h"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">array</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-name">Apqh</tt>  <tt class="py-op">=</tt> <tt class="py-name">zeros</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">*</tt><tt class="py-name">ng</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-name">ubpqh</tt> <tt class="py-op">=</tt> <tt class="py-name">array</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">    <tt class="py-comment">## similarly Apql</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">npql</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"l"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">c_</tt><tt class="py-op">[</tt><tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipql</tt><tt class="py-op">,</tt> <tt id="link-17" class="py-name"><a title="pypower.idx_gen.QC2MIN
+pypower.savecase.QC2MIN" class="py-name" href="#" onclick="return doclink('link-17', 'QC2MIN', 'link-5');">QC2MIN</a></tt><tt class="py-op">]</tt> <tt class="py-op">-</tt> <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipql</tt><tt class="py-op">,</tt> <tt id="link-18" class="py-name"><a title="pypower.idx_gen.QC1MIN
+pypower.savecase.QC1MIN" class="py-name" href="#" onclick="return doclink('link-18', 'QC1MIN', 'link-3');">QC1MIN</a></tt><tt class="py-op">]</tt><tt class="py-op">,</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">                       <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipql</tt><tt class="py-op">,</tt> <tt id="link-19" class="py-name"><a title="pypower.idx_gen.PC1
+pypower.savecase.PC1" class="py-name" href="#" onclick="return doclink('link-19', 'PC1', 'link-1');">PC1</a></tt><tt class="py-op">]</tt> <tt class="py-op">-</tt> <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipql</tt><tt class="py-op">,</tt> <tt id="link-20" class="py-name"><a title="pypower.idx_gen.PC2
+pypower.savecase.PC2" class="py-name" href="#" onclick="return doclink('link-20', 'PC2', 'link-2');">PC2</a></tt><tt class="py-op">]</tt><tt class="py-op">]</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-name">ubpql</tt> <tt class="py-op">=</tt> <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"l"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">*</tt> <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipql</tt><tt class="py-op">,</tt> <tt id="link-21" class="py-name"><a title="pypower.idx_gen.PC1
+pypower.savecase.PC1" class="py-name" href="#" onclick="return doclink('link-21', 'PC1', 'link-1');">PC1</a></tt><tt class="py-op">]</tt> <tt class="py-op">+</tt> \ </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">                <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"l"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">]</tt> <tt class="py-op">*</tt> <tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-name">ipql</tt><tt class="py-op">,</tt> <tt id="link-22" class="py-name"><a title="pypower.idx_gen.QC1MIN
+pypower.savecase.QC1MIN" class="py-name" href="#" onclick="return doclink('link-22', 'QC1MIN', 'link-3');">QC1MIN</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-name">npql</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">            <tt class="py-name">tmp</tt> <tt class="py-op">=</tt> <tt class="py-name">linalg</tt><tt class="py-op">.</tt><tt class="py-name">norm</tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"l"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">            <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"l"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"l"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt> <tt class="py-op">/</tt> <tt class="py-name">tmp</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">            <tt class="py-name">ubpql</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">ubpql</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">/</tt> <tt class="py-name">tmp</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-name">Apql</tt> <tt class="py-op">=</tt> <tt class="py-name">sparse</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"l"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">flatten</tt><tt class="py-op">(</tt><tt class="py-string">'F'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">                       <tt class="py-op">(</tt><tt class="py-name">r_</tt><tt class="py-op">[</tt><tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">npql</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">arange</tt><tt class="py-op">(</tt><tt class="py-name">npql</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">r_</tt><tt class="py-op">[</tt><tt class="py-name">ipql</tt><tt class="py-op">,</tt> <tt class="py-name">ipql</tt><tt class="py-op">+</tt><tt class="py-name">ng</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">                      <tt class="py-op">(</tt><tt class="py-name">npql</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">*</tt><tt class="py-name">ng</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-name">ubpql</tt> <tt class="py-op">=</tt> <tt class="py-name">ubpql</tt> <tt class="py-op">/</tt> <tt class="py-name">baseMVA</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"l"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">array</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-name">Apql</tt>  <tt class="py-op">=</tt> <tt class="py-name">zeros</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">*</tt><tt class="py-name">ng</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-name">ubpql</tt> <tt class="py-op">=</tt> <tt class="py-name">array</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">    <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"ipql"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">ipql</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">    <tt class="py-name">data</tt><tt class="py-op">[</tt><tt class="py-string">"ipqh"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">ipqh</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">Apqh</tt><tt class="py-op">,</tt> <tt class="py-name">ubpqh</tt><tt class="py-op">,</tt> <tt class="py-name">Apql</tt><tt class="py-op">,</tt> <tt class="py-name">ubpql</tt><tt class="py-op">,</tt> <tt class="py-name">data</tt> </tt>
+</div><a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:56 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

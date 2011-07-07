@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.api</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        Module&nbsp;api
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.api-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pypower.api-module.html">Module pypower.api</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2011 Richard Lincoln</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"># by the Free Software Foundation, either version 3 of the License,</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"># or (at your option) any later version.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY], without even the implied warranty of</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"># along with PYPOWER. If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-docstring">""" Pseudo-package for all of the core functions from PYPOWER.</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-docstring">Use this module for importing PYPOWER function names into your namespace. For</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-docstring">example::</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-docstring">    from pypower.api import runpf</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">__future__</tt> <tt class="py-keyword">import</tt> <tt class="py-name">absolute_import</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Module pypower.add_userfcn=pypower.add_userfcn-module.html,Function pypower.add_userfcn.add_userfcn()=pypower.add_userfcn-module.html#add_userfcn"><a title="pypower.add_userfcn
+pypower.add_userfcn.add_userfcn" class="py-name" href="#" onclick="return doclink('link-0', 'add_userfcn', 'link-0');">add_userfcn</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="pypower.add_userfcn
+pypower.add_userfcn.add_userfcn" class="py-name" href="#" onclick="return doclink('link-1', 'add_userfcn', 'link-0');">add_userfcn</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module pypower.bustypes=pypower.bustypes-module.html,Function pypower.bustypes.bustypes()=pypower.bustypes-module.html#bustypes"><a title="pypower.bustypes
+pypower.bustypes.bustypes" class="py-name" href="#" onclick="return doclink('link-2', 'bustypes', 'link-2');">bustypes</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="pypower.bustypes
+pypower.bustypes.bustypes" class="py-name" href="#" onclick="return doclink('link-3', 'bustypes', 'link-2');">bustypes</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module pypower.case118=pypower.case118-module.html,Function pypower.case118.case118()=pypower.case118-module.html#case118"><a title="pypower.case118
+pypower.case118.case118" class="py-name" href="#" onclick="return doclink('link-4', 'case118', 'link-4');">case118</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name"><a title="pypower.case118
+pypower.case118.case118" class="py-name" href="#" onclick="return doclink('link-5', 'case118', 'link-4');">case118</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Module pypower.case14=pypower.case14-module.html,Function pypower.case14.case14()=pypower.case14-module.html#case14"><a title="pypower.case14
+pypower.case14.case14" class="py-name" href="#" onclick="return doclink('link-6', 'case14', 'link-6');">case14</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name"><a title="pypower.case14
+pypower.case14.case14" class="py-name" href="#" onclick="return doclink('link-7', 'case14', 'link-6');">case14</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Module pypower.case24_ieee_rts=pypower.case24_ieee_rts-module.html,Function pypower.case24_ieee_rts.case24_ieee_rts()=pypower.case24_ieee_rts-module.html#case24_ieee_rts"><a title="pypower.case24_ieee_rts
+pypower.case24_ieee_rts.case24_ieee_rts" class="py-name" href="#" onclick="return doclink('link-8', 'case24_ieee_rts', 'link-8');">case24_ieee_rts</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name"><a title="pypower.case24_ieee_rts
+pypower.case24_ieee_rts.case24_ieee_rts" class="py-name" href="#" onclick="return doclink('link-9', 'case24_ieee_rts', 'link-8');">case24_ieee_rts</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Module pypower.case300=pypower.case300-module.html,Function pypower.case300.case300()=pypower.case300-module.html#case300"><a title="pypower.case300
+pypower.case300.case300" class="py-name" href="#" onclick="return doclink('link-10', 'case300', 'link-10');">case300</a></tt> <tt class="py-keyword">import</tt> <tt id="link-11" class="py-name"><a title="pypower.case300
+pypower.case300.case300" class="py-name" href="#" onclick="return doclink('link-11', 'case300', 'link-10');">case300</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Module pypower.case30pwl=pypower.case30pwl-module.html,Function pypower.case30pwl.case30pwl()=pypower.case30pwl-module.html#case30pwl"><a title="pypower.case30pwl
+pypower.case30pwl.case30pwl" class="py-name" href="#" onclick="return doclink('link-12', 'case30pwl', 'link-12');">case30pwl</a></tt> <tt class="py-keyword">import</tt> <tt id="link-13" class="py-name"><a title="pypower.case30pwl
+pypower.case30pwl.case30pwl" class="py-name" href="#" onclick="return doclink('link-13', 'case30pwl', 'link-12');">case30pwl</a></tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Module pypower.case30=pypower.case30-module.html,Function pypower.case30.case30()=pypower.case30-module.html#case30"><a title="pypower.case30
+pypower.case30.case30" class="py-name" href="#" onclick="return doclink('link-14', 'case30', 'link-14');">case30</a></tt> <tt class="py-keyword">import</tt> <tt id="link-15" class="py-name"><a title="pypower.case30
+pypower.case30.case30" class="py-name" href="#" onclick="return doclink('link-15', 'case30', 'link-14');">case30</a></tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Module pypower.case30Q=pypower.case30Q-module.html,Function pypower.case30Q.case30Q()=pypower.case30Q-module.html#case30Q"><a title="pypower.case30Q
+pypower.case30Q.case30Q" class="py-name" href="#" onclick="return doclink('link-16', 'case30Q', 'link-16');">case30Q</a></tt> <tt class="py-keyword">import</tt> <tt id="link-17" class="py-name"><a title="pypower.case30Q
+pypower.case30Q.case30Q" class="py-name" href="#" onclick="return doclink('link-17', 'case30Q', 'link-16');">case30Q</a></tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Module pypower.case39=pypower.case39-module.html,Function pypower.case39.case39()=pypower.case39-module.html#case39"><a title="pypower.case39
+pypower.case39.case39" class="py-name" href="#" onclick="return doclink('link-18', 'case39', 'link-18');">case39</a></tt> <tt class="py-keyword">import</tt> <tt id="link-19" class="py-name"><a title="pypower.case39
+pypower.case39.case39" class="py-name" href="#" onclick="return doclink('link-19', 'case39', 'link-18');">case39</a></tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-20" class="py-name" targets="Module pypower.case4gs=pypower.case4gs-module.html,Function pypower.case4gs.case4gs()=pypower.case4gs-module.html#case4gs"><a title="pypower.case4gs
+pypower.case4gs.case4gs" class="py-name" href="#" onclick="return doclink('link-20', 'case4gs', 'link-20');">case4gs</a></tt> <tt class="py-keyword">import</tt> <tt id="link-21" class="py-name"><a title="pypower.case4gs
+pypower.case4gs.case4gs" class="py-name" href="#" onclick="return doclink('link-21', 'case4gs', 'link-20');">case4gs</a></tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Module pypower.case57=pypower.case57-module.html,Function pypower.case57.case57()=pypower.case57-module.html#case57"><a title="pypower.case57
+pypower.case57.case57" class="py-name" href="#" onclick="return doclink('link-22', 'case57', 'link-22');">case57</a></tt> <tt class="py-keyword">import</tt> <tt id="link-23" class="py-name"><a title="pypower.case57
+pypower.case57.case57" class="py-name" href="#" onclick="return doclink('link-23', 'case57', 'link-22');">case57</a></tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Module pypower.case6ww=pypower.case6ww-module.html,Function pypower.case6ww.case6ww()=pypower.case6ww-module.html#case6ww"><a title="pypower.case6ww
+pypower.case6ww.case6ww" class="py-name" href="#" onclick="return doclink('link-24', 'case6ww', 'link-24');">case6ww</a></tt> <tt class="py-keyword">import</tt> <tt id="link-25" class="py-name"><a title="pypower.case6ww
+pypower.case6ww.case6ww" class="py-name" href="#" onclick="return doclink('link-25', 'case6ww', 'link-24');">case6ww</a></tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Module pypower.case9=pypower.case9-module.html,Function pypower.case9.case9()=pypower.case9-module.html#case9"><a title="pypower.case9
+pypower.case9.case9" class="py-name" href="#" onclick="return doclink('link-26', 'case9', 'link-26');">case9</a></tt> <tt class="py-keyword">import</tt> <tt id="link-27" class="py-name"><a title="pypower.case9
+pypower.case9.case9" class="py-name" href="#" onclick="return doclink('link-27', 'case9', 'link-26');">case9</a></tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Module pypower.case9Q=pypower.case9Q-module.html,Function pypower.case9Q.case9Q()=pypower.case9Q-module.html#case9Q"><a title="pypower.case9Q
+pypower.case9Q.case9Q" class="py-name" href="#" onclick="return doclink('link-28', 'case9Q', 'link-28');">case9Q</a></tt> <tt class="py-keyword">import</tt> <tt id="link-29" class="py-name"><a title="pypower.case9Q
+pypower.case9Q.case9Q" class="py-name" href="#" onclick="return doclink('link-29', 'case9Q', 'link-28');">case9Q</a></tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Module pypower.cplex_options=pypower.cplex_options-module.html,Function pypower.cplex_options.cplex_options()=pypower.cplex_options-module.html#cplex_options"><a title="pypower.cplex_options
+pypower.cplex_options.cplex_options" class="py-name" href="#" onclick="return doclink('link-30', 'cplex_options', 'link-30');">cplex_options</a></tt> <tt class="py-keyword">import</tt> <tt id="link-31" class="py-name"><a title="pypower.cplex_options
+pypower.cplex_options.cplex_options" class="py-name" href="#" onclick="return doclink('link-31', 'cplex_options', 'link-30');">cplex_options</a></tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Module pypower.d2AIbr_dV2=pypower.d2AIbr_dV2-module.html,Function pypower.d2AIbr_dV2.d2AIbr_dV2()=pypower.d2AIbr_dV2-module.html#d2AIbr_dV2"><a title="pypower.d2AIbr_dV2
+pypower.d2AIbr_dV2.d2AIbr_dV2" class="py-name" href="#" onclick="return doclink('link-32', 'd2AIbr_dV2', 'link-32');">d2AIbr_dV2</a></tt> <tt class="py-keyword">import</tt> <tt id="link-33" class="py-name"><a title="pypower.d2AIbr_dV2
+pypower.d2AIbr_dV2.d2AIbr_dV2" class="py-name" href="#" onclick="return doclink('link-33', 'd2AIbr_dV2', 'link-32');">d2AIbr_dV2</a></tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-34" class="py-name" targets="Module pypower.d2ASbr_dV2=pypower.d2ASbr_dV2-module.html,Function pypower.d2ASbr_dV2.d2ASbr_dV2()=pypower.d2ASbr_dV2-module.html#d2ASbr_dV2"><a title="pypower.d2ASbr_dV2
+pypower.d2ASbr_dV2.d2ASbr_dV2" class="py-name" href="#" onclick="return doclink('link-34', 'd2ASbr_dV2', 'link-34');">d2ASbr_dV2</a></tt> <tt class="py-keyword">import</tt> <tt id="link-35" class="py-name"><a title="pypower.d2ASbr_dV2
+pypower.d2ASbr_dV2.d2ASbr_dV2" class="py-name" href="#" onclick="return doclink('link-35', 'd2ASbr_dV2', 'link-34');">d2ASbr_dV2</a></tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-36" class="py-name" targets="Module pypower.d2Ibr_dV2=pypower.d2Ibr_dV2-module.html,Function pypower.d2Ibr_dV2.d2Ibr_dV2()=pypower.d2Ibr_dV2-module.html#d2Ibr_dV2"><a title="pypower.d2Ibr_dV2
+pypower.d2Ibr_dV2.d2Ibr_dV2" class="py-name" href="#" onclick="return doclink('link-36', 'd2Ibr_dV2', 'link-36');">d2Ibr_dV2</a></tt> <tt class="py-keyword">import</tt> <tt id="link-37" class="py-name"><a title="pypower.d2Ibr_dV2
+pypower.d2Ibr_dV2.d2Ibr_dV2" class="py-name" href="#" onclick="return doclink('link-37', 'd2Ibr_dV2', 'link-36');">d2Ibr_dV2</a></tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-38" class="py-name" targets="Module pypower.d2Sbr_dV2=pypower.d2Sbr_dV2-module.html,Function pypower.d2Sbr_dV2.d2Sbr_dV2()=pypower.d2Sbr_dV2-module.html#d2Sbr_dV2"><a title="pypower.d2Sbr_dV2
+pypower.d2Sbr_dV2.d2Sbr_dV2" class="py-name" href="#" onclick="return doclink('link-38', 'd2Sbr_dV2', 'link-38');">d2Sbr_dV2</a></tt> <tt class="py-keyword">import</tt> <tt id="link-39" class="py-name"><a title="pypower.d2Sbr_dV2
+pypower.d2Sbr_dV2.d2Sbr_dV2" class="py-name" href="#" onclick="return doclink('link-39', 'd2Sbr_dV2', 'link-38');">d2Sbr_dV2</a></tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Module pypower.d2Sbus_dV2=pypower.d2Sbus_dV2-module.html,Function pypower.d2Sbus_dV2.d2Sbus_dV2()=pypower.d2Sbus_dV2-module.html#d2Sbus_dV2"><a title="pypower.d2Sbus_dV2
+pypower.d2Sbus_dV2.d2Sbus_dV2" class="py-name" href="#" onclick="return doclink('link-40', 'd2Sbus_dV2', 'link-40');">d2Sbus_dV2</a></tt> <tt class="py-keyword">import</tt> <tt id="link-41" class="py-name"><a title="pypower.d2Sbus_dV2
+pypower.d2Sbus_dV2.d2Sbus_dV2" class="py-name" href="#" onclick="return doclink('link-41', 'd2Sbus_dV2', 'link-40');">d2Sbus_dV2</a></tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-42" class="py-name" targets="Module pypower.dAbr_dV=pypower.dAbr_dV-module.html,Function pypower.dAbr_dV.dAbr_dV()=pypower.dAbr_dV-module.html#dAbr_dV"><a title="pypower.dAbr_dV
+pypower.dAbr_dV.dAbr_dV" class="py-name" href="#" onclick="return doclink('link-42', 'dAbr_dV', 'link-42');">dAbr_dV</a></tt> <tt class="py-keyword">import</tt> <tt id="link-43" class="py-name"><a title="pypower.dAbr_dV
+pypower.dAbr_dV.dAbr_dV" class="py-name" href="#" onclick="return doclink('link-43', 'dAbr_dV', 'link-42');">dAbr_dV</a></tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-44" class="py-name" targets="Module pypower.dcopf=pypower.dcopf-module.html,Function pypower.dcopf.dcopf()=pypower.dcopf-module.html#dcopf"><a title="pypower.dcopf
+pypower.dcopf.dcopf" class="py-name" href="#" onclick="return doclink('link-44', 'dcopf', 'link-44');">dcopf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-45" class="py-name"><a title="pypower.dcopf
+pypower.dcopf.dcopf" class="py-name" href="#" onclick="return doclink('link-45', 'dcopf', 'link-44');">dcopf</a></tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-46" class="py-name" targets="Module pypower.dcopf_solver=pypower.dcopf_solver-module.html,Function pypower.dcopf_solver.dcopf_solver()=pypower.dcopf_solver-module.html#dcopf_solver"><a title="pypower.dcopf_solver
+pypower.dcopf_solver.dcopf_solver" class="py-name" href="#" onclick="return doclink('link-46', 'dcopf_solver', 'link-46');">dcopf_solver</a></tt> <tt class="py-keyword">import</tt> <tt id="link-47" class="py-name"><a title="pypower.dcopf_solver
+pypower.dcopf_solver.dcopf_solver" class="py-name" href="#" onclick="return doclink('link-47', 'dcopf_solver', 'link-46');">dcopf_solver</a></tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-48" class="py-name" targets="Module pypower.dcpf=pypower.dcpf-module.html,Function pypower.dcpf.dcpf()=pypower.dcpf-module.html#dcpf"><a title="pypower.dcpf
+pypower.dcpf.dcpf" class="py-name" href="#" onclick="return doclink('link-48', 'dcpf', 'link-48');">dcpf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-49" class="py-name"><a title="pypower.dcpf
+pypower.dcpf.dcpf" class="py-name" href="#" onclick="return doclink('link-49', 'dcpf', 'link-48');">dcpf</a></tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-50" class="py-name" targets="Module pypower.dIbr_dV=pypower.dIbr_dV-module.html,Function pypower.dIbr_dV.dIbr_dV()=pypower.dIbr_dV-module.html#dIbr_dV"><a title="pypower.dIbr_dV
+pypower.dIbr_dV.dIbr_dV" class="py-name" href="#" onclick="return doclink('link-50', 'dIbr_dV', 'link-50');">dIbr_dV</a></tt> <tt class="py-keyword">import</tt> <tt id="link-51" class="py-name"><a title="pypower.dIbr_dV
+pypower.dIbr_dV.dIbr_dV" class="py-name" href="#" onclick="return doclink('link-51', 'dIbr_dV', 'link-50');">dIbr_dV</a></tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-52" class="py-name" targets="Module pypower.dSbr_dV=pypower.dSbr_dV-module.html,Function pypower.dSbr_dV.dSbr_dV()=pypower.dSbr_dV-module.html#dSbr_dV"><a title="pypower.dSbr_dV
+pypower.dSbr_dV.dSbr_dV" class="py-name" href="#" onclick="return doclink('link-52', 'dSbr_dV', 'link-52');">dSbr_dV</a></tt> <tt class="py-keyword">import</tt> <tt id="link-53" class="py-name"><a title="pypower.dSbr_dV
+pypower.dSbr_dV.dSbr_dV" class="py-name" href="#" onclick="return doclink('link-53', 'dSbr_dV', 'link-52');">dSbr_dV</a></tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-54" class="py-name" targets="Module pypower.dSbus_dV=pypower.dSbus_dV-module.html,Function pypower.dSbus_dV.dSbus_dV()=pypower.dSbus_dV-module.html#dSbus_dV"><a title="pypower.dSbus_dV
+pypower.dSbus_dV.dSbus_dV" class="py-name" href="#" onclick="return doclink('link-54', 'dSbus_dV', 'link-54');">dSbus_dV</a></tt> <tt class="py-keyword">import</tt> <tt id="link-55" class="py-name"><a title="pypower.dSbus_dV
+pypower.dSbus_dV.dSbus_dV" class="py-name" href="#" onclick="return doclink('link-55', 'dSbus_dV', 'link-54');">dSbus_dV</a></tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-56" class="py-name" targets="Module pypower.ext2int=pypower.ext2int-module.html,Function pypower.ext2int.ext2int()=pypower.ext2int-module.html#ext2int"><a title="pypower.ext2int
+pypower.ext2int.ext2int" class="py-name" href="#" onclick="return doclink('link-56', 'ext2int', 'link-56');">ext2int</a></tt> <tt class="py-keyword">import</tt> <tt id="link-57" class="py-name"><a title="pypower.ext2int
+pypower.ext2int.ext2int" class="py-name" href="#" onclick="return doclink('link-57', 'ext2int', 'link-56');">ext2int</a></tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-58" class="py-name" targets="Module pypower.fairmax=pypower.fairmax-module.html,Function pypower.fairmax.fairmax()=pypower.fairmax-module.html#fairmax"><a title="pypower.fairmax
+pypower.fairmax.fairmax" class="py-name" href="#" onclick="return doclink('link-58', 'fairmax', 'link-58');">fairmax</a></tt> <tt class="py-keyword">import</tt> <tt id="link-59" class="py-name"><a title="pypower.fairmax
+pypower.fairmax.fairmax" class="py-name" href="#" onclick="return doclink('link-59', 'fairmax', 'link-58');">fairmax</a></tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Module pypower.fdpf=pypower.fdpf-module.html,Function pypower.fdpf.fdpf()=pypower.fdpf-module.html#fdpf"><a title="pypower.fdpf
+pypower.fdpf.fdpf" class="py-name" href="#" onclick="return doclink('link-60', 'fdpf', 'link-60');">fdpf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-61" class="py-name"><a title="pypower.fdpf
+pypower.fdpf.fdpf" class="py-name" href="#" onclick="return doclink('link-61', 'fdpf', 'link-60');">fdpf</a></tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-62" class="py-name" targets="Module pypower.gausspf=pypower.gausspf-module.html,Function pypower.gausspf.gausspf()=pypower.gausspf-module.html#gausspf"><a title="pypower.gausspf
+pypower.gausspf.gausspf" class="py-name" href="#" onclick="return doclink('link-62', 'gausspf', 'link-62');">gausspf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-63" class="py-name"><a title="pypower.gausspf
+pypower.gausspf.gausspf" class="py-name" href="#" onclick="return doclink('link-63', 'gausspf', 'link-62');">gausspf</a></tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-64" class="py-name" targets="Module pypower.get_reorder=pypower.get_reorder-module.html,Function pypower.get_reorder.get_reorder()=pypower.get_reorder-module.html#get_reorder"><a title="pypower.get_reorder
+pypower.get_reorder.get_reorder" class="py-name" href="#" onclick="return doclink('link-64', 'get_reorder', 'link-64');">get_reorder</a></tt> <tt class="py-keyword">import</tt> <tt id="link-65" class="py-name"><a title="pypower.get_reorder
+pypower.get_reorder.get_reorder" class="py-name" href="#" onclick="return doclink('link-65', 'get_reorder', 'link-64');">get_reorder</a></tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-66" class="py-name" targets="Module pypower.hasPQcap=pypower.hasPQcap-module.html,Function pypower.hasPQcap.hasPQcap()=pypower.hasPQcap-module.html#hasPQcap"><a title="pypower.hasPQcap
+pypower.hasPQcap.hasPQcap" class="py-name" href="#" onclick="return doclink('link-66', 'hasPQcap', 'link-66');">hasPQcap</a></tt> <tt class="py-keyword">import</tt> <tt id="link-67" class="py-name"><a title="pypower.hasPQcap
+pypower.hasPQcap.hasPQcap" class="py-name" href="#" onclick="return doclink('link-67', 'hasPQcap', 'link-66');">hasPQcap</a></tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-68" class="py-name" targets="Module pypower.int2ext=pypower.int2ext-module.html,Function pypower.int2ext.int2ext()=pypower.int2ext-module.html#int2ext"><a title="pypower.int2ext
+pypower.int2ext.int2ext" class="py-name" href="#" onclick="return doclink('link-68', 'int2ext', 'link-68');">int2ext</a></tt> <tt class="py-keyword">import</tt> <tt id="link-69" class="py-name"><a title="pypower.int2ext
+pypower.int2ext.int2ext" class="py-name" href="#" onclick="return doclink('link-69', 'int2ext', 'link-68');">int2ext</a></tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-70" class="py-name" targets="Module pypower.ipoptopf_solver=pypower.ipoptopf_solver-module.html,Function pypower.ipoptopf_solver.ipoptopf_solver()=pypower.ipoptopf_solver-module.html#ipoptopf_solver"><a title="pypower.ipoptopf_solver
+pypower.ipoptopf_solver.ipoptopf_solver" class="py-name" href="#" onclick="return doclink('link-70', 'ipoptopf_solver', 'link-70');">ipoptopf_solver</a></tt> <tt class="py-keyword">import</tt> <tt id="link-71" class="py-name"><a title="pypower.ipoptopf_solver
+pypower.ipoptopf_solver.ipoptopf_solver" class="py-name" href="#" onclick="return doclink('link-71', 'ipoptopf_solver', 'link-70');">ipoptopf_solver</a></tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-72" class="py-name" targets="Module pypower.ipopt_options=pypower.ipopt_options-module.html,Function pypower.ipopt_options.ipopt_options()=pypower.ipopt_options-module.html#ipopt_options"><a title="pypower.ipopt_options
+pypower.ipopt_options.ipopt_options" class="py-name" href="#" onclick="return doclink('link-72', 'ipopt_options', 'link-72');">ipopt_options</a></tt> <tt class="py-keyword">import</tt> <tt id="link-73" class="py-name"><a title="pypower.ipopt_options
+pypower.ipopt_options.ipopt_options" class="py-name" href="#" onclick="return doclink('link-73', 'ipopt_options', 'link-72');">ipopt_options</a></tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-74" class="py-name" targets="Module pypower.isload=pypower.isload-module.html,Function pypower.isload.isload()=pypower.isload-module.html#isload"><a title="pypower.isload
+pypower.isload.isload" class="py-name" href="#" onclick="return doclink('link-74', 'isload', 'link-74');">isload</a></tt> <tt class="py-keyword">import</tt> <tt id="link-75" class="py-name"><a title="pypower.isload
+pypower.isload.isload" class="py-name" href="#" onclick="return doclink('link-75', 'isload', 'link-74');">isload</a></tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-76" class="py-name" targets="Module pypower.loadcase=pypower.loadcase-module.html,Function pypower.loadcase.loadcase()=pypower.loadcase-module.html#loadcase"><a title="pypower.loadcase
+pypower.loadcase.loadcase" class="py-name" href="#" onclick="return doclink('link-76', 'loadcase', 'link-76');">loadcase</a></tt> <tt class="py-keyword">import</tt> <tt id="link-77" class="py-name"><a title="pypower.loadcase
+pypower.loadcase.loadcase" class="py-name" href="#" onclick="return doclink('link-77', 'loadcase', 'link-76');">loadcase</a></tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-78" class="py-name" targets="Module pypower.makeAang=pypower.makeAang-module.html,Function pypower.makeAang.makeAang()=pypower.makeAang-module.html#makeAang"><a title="pypower.makeAang
+pypower.makeAang.makeAang" class="py-name" href="#" onclick="return doclink('link-78', 'makeAang', 'link-78');">makeAang</a></tt> <tt class="py-keyword">import</tt> <tt id="link-79" class="py-name"><a title="pypower.makeAang
+pypower.makeAang.makeAang" class="py-name" href="#" onclick="return doclink('link-79', 'makeAang', 'link-78');">makeAang</a></tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-80" class="py-name" targets="Module pypower.makeApq=pypower.makeApq-module.html,Function pypower.makeApq.makeApq()=pypower.makeApq-module.html#makeApq"><a title="pypower.makeApq
+pypower.makeApq.makeApq" class="py-name" href="#" onclick="return doclink('link-80', 'makeApq', 'link-80');">makeApq</a></tt> <tt class="py-keyword">import</tt> <tt id="link-81" class="py-name"><a title="pypower.makeApq
+pypower.makeApq.makeApq" class="py-name" href="#" onclick="return doclink('link-81', 'makeApq', 'link-80');">makeApq</a></tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-82" class="py-name" targets="Module pypower.makeAvl=pypower.makeAvl-module.html,Function pypower.makeAvl.makeAvl()=pypower.makeAvl-module.html#makeAvl"><a title="pypower.makeAvl
+pypower.makeAvl.makeAvl" class="py-name" href="#" onclick="return doclink('link-82', 'makeAvl', 'link-82');">makeAvl</a></tt> <tt class="py-keyword">import</tt> <tt id="link-83" class="py-name"><a title="pypower.makeAvl
+pypower.makeAvl.makeAvl" class="py-name" href="#" onclick="return doclink('link-83', 'makeAvl', 'link-82');">makeAvl</a></tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-84" class="py-name" targets="Module pypower.makeAy=pypower.makeAy-module.html,Function pypower.makeAy.makeAy()=pypower.makeAy-module.html#makeAy"><a title="pypower.makeAy
+pypower.makeAy.makeAy" class="py-name" href="#" onclick="return doclink('link-84', 'makeAy', 'link-84');">makeAy</a></tt> <tt class="py-keyword">import</tt> <tt id="link-85" class="py-name"><a title="pypower.makeAy
+pypower.makeAy.makeAy" class="py-name" href="#" onclick="return doclink('link-85', 'makeAy', 'link-84');">makeAy</a></tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-86" class="py-name" targets="Module pypower.makeBdc=pypower.makeBdc-module.html,Function pypower.makeBdc.makeBdc()=pypower.makeBdc-module.html#makeBdc"><a title="pypower.makeBdc
+pypower.makeBdc.makeBdc" class="py-name" href="#" onclick="return doclink('link-86', 'makeBdc', 'link-86');">makeBdc</a></tt> <tt class="py-keyword">import</tt> <tt id="link-87" class="py-name"><a title="pypower.makeBdc
+pypower.makeBdc.makeBdc" class="py-name" href="#" onclick="return doclink('link-87', 'makeBdc', 'link-86');">makeBdc</a></tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-88" class="py-name" targets="Module pypower.makeB=pypower.makeB-module.html,Function pypower.makeB.makeB()=pypower.makeB-module.html#makeB"><a title="pypower.makeB
+pypower.makeB.makeB" class="py-name" href="#" onclick="return doclink('link-88', 'makeB', 'link-88');">makeB</a></tt> <tt class="py-keyword">import</tt> <tt id="link-89" class="py-name"><a title="pypower.makeB
+pypower.makeB.makeB" class="py-name" href="#" onclick="return doclink('link-89', 'makeB', 'link-88');">makeB</a></tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-90" class="py-name" targets="Module pypower.makeLODF=pypower.makeLODF-module.html,Function pypower.makeLODF.makeLODF()=pypower.makeLODF-module.html#makeLODF"><a title="pypower.makeLODF
+pypower.makeLODF.makeLODF" class="py-name" href="#" onclick="return doclink('link-90', 'makeLODF', 'link-90');">makeLODF</a></tt> <tt class="py-keyword">import</tt> <tt id="link-91" class="py-name"><a title="pypower.makeLODF
+pypower.makeLODF.makeLODF" class="py-name" href="#" onclick="return doclink('link-91', 'makeLODF', 'link-90');">makeLODF</a></tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-92" class="py-name" targets="Module pypower.makePTDF=pypower.makePTDF-module.html,Function pypower.makePTDF.makePTDF()=pypower.makePTDF-module.html#makePTDF"><a title="pypower.makePTDF
+pypower.makePTDF.makePTDF" class="py-name" href="#" onclick="return doclink('link-92', 'makePTDF', 'link-92');">makePTDF</a></tt> <tt class="py-keyword">import</tt> <tt id="link-93" class="py-name"><a title="pypower.makePTDF
+pypower.makePTDF.makePTDF" class="py-name" href="#" onclick="return doclink('link-93', 'makePTDF', 'link-92');">makePTDF</a></tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-94" class="py-name" targets="Module pypower.makeSbus=pypower.makeSbus-module.html,Function pypower.makeSbus.makeSbus()=pypower.makeSbus-module.html#makeSbus"><a title="pypower.makeSbus
+pypower.makeSbus.makeSbus" class="py-name" href="#" onclick="return doclink('link-94', 'makeSbus', 'link-94');">makeSbus</a></tt> <tt class="py-keyword">import</tt> <tt id="link-95" class="py-name"><a title="pypower.makeSbus
+pypower.makeSbus.makeSbus" class="py-name" href="#" onclick="return doclink('link-95', 'makeSbus', 'link-94');">makeSbus</a></tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-96" class="py-name" targets="Module pypower.makeYbus=pypower.makeYbus-module.html,Function pypower.makeYbus.makeYbus()=pypower.makeYbus-module.html#makeYbus"><a title="pypower.makeYbus
+pypower.makeYbus.makeYbus" class="py-name" href="#" onclick="return doclink('link-96', 'makeYbus', 'link-96');">makeYbus</a></tt> <tt class="py-keyword">import</tt> <tt id="link-97" class="py-name"><a title="pypower.makeYbus
+pypower.makeYbus.makeYbus" class="py-name" href="#" onclick="return doclink('link-97', 'makeYbus', 'link-96');">makeYbus</a></tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-98" class="py-name" targets="Module pypower.modcost=pypower.modcost-module.html,Function pypower.modcost.modcost()=pypower.modcost-module.html#modcost"><a title="pypower.modcost
+pypower.modcost.modcost" class="py-name" href="#" onclick="return doclink('link-98', 'modcost', 'link-98');">modcost</a></tt> <tt class="py-keyword">import</tt> <tt id="link-99" class="py-name"><a title="pypower.modcost
+pypower.modcost.modcost" class="py-name" href="#" onclick="return doclink('link-99', 'modcost', 'link-98');">modcost</a></tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-100" class="py-name" targets="Module pypower.mosek_options=pypower.mosek_options-module.html,Function pypower.mosek_options.mosek_options()=pypower.mosek_options-module.html#mosek_options"><a title="pypower.mosek_options
+pypower.mosek_options.mosek_options" class="py-name" href="#" onclick="return doclink('link-100', 'mosek_options', 'link-100');">mosek_options</a></tt> <tt class="py-keyword">import</tt> <tt id="link-101" class="py-name"><a title="pypower.mosek_options
+pypower.mosek_options.mosek_options" class="py-name" href="#" onclick="return doclink('link-101', 'mosek_options', 'link-100');">mosek_options</a></tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-102" class="py-name" targets="Module pypower.newtonpf=pypower.newtonpf-module.html,Function pypower.newtonpf.newtonpf()=pypower.newtonpf-module.html#newtonpf"><a title="pypower.newtonpf
+pypower.newtonpf.newtonpf" class="py-name" href="#" onclick="return doclink('link-102', 'newtonpf', 'link-102');">newtonpf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-103" class="py-name"><a title="pypower.newtonpf
+pypower.newtonpf.newtonpf" class="py-name" href="#" onclick="return doclink('link-103', 'newtonpf', 'link-102');">newtonpf</a></tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-104" class="py-name" targets="Module pypower.opf_args=pypower.opf_args-module.html,Function pypower.opf_args.opf_args()=pypower.opf_args-module.html#opf_args"><a title="pypower.opf_args
+pypower.opf_args.opf_args" class="py-name" href="#" onclick="return doclink('link-104', 'opf_args', 'link-104');">opf_args</a></tt> <tt class="py-keyword">import</tt> <tt id="link-105" class="py-name"><a title="pypower.opf_args
+pypower.opf_args.opf_args" class="py-name" href="#" onclick="return doclink('link-105', 'opf_args', 'link-104');">opf_args</a></tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-106" class="py-name" targets="Module pypower.opf_consfcn=pypower.opf_consfcn-module.html,Function pypower.opf_consfcn.opf_consfcn()=pypower.opf_consfcn-module.html#opf_consfcn"><a title="pypower.opf_consfcn
+pypower.opf_consfcn.opf_consfcn" class="py-name" href="#" onclick="return doclink('link-106', 'opf_consfcn', 'link-106');">opf_consfcn</a></tt> <tt class="py-keyword">import</tt> <tt id="link-107" class="py-name"><a title="pypower.opf_consfcn
+pypower.opf_consfcn.opf_consfcn" class="py-name" href="#" onclick="return doclink('link-107', 'opf_consfcn', 'link-106');">opf_consfcn</a></tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-108" class="py-name" targets="Module pypower.opf_costfcn=pypower.opf_costfcn-module.html,Function pypower.opf_costfcn.opf_costfcn()=pypower.opf_costfcn-module.html#opf_costfcn"><a title="pypower.opf_costfcn
+pypower.opf_costfcn.opf_costfcn" class="py-name" href="#" onclick="return doclink('link-108', 'opf_costfcn', 'link-108');">opf_costfcn</a></tt> <tt class="py-keyword">import</tt> <tt id="link-109" class="py-name"><a title="pypower.opf_costfcn
+pypower.opf_costfcn.opf_costfcn" class="py-name" href="#" onclick="return doclink('link-109', 'opf_costfcn', 'link-108');">opf_costfcn</a></tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-110" class="py-name" targets="Module pypower.opf_execute=pypower.opf_execute-module.html,Function pypower.opf_execute.opf_execute()=pypower.opf_execute-module.html#opf_execute"><a title="pypower.opf_execute
+pypower.opf_execute.opf_execute" class="py-name" href="#" onclick="return doclink('link-110', 'opf_execute', 'link-110');">opf_execute</a></tt> <tt class="py-keyword">import</tt> <tt id="link-111" class="py-name"><a title="pypower.opf_execute
+pypower.opf_execute.opf_execute" class="py-name" href="#" onclick="return doclink('link-111', 'opf_execute', 'link-110');">opf_execute</a></tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-112" class="py-name" targets="Module pypower.opf_hessfcn=pypower.opf_hessfcn-module.html,Function pypower.opf_hessfcn.opf_hessfcn()=pypower.opf_hessfcn-module.html#opf_hessfcn"><a title="pypower.opf_hessfcn
+pypower.opf_hessfcn.opf_hessfcn" class="py-name" href="#" onclick="return doclink('link-112', 'opf_hessfcn', 'link-112');">opf_hessfcn</a></tt> <tt class="py-keyword">import</tt> <tt id="link-113" class="py-name"><a title="pypower.opf_hessfcn
+pypower.opf_hessfcn.opf_hessfcn" class="py-name" href="#" onclick="return doclink('link-113', 'opf_hessfcn', 'link-112');">opf_hessfcn</a></tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-114" class="py-name" targets="Module pypower.opf_model=pypower.opf_model-module.html,Class pypower.opf_model.opf_model=pypower.opf_model.opf_model-class.html"><a title="pypower.opf_model
+pypower.opf_model.opf_model" class="py-name" href="#" onclick="return doclink('link-114', 'opf_model', 'link-114');">opf_model</a></tt> <tt class="py-keyword">import</tt> <tt id="link-115" class="py-name"><a title="pypower.opf_model
+pypower.opf_model.opf_model" class="py-name" href="#" onclick="return doclink('link-115', 'opf_model', 'link-114');">opf_model</a></tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-116" class="py-name" targets="Function pypower.main.opf()=pypower.main-module.html#opf,Module pypower.opf=pypower.opf-module.html,Function pypower.opf.opf()=pypower.opf-module.html#opf"><a title="pypower.main.opf
+pypower.opf
+pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-116', 'opf', 'link-116');">opf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-117" class="py-name"><a title="pypower.main.opf
+pypower.opf
+pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-117', 'opf', 'link-116');">opf</a></tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-118" class="py-name" targets="Module pypower.opf_setup=pypower.opf_setup-module.html,Function pypower.opf_setup.opf_setup()=pypower.opf_setup-module.html#opf_setup"><a title="pypower.opf_setup
+pypower.opf_setup.opf_setup" class="py-name" href="#" onclick="return doclink('link-118', 'opf_setup', 'link-118');">opf_setup</a></tt> <tt class="py-keyword">import</tt> <tt id="link-119" class="py-name"><a title="pypower.opf_setup
+pypower.opf_setup.opf_setup" class="py-name" href="#" onclick="return doclink('link-119', 'opf_setup', 'link-118');">opf_setup</a></tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-120" class="py-name" targets="Module pypower.pfsoln=pypower.pfsoln-module.html,Function pypower.pfsoln.pfsoln()=pypower.pfsoln-module.html#pfsoln"><a title="pypower.pfsoln
+pypower.pfsoln.pfsoln" class="py-name" href="#" onclick="return doclink('link-120', 'pfsoln', 'link-120');">pfsoln</a></tt> <tt class="py-keyword">import</tt> <tt id="link-121" class="py-name"><a title="pypower.pfsoln
+pypower.pfsoln.pfsoln" class="py-name" href="#" onclick="return doclink('link-121', 'pfsoln', 'link-120');">pfsoln</a></tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-122" class="py-name" targets="Module pypower.pipsopf_solver=pypower.pipsopf_solver-module.html,Function pypower.pipsopf_solver.pipsopf_solver()=pypower.pipsopf_solver-module.html#pipsopf_solver"><a title="pypower.pipsopf_solver
+pypower.pipsopf_solver.pipsopf_solver" class="py-name" href="#" onclick="return doclink('link-122', 'pipsopf_solver', 'link-122');">pipsopf_solver</a></tt> <tt class="py-keyword">import</tt> <tt id="link-123" class="py-name"><a title="pypower.pipsopf_solver
+pypower.pipsopf_solver.pipsopf_solver" class="py-name" href="#" onclick="return doclink('link-123', 'pipsopf_solver', 'link-122');">pipsopf_solver</a></tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-124" class="py-name" targets="Module pypower.pips=pypower.pips-module.html,Function pypower.pips.pips()=pypower.pips-module.html#pips"><a title="pypower.pips
+pypower.pips.pips" class="py-name" href="#" onclick="return doclink('link-124', 'pips', 'link-124');">pips</a></tt> <tt class="py-keyword">import</tt> <tt id="link-125" class="py-name"><a title="pypower.pips
+pypower.pips.pips" class="py-name" href="#" onclick="return doclink('link-125', 'pips', 'link-124');">pips</a></tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-126" class="py-name" targets="Module pypower.pipsver=pypower.pipsver-module.html,Function pypower.pipsver.pipsver()=pypower.pipsver-module.html#pipsver"><a title="pypower.pipsver
+pypower.pipsver.pipsver" class="py-name" href="#" onclick="return doclink('link-126', 'pipsver', 'link-126');">pipsver</a></tt> <tt class="py-keyword">import</tt> <tt id="link-127" class="py-name"><a title="pypower.pipsver
+pypower.pipsver.pipsver" class="py-name" href="#" onclick="return doclink('link-127', 'pipsver', 'link-126');">pipsver</a></tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-128" class="py-name" targets="Module pypower.poly2pwl=pypower.poly2pwl-module.html,Function pypower.poly2pwl.poly2pwl()=pypower.poly2pwl-module.html#poly2pwl"><a title="pypower.poly2pwl
+pypower.poly2pwl.poly2pwl" class="py-name" href="#" onclick="return doclink('link-128', 'poly2pwl', 'link-128');">poly2pwl</a></tt> <tt class="py-keyword">import</tt> <tt id="link-129" class="py-name"><a title="pypower.poly2pwl
+pypower.poly2pwl.poly2pwl" class="py-name" href="#" onclick="return doclink('link-129', 'poly2pwl', 'link-128');">poly2pwl</a></tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-130" class="py-name" targets="Module pypower.polycost=pypower.polycost-module.html,Function pypower.polycost.polycost()=pypower.polycost-module.html#polycost"><a title="pypower.polycost
+pypower.polycost.polycost" class="py-name" href="#" onclick="return doclink('link-130', 'polycost', 'link-130');">polycost</a></tt> <tt class="py-keyword">import</tt> <tt id="link-131" class="py-name"><a title="pypower.polycost
+pypower.polycost.polycost" class="py-name" href="#" onclick="return doclink('link-131', 'polycost', 'link-130');">polycost</a></tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-132" class="py-name" targets="Module pypower.ppoption=pypower.ppoption-module.html,Function pypower.ppoption.ppoption()=pypower.ppoption-module.html#ppoption"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-132', 'ppoption', 'link-132');">ppoption</a></tt> <tt class="py-keyword">import</tt> <tt id="link-133" class="py-name"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-133', 'ppoption', 'link-132');">ppoption</a></tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-134" class="py-name" targets="Module pypower.ppver=pypower.ppver-module.html,Function pypower.ppver.ppver()=pypower.ppver-module.html#ppver"><a title="pypower.ppver
+pypower.ppver.ppver" class="py-name" href="#" onclick="return doclink('link-134', 'ppver', 'link-134');">ppver</a></tt> <tt class="py-keyword">import</tt> <tt id="link-135" class="py-name"><a title="pypower.ppver
+pypower.ppver.ppver" class="py-name" href="#" onclick="return doclink('link-135', 'ppver', 'link-134');">ppver</a></tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-136" class="py-name" targets="Module pypower.pqcost=pypower.pqcost-module.html,Function pypower.pqcost.pqcost()=pypower.pqcost-module.html#pqcost"><a title="pypower.pqcost
+pypower.pqcost.pqcost" class="py-name" href="#" onclick="return doclink('link-136', 'pqcost', 'link-136');">pqcost</a></tt> <tt class="py-keyword">import</tt> <tt id="link-137" class="py-name"><a title="pypower.pqcost
+pypower.pqcost.pqcost" class="py-name" href="#" onclick="return doclink('link-137', 'pqcost', 'link-136');">pqcost</a></tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-138" class="py-name" targets="Module pypower.printpf=pypower.printpf-module.html,Function pypower.printpf.printpf()=pypower.printpf-module.html#printpf"><a title="pypower.printpf
+pypower.printpf.printpf" class="py-name" href="#" onclick="return doclink('link-138', 'printpf', 'link-138');">printpf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-139" class="py-name"><a title="pypower.printpf
+pypower.printpf.printpf" class="py-name" href="#" onclick="return doclink('link-139', 'printpf', 'link-138');">printpf</a></tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-140" class="py-name" targets="Module pypower.qps_cplex=pypower.qps_cplex-module.html,Function pypower.qps_cplex.qps_cplex()=pypower.qps_cplex-module.html#qps_cplex"><a title="pypower.qps_cplex
+pypower.qps_cplex.qps_cplex" class="py-name" href="#" onclick="return doclink('link-140', 'qps_cplex', 'link-140');">qps_cplex</a></tt> <tt class="py-keyword">import</tt> <tt id="link-141" class="py-name"><a title="pypower.qps_cplex
+pypower.qps_cplex.qps_cplex" class="py-name" href="#" onclick="return doclink('link-141', 'qps_cplex', 'link-140');">qps_cplex</a></tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-142" class="py-name" targets="Module pypower.qps_ipopt=pypower.qps_ipopt-module.html,Function pypower.qps_ipopt.qps_ipopt()=pypower.qps_ipopt-module.html#qps_ipopt"><a title="pypower.qps_ipopt
+pypower.qps_ipopt.qps_ipopt" class="py-name" href="#" onclick="return doclink('link-142', 'qps_ipopt', 'link-142');">qps_ipopt</a></tt> <tt class="py-keyword">import</tt> <tt id="link-143" class="py-name"><a title="pypower.qps_ipopt
+pypower.qps_ipopt.qps_ipopt" class="py-name" href="#" onclick="return doclink('link-143', 'qps_ipopt', 'link-142');">qps_ipopt</a></tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-144" class="py-name" targets="Module pypower.qps_mosek=pypower.qps_mosek-module.html,Function pypower.qps_mosek.qps_mosek()=pypower.qps_mosek-module.html#qps_mosek"><a title="pypower.qps_mosek
+pypower.qps_mosek.qps_mosek" class="py-name" href="#" onclick="return doclink('link-144', 'qps_mosek', 'link-144');">qps_mosek</a></tt> <tt class="py-keyword">import</tt> <tt id="link-145" class="py-name"><a title="pypower.qps_mosek
+pypower.qps_mosek.qps_mosek" class="py-name" href="#" onclick="return doclink('link-145', 'qps_mosek', 'link-144');">qps_mosek</a></tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-146" class="py-name" targets="Module pypower.qps_pips=pypower.qps_pips-module.html,Function pypower.qps_pips.qps_pips()=pypower.qps_pips-module.html#qps_pips"><a title="pypower.qps_pips
+pypower.qps_pips.qps_pips" class="py-name" href="#" onclick="return doclink('link-146', 'qps_pips', 'link-146');">qps_pips</a></tt> <tt class="py-keyword">import</tt> <tt id="link-147" class="py-name"><a title="pypower.qps_pips
+pypower.qps_pips.qps_pips" class="py-name" href="#" onclick="return doclink('link-147', 'qps_pips', 'link-146');">qps_pips</a></tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-148" class="py-name" targets="Module pypower.qps_pypower=pypower.qps_pypower-module.html,Function pypower.qps_pypower.qps_pypower()=pypower.qps_pypower-module.html#qps_pypower"><a title="pypower.qps_pypower
+pypower.qps_pypower.qps_pypower" class="py-name" href="#" onclick="return doclink('link-148', 'qps_pypower', 'link-148');">qps_pypower</a></tt> <tt class="py-keyword">import</tt> <tt id="link-149" class="py-name"><a title="pypower.qps_pypower
+pypower.qps_pypower.qps_pypower" class="py-name" href="#" onclick="return doclink('link-149', 'qps_pypower', 'link-148');">qps_pypower</a></tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-150" class="py-name" targets="Module pypower.remove_userfcn=pypower.remove_userfcn-module.html,Function pypower.remove_userfcn.remove_userfcn()=pypower.remove_userfcn-module.html#remove_userfcn"><a title="pypower.remove_userfcn
+pypower.remove_userfcn.remove_userfcn" class="py-name" href="#" onclick="return doclink('link-150', 'remove_userfcn', 'link-150');">remove_userfcn</a></tt> <tt class="py-keyword">import</tt> <tt id="link-151" class="py-name"><a title="pypower.remove_userfcn
+pypower.remove_userfcn.remove_userfcn" class="py-name" href="#" onclick="return doclink('link-151', 'remove_userfcn', 'link-150');">remove_userfcn</a></tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-152" class="py-name" targets="Module pypower.rundcopf=pypower.rundcopf-module.html,Function pypower.rundcopf.rundcopf()=pypower.rundcopf-module.html#rundcopf"><a title="pypower.rundcopf
+pypower.rundcopf.rundcopf" class="py-name" href="#" onclick="return doclink('link-152', 'rundcopf', 'link-152');">rundcopf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-153" class="py-name"><a title="pypower.rundcopf
+pypower.rundcopf.rundcopf" class="py-name" href="#" onclick="return doclink('link-153', 'rundcopf', 'link-152');">rundcopf</a></tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-154" class="py-name" targets="Module pypower.rundcpf=pypower.rundcpf-module.html,Function pypower.rundcpf.rundcpf()=pypower.rundcpf-module.html#rundcpf"><a title="pypower.rundcpf
+pypower.rundcpf.rundcpf" class="py-name" href="#" onclick="return doclink('link-154', 'rundcpf', 'link-154');">rundcpf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-155" class="py-name"><a title="pypower.rundcpf
+pypower.rundcpf.rundcpf" class="py-name" href="#" onclick="return doclink('link-155', 'rundcpf', 'link-154');">rundcpf</a></tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-156" class="py-name" targets="Module pypower.runduopf=pypower.runduopf-module.html,Function pypower.runduopf.runduopf()=pypower.runduopf-module.html#runduopf"><a title="pypower.runduopf
+pypower.runduopf.runduopf" class="py-name" href="#" onclick="return doclink('link-156', 'runduopf', 'link-156');">runduopf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-157" class="py-name"><a title="pypower.runduopf
+pypower.runduopf.runduopf" class="py-name" href="#" onclick="return doclink('link-157', 'runduopf', 'link-156');">runduopf</a></tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-158" class="py-name" targets="Module pypower.runopf=pypower.runopf-module.html,Function pypower.runopf.runopf()=pypower.runopf-module.html#runopf"><a title="pypower.runopf
+pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-158', 'runopf', 'link-158');">runopf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-159" class="py-name"><a title="pypower.runopf
+pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-159', 'runopf', 'link-158');">runopf</a></tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-160" class="py-name" targets="Module pypower.runopf_w_res=pypower.runopf_w_res-module.html,Function pypower.runopf_w_res.runopf_w_res()=pypower.runopf_w_res-module.html#runopf_w_res"><a title="pypower.runopf_w_res
+pypower.runopf_w_res.runopf_w_res" class="py-name" href="#" onclick="return doclink('link-160', 'runopf_w_res', 'link-160');">runopf_w_res</a></tt> <tt class="py-keyword">import</tt> <tt id="link-161" class="py-name"><a title="pypower.runopf_w_res
+pypower.runopf_w_res.runopf_w_res" class="py-name" href="#" onclick="return doclink('link-161', 'runopf_w_res', 'link-160');">runopf_w_res</a></tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-162" class="py-name" targets="Module pypower.runpf=pypower.runpf-module.html,Function pypower.runpf.runpf()=pypower.runpf-module.html#runpf"><a title="pypower.runpf
+pypower.runpf.runpf" class="py-name" href="#" onclick="return doclink('link-162', 'runpf', 'link-162');">runpf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-163" class="py-name"><a title="pypower.runpf
+pypower.runpf.runpf" class="py-name" href="#" onclick="return doclink('link-163', 'runpf', 'link-162');">runpf</a></tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-164" class="py-name" targets="Module pypower.runuopf=pypower.runuopf-module.html,Function pypower.runuopf.runuopf()=pypower.runuopf-module.html#runuopf"><a title="pypower.runuopf
+pypower.runuopf.runuopf" class="py-name" href="#" onclick="return doclink('link-164', 'runuopf', 'link-164');">runuopf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-165" class="py-name"><a title="pypower.runuopf
+pypower.runuopf.runuopf" class="py-name" href="#" onclick="return doclink('link-165', 'runuopf', 'link-164');">runuopf</a></tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-166" class="py-name" targets="Module pypower.run_userfcn=pypower.run_userfcn-module.html,Function pypower.run_userfcn.run_userfcn()=pypower.run_userfcn-module.html#run_userfcn"><a title="pypower.run_userfcn
+pypower.run_userfcn.run_userfcn" class="py-name" href="#" onclick="return doclink('link-166', 'run_userfcn', 'link-166');">run_userfcn</a></tt> <tt class="py-keyword">import</tt> <tt id="link-167" class="py-name"><a title="pypower.run_userfcn
+pypower.run_userfcn.run_userfcn" class="py-name" href="#" onclick="return doclink('link-167', 'run_userfcn', 'link-166');">run_userfcn</a></tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-168" class="py-name" targets="Module pypower.savecase=pypower.savecase-module.html,Function pypower.savecase.savecase()=pypower.savecase-module.html#savecase"><a title="pypower.savecase
+pypower.savecase.savecase" class="py-name" href="#" onclick="return doclink('link-168', 'savecase', 'link-168');">savecase</a></tt> <tt class="py-keyword">import</tt> <tt id="link-169" class="py-name"><a title="pypower.savecase
+pypower.savecase.savecase" class="py-name" href="#" onclick="return doclink('link-169', 'savecase', 'link-168');">savecase</a></tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-170" class="py-name" targets="Module pypower.scale_load=pypower.scale_load-module.html,Function pypower.scale_load.scale_load()=pypower.scale_load-module.html#scale_load"><a title="pypower.scale_load
+pypower.scale_load.scale_load" class="py-name" href="#" onclick="return doclink('link-170', 'scale_load', 'link-170');">scale_load</a></tt> <tt class="py-keyword">import</tt> <tt id="link-171" class="py-name"><a title="pypower.scale_load
+pypower.scale_load.scale_load" class="py-name" href="#" onclick="return doclink('link-171', 'scale_load', 'link-170');">scale_load</a></tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-172" class="py-name" targets="Module pypower.set_reorder=pypower.set_reorder-module.html,Function pypower.set_reorder.set_reorder()=pypower.set_reorder-module.html#set_reorder"><a title="pypower.set_reorder
+pypower.set_reorder.set_reorder" class="py-name" href="#" onclick="return doclink('link-172', 'set_reorder', 'link-172');">set_reorder</a></tt> <tt class="py-keyword">import</tt> <tt id="link-173" class="py-name"><a title="pypower.set_reorder
+pypower.set_reorder.set_reorder" class="py-name" href="#" onclick="return doclink('link-173', 'set_reorder', 'link-172');">set_reorder</a></tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-174" class="py-name" targets="Module pypower.toggle_iflims=pypower.toggle_iflims-module.html,Function pypower.toggle_iflims.toggle_iflims()=pypower.toggle_iflims-module.html#toggle_iflims"><a title="pypower.toggle_iflims
+pypower.toggle_iflims.toggle_iflims" class="py-name" href="#" onclick="return doclink('link-174', 'toggle_iflims', 'link-174');">toggle_iflims</a></tt> <tt class="py-keyword">import</tt> <tt id="link-175" class="py-name"><a title="pypower.toggle_iflims
+pypower.toggle_iflims.toggle_iflims" class="py-name" href="#" onclick="return doclink('link-175', 'toggle_iflims', 'link-174');">toggle_iflims</a></tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-176" class="py-name" targets="Module pypower.toggle_reserves=pypower.toggle_reserves-module.html,Function pypower.toggle_reserves.toggle_reserves()=pypower.toggle_reserves-module.html#toggle_reserves"><a title="pypower.toggle_reserves
+pypower.toggle_reserves.toggle_reserves" class="py-name" href="#" onclick="return doclink('link-176', 'toggle_reserves', 'link-176');">toggle_reserves</a></tt> <tt class="py-keyword">import</tt> <tt id="link-177" class="py-name"><a title="pypower.toggle_reserves
+pypower.toggle_reserves.toggle_reserves" class="py-name" href="#" onclick="return doclink('link-177', 'toggle_reserves', 'link-176');">toggle_reserves</a></tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-178" class="py-name" targets="Module pypower.total_load=pypower.total_load-module.html,Function pypower.total_load.total_load()=pypower.total_load-module.html#total_load"><a title="pypower.total_load
+pypower.total_load.total_load" class="py-name" href="#" onclick="return doclink('link-178', 'total_load', 'link-178');">total_load</a></tt> <tt class="py-keyword">import</tt> <tt id="link-179" class="py-name"><a title="pypower.total_load
+pypower.total_load.total_load" class="py-name" href="#" onclick="return doclink('link-179', 'total_load', 'link-178');">total_load</a></tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-180" class="py-name" targets="Module pypower.totcost=pypower.totcost-module.html,Function pypower.totcost.totcost()=pypower.totcost-module.html#totcost"><a title="pypower.totcost
+pypower.totcost.totcost" class="py-name" href="#" onclick="return doclink('link-180', 'totcost', 'link-180');">totcost</a></tt> <tt class="py-keyword">import</tt> <tt id="link-181" class="py-name"><a title="pypower.totcost
+pypower.totcost.totcost" class="py-name" href="#" onclick="return doclink('link-181', 'totcost', 'link-180');">totcost</a></tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-182" class="py-name" targets="Module pypower.uopf=pypower.uopf-module.html,Function pypower.uopf.uopf()=pypower.uopf-module.html#uopf"><a title="pypower.uopf
+pypower.uopf.uopf" class="py-name" href="#" onclick="return doclink('link-182', 'uopf', 'link-182');">uopf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-183" class="py-name"><a title="pypower.uopf
+pypower.uopf.uopf" class="py-name" href="#" onclick="return doclink('link-183', 'uopf', 'link-182');">uopf</a></tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-184" class="py-name" targets="Module pypower.update_mupq=pypower.update_mupq-module.html,Function pypower.update_mupq.update_mupq()=pypower.update_mupq-module.html#update_mupq"><a title="pypower.update_mupq
+pypower.update_mupq.update_mupq" class="py-name" href="#" onclick="return doclink('link-184', 'update_mupq', 'link-184');">update_mupq</a></tt> <tt class="py-keyword">import</tt> <tt id="link-185" class="py-name"><a title="pypower.update_mupq
+pypower.update_mupq.update_mupq" class="py-name" href="#" onclick="return doclink('link-185', 'update_mupq', 'link-184');">update_mupq</a></tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-186" class="py-name" targets="Package pypower.t=pypower.t-module.html"><a title="pypower.t" class="py-name" href="#" onclick="return doclink('link-186', 't', 'link-186');">t</a></tt><tt class="py-op">.</tt><tt id="link-187" class="py-name" targets="Module pypower.t.test_pypower=pypower.t.test_pypower-module.html,Function pypower.t.test_pypower.test_pypower()=pypower.t.test_pypower-module.html#test_pypower"><a title="pypower.t.test_pypower
+pypower.t.test_pypower.test_pypower" class="py-name" href="#" onclick="return doclink('link-187', 'test_pypower', 'link-187');">test_pypower</a></tt> <tt class="py-keyword">import</tt> <tt id="link-188" class="py-name"><a title="pypower.t.test_pypower
+pypower.t.test_pypower.test_pypower" class="py-name" href="#" onclick="return doclink('link-188', 'test_pypower', 'link-187');">test_pypower</a></tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-op">.</tt><tt id="link-189" class="py-name"><a title="pypower.t" class="py-name" href="#" onclick="return doclink('link-189', 't', 'link-186');">t</a></tt><tt class="py-op">.</tt><tt id="link-190" class="py-name" targets="Module pypower.t.t_case30_userfcns=pypower.t.t_case30_userfcns-module.html,Function pypower.t.t_case30_userfcns.t_case30_userfcns()=pypower.t.t_case30_userfcns-module.html#t_case30_userfcns"><a title="pypower.t.t_case30_userfcns
+pypower.t.t_case30_userfcns.t_case30_userfcns" class="py-name" href="#" onclick="return doclink('link-190', 't_case30_userfcns', 'link-190');">t_case30_userfcns</a></tt> <tt class="py-keyword">import</tt> <tt id="link-191" class="py-name"><a title="pypower.t.t_case30_userfcns
+pypower.t.t_case30_userfcns.t_case30_userfcns" class="py-name" href="#" onclick="return doclink('link-191', 't_case30_userfcns', 'link-190');">t_case30_userfcns</a></tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:56 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

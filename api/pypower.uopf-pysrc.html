@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.uopf</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        Module&nbsp;uopf
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.uopf-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pypower.uopf-module.html">Module pypower.uopf</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2010-2011 Richard Lincoln</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"># by the Free Software Foundation, either version 3 of the License,</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"># or (at your option) any later version.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"># along with PYPOWER. If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-docstring">"""Solves combined unit decommitment / optimal power flow.</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">time</tt> <tt class="py-keyword">import</tt> <tt class="py-name">time</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">copy</tt> <tt class="py-keyword">import</tt> <tt class="py-name">deepcopy</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">numpy</tt> <tt class="py-keyword">import</tt> <tt class="py-name">flatnonzero</tt> <tt class="py-keyword">as</tt> <tt class="py-name">find</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module pypower.opf_args=pypower.opf_args-module.html,Function pypower.opf_args.opf_args()=pypower.opf_args-module.html#opf_args"><a title="pypower.opf_args
+pypower.opf_args.opf_args" class="py-name" href="#" onclick="return doclink('link-0', 'opf_args', 'link-0');">opf_args</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Function pypower.opf_args.opf_args2()=pypower.opf_args-module.html#opf_args2"><a title="pypower.opf_args.opf_args2" class="py-name" href="#" onclick="return doclink('link-1', 'opf_args2', 'link-1');">opf_args2</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Module pypower.ppoption=pypower.ppoption-module.html,Function pypower.ppoption.ppoption()=pypower.ppoption-module.html#ppoption"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-2', 'ppoption', 'link-2');">ppoption</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-3', 'ppoption', 'link-2');">ppoption</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Module pypower.isload=pypower.isload-module.html,Function pypower.isload.isload()=pypower.isload-module.html#isload"><a title="pypower.isload
+pypower.isload.isload" class="py-name" href="#" onclick="return doclink('link-4', 'isload', 'link-4');">isload</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name"><a title="pypower.isload
+pypower.isload.isload" class="py-name" href="#" onclick="return doclink('link-5', 'isload', 'link-4');">isload</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name" targets="Module pypower.totcost=pypower.totcost-module.html,Function pypower.totcost.totcost()=pypower.totcost-module.html#totcost"><a title="pypower.totcost
+pypower.totcost.totcost" class="py-name" href="#" onclick="return doclink('link-6', 'totcost', 'link-6');">totcost</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name"><a title="pypower.totcost
+pypower.totcost.totcost" class="py-name" href="#" onclick="return doclink('link-7', 'totcost', 'link-6');">totcost</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-8" class="py-name" targets="Module pypower.fairmax=pypower.fairmax-module.html,Function pypower.fairmax.fairmax()=pypower.fairmax-module.html#fairmax"><a title="pypower.fairmax
+pypower.fairmax.fairmax" class="py-name" href="#" onclick="return doclink('link-8', 'fairmax', 'link-8');">fairmax</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name"><a title="pypower.fairmax
+pypower.fairmax.fairmax" class="py-name" href="#" onclick="return doclink('link-9', 'fairmax', 'link-8');">fairmax</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-10" class="py-name" targets="Function pypower.main.opf()=pypower.main-module.html#opf,Module pypower.opf=pypower.opf-module.html,Function pypower.opf.opf()=pypower.opf-module.html#opf"><a title="pypower.main.opf
+pypower.opf
+pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-10', 'opf', 'link-10');">opf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-11" class="py-name"><a title="pypower.main.opf
+pypower.opf
+pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-11', 'opf', 'link-10');">opf</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-12" class="py-name" targets="Module pypower.idx_bus=pypower.idx_bus-module.html"><a title="pypower.idx_bus" class="py-name" href="#" onclick="return doclink('link-12', 'idx_bus', 'link-12');">idx_bus</a></tt> <tt class="py-keyword">import</tt> <tt id="link-13" class="py-name" targets="Variable pypower.idx_bus.PD=pypower.idx_bus-module.html#PD,Variable pypower.savecase.PD=pypower.savecase-module.html#PD"><a title="pypower.idx_bus.PD
+pypower.savecase.PD" class="py-name" href="#" onclick="return doclink('link-13', 'PD', 'link-13');">PD</a></tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-14" class="py-name" targets="Module pypower.idx_gen=pypower.idx_gen-module.html"><a title="pypower.idx_gen" class="py-name" href="#" onclick="return doclink('link-14', 'idx_gen', 'link-14');">idx_gen</a></tt> <tt class="py-keyword">import</tt> <tt id="link-15" class="py-name" targets="Variable pypower.idx_gen.GEN_STATUS=pypower.idx_gen-module.html#GEN_STATUS,Variable pypower.savecase.GEN_STATUS=pypower.savecase-module.html#GEN_STATUS"><a title="pypower.idx_gen.GEN_STATUS
+pypower.savecase.GEN_STATUS" class="py-name" href="#" onclick="return doclink('link-15', 'GEN_STATUS', 'link-15');">GEN_STATUS</a></tt><tt class="py-op">,</tt> <tt id="link-16" class="py-name" targets="Variable pypower.idx_gen.PG=pypower.idx_gen-module.html#PG,Variable pypower.savecase.PG=pypower.savecase-module.html#PG"><a title="pypower.idx_gen.PG
+pypower.savecase.PG" class="py-name" href="#" onclick="return doclink('link-16', 'PG', 'link-16');">PG</a></tt><tt class="py-op">,</tt> <tt id="link-17" class="py-name" targets="Variable pypower.idx_gen.QG=pypower.idx_gen-module.html#QG,Variable pypower.savecase.QG=pypower.savecase-module.html#QG"><a title="pypower.idx_gen.QG
+pypower.savecase.QG" class="py-name" href="#" onclick="return doclink('link-17', 'QG', 'link-17');">QG</a></tt><tt class="py-op">,</tt> <tt id="link-18" class="py-name" targets="Variable pypower.idx_gen.PMIN=pypower.idx_gen-module.html#PMIN,Variable pypower.savecase.PMIN=pypower.savecase-module.html#PMIN"><a title="pypower.idx_gen.PMIN
+pypower.savecase.PMIN" class="py-name" href="#" onclick="return doclink('link-18', 'PMIN', 'link-18');">PMIN</a></tt><tt class="py-op">,</tt> <tt id="link-19" class="py-name" targets="Variable pypower.idx_gen.MU_PMIN=pypower.idx_gen-module.html#MU_PMIN,Variable pypower.savecase.MU_PMIN=pypower.savecase-module.html#MU_PMIN"><a title="pypower.idx_gen.MU_PMIN
+pypower.savecase.MU_PMIN" class="py-name" href="#" onclick="return doclink('link-19', 'MU_PMIN', 'link-19');">MU_PMIN</a></tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="uopf"></a><div id="uopf-def"><a name="L37"></a><tt class="py-lineno"> 37</tt> <a class="py-toggle" href="#" id="uopf-toggle" onclick="return toggle('uopf');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.uopf-module.html#uopf">uopf</a><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="uopf-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="uopf-expanded"><a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">    <tt class="py-docstring">"""Solves combined unit decommitment / optimal power flow.</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">    Solves a combined unit decommitment and optimal power flow for a single</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">    time period. Uses an algorithm similar to dynamic programming. It proceeds</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">    through a sequence of stages, where stage C{N} has C{N} generators shut</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">    down, starting with C{N=0}. In each stage, it forms a list of candidates</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-docstring">    (gens at their C{Pmin} limits) and computes the cost with each one of them</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-docstring">    shut down. It selects the least cost case as the starting point for the</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-docstring">    next stage, continuing until there are no more candidates to be shut down</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-docstring">    or no more improvement can be gained by shutting something down.</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">    If C{verbose} in ppopt (see L{ppoption} is C{true}, it prints progress</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring">    info, if it is &gt; 1 it prints the output of each individual opf.</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">    @see: L{opf}, L{runuopf}</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">    <tt class="py-comment">##----- initialization -----</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">    <tt class="py-name">t0</tt> <tt class="py-op">=</tt> <tt class="py-name">time</tt><tt class="py-op">(</tt><tt class="py-op">)</tt>                                 <tt class="py-comment">## start timer</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">    <tt class="py-comment">## process input arguments</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">    <tt class="py-name">ppc</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-20" class="py-name"><a title="pypower.opf_args.opf_args2" class="py-name" href="#" onclick="return doclink('link-20', 'opf_args2', 'link-1');">opf_args2</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">    <tt class="py-comment">## options</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">    <tt class="py-name">verbose</tt> <tt class="py-op">=</tt> <tt class="py-name">ppopt</tt><tt class="py-op">[</tt><tt class="py-string">"VERBOSE"</tt><tt class="py-op">]</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">verbose</tt><tt class="py-op">:</tt>      <tt class="py-comment">## turn down verbosity one level for calls to opf</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-21" class="py-name"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-21', 'ppoption', 'link-2');">ppoption</a></tt><tt class="py-op">(</tt><tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">VERBOSE</tt><tt class="py-op">=</tt><tt class="py-name">verbose</tt> <tt class="py-op">-</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">    <tt class="py-comment">##-----  do combined unit commitment/optimal power flow  -----</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">    <tt class="py-comment">## check for sum(Pmin) &gt; total load, decommit as necessary</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">    <tt class="py-name">on</tt>   <tt class="py-op">=</tt> <tt class="py-name">find</tt><tt class="py-op">(</tt> <tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-22" class="py-name"><a title="pypower.idx_gen.GEN_STATUS
+pypower.savecase.GEN_STATUS" class="py-name" href="#" onclick="return doclink('link-22', 'GEN_STATUS', 'link-15');">GEN_STATUS</a></tt><tt class="py-op">]</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-op">~</tt><tt id="link-23" class="py-name"><a title="pypower.isload
+pypower.isload.isload" class="py-name" href="#" onclick="return doclink('link-23', 'isload', 'link-4');">isload</a></tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">)</tt>   <tt class="py-comment">## gens in service</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">    <tt class="py-name">onld</tt> <tt class="py-op">=</tt> <tt class="py-name">find</tt><tt class="py-op">(</tt> <tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-24" class="py-name"><a title="pypower.idx_gen.GEN_STATUS
+pypower.savecase.GEN_STATUS" class="py-name" href="#" onclick="return doclink('link-24', 'GEN_STATUS', 'link-15');">GEN_STATUS</a></tt><tt class="py-op">]</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt>  <tt id="link-25" class="py-name"><a title="pypower.isload
+pypower.isload.isload" class="py-name" href="#" onclick="return doclink('link-25', 'isload', 'link-4');">isload</a></tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">)</tt>   <tt class="py-comment">## disp loads in serv</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">    <tt class="py-name">load_capacity</tt> <tt class="py-op">=</tt> <tt class="py-name">sum</tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"bus"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-26" class="py-name"><a title="pypower.idx_bus.PD
+pypower.savecase.PD" class="py-name" href="#" onclick="return doclink('link-26', 'PD', 'link-13');">PD</a></tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">sum</tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">onld</tt><tt class="py-op">,</tt> <tt id="link-27" class="py-name"><a title="pypower.idx_gen.PMIN
+pypower.savecase.PMIN" class="py-name" href="#" onclick="return doclink('link-27', 'PMIN', 'link-18');">PMIN</a></tt><tt class="py-op">]</tt><tt class="py-op">)</tt>   <tt class="py-comment">## total load capacity</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">    <tt class="py-name">Pmin</tt> <tt class="py-op">=</tt> <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">on</tt><tt class="py-op">,</tt> <tt id="link-28" class="py-name"><a title="pypower.idx_gen.PMIN
+pypower.savecase.PMIN" class="py-name" href="#" onclick="return doclink('link-28', 'PMIN', 'link-18');">PMIN</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">sum</tt><tt class="py-op">(</tt><tt class="py-name">Pmin</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;</tt> <tt class="py-name">load_capacity</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-comment">## shut down most expensive unit</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-name">avgPmincost</tt> <tt class="py-op">=</tt> <tt id="link-29" class="py-name"><a title="pypower.totcost
+pypower.totcost.totcost" class="py-name" href="#" onclick="return doclink('link-29', 'totcost', 'link-6');">totcost</a></tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gencost"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">on</tt><tt class="py-op">,</tt> <tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">Pmin</tt><tt class="py-op">)</tt> <tt class="py-op">/</tt> <tt class="py-name">Pmin</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-name">_</tt><tt class="py-op">,</tt> <tt class="py-name">i</tt> <tt class="py-op">=</tt> <tt id="link-30" class="py-name"><a title="pypower.fairmax
+pypower.fairmax.fairmax" class="py-name" href="#" onclick="return doclink('link-30', 'fairmax', 'link-8');">fairmax</a></tt><tt class="py-op">(</tt><tt class="py-name">avgPmincost</tt><tt class="py-op">)</tt>   <tt class="py-comment">## pick one with max avg cost at Pmin</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-name">i</tt> <tt class="py-op">=</tt> <tt class="py-name">on</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt>                     <tt class="py-comment">## convert to generator index</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">'Shutting down generator %d so all Pmin limits can be satisfied.\n'</tt> <tt class="py-op">%</tt> <tt class="py-name">i</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-comment">## set generation to zero</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt id="link-31" class="py-name"><a title="pypower.idx_gen.PG
+pypower.savecase.PG" class="py-name" href="#" onclick="return doclink('link-31', 'PG', 'link-16');">PG</a></tt><tt class="py-op">,</tt> <tt id="link-32" class="py-name"><a title="pypower.idx_gen.QG
+pypower.savecase.QG" class="py-name" href="#" onclick="return doclink('link-32', 'QG', 'link-17');">QG</a></tt><tt class="py-op">,</tt> <tt id="link-33" class="py-name"><a title="pypower.idx_gen.GEN_STATUS
+pypower.savecase.GEN_STATUS" class="py-name" href="#" onclick="return doclink('link-33', 'GEN_STATUS', 'link-15');">GEN_STATUS</a></tt><tt class="py-op">]</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-comment">## update minimum gen capacity</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">on</tt>  <tt class="py-op">=</tt> <tt class="py-name">find</tt><tt class="py-op">(</tt> <tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-34" class="py-name"><a title="pypower.idx_gen.GEN_STATUS
+pypower.savecase.GEN_STATUS" class="py-name" href="#" onclick="return doclink('link-34', 'GEN_STATUS', 'link-15');">GEN_STATUS</a></tt><tt class="py-op">]</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-op">~</tt><tt id="link-35" class="py-name"><a title="pypower.isload
+pypower.isload.isload" class="py-name" href="#" onclick="return doclink('link-35', 'isload', 'link-4');">isload</a></tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">)</tt>   <tt class="py-comment">## gens in service</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">Pmin</tt> <tt class="py-op">=</tt> <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">on</tt><tt class="py-op">,</tt> <tt id="link-36" class="py-name"><a title="pypower.idx_gen.PMIN
+pypower.savecase.PMIN" class="py-name" href="#" onclick="return doclink('link-36', 'PMIN', 'link-18');">PMIN</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">    <tt class="py-comment">## run initial opf</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">    <tt class="py-name">results</tt> <tt class="py-op">=</tt> <tt id="link-37" class="py-name"><a title="pypower.main.opf
+pypower.opf
+pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-37', 'opf', 'link-10');">opf</a></tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">    <tt class="py-comment">## best case so far</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">    <tt class="py-name">results1</tt> <tt class="py-op">=</tt> <tt class="py-name">deepcopy</tt><tt class="py-op">(</tt><tt class="py-name">results</tt><tt class="py-op">)</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">    <tt class="py-comment">## best case for this stage (ie. with n gens shut down, n=0,1,2 ...)</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">    <tt class="py-name">results0</tt> <tt class="py-op">=</tt> <tt class="py-name">deepcopy</tt><tt class="py-op">(</tt><tt class="py-name">results1</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">    <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"bus"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">results0</tt><tt class="py-op">[</tt><tt class="py-string">"bus"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">copy</tt><tt class="py-op">(</tt><tt class="py-op">)</tt>     <tt class="py-comment">## use these V as starting point for OPF</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">True</tt><tt class="py-op">:</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-comment">## get candidates for shutdown</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-name">candidates</tt> <tt class="py-op">=</tt> <tt class="py-name">find</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">results0</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-38" class="py-name"><a title="pypower.idx_gen.MU_PMIN
+pypower.savecase.MU_PMIN" class="py-name" href="#" onclick="return doclink('link-38', 'MU_PMIN', 'link-19');">MU_PMIN</a></tt><tt class="py-op">]</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-op">(</tt><tt class="py-name">results0</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-39" class="py-name"><a title="pypower.idx_gen.PMIN
+pypower.savecase.PMIN" class="py-name" href="#" onclick="return doclink('link-39', 'PMIN', 'link-18');">PMIN</a></tt><tt class="py-op">]</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">candidates</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">            <tt class="py-keyword">break</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-comment">## do not check for further decommitment unless we</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">        <tt class="py-comment">##  see something better during this stage</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-name">done</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">k</tt> <tt class="py-keyword">in</tt> <tt class="py-name">candidates</tt><tt class="py-op">:</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">            <tt class="py-comment">## start with best for this stage</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">            <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">results0</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">copy</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">            <tt class="py-comment">## shut down gen k</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">            <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"gen"</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">k</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt id="link-40" class="py-name"><a title="pypower.idx_gen.PG
+pypower.savecase.PG" class="py-name" href="#" onclick="return doclink('link-40', 'PG', 'link-16');">PG</a></tt><tt class="py-op">,</tt> <tt id="link-41" class="py-name"><a title="pypower.idx_gen.QG
+pypower.savecase.QG" class="py-name" href="#" onclick="return doclink('link-41', 'QG', 'link-17');">QG</a></tt><tt class="py-op">,</tt> <tt id="link-42" class="py-name"><a title="pypower.idx_gen.GEN_STATUS
+pypower.savecase.GEN_STATUS" class="py-name" href="#" onclick="return doclink('link-42', 'GEN_STATUS', 'link-15');">GEN_STATUS</a></tt><tt class="py-op">]</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">            <tt class="py-comment">## run opf</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">            <tt class="py-name">results</tt> <tt class="py-op">=</tt> <tt id="link-43" class="py-name"><a title="pypower.main.opf
+pypower.opf
+pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-43', 'opf', 'link-10');">opf</a></tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">)</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt class="py-comment">## something better?</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">results</tt><tt class="py-op">[</tt><tt class="py-string">'success'</tt><tt class="py-op">]</tt> <tt class="py-keyword">and</tt> <tt class="py-op">(</tt><tt class="py-name">results</tt><tt class="py-op">[</tt><tt class="py-string">"f"</tt><tt class="py-op">]</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">results1</tt><tt class="py-op">[</tt><tt class="py-string">"f"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">                <tt class="py-name">results1</tt> <tt class="py-op">=</tt> <tt class="py-name">deepcopy</tt><tt class="py-op">(</tt><tt class="py-name">results</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">                <tt class="py-name">k1</tt> <tt class="py-op">=</tt> <tt class="py-name">k</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">                <tt class="py-name">done</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt>   <tt class="py-comment">## make sure we check for further decommitment</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">done</tt><tt class="py-op">:</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">            <tt class="py-comment">## decommits at this stage did not help, so let's quit</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">            <tt class="py-keyword">break</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">            <tt class="py-comment">## shutting something else down helps, so let's keep going</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">verbose</tt><tt class="py-op">:</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">                <tt class="py-keyword">print</tt> <tt class="py-string">'Shutting down generator %d.\n'</tt> <tt class="py-op">%</tt> <tt class="py-name">k1</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">            <tt class="py-name">results0</tt> <tt class="py-op">=</tt> <tt class="py-name">deepcopy</tt><tt class="py-op">(</tt><tt class="py-name">results1</tt><tt class="py-op">)</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-name">ppc</tt><tt class="py-op">[</tt><tt class="py-string">"bus"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">results0</tt><tt class="py-op">[</tt><tt class="py-string">"bus"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">copy</tt><tt class="py-op">(</tt><tt class="py-op">)</tt>     <tt class="py-comment">## use these V as starting point for OPF</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">    <tt class="py-comment">## compute elapsed time</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">    <tt class="py-name">et</tt> <tt class="py-op">=</tt> <tt class="py-name">time</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">-</tt> <tt class="py-name">t0</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">    <tt class="py-comment">## finish preparing output</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">    <tt class="py-name">results0</tt><tt class="py-op">[</tt><tt class="py-string">'et'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">et</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">results0</tt> </tt>
+</div><a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:59 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

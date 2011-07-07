@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.toggle_reserves</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        Module&nbsp;toggle_reserves
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.toggle_reserves-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module toggle_reserves</h1><p class="nomargin-top"><span class="codelink"><a href="pypower.toggle_reserves-pysrc.html">source&nbsp;code</a></span></p>
+<p>Enable or disable fixed reserve requirements.</p>
+
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.toggle_reserves-module.html#toggle_reserves" class="summary-sig-name">toggle_reserves</a>(<span class="summary-sig-arg">ppc</span>,
+        <span class="summary-sig-arg">on_off</span>)</span><br />
+      Enable or disable fixed reserve requirements.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#toggle_reserves">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.toggle_reserves-module.html#userfcn_reserves_ext2int" class="summary-sig-name">userfcn_reserves_ext2int</a>(<span class="summary-sig-arg">ppc</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
+      This is the 'ext2int' stage userfcn callback that prepares the input 
+      data for the formulation stage.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_ext2int">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.toggle_reserves-module.html#userfcn_reserves_formulation" class="summary-sig-name">userfcn_reserves_formulation</a>(<span class="summary-sig-arg">om</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
+      This is the 'formulation' stage userfcn callback that defines the 
+      user costs and constraints for fixed reserves.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_formulation">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.toggle_reserves-module.html#userfcn_reserves_int2ext" class="summary-sig-name">userfcn_reserves_int2ext</a>(<span class="summary-sig-arg">results</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
+      This is the 'int2ext' stage userfcn callback that converts everything
+      back to external indexing and packages up the results.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_int2ext">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.toggle_reserves-module.html#userfcn_reserves_printpf" class="summary-sig-name">userfcn_reserves_printpf</a>(<span class="summary-sig-arg">results</span>,
+        <span class="summary-sig-arg">fd</span>,
+        <span class="summary-sig-arg">ppopt</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
+      This is the 'printpf' stage userfcn callback that pretty-prints the 
+      results.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_printpf">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pypower.toggle_reserves-module.html#userfcn_reserves_savecase" class="summary-sig-name">userfcn_reserves_savecase</a>(<span class="summary-sig-arg">ppc</span>,
+        <span class="summary-sig-arg">fd</span>,
+        <span class="summary-sig-arg">prefix</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
+      This is the 'savecase' stage userfcn callback that prints the Python 
+      file code to save the 'reserves' field in the case file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_savecase">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'pypower'"><code class="variable-quote">'</code><code class="variable-string">pypower</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="toggle_reserves"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">toggle_reserves</span>(<span class="sig-arg">ppc</span>,
+        <span class="sig-arg">on_off</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#toggle_reserves">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Enable or disable fixed reserve requirements.</p>
+  <p>Enables or disables a set of OPF userfcn callbacks to implement 
+  co-optimization of reserves with fixed zonal reserve requirements.</p>
+  <p>These callbacks expect to find a 'reserves' field in the input 
+  <code>ppc</code>, where <code>ppc['reserves']</code> is a dict with the 
+  following fields:</p>
+  <ul>
+    <li>
+      <code>zones</code>   <code>nrz x ng</code>, <code>zone(i, j) = 
+      1</code>, if gen <code>j</code> belongs to zone <code>i</code> 0, 
+      otherwise
+    </li>
+    <li>
+      <code>req</code>     <code>nrz x 1</code>, zonal reserve requirement 
+      in MW
+    </li>
+    <li>
+      <code>cost</code>    (<code>ng</code> or <code>ngr</code>) <code>x 
+      1</code>, cost of reserves in $/MW
+    </li>
+    <li>
+      <code>qty</code>     (<code>ng</code> or <code>ngr</code>) <code>x 
+      1</code>, max quantity of reserves in MW (optional)
+    </li>
+  </ul>
+  <p>where <code>nrz</code> is the number of reserve zones and 
+  <code>ngr</code> is the number of generators belonging to at least one 
+  reserve zone and <code>ng</code> is the total number of generators.</p>
+  <p>The 'int2ext' callback also packages up results and stores them in the
+  following output fields of <code>results['reserves']</code>:</p>
+  <ul>
+    <li>
+      <code>R</code>       - <code>ng x 1</code>, reserves provided by each
+      gen in MW
+    </li>
+    <li>
+      <code>Rmin</code>    - <code>ng x 1</code>, lower limit on reserves 
+      provided by each gen, (MW)
+    </li>
+    <li>
+      <code>Rmax</code>    - <code>ng x 1</code>, upper limit on reserves 
+      provided by each gen, (MW)
+    </li>
+    <li>
+      <code>mu.l</code>    - <code>ng x 1</code>, shadow price on reserve 
+      lower limit, ($/MW)
+    </li>
+    <li>
+      <code>mu.u</code>    - <code>ng x 1</code>, shadow price on reserve 
+      upper limit, ($/MW)
+    </li>
+    <li>
+      <code>mu.Pmax</code> - <code>ng x 1</code>, shadow price on <code>Pg 
+      + R &lt;= Pmax</code> constraint, ($/MW)
+    </li>
+    <li>
+      <code>prc</code>     - <code>ng x 1</code>, reserve price for each 
+      gen equal to maximum of the shadow prices on the zonal requirement 
+      constraint for each zone the generator belongs to
+    </li>
+  </ul>
+  <dl class="fields">
+  </dl>
+<div class="fields">      <p><strong>See Also:</strong>
+        <a href="pypower.runopf_w_res-module.html" 
+        class="link">runopf_w_res</a>, <a 
+        href="pypower.add_userfcn-module.html#add_userfcn" 
+        class="link">add_userfcn</a>, <a 
+        href="pypower.remove_userfcn-module.html#remove_userfcn" 
+        class="link">remove_userfcn</a>, <a 
+        href="pypower.run_userfcn-module.html" 
+        class="link">run_userfcn</a>, <a 
+        href="pypower.t.t_case30_userfcns-module.html" 
+        class="link">t.t_case30_userfcns</a>
+      </p>
+</div></td></tr></table>
+</div>
+<a name="userfcn_reserves_ext2int"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">userfcn_reserves_ext2int</span>(<span class="sig-arg">ppc</span>,
+        <span class="sig-arg">*args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_ext2int">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the 'ext2int' stage userfcn callback that prepares the input 
+  data for the formulation stage. It expects to find a 'reserves' field in 
+  ppc as described above. The optional args are not currently used.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="userfcn_reserves_formulation"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">userfcn_reserves_formulation</span>(<span class="sig-arg">om</span>,
+        <span class="sig-arg">*args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_formulation">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the 'formulation' stage userfcn callback that defines the user
+  costs and constraints for fixed reserves. It expects to find a 'reserves'
+  field in the ppc stored in om, as described above. By the time it is 
+  passed to this callback, ppc['reserves'] should have two additional 
+  fields:</p>
+  <ul>
+    <li>
+      <code>igr</code>     <code>1 x ngr</code>, indices of generators 
+      available for reserves
+    </li>
+    <li>
+      <code>rgens</code>   <code>1 x ng</code>, 1 if gen avaiable for 
+      reserves, 0 otherwise
+    </li>
+  </ul>
+  <p>It is also assumed that if cost or qty were <code>ngr x 1</code>, they
+  have been expanded to <code>ng x 1</code> and that everything has been 
+  converted to internal indexing, i.e. all gens are on-line (by the 
+  'ext2int' callback). The optional args are not currently used.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="userfcn_reserves_int2ext"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">userfcn_reserves_int2ext</span>(<span class="sig-arg">results</span>,
+        <span class="sig-arg">*args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_int2ext">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the 'int2ext' stage userfcn callback that converts everything 
+  back to external indexing and packages up the results. It expects to find
+  a 'reserves' field in the results struct as described for ppc above, 
+  including the two additional fields 'igr' and 'rgens'. It also expects 
+  the results to contain a variable 'R' and linear constraints 'Pg_plus_R' 
+  and 'Rreq' which are used to populate output fields in results.reserves. 
+  The optional args are not currently used.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="userfcn_reserves_printpf"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">userfcn_reserves_printpf</span>(<span class="sig-arg">results</span>,
+        <span class="sig-arg">fd</span>,
+        <span class="sig-arg">ppopt</span>,
+        <span class="sig-arg">*args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_printpf">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the 'printpf' stage userfcn callback that pretty-prints the 
+  results. It expects a <code>results</code> dict, a file descriptor and a 
+  PYPOWER options vector. The optional args are not currently used.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="userfcn_reserves_savecase"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">userfcn_reserves_savecase</span>(<span class="sig-arg">ppc</span>,
+        <span class="sig-arg">fd</span>,
+        <span class="sig-arg">prefix</span>,
+        <span class="sig-arg">*args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pypower.toggle_reserves-pysrc.html#userfcn_reserves_savecase">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the 'savecase' stage userfcn callback that prints the Python 
+  file code to save the 'reserves' field in the case file. It expects a 
+  PYPOWER case dict (ppc), a file descriptor and variable prefix (usually 
+  'ppc'). The optional args are not currently used.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:54 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

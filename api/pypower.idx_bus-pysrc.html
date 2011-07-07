@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.idx_bus</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        Module&nbsp;idx_bus
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.idx_bus-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pypower.idx_bus-module.html">Module pypower.idx_bus</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2010-2011 Richard Lincoln</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"># by the Free Software Foundation, either version 3 of the License,</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"># or (at your option) any later version.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"># along with PYPOWER. If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-docstring">"""Defines constants for named column indices to bus matrix.</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-docstring">Some examples of usage, after defining the constants using the line above,</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-docstring">are::</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-docstring">    Pd = bus[3, PD]     # get the real power demand at bus 4</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-docstring">    bus[:, VMIN] = 0.95 # set the min voltage magnitude to 0.95 at all buses</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-docstring">The index, name and meaning of each column of the bus matrix is given</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-docstring">below:</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-docstring">columns 0-12 must be included in input matrix (in case file)</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-docstring">    0.  C{BUS_I}       bus number (1 to 29997)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-docstring">    1.  C{BUS_TYPE}    bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-docstring">    2.  C{PD}          real power demand (MW)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"><tt class="py-docstring">    3.  C{QD}          reactive power demand (MVAr)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-docstring">    4.  C{GS}          shunt conductance (MW at V = 1.0 p.u.)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-docstring">    5.  C{BS}          shunt susceptance (MVAr at V = 1.0 p.u.)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-docstring">    6.  C{BUS_AREA}    area number, 1-100</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt class="py-docstring">    7.  C{VM}          voltage magnitude (p.u.)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"><tt class="py-docstring">    8.  C{VA}          voltage angle (degrees)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"><tt class="py-docstring">    9.  C{BASE_KV}     base voltage (kV)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"><tt class="py-docstring">    10. C{ZONE}        loss zone (1-999)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt class="py-docstring">    11. C{VMAX}        maximum voltage magnitude (p.u.)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-docstring">    12. C{VMIN}        minimum voltage magnitude (p.u.)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"><tt class="py-docstring">columns 13-16 are added to matrix after OPF solution</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"><tt class="py-docstring">they are typically not present in the input matrix</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"><tt class="py-docstring">(assume OPF objective function has units, u)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"><tt class="py-docstring">    13. C{LAM_P}       Lagrange multiplier on real power mismatch (u/MW)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-docstring">    14. C{LAM_Q}       Lagrange multiplier on reactive power mismatch (u/MVAr)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"><tt class="py-docstring">    15. C{MU_VMAX}     Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"><tt class="py-docstring">    16. C{MU_VMIN}     Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"><tt class="py-docstring">additional constants, used to assign/compare values in the C{BUS_TYPE} column</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt class="py-docstring">    1.  C{PQ}    PQ bus</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"><tt class="py-docstring">    2.  C{PV}    PV bus</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt class="py-docstring">    3.  C{REF}   reference bus</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt class="py-docstring">    4.  C{NONE}  isolated bus</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"><tt class="py-comment"># define bus types</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable pypower.idx_bus.PQ=pypower.idx_bus-module.html#PQ,Variable pypower.savecase.PQ=pypower.savecase-module.html#PQ"><a title="pypower.idx_bus.PQ
+pypower.savecase.PQ" class="py-name" href="#" onclick="return doclink('link-0', 'PQ', 'link-0');">PQ</a></tt>      <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line"><tt id="link-1" class="py-name" targets="Variable pypower.idx_bus.PV=pypower.idx_bus-module.html#PV,Variable pypower.savecase.PV=pypower.savecase-module.html#PV"><a title="pypower.idx_bus.PV
+pypower.savecase.PV" class="py-name" href="#" onclick="return doclink('link-1', 'PV', 'link-1');">PV</a></tt>      <tt class="py-op">=</tt> <tt class="py-number">2</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable pypower.idx_bus.REF=pypower.idx_bus-module.html#REF,Variable pypower.savecase.REF=pypower.savecase-module.html#REF"><a title="pypower.idx_bus.REF
+pypower.savecase.REF" class="py-name" href="#" onclick="return doclink('link-2', 'REF', 'link-2');">REF</a></tt>     <tt class="py-op">=</tt> <tt class="py-number">3</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"><tt id="link-3" class="py-name" targets="Variable pypower.idx_bus.NONE=pypower.idx_bus-module.html#NONE,Variable pypower.savecase.NONE=pypower.savecase-module.html#NONE"><a title="pypower.idx_bus.NONE
+pypower.savecase.NONE" class="py-name" href="#" onclick="return doclink('link-3', 'NONE', 'link-3');">NONE</a></tt>    <tt class="py-op">=</tt> <tt class="py-number">4</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line"> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line"><tt class="py-comment"># define the indices</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable pypower.idx_bus.BUS_I=pypower.idx_bus-module.html#BUS_I,Variable pypower.savecase.BUS_I=pypower.savecase-module.html#BUS_I"><a title="pypower.idx_bus.BUS_I
+pypower.savecase.BUS_I" class="py-name" href="#" onclick="return doclink('link-4', 'BUS_I', 'link-4');">BUS_I</a></tt>       <tt class="py-op">=</tt> <tt class="py-number">0</tt>    <tt class="py-comment"># bus number (1 to 29997)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable pypower.idx_bus.BUS_TYPE=pypower.idx_bus-module.html#BUS_TYPE,Variable pypower.savecase.BUS_TYPE=pypower.savecase-module.html#BUS_TYPE"><a title="pypower.idx_bus.BUS_TYPE
+pypower.savecase.BUS_TYPE" class="py-name" href="#" onclick="return doclink('link-5', 'BUS_TYPE', 'link-5');">BUS_TYPE</a></tt>    <tt class="py-op">=</tt> <tt class="py-number">1</tt>    <tt class="py-comment"># bus type</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line"><tt id="link-6" class="py-name" targets="Variable pypower.idx_bus.PD=pypower.idx_bus-module.html#PD,Variable pypower.savecase.PD=pypower.savecase-module.html#PD"><a title="pypower.idx_bus.PD
+pypower.savecase.PD" class="py-name" href="#" onclick="return doclink('link-6', 'PD', 'link-6');">PD</a></tt>          <tt class="py-op">=</tt> <tt class="py-number">2</tt>    <tt class="py-comment"># Pd, real power demand (MW)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line"><tt id="link-7" class="py-name" targets="Variable pypower.idx_bus.QD=pypower.idx_bus-module.html#QD,Variable pypower.savecase.QD=pypower.savecase-module.html#QD"><a title="pypower.idx_bus.QD
+pypower.savecase.QD" class="py-name" href="#" onclick="return doclink('link-7', 'QD', 'link-7');">QD</a></tt>          <tt class="py-op">=</tt> <tt class="py-number">3</tt>    <tt class="py-comment"># Qd, reactive power demand (MVAr)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line"><tt id="link-8" class="py-name" targets="Variable pypower.idx_bus.GS=pypower.idx_bus-module.html#GS,Variable pypower.savecase.GS=pypower.savecase-module.html#GS"><a title="pypower.idx_bus.GS
+pypower.savecase.GS" class="py-name" href="#" onclick="return doclink('link-8', 'GS', 'link-8');">GS</a></tt>          <tt class="py-op">=</tt> <tt class="py-number">4</tt>    <tt class="py-comment"># Gs, shunt conductance (MW at V = 1.0 p.u.)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line"><tt id="link-9" class="py-name" targets="Variable pypower.idx_bus.BS=pypower.idx_bus-module.html#BS,Variable pypower.savecase.BS=pypower.savecase-module.html#BS"><a title="pypower.idx_bus.BS
+pypower.savecase.BS" class="py-name" href="#" onclick="return doclink('link-9', 'BS', 'link-9');">BS</a></tt>          <tt class="py-op">=</tt> <tt class="py-number">5</tt>    <tt class="py-comment"># Bs, shunt susceptance (MVAr at V = 1.0 p.u.)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line"><tt id="link-10" class="py-name" targets="Variable pypower.idx_bus.BUS_AREA=pypower.idx_bus-module.html#BUS_AREA,Variable pypower.savecase.BUS_AREA=pypower.savecase-module.html#BUS_AREA"><a title="pypower.idx_bus.BUS_AREA
+pypower.savecase.BUS_AREA" class="py-name" href="#" onclick="return doclink('link-10', 'BUS_AREA', 'link-10');">BUS_AREA</a></tt>    <tt class="py-op">=</tt> <tt class="py-number">6</tt>    <tt class="py-comment"># area number, 1-100</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"><tt id="link-11" class="py-name" targets="Variable pypower.idx_bus.VM=pypower.idx_bus-module.html#VM,Variable pypower.savecase.VM=pypower.savecase-module.html#VM"><a title="pypower.idx_bus.VM
+pypower.savecase.VM" class="py-name" href="#" onclick="return doclink('link-11', 'VM', 'link-11');">VM</a></tt>          <tt class="py-op">=</tt> <tt class="py-number">7</tt>    <tt class="py-comment"># Vm, voltage magnitude (p.u.)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line"><tt id="link-12" class="py-name" targets="Variable pypower.idx_bus.VA=pypower.idx_bus-module.html#VA,Variable pypower.savecase.VA=pypower.savecase-module.html#VA"><a title="pypower.idx_bus.VA
+pypower.savecase.VA" class="py-name" href="#" onclick="return doclink('link-12', 'VA', 'link-12');">VA</a></tt>          <tt class="py-op">=</tt> <tt class="py-number">8</tt>    <tt class="py-comment"># Va, voltage angle (degrees)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line"><tt id="link-13" class="py-name" targets="Variable pypower.idx_bus.BASE_KV=pypower.idx_bus-module.html#BASE_KV,Variable pypower.savecase.BASE_KV=pypower.savecase-module.html#BASE_KV"><a title="pypower.idx_bus.BASE_KV
+pypower.savecase.BASE_KV" class="py-name" href="#" onclick="return doclink('link-13', 'BASE_KV', 'link-13');">BASE_KV</a></tt>     <tt class="py-op">=</tt> <tt class="py-number">9</tt>    <tt class="py-comment"># baseKV, base voltage (kV)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line"><tt id="link-14" class="py-name" targets="Variable pypower.idx_bus.ZONE=pypower.idx_bus-module.html#ZONE,Variable pypower.savecase.ZONE=pypower.savecase-module.html#ZONE"><a title="pypower.idx_bus.ZONE
+pypower.savecase.ZONE" class="py-name" href="#" onclick="return doclink('link-14', 'ZONE', 'link-14');">ZONE</a></tt>        <tt class="py-op">=</tt> <tt class="py-number">10</tt>   <tt class="py-comment"># zone, loss zone (1-999)</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line"><tt id="link-15" class="py-name" targets="Variable pypower.idx_bus.VMAX=pypower.idx_bus-module.html#VMAX,Variable pypower.savecase.VMAX=pypower.savecase-module.html#VMAX"><a title="pypower.idx_bus.VMAX
+pypower.savecase.VMAX" class="py-name" href="#" onclick="return doclink('link-15', 'VMAX', 'link-15');">VMAX</a></tt>        <tt class="py-op">=</tt> <tt class="py-number">11</tt>   <tt class="py-comment"># maxVm, maximum voltage magnitude (p.u.)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line"><tt id="link-16" class="py-name" targets="Variable pypower.idx_bus.VMIN=pypower.idx_bus-module.html#VMIN,Variable pypower.savecase.VMIN=pypower.savecase-module.html#VMIN"><a title="pypower.idx_bus.VMIN
+pypower.savecase.VMIN" class="py-name" href="#" onclick="return doclink('link-16', 'VMIN', 'link-16');">VMIN</a></tt>        <tt class="py-op">=</tt> <tt class="py-number">12</tt>   <tt class="py-comment"># minVm, minimum voltage magnitude (p.u.)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line"> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line"><tt class="py-comment"># included in opf solution, not necessarily in input</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line"><tt class="py-comment"># assume objective function has units, u</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line"><tt id="link-17" class="py-name" targets="Variable pypower.idx_bus.LAM_P=pypower.idx_bus-module.html#LAM_P,Variable pypower.savecase.LAM_P=pypower.savecase-module.html#LAM_P"><a title="pypower.idx_bus.LAM_P
+pypower.savecase.LAM_P" class="py-name" href="#" onclick="return doclink('link-17', 'LAM_P', 'link-17');">LAM_P</a></tt>       <tt class="py-op">=</tt> <tt class="py-number">13</tt>   <tt class="py-comment"># Lagrange multiplier on real power mismatch (u/MW)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line"><tt id="link-18" class="py-name" targets="Variable pypower.idx_bus.LAM_Q=pypower.idx_bus-module.html#LAM_Q,Variable pypower.savecase.LAM_Q=pypower.savecase-module.html#LAM_Q"><a title="pypower.idx_bus.LAM_Q
+pypower.savecase.LAM_Q" class="py-name" href="#" onclick="return doclink('link-18', 'LAM_Q', 'link-18');">LAM_Q</a></tt>       <tt class="py-op">=</tt> <tt class="py-number">14</tt>   <tt class="py-comment"># Lagrange multiplier on reactive power mismatch (u/MVAr)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line"><tt id="link-19" class="py-name" targets="Variable pypower.idx_bus.MU_VMAX=pypower.idx_bus-module.html#MU_VMAX,Variable pypower.savecase.MU_VMAX=pypower.savecase-module.html#MU_VMAX"><a title="pypower.idx_bus.MU_VMAX
+pypower.savecase.MU_VMAX" class="py-name" href="#" onclick="return doclink('link-19', 'MU_VMAX', 'link-19');">MU_VMAX</a></tt>     <tt class="py-op">=</tt> <tt class="py-number">15</tt>   <tt class="py-comment"># Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line"><tt id="link-20" class="py-name" targets="Variable pypower.idx_bus.MU_VMIN=pypower.idx_bus-module.html#MU_VMIN,Variable pypower.savecase.MU_VMIN=pypower.savecase-module.html#MU_VMIN"><a title="pypower.idx_bus.MU_VMIN
+pypower.savecase.MU_VMIN" class="py-name" href="#" onclick="return doclink('link-20', 'MU_VMIN', 'link-20');">MU_VMIN</a></tt>     <tt class="py-op">=</tt> <tt class="py-number">16</tt>   <tt class="py-comment"># Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:58 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pypower.main</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pypower-module.html">Package&nbsp;pypower</a> ::
+        Module&nbsp;main
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pypower.main-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pypower.main-module.html">Module pypower.main</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2011 Richard Lincoln</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"># by the Free Software Foundation, either version 3 of the License,</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"># or (at your option) any later version.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY], without even the implied warranty of</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"># along with PYPOWER. If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-docstring">"""Main entry-points for PYPOWER.</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">sys</tt> <tt class="py-keyword">import</tt> <tt class="py-name">stderr</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">optparse</tt> <tt class="py-keyword">import</tt> <tt class="py-name">OptionParser</tt><tt class="py-op">,</tt> <tt class="py-name">OptionGroup</tt><tt class="py-op">,</tt> <tt class="py-name">OptionValueError</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package pypower=pypower-module.html"><a title="pypower" class="py-name" href="#" onclick="return doclink('link-0', 'pypower', 'link-0');">pypower</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module pypower.api=pypower.api-module.html"><a title="pypower.api" class="py-name" href="#" onclick="return doclink('link-1', 'api', 'link-1');">api</a></tt> <tt class="py-keyword">import</tt> \ </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">    <tt id="link-2" class="py-name" targets="Module pypower.ppver=pypower.ppver-module.html,Function pypower.ppver.ppver()=pypower.ppver-module.html#ppver"><a title="pypower.ppver
+pypower.ppver.ppver" class="py-name" href="#" onclick="return doclink('link-2', 'ppver', 'link-2');">ppver</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Module pypower.ppoption=pypower.ppoption-module.html,Function pypower.ppoption.ppoption()=pypower.ppoption-module.html#ppoption"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-3', 'ppoption', 'link-3');">ppoption</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Module pypower.runpf=pypower.runpf-module.html,Function pypower.runpf.runpf()=pypower.runpf-module.html#runpf"><a title="pypower.runpf
+pypower.runpf.runpf" class="py-name" href="#" onclick="return doclink('link-4', 'runpf', 'link-4');">runpf</a></tt><tt class="py-op">,</tt> <tt id="link-5" class="py-name" targets="Module pypower.runopf=pypower.runopf-module.html,Function pypower.runopf.runopf()=pypower.runopf-module.html#runopf"><a title="pypower.runopf
+pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-5', 'runopf', 'link-5');">runopf</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name" targets="Module pypower.runuopf=pypower.runuopf-module.html,Function pypower.runuopf.runuopf()=pypower.runuopf-module.html#runuopf"><a title="pypower.runuopf
+pypower.runuopf.runuopf" class="py-name" href="#" onclick="return doclink('link-6', 'runuopf', 'link-6');">runuopf</a></tt><tt class="py-op">,</tt> <tt id="link-7" class="py-name" targets="Module pypower.runopf_w_res=pypower.runopf_w_res-module.html,Function pypower.runopf_w_res.runopf_w_res()=pypower.runopf_w_res-module.html#runopf_w_res"><a title="pypower.runopf_w_res
+pypower.runopf_w_res.runopf_w_res" class="py-name" href="#" onclick="return doclink('link-7', 'runopf_w_res', 'link-7');">runopf_w_res</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-8" class="py-name"><a title="pypower" class="py-name" href="#" onclick="return doclink('link-8', 'pypower', 'link-0');">pypower</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="pypower.api" class="py-name" href="#" onclick="return doclink('link-9', 'api', 'link-1');">api</a></tt> <tt class="py-keyword">import</tt> \ </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">    <tt id="link-10" class="py-name" targets="Module pypower.case4gs=pypower.case4gs-module.html,Function pypower.case4gs.case4gs()=pypower.case4gs-module.html#case4gs"><a title="pypower.case4gs
+pypower.case4gs.case4gs" class="py-name" href="#" onclick="return doclink('link-10', 'case4gs', 'link-10');">case4gs</a></tt><tt class="py-op">,</tt> <tt id="link-11" class="py-name" targets="Module pypower.case6ww=pypower.case6ww-module.html,Function pypower.case6ww.case6ww()=pypower.case6ww-module.html#case6ww"><a title="pypower.case6ww
+pypower.case6ww.case6ww" class="py-name" href="#" onclick="return doclink('link-11', 'case6ww', 'link-11');">case6ww</a></tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name" targets="Module pypower.case9=pypower.case9-module.html,Function pypower.case9.case9()=pypower.case9-module.html#case9"><a title="pypower.case9
+pypower.case9.case9" class="py-name" href="#" onclick="return doclink('link-12', 'case9', 'link-12');">case9</a></tt><tt class="py-op">,</tt> <tt id="link-13" class="py-name" targets="Module pypower.case9Q=pypower.case9Q-module.html,Function pypower.case9Q.case9Q()=pypower.case9Q-module.html#case9Q"><a title="pypower.case9Q
+pypower.case9Q.case9Q" class="py-name" href="#" onclick="return doclink('link-13', 'case9Q', 'link-13');">case9Q</a></tt><tt class="py-op">,</tt> <tt id="link-14" class="py-name" targets="Module pypower.case14=pypower.case14-module.html,Function pypower.case14.case14()=pypower.case14-module.html#case14"><a title="pypower.case14
+pypower.case14.case14" class="py-name" href="#" onclick="return doclink('link-14', 'case14', 'link-14');">case14</a></tt><tt class="py-op">,</tt> <tt id="link-15" class="py-name" targets="Module pypower.case24_ieee_rts=pypower.case24_ieee_rts-module.html,Function pypower.case24_ieee_rts.case24_ieee_rts()=pypower.case24_ieee_rts-module.html#case24_ieee_rts"><a title="pypower.case24_ieee_rts
+pypower.case24_ieee_rts.case24_ieee_rts" class="py-name" href="#" onclick="return doclink('link-15', 'case24_ieee_rts', 'link-15');">case24_ieee_rts</a></tt><tt class="py-op">,</tt> <tt id="link-16" class="py-name" targets="Module pypower.case30=pypower.case30-module.html,Function pypower.case30.case30()=pypower.case30-module.html#case30"><a title="pypower.case30
+pypower.case30.case30" class="py-name" href="#" onclick="return doclink('link-16', 'case30', 'link-16');">case30</a></tt><tt class="py-op">,</tt> \ </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">    <tt id="link-17" class="py-name" targets="Module pypower.case30Q=pypower.case30Q-module.html,Function pypower.case30Q.case30Q()=pypower.case30Q-module.html#case30Q"><a title="pypower.case30Q
+pypower.case30Q.case30Q" class="py-name" href="#" onclick="return doclink('link-17', 'case30Q', 'link-17');">case30Q</a></tt><tt class="py-op">,</tt> <tt id="link-18" class="py-name" targets="Module pypower.case30pwl=pypower.case30pwl-module.html,Function pypower.case30pwl.case30pwl()=pypower.case30pwl-module.html#case30pwl"><a title="pypower.case30pwl
+pypower.case30pwl.case30pwl" class="py-name" href="#" onclick="return doclink('link-18', 'case30pwl', 'link-18');">case30pwl</a></tt><tt class="py-op">,</tt> <tt id="link-19" class="py-name" targets="Module pypower.case39=pypower.case39-module.html,Function pypower.case39.case39()=pypower.case39-module.html#case39"><a title="pypower.case39
+pypower.case39.case39" class="py-name" href="#" onclick="return doclink('link-19', 'case39', 'link-19');">case39</a></tt><tt class="py-op">,</tt> <tt id="link-20" class="py-name" targets="Module pypower.case57=pypower.case57-module.html,Function pypower.case57.case57()=pypower.case57-module.html#case57"><a title="pypower.case57
+pypower.case57.case57" class="py-name" href="#" onclick="return doclink('link-20', 'case57', 'link-20');">case57</a></tt><tt class="py-op">,</tt> <tt id="link-21" class="py-name" targets="Module pypower.case118=pypower.case118-module.html,Function pypower.case118.case118()=pypower.case118-module.html#case118"><a title="pypower.case118
+pypower.case118.case118" class="py-name" href="#" onclick="return doclink('link-21', 'case118', 'link-21');">case118</a></tt><tt class="py-op">,</tt> <tt id="link-22" class="py-name" targets="Module pypower.case300=pypower.case300-module.html,Function pypower.case300.case300()=pypower.case300-module.html#case300"><a title="pypower.case300
+pypower.case300.case300" class="py-name" href="#" onclick="return doclink('link-22', 'case300', 'link-22');">case300</a></tt><tt class="py-op">,</tt> <tt id="link-23" class="py-name" targets="Module pypower.t.t_case30_userfcns=pypower.t.t_case30_userfcns-module.html,Function pypower.t.t_case30_userfcns.t_case30_userfcns()=pypower.t.t_case30_userfcns-module.html#t_case30_userfcns"><a title="pypower.t.t_case30_userfcns
+pypower.t.t_case30_userfcns.t_case30_userfcns" class="py-name" href="#" onclick="return doclink('link-23', 't_case30_userfcns', 'link-23');">t_case30_userfcns</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-24" class="py-name"><a title="pypower" class="py-name" href="#" onclick="return doclink('link-24', 'pypower', 'link-0');">pypower</a></tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-25', 'ppoption', 'link-3');">ppoption</a></tt> <tt class="py-keyword">import</tt> \ </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">    <tt id="link-26" class="py-name" targets="Variable pypower.ppoption.PF_OPTIONS=pypower.ppoption-module.html#PF_OPTIONS"><a title="pypower.ppoption.PF_OPTIONS" class="py-name" href="#" onclick="return doclink('link-26', 'PF_OPTIONS', 'link-26');">PF_OPTIONS</a></tt><tt class="py-op">,</tt> <tt id="link-27" class="py-name" targets="Variable pypower.ppoption.OPF_OPTIONS=pypower.ppoption-module.html#OPF_OPTIONS"><a title="pypower.ppoption.OPF_OPTIONS" class="py-name" href="#" onclick="return doclink('link-27', 'OPF_OPTIONS', 'link-27');">OPF_OPTIONS</a></tt><tt class="py-op">,</tt> <tt id="link-28" class="py-name" targets="Variable pypower.ppoption.OUTPUT_OPTIONS=pypower.ppoption-module.html#OUTPUT_OPTIONS"><a title="pypower.ppoption.OUTPUT_OPTIONS" class="py-name" href="#" onclick="return doclink('link-28', 'OUTPUT_OPTIONS', 'link-28');">OUTPUT_OPTIONS</a></tt><tt class="py-op">,</tt> <tt id="link-29" class="py-name" targets="Variable pypower.ppoption.PDIPM_OPTIONS=pypower.ppoption-module.html#PDIPM_OPTIONS"><a title="pypower.ppoption.PDIPM_OPTIONS" class="py-name" href="#" onclick="return doclink('link-29', 'PDIPM_OPTIONS', 'link-29');">PDIPM_OPTIONS</a></tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-30" class="py-name"><a title="pypower" class="py-name" href="#" onclick="return doclink('link-30', 'pypower', 'link-0');">pypower</a></tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Package pypower.t=pypower.t-module.html"><a title="pypower.t" class="py-name" href="#" onclick="return doclink('link-31', 't', 'link-31');">t</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Module pypower.t.test_pypower=pypower.t.test_pypower-module.html,Function pypower.t.test_pypower.test_pypower()=pypower.t.test_pypower-module.html#test_pypower"><a title="pypower.t.test_pypower
+pypower.t.test_pypower.test_pypower" class="py-name" href="#" onclick="return doclink('link-32', 'test_pypower', 'link-32');">test_pypower</a></tt> <tt class="py-keyword">import</tt> <tt id="link-33" class="py-name" targets="Function pypower.t.test_pypower.test_pf()=pypower.t.test_pypower-module.html#test_pf"><a title="pypower.t.test_pypower.test_pf" class="py-name" href="#" onclick="return doclink('link-33', 'test_pf', 'link-33');">test_pf</a></tt><tt class="py-op">,</tt> <tt id="link-34" class="py-name" targets="Function pypower.t.test_pypower.test_opf()=pypower.t.test_pypower-module.html#test_opf"><a title="pypower.t.test_pypower.test_opf" class="py-name" href="#" onclick="return doclink('link-34', 'test_opf', 'link-34');">test_opf</a></tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt id="link-35" class="py-name" targets="Variable pypower.main.TYPE_MAP=pypower.main-module.html#TYPE_MAP"><a title="pypower.main.TYPE_MAP" class="py-name" href="#" onclick="return doclink('link-35', 'TYPE_MAP', 'link-35');">TYPE_MAP</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-name">bool</tt><tt class="py-op">:</tt> <tt class="py-string">'choice'</tt><tt class="py-op">,</tt> <tt class="py-name">float</tt><tt class="py-op">:</tt> <tt class="py-string">'float'</tt><tt class="py-op">,</tt> <tt class="py-name">int</tt><tt class="py-op">:</tt> <tt class="py-string">'int'</tt><tt class="py-op">}</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt id="link-36" class="py-name" targets="Variable pypower.main.AFFIRMATIVE=pypower.main-module.html#AFFIRMATIVE"><a title="pypower.main.AFFIRMATIVE" class="py-name" href="#" onclick="return doclink('link-36', 'AFFIRMATIVE', 'link-36');">AFFIRMATIVE</a></tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-string">'True'</tt><tt class="py-op">,</tt> <tt class="py-string">'Yes'</tt><tt class="py-op">,</tt> <tt class="py-string">'true'</tt><tt class="py-op">,</tt> <tt class="py-string">'yes'</tt><tt class="py-op">,</tt> <tt class="py-string">'1'</tt><tt class="py-op">,</tt> <tt class="py-string">'Y'</tt><tt class="py-op">,</tt> <tt class="py-string">'y'</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt id="link-37" class="py-name" targets="Variable pypower.main.NEGATIVE=pypower.main-module.html#NEGATIVE"><a title="pypower.main.NEGATIVE" class="py-name" href="#" onclick="return doclink('link-37', 'NEGATIVE', 'link-37');">NEGATIVE</a></tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-string">'False'</tt><tt class="py-op">,</tt> <tt class="py-string">'No'</tt><tt class="py-op">,</tt> <tt class="py-string">'false'</tt><tt class="py-op">,</tt> <tt class="py-string">'no'</tt><tt class="py-op">,</tt> <tt class="py-string">'0'</tt><tt class="py-op">,</tt> <tt class="py-string">'N'</tt><tt class="py-op">,</tt> <tt class="py-string">'n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt id="link-38" class="py-name" targets="Variable pypower.main.CASES=pypower.main-module.html#CASES"><a title="pypower.main.CASES" class="py-name" href="#" onclick="return doclink('link-38', 'CASES', 'link-38');">CASES</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'case4gs'</tt><tt class="py-op">:</tt> <tt id="link-39" class="py-name"><a title="pypower.case4gs
+pypower.case4gs.case4gs" class="py-name" href="#" onclick="return doclink('link-39', 'case4gs', 'link-10');">case4gs</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case6ww'</tt><tt class="py-op">:</tt> <tt id="link-40" class="py-name"><a title="pypower.case6ww
+pypower.case6ww.case6ww" class="py-name" href="#" onclick="return doclink('link-40', 'case6ww', 'link-11');">case6ww</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case9'</tt><tt class="py-op">:</tt> <tt id="link-41" class="py-name"><a title="pypower.case9
+pypower.case9.case9" class="py-name" href="#" onclick="return doclink('link-41', 'case9', 'link-12');">case9</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">    <tt class="py-string">'case9Q'</tt><tt class="py-op">:</tt> <tt id="link-42" class="py-name"><a title="pypower.case9Q
+pypower.case9Q.case9Q" class="py-name" href="#" onclick="return doclink('link-42', 'case9Q', 'link-13');">case9Q</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case14'</tt><tt class="py-op">:</tt> <tt id="link-43" class="py-name"><a title="pypower.case14
+pypower.case14.case14" class="py-name" href="#" onclick="return doclink('link-43', 'case14', 'link-14');">case14</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case24_ieee_rts'</tt><tt class="py-op">:</tt> <tt id="link-44" class="py-name"><a title="pypower.case24_ieee_rts
+pypower.case24_ieee_rts.case24_ieee_rts" class="py-name" href="#" onclick="return doclink('link-44', 'case24_ieee_rts', 'link-15');">case24_ieee_rts</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">    <tt class="py-string">'case30'</tt><tt class="py-op">:</tt> <tt id="link-45" class="py-name"><a title="pypower.case30
+pypower.case30.case30" class="py-name" href="#" onclick="return doclink('link-45', 'case30', 'link-16');">case30</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case30Q'</tt><tt class="py-op">:</tt> <tt id="link-46" class="py-name"><a title="pypower.case30Q
+pypower.case30Q.case30Q" class="py-name" href="#" onclick="return doclink('link-46', 'case30Q', 'link-17');">case30Q</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case30pwl'</tt><tt class="py-op">:</tt> <tt id="link-47" class="py-name"><a title="pypower.case30pwl
+pypower.case30pwl.case30pwl" class="py-name" href="#" onclick="return doclink('link-47', 'case30pwl', 'link-18');">case30pwl</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">    <tt class="py-string">'case39'</tt><tt class="py-op">:</tt> <tt id="link-48" class="py-name"><a title="pypower.case39
+pypower.case39.case39" class="py-name" href="#" onclick="return doclink('link-48', 'case39', 'link-19');">case39</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case57'</tt><tt class="py-op">:</tt> <tt id="link-49" class="py-name"><a title="pypower.case57
+pypower.case57.case57" class="py-name" href="#" onclick="return doclink('link-49', 'case57', 'link-20');">case57</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case118'</tt><tt class="py-op">:</tt> <tt id="link-50" class="py-name"><a title="pypower.case118
+pypower.case118.case118" class="py-name" href="#" onclick="return doclink('link-50', 'case118', 'link-21');">case118</a></tt><tt class="py-op">,</tt> <tt class="py-string">'case300'</tt><tt class="py-op">:</tt> <tt id="link-51" class="py-name"><a title="pypower.case300
+pypower.case300.case300" class="py-name" href="#" onclick="return doclink('link-51', 'case300', 'link-22');">case300</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">    <tt class="py-string">'case30_userfcns'</tt><tt class="py-op">:</tt> <tt id="link-52" class="py-name"><a title="pypower.t.t_case30_userfcns
+pypower.t.t_case30_userfcns.t_case30_userfcns" class="py-name" href="#" onclick="return doclink('link-52', 't_case30_userfcns', 'link-23');">t_case30_userfcns</a></tt><tt class="py-op">}</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"> </tt>
+<a name="option_callback"></a><div id="option_callback-def"><a name="L49"></a><tt class="py-lineno"> 49</tt> <a class="py-toggle" href="#" id="option_callback-toggle" onclick="return toggle('option_callback');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.main-module.html#option_callback">option_callback</a><tt class="py-op">(</tt><tt class="py-param">option</tt><tt class="py-op">,</tt> <tt class="py-param">opt</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">,</tt> <tt class="py-param">parser</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kw_args</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="option_callback-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="option_callback-expanded"><a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">value</tt> <tt class="py-keyword">in</tt> <tt id="link-53" class="py-name"><a title="pypower.main.AFFIRMATIVE" class="py-name" href="#" onclick="return doclink('link-53', 'AFFIRMATIVE', 'link-36');">AFFIRMATIVE</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">            <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">value</tt> <tt class="py-keyword">in</tt> <tt id="link-54" class="py-name"><a title="pypower.main.NEGATIVE" class="py-name" href="#" onclick="return doclink('link-54', 'NEGATIVE', 'link-37');">NEGATIVE</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">            <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">            <tt class="py-name">choices</tt> <tt class="py-op">=</tt> <tt class="py-string">", "</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">map</tt><tt class="py-op">(</tt><tt class="py-name">repr</tt><tt class="py-op">,</tt> <tt class="py-name">option</tt><tt class="py-op">.</tt><tt class="py-name">choices</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">OptionValueError</tt><tt class="py-op">(</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">                <tt class="py-name">_</tt><tt class="py-op">(</tt><tt class="py-string">"option %s: invalid choice: %r (choose from %s)"</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">                <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">opt</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">,</tt> <tt class="py-name">choices</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">    <tt class="py-name">opt_name</tt> <tt class="py-op">=</tt> <tt class="py-name">opt</tt><tt class="py-op">[</tt><tt class="py-number">2</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">upper</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">    <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">    <tt class="py-name">ppopt</tt><tt class="py-op">[</tt><tt class="py-name">opt_name</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">value</tt> </tt>
+</div><a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="add_options"></a><div id="add_options-def"><a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="add_options-toggle" onclick="return toggle('add_options');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.main-module.html#add_options">add_options</a><tt class="py-op">(</tt><tt class="py-param">group</tt><tt class="py-op">,</tt> <tt class="py-param">options</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">callback_args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">callback_kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="add_options-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="add_options-expanded"><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">default_val</tt><tt class="py-op">,</tt> <tt class="py-name">help</tt> <tt class="py-keyword">in</tt> <tt class="py-name">options</tt><tt class="py-op">:</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-name">long_opt</tt> <tt class="py-op">=</tt> <tt class="py-string">'--%s'</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-name">kw_args</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">            <tt class="py-string">'default'</tt><tt class="py-op">:</tt> <tt class="py-name">default_val</tt><tt class="py-op">,</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">            <tt class="py-string">'help'</tt><tt class="py-op">:</tt> <tt class="py-string">'%s [default: %%default]'</tt> <tt class="py-op">%</tt> <tt class="py-name">help</tt><tt class="py-op">,</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">            <tt class="py-string">'type'</tt><tt class="py-op">:</tt> <tt id="link-55" class="py-name"><a title="pypower.main.TYPE_MAP" class="py-name" href="#" onclick="return doclink('link-55', 'TYPE_MAP', 'link-35');">TYPE_MAP</a></tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">type</tt><tt class="py-op">(</tt><tt class="py-name">default_val</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">'string'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">            <tt class="py-string">'action'</tt><tt class="py-op">:</tt> <tt class="py-string">"callback"</tt><tt class="py-op">,</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">            <tt class="py-string">'callback'</tt><tt class="py-op">:</tt> <tt id="link-56" class="py-name" targets="Function pypower.main.option_callback()=pypower.main-module.html#option_callback"><a title="pypower.main.option_callback" class="py-name" href="#" onclick="return doclink('link-56', 'option_callback', 'link-56');">option_callback</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">            <tt class="py-string">'callback_args'</tt><tt class="py-op">:</tt> <tt class="py-name">callback_args</tt><tt class="py-op">,</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">            <tt class="py-string">'callback_kwargs'</tt><tt class="py-op">:</tt> <tt class="py-name">callback_kwargs</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-op">}</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">default_val</tt><tt class="py-op">,</tt> <tt class="py-name">bool</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">            <tt class="py-name">kw_args</tt><tt class="py-op">[</tt><tt class="py-string">'choices'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-57" class="py-name"><a title="pypower.main.AFFIRMATIVE" class="py-name" href="#" onclick="return doclink('link-57', 'AFFIRMATIVE', 'link-36');">AFFIRMATIVE</a></tt> <tt class="py-op">+</tt> <tt id="link-58" class="py-name"><a title="pypower.main.NEGATIVE" class="py-name" href="#" onclick="return doclink('link-58', 'NEGATIVE', 'link-37');">NEGATIVE</a></tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">group</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-name">long_opt</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">kw_args</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"> </tt>
+<a name="parse_options"></a><div id="parse_options-def"><a name="L87"></a><tt class="py-lineno"> 87</tt> <a class="py-toggle" href="#" id="parse_options-toggle" onclick="return toggle('parse_options');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.main-module.html#parse_options">parse_options</a><tt class="py-op">(</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-param">usage</tt><tt class="py-op">,</tt> <tt class="py-param">opf</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="parse_options-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="parse_options-expanded"><a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">    <tt class="py-docstring">"""Parse command line options.</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-docstring">    @param opf: Include OPF options?</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">    <tt class="py-name">v</tt> <tt class="py-op">=</tt> <tt id="link-59" class="py-name"><a title="pypower.ppver
+pypower.ppver.ppver" class="py-name" href="#" onclick="return doclink('link-59', 'ppver', 'link-2');">ppver</a></tt><tt class="py-op">(</tt><tt class="py-string">'all'</tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">    <tt class="py-name">parser</tt> <tt class="py-op">=</tt> <tt class="py-name">OptionParser</tt><tt class="py-op">(</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-name">usage</tt><tt class="py-op">=</tt><tt class="py-string">"""usage: %%prog [options] [casedata]</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-string"></tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-string">%s</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-string"></tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-string">If 'casedata' is provided it specifies the name of the input data file</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-string">containing the case data."""</tt> <tt class="py-op">%</tt> <tt class="py-name">usage</tt><tt class="py-op">,</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-name">version</tt><tt class="py-op">=</tt><tt class="py-string">'PYPOWER (%%prog) Version %s, %s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">v</tt><tt class="py-op">[</tt><tt class="py-string">"Version"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">v</tt><tt class="py-op">[</tt><tt class="py-string">"Date"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">    <tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-t"</tt><tt class="py-op">,</tt> <tt class="py-string">"--test"</tt><tt class="py-op">,</tt> <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store_true"</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">"test"</tt><tt class="py-op">,</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">        <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"run tests"</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-c"</tt><tt class="py-op">,</tt> <tt class="py-string">"--testcase"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-string">'case9'</tt><tt class="py-op">,</tt> <tt class="py-name">choices</tt><tt class="py-op">=</tt><tt id="link-60" class="py-name"><a title="pypower.main.CASES" class="py-name" href="#" onclick="return doclink('link-60', 'CASES', 'link-38');">CASES</a></tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"built-in test case (choose from: %s)"</tt> <tt class="py-op">%</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt id="link-61" class="py-name"><a title="pypower.main.CASES" class="py-name" href="#" onclick="return doclink('link-61', 'CASES', 'link-38');">CASES</a></tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-o"</tt><tt class="py-op">,</tt> <tt class="py-string">"--outfile"</tt><tt class="py-op">,</tt> <tt class="py-name">dest</tt><tt class="py-op">=</tt><tt class="py-string">'fname'</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">'string'</tt><tt class="py-op">,</tt> <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"""pretty printed output will be</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-string">appended to a file with the name specified. Defaults to stdout."""</tt><tt class="py-op">)</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-s"</tt><tt class="py-op">,</tt> <tt class="py-string">"--solvedcase"</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">'string'</tt><tt class="py-op">,</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"""the solved case will be written</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-string">to a case file with the specified name in PYPOWER format. If solvedcase ends</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"><tt class="py-string">with '.mat' the case is saves  as a MAT-file otherwise it saves it as a Python</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-string">file."""</tt><tt class="py-op">)</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">    <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-62" class="py-name"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-62', 'ppoption', 'link-3');">ppoption</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-63" class="py-name" targets="Function pypower.main.opf()=pypower.main-module.html#opf,Module pypower.opf=pypower.opf-module.html,Function pypower.opf.opf()=pypower.opf-module.html#opf"><a title="pypower.main.opf
+pypower.opf
+pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-63', 'opf', 'link-63');">opf</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-name">opf_options</tt> <tt class="py-op">=</tt> <tt class="py-name">OptionGroup</tt><tt class="py-op">(</tt><tt class="py-name">parser</tt><tt class="py-op">,</tt> <tt class="py-string">'OPF Options'</tt><tt class="py-op">)</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt class="py-name">pdipm_options</tt> <tt class="py-op">=</tt> <tt class="py-name">OptionGroup</tt><tt class="py-op">(</tt><tt class="py-name">parser</tt><tt class="py-op">,</tt> <tt class="py-string">'PDIPM Options'</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-name">opf_options</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-u"</tt><tt class="py-op">,</tt> <tt class="py-string">"--uopf"</tt><tt class="py-op">,</tt> <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store_true"</tt><tt class="py-op">,</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"""runs an optimal power flow with the unit-decommitment</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"><tt class="py-string">heuristic"""</tt><tt class="py-op">)</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-name">opf_options</tt><tt class="py-op">.</tt><tt class="py-name">add_option</tt><tt class="py-op">(</tt><tt class="py-string">"-r"</tt><tt class="py-op">,</tt> <tt class="py-string">"--w_res"</tt><tt class="py-op">,</tt> <tt class="py-name">action</tt><tt class="py-op">=</tt><tt class="py-string">"store_true"</tt><tt class="py-op">,</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">            <tt class="py-name">help</tt><tt class="py-op">=</tt><tt class="py-string">"""runs an optimal power flow with fixed zonal reserves"""</tt><tt class="py-op">)</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt id="link-64" class="py-name" targets="Function pypower.main.add_options()=pypower.main-module.html#add_options"><a title="pypower.main.add_options" class="py-name" href="#" onclick="return doclink('link-64', 'add_options', 'link-64');">add_options</a></tt><tt class="py-op">(</tt><tt class="py-name">opf_options</tt><tt class="py-op">,</tt> <tt id="link-65" class="py-name"><a title="pypower.ppoption.OPF_OPTIONS" class="py-name" href="#" onclick="return doclink('link-65', 'OPF_OPTIONS', 'link-27');">OPF_OPTIONS</a></tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">)</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt id="link-66" class="py-name"><a title="pypower.main.add_options" class="py-name" href="#" onclick="return doclink('link-66', 'add_options', 'link-64');">add_options</a></tt><tt class="py-op">(</tt><tt class="py-name">pdipm_options</tt><tt class="py-op">,</tt> <tt id="link-67" class="py-name"><a title="pypower.ppoption.PDIPM_OPTIONS" class="py-name" href="#" onclick="return doclink('link-67', 'PDIPM_OPTIONS', 'link-29');">PDIPM_OPTIONS</a></tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">)</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option_group</tt><tt class="py-op">(</tt><tt class="py-name">opf_options</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option_group</tt><tt class="py-op">(</tt><tt class="py-name">pdipm_options</tt><tt class="py-op">)</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">        <tt class="py-name">pf_options</tt> <tt class="py-op">=</tt> <tt class="py-name">OptionGroup</tt><tt class="py-op">(</tt><tt class="py-name">parser</tt><tt class="py-op">,</tt> <tt class="py-string">'Power Flow Options'</tt><tt class="py-op">)</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">        <tt id="link-68" class="py-name"><a title="pypower.main.add_options" class="py-name" href="#" onclick="return doclink('link-68', 'add_options', 'link-64');">add_options</a></tt><tt class="py-op">(</tt><tt class="py-name">pf_options</tt><tt class="py-op">,</tt> <tt id="link-69" class="py-name"><a title="pypower.ppoption.PF_OPTIONS" class="py-name" href="#" onclick="return doclink('link-69', 'PF_OPTIONS', 'link-26');">PF_OPTIONS</a></tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">        <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option_group</tt><tt class="py-op">(</tt><tt class="py-name">pf_options</tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">    <tt class="py-name">output_options</tt> <tt class="py-op">=</tt> <tt class="py-name">OptionGroup</tt><tt class="py-op">(</tt><tt class="py-name">parser</tt><tt class="py-op">,</tt> <tt class="py-string">'Output Options'</tt><tt class="py-op">)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">    <tt id="link-70" class="py-name"><a title="pypower.main.add_options" class="py-name" href="#" onclick="return doclink('link-70', 'add_options', 'link-64');">add_options</a></tt><tt class="py-op">(</tt><tt class="py-name">output_options</tt><tt class="py-op">,</tt> <tt id="link-71" class="py-name"><a title="pypower.ppoption.OUTPUT_OPTIONS" class="py-name" href="#" onclick="return doclink('link-71', 'OUTPUT_OPTIONS', 'link-28');">OUTPUT_OPTIONS</a></tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">)</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">    <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">add_option_group</tt><tt class="py-op">(</tt><tt class="py-name">output_options</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">    <tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">parse_args</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"><tt class="py-comment">#    casedata, fname, solvedcase = case9(), '', ''  # defaults</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">    <tt class="py-name">nargs</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">nargs</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-name">stderr</tt><tt class="py-op">.</tt><tt class="py-name">write</tt><tt class="py-op">(</tt><tt class="py-string">'Too many arguments'</tt><tt class="py-op">)</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt class="py-name">parser</tt><tt class="py-op">.</tt><tt class="py-name">print_help</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">        <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt id="link-72" class="py-name" targets="Function pypower.main.exit()=pypower.main-module.html#exit"><a title="pypower.main.exit" class="py-name" href="#" onclick="return doclink('link-72', 'exit', 'link-72');">exit</a></tt><tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">)</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">nargs</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt class="py-name">casedata</tt> <tt class="py-op">=</tt> <tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">            <tt class="py-name">casedata</tt> <tt class="py-op">=</tt> <tt id="link-73" class="py-name"><a title="pypower.main.CASES" class="py-name" href="#" onclick="return doclink('link-73', 'CASES', 'link-38');">CASES</a></tt><tt class="py-op">[</tt><tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">testcase</tt><tt class="py-op">]</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">            <tt class="py-name">stderr</tt><tt class="py-op">.</tt><tt class="py-name">write</tt><tt class="py-op">(</tt><tt class="py-string">"Invalid case choice: %r (choose from %s)\n"</tt> <tt class="py-op">%</tt> \ </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">                <tt class="py-op">(</tt><tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">testcase</tt><tt class="py-op">,</tt> <tt id="link-74" class="py-name"><a title="pypower.main.CASES" class="py-name" href="#" onclick="return doclink('link-74', 'CASES', 'link-38');">CASES</a></tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">            <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="pypower.main.exit" class="py-name" href="#" onclick="return doclink('link-75', 'exit', 'link-72');">exit</a></tt><tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">)</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line"> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">solvedcase</tt> </tt>
+</div><a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"> </tt>
+<a name="exit"></a><div id="exit-def"><a name="L173"></a><tt class="py-lineno">173</tt> <a class="py-toggle" href="#" id="exit-toggle" onclick="return toggle('exit');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.main-module.html#exit">exit</a><tt class="py-op">(</tt><tt class="py-param">success</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="exit-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="exit-expanded"><a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">    <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt id="link-76" class="py-name"><a title="pypower.main.exit" class="py-name" href="#" onclick="return doclink('link-76', 'exit', 'link-72');">exit</a></tt><tt class="py-op">(</tt><tt class="py-number">0</tt> <tt class="py-keyword">if</tt> <tt class="py-name">success</tt> <tt class="py-keyword">else</tt> <tt class="py-number">2</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line"> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"> </tt>
+<a name="pf"></a><div id="pf-def"><a name="L177"></a><tt class="py-lineno">177</tt> <a class="py-toggle" href="#" id="pf-toggle" onclick="return toggle('pf');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.main-module.html#pf">pf</a><tt class="py-op">(</tt><tt class="py-param">args</tt><tt class="py-op">=</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="pf-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="pf-expanded"><a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">    <tt class="py-name">usage</tt> <tt class="py-op">=</tt> <tt class="py-string">'Runs a power flow.'</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">    <tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">solvedcase</tt> <tt class="py-op">=</tt> \ </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">            <tt id="link-77" class="py-name" targets="Function pypower.main.parse_options()=pypower.main-module.html#parse_options"><a title="pypower.main.parse_options" class="py-name" href="#" onclick="return doclink('link-77', 'parse_options', 'link-77');">parse_options</a></tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-name">usage</tt><tt class="py-op">)</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">test</tt><tt class="py-op">:</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">        <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt id="link-78" class="py-name"><a title="pypower.main.exit" class="py-name" href="#" onclick="return doclink('link-78', 'exit', 'link-72');">exit</a></tt><tt class="py-op">(</tt><tt id="link-79" class="py-name"><a title="pypower.t.test_pypower.test_pf" class="py-name" href="#" onclick="return doclink('link-79', 'test_pf', 'link-33');">test_pf</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">    <tt class="py-name">_</tt><tt class="py-op">,</tt> <tt class="py-name">success</tt> <tt class="py-op">=</tt> <tt id="link-80" class="py-name"><a title="pypower.runpf
+pypower.runpf.runpf" class="py-name" href="#" onclick="return doclink('link-80', 'runpf', 'link-4');">runpf</a></tt><tt class="py-op">(</tt><tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">solvedcase</tt><tt class="py-op">)</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">    <tt id="link-81" class="py-name"><a title="pypower.main.exit" class="py-name" href="#" onclick="return doclink('link-81', 'exit', 'link-72');">exit</a></tt><tt class="py-op">(</tt><tt class="py-name">success</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line"> </tt>
+<a name="opf"></a><div id="opf-def"><a name="L187"></a><tt class="py-lineno">187</tt> <a class="py-toggle" href="#" id="opf-toggle" onclick="return toggle('opf');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.main-module.html#opf">opf</a><tt class="py-op">(</tt><tt class="py-param">args</tt><tt class="py-op">=</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="opf-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="opf-expanded"><a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">    <tt class="py-name">usage</tt> <tt class="py-op">=</tt> <tt class="py-string">'Runs an optimal power flow.'</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">    <tt class="py-name">options</tt><tt class="py-op">,</tt> <tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">solvedcase</tt> <tt class="py-op">=</tt> \ </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">            <tt id="link-82" class="py-name"><a title="pypower.main.parse_options" class="py-name" href="#" onclick="return doclink('link-82', 'parse_options', 'link-77');">parse_options</a></tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-name">usage</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">test</tt><tt class="py-op">:</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">        <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="pypower.main.exit" class="py-name" href="#" onclick="return doclink('link-83', 'exit', 'link-72');">exit</a></tt><tt class="py-op">(</tt><tt id="link-84" class="py-name"><a title="pypower.t.test_pypower.test_opf" class="py-name" href="#" onclick="return doclink('link-84', 'test_opf', 'link-34');">test_opf</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">options</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name" targets="Module pypower.uopf=pypower.uopf-module.html,Function pypower.uopf.uopf()=pypower.uopf-module.html#uopf"><a title="pypower.uopf
+pypower.uopf.uopf" class="py-name" href="#" onclick="return doclink('link-85', 'uopf', 'link-85');">uopf</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">w_res</tt><tt class="py-op">:</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">            <tt class="py-name">stderr</tt><tt class="py-op">.</tt><tt class="py-name">write</tt><tt class="py-op">(</tt><tt class="py-string">'uopf and opf_w_res are mutex\n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">        <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt id="link-86" class="py-name"><a title="pypower.runuopf
+pypower.runuopf.runuopf" class="py-name" href="#" onclick="return doclink('link-86', 'runuopf', 'link-6');">runuopf</a></tt><tt class="py-op">(</tt><tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">solvedcase</tt><tt class="py-op">)</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">options</tt><tt class="py-op">.</tt><tt class="py-name">w_res</tt><tt class="py-op">:</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt id="link-87" class="py-name"><a title="pypower.runopf_w_res
+pypower.runopf_w_res.runopf_w_res" class="py-name" href="#" onclick="return doclink('link-87', 'runopf_w_res', 'link-7');">runopf_w_res</a></tt><tt class="py-op">(</tt><tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">solvedcase</tt><tt class="py-op">)</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">        <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt id="link-88" class="py-name"><a title="pypower.runopf
+pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-88', 'runopf', 'link-5');">runopf</a></tt><tt class="py-op">(</tt><tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">solvedcase</tt><tt class="py-op">)</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">    <tt id="link-89" class="py-name"><a title="pypower.main.exit" class="py-name" href="#" onclick="return doclink('link-89', 'exit', 'link-72');">exit</a></tt><tt class="py-op">(</tt><tt class="py-name">r</tt><tt class="py-op">[</tt><tt class="py-string">'success'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line"> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">'__main__'</tt><tt class="py-op">:</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">    <tt class="py-comment">#pf(['-t'])</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">    <tt id="link-90" class="py-name" targets="Function pypower.main.pf()=pypower.main-module.html#pf"><a title="pypower.main.pf" class="py-name" href="#" onclick="return doclink('link-90', 'pf', 'link-90');">pf</a></tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-string">'--out_all=0'</tt><tt class="py-op">,</tt> <tt class="py-string">'--pf_alg=2'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pypower-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.pypower.org/">PYPOWER</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:55 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
