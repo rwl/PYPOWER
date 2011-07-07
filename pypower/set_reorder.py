@@ -14,16 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Assigns B to A with one of the dimensions of A indexed.
+"""
+
 from numpy import ndim
 
+
 def set_reorder(A, B, idx, dim=0):
-    """ Assigns B to A with one of the dimensions of A indexed.
+    """Assigns B to A with one of the dimensions of A indexed.
 
     @return: A after doing A(:, ..., :, IDX, :, ..., :) = B
     where DIM determines in which dimension to place the IDX.
 
     @see: L{get_reorder}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     A = A.copy()
     ndims = ndim(A)

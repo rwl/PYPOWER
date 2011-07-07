@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import asarray, angle, pi, conj, zeros, ones, finfo, r_, c_, ix_
+"""Updates bus, gen, branch data structures to match power flow soln.
+"""
+
+from numpy import asarray, angle, pi, conj, zeros, ones, finfo, c_, ix_
 from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix
@@ -28,8 +31,6 @@ EPS = finfo(float).eps
 
 def pfsoln(baseMVA, bus0, gen0, branch0, Ybus, Yf, Yt, V, ref, pv, pq):
     """Updates bus, gen, branch data structures to match power flow soln.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## initialize return values
     bus     = bus0

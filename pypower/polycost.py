@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Evaluates polynomial generator cost & derivatives.
+"""
+
 import sys
 
 from numpy import zeros, arange, flatnonzero as find
@@ -23,18 +26,17 @@ from idx_cost import MODEL, NCOST, PW_LINEAR, COST
 
 def polycost(gencost, Pg, der=0):
     """Evaluates polynomial generator cost & derivatives.
-    F = POLYCOST(GENCOST, PG) returns the vector of costs evaluated at PG
 
-    DF = POLYCOST(GENCOST, PG, 1) returns the vector of first derivatives
-    of costs evaluated at PG
+    C{f = polycost(gencost, Pg)} returns the vector of costs evaluated at C{Pg}
 
-    D2F = POLYCOST(GENCOST, PG, 2) returns the vector of second derivatives
-    of costs evaluated at PG
+    C{df = polycost(gencost, Pg, 1)} returns the vector of first derivatives
+    of costs evaluated at C{Pg}
 
-    GENCOST must contain only polynomial costs
-    PG is in MW, not p.u. (works for QG too)
+    C{d2f = polycost(gencost, Pg, 2)} returns the vector of second derivatives
+    of costs evaluated at C{Pg}
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    C{gencost} must contain only polynomial costs
+    C{Pg} is in MW, not p.u. (works for C{Qg} too)
     """
     if any(gencost[:, MODEL] == PW_LINEAR):
         sys.stderr.write('polycost: all costs must be polynomial\n')

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Solves an optimal power flow.
+"""
+
 from time import time
 
 from numpy import zeros, c_, shape, ix_
@@ -32,128 +35,121 @@ from int2ext import int2ext
 def opf(*args):
     """Solves an optimal power flow.
 
-    Returns either a RESULTS struct and an optional SUCCESS flag, or individual
-    data matrices, the objective function value and a SUCCESS flag. In the
-    latter case, there are additional optional return values. See Examples
-    below for the possible calling syntax options.
+    Returns a C{results} dict.
 
     The data for the problem can be specified in one of three ways:
-    (1) a string (ppc) containing the file name of a MATPOWER case
+      1. a string (ppc) containing the file name of a PYPOWER case
       which defines the data matrices baseMVA, bus, gen, branch, and
       gencost (areas is not used at all, it is only included for
       backward compatibility of the API).
-    (2) a struct (ppc) containing the data matrices as fields.
-    (3) the individual data matrices themselves.
+      2. a dict (ppc) containing the data matrices as fields.
+      3. the individual data matrices themselves.
 
-    The optional user parameters for user constraints (A, l, u), user costs
-    (N, fparm, H, Cw), user variable initializer (z0), and user variable
-    limits (zl, zu) can also be specified as fields in a case struct,
+    The optional user parameters for user constraints (C{A, l, u}), user costs
+    (C{N, fparm, H, Cw}), user variable initializer (C{z0}), and user variable
+    limits (C{zl, zu}) can also be specified as fields in a case dict,
     either passed in directly or defined in a case file referenced by name.
 
-    When specified, A, l, u represent additional linear constraints on the
-    optimization variables, l <= A*[x z] <= u. If the user specifies an A
-    matrix that has more columns than the number of "x" (OPF) variables,
-    then there are extra linearly constrained "z" variables. For an
+    When specified, C{A, l, u} represent additional linear constraints on the
+    optimization variables, C{l <= A*[x z] <= u}. If the user specifies an C{A}
+    matrix that has more columns than the number of "C{x}" (OPF) variables,
+    then there are extra linearly constrained "C{z}" variables. For an
     explanation of the formulation used and instructions for forming the
-    A matrix, see the manual.
+    C{A} matrix, see the MATPOWER manual.
 
     A generalized cost on all variables can be applied if input arguments
-    N, fparm, H and Cw are specified.  First, a linear transformation
-    of the optimization variables is defined by means of r = N * [x z].
-    Then, to each element of r a function is applied as encoded in the
-    fparm matrix (see manual). If the resulting vector is named w,
-    then H and Cw define a quadratic cost on w: (1/2)*w'*H*w + Cw * w .
-    H and N should be sparse matrices and H should also be symmetric.
+    C{N}, C{fparm}, C{H} and C{Cw} are specified. First, a linear transformation
+    of the optimization variables is defined by means of C{r = N * [x z]}.
+    Then, to each element of C{r} a function is applied as encoded in the
+    C{fparm} matrix (see MATPOWER manual). If the resulting vector is named
+    C{w}, then C{H} and C{Cw} define a quadratic cost on w:
+    C{(1/2)*w'*H*w + Cw * w}. C{H} and C{N} should be sparse matrices and C{H}
+    should also be symmetric.
 
-    The optional mpopt vector specifies MATPOWER options. If the OPF
-    algorithm is not explicitly set in the options MATPOWER will use
-    the default solver, based on a primal-dual interior point method.
-    For the AC OPF this is OPF_ALG = 560, unless the TSPOPF optional
-    package is installed, in which case the default is 540. For the
-    DC OPF, the default is OPF_ALG_DC = 200. See MPOPTION for
-    more details on the available OPF solvers and other OPF options
-    and their default values.
+    The optional C{ppopt} vector specifies PYPOWER options. If the OPF
+    algorithm is not explicitly set in the options PYPOWER will use the default
+    solver, based on a primal-dual interior point method. For the AC OPF this
+    is C{OPF_ALG = 560}. For the DC OPF, the default is C{OPF_ALG_DC = 200}.
+    See L{ppoption} for more details on the available OPF solvers and other OPF
+    options and their default values.
 
-    The solved case is returned either in a single results struct (described
-    below) or in the individual data matrices, bus, gen and branch. Also
-    returned are the final objective function value (f) and a flag which is
-    true if the algorithm was successful in finding a solution (success).
-    Additional optional return values are an algorithm specific return status
-    (info), elapsed time in seconds (et), the constraint vector (g), the
-    Jacobian matrix (jac), and the vector of variables (xr) as well
-    as the constraint multipliers (pimul).
+    The solved case is returned in a single results dict (described
+    below). Also returned are the final objective function value (C{f}) and a
+    flag which is C{True} if the algorithm was successful in finding a solution
+    (success). Additional optional return values are an algorithm specific
+    return status (C{info}), elapsed time in seconds (C{et}), the constraint
+    vector (C{g}), the Jacobian matrix (C{jac}), and the vector of variables
+    (C{xr}) as well as the constraint multipliers (C{pimul}).
 
-    The single results struct is a MATPOWER case struct (ppc) with the
+    The single results dict is a PYPOWER case struct (ppc) with the
     usual baseMVA, bus, branch, gen, gencost fields, along with the
     following additional fields:
 
-        C{order}      see 'help ext2int' for details of this field
-        C{et}         elapsed time in seconds for solving OPF
-        C{success}    1 if solver converged successfully, 0 otherwise
-        C{om}         OPF model object, see 'help opf_model'
-        C{x}          final value of optimization variables (internal order)
-        C{f}          final objective function value
-        C{mu}         shadow prices on ...
-            C{var}
-                C{l}  lower bounds on variables
-                C{u}  upper bounds on variables
-            C{nln}
-                C{l}  lower bounds on nonlinear constraints
-                C{u}  upper bounds on nonlinear constraints
-            C{lin}
-                C{l}  lower bounds on linear constraints
-                C{u}  upper bounds on linear constraints
-        C{g}          (optional) constraint values
-        C{dg}         (optional) constraint 1st derivatives
-        C{df}         (optional) obj fun 1st derivatives (not yet implemented)
-        C{d2f}        (optional) obj fun 2nd derivatives (not yet implemented)
-        C{raw}        raw solver output in form returned by MINOS, and more
-            C{xr}     final value of optimization variables
-            C{pimul}  constraint multipliers
-            C{info}   solver specific termination code
-            C{output} solver specific output information
-               C{alg} algorithm code of solver used
-        C{var}
-            C{val}    optimization variable values, by named block
-                C{Va}     voltage angles
-                C{Vm}     voltage magnitudes (AC only)
-                C{Pg}     real power injections
-                C{Qg}     reactive power injections (AC only)
-                C{y}      constrained cost variable (only if have pwl costs)
-                (other) any user defined variable blocks
-            C{mu}     variable bound shadow prices, by named block
-                C{l}  lower bound shadow prices
-                    C{Va}, C{Vm}, C{Pg}, C{Qg}, C{y}, (other)
-                C{u}  upper bound shadow prices
-                    C{Va}, C{Vm}, C{Pg}, C{Qg}, C{y}, (other)
-        C{nln}    (AC only)
-            C{mu}     shadow prices on nonlinear constraints, by named block
-                C{l}  lower bounds
-                    C{Pmis}   real power mismatch equations
-                    C{Qmis}   reactive power mismatch equations
-                    C{Sf}     flow limits at "from" end of branches
-                    C{St}     flow limits at "to" end of branches
-                C{u}  upper bounds
-                    C{Pmis}, C{Qmis}, C{Sf}, C{St}
-        C{lin}
-            C{mu}     shadow prices on linear constraints, by named block
-                C{l}  lower bounds
-                    C{Pmis}   real power mistmatch equations (DC only)
-                    C{Pf}     flow limits at "from" end of branches (DC only)
-                    C{Pt}     flow limits at "to" end of branches (DC only)
-                    C{PQh}    upper portion of gen PQ-capability curve(AC only)
-                    C{PQl}    lower portion of gen PQ-capability curve(AC only)
-                    C{vl}     constant power factor constraint for loads
-                    (AC only)
-                    C{ycon}   basin constraints for CCV for pwl costs
-                    (other) any user defined constraint blocks
-                C{u}  upper bounds
-                    C{Pmis}, C{Pf}, C{Pf}, C{PQh}, C{PQl}, C{vl}, C{ycon},
-                    (other)
-        C{cost}       user defined cost values, by named block
+        - C{order}      see 'help ext2int' for details of this field
+        - C{et}         elapsed time in seconds for solving OPF
+        - C{success}    1 if solver converged successfully, 0 otherwise
+        - C{om}         OPF model object, see 'help opf_model'
+        - C{x}          final value of optimization variables (internal order)
+        - C{f}          final objective function value
+        - C{mu}         shadow prices on ...
+            - C{var}
+                - C{l}  lower bounds on variables
+                - C{u}  upper bounds on variables
+            - C{nln}
+                - C{l}  lower bounds on nonlinear constraints
+                - C{u}  upper bounds on nonlinear constraints
+            - C{lin}
+                - C{l}  lower bounds on linear constraints
+                - C{u}  upper bounds on linear constraints
+        - C{g}          (optional) constraint values
+        - C{dg}         (optional) constraint 1st derivatives
+        - C{df}         (optional) obj fun 1st derivatives (not yet implemented)
+        - C{d2f}        (optional) obj fun 2nd derivatives (not yet implemented)
+        - C{raw}        raw solver output in form returned by MINOS, and more
+            - C{xr}     final value of optimization variables
+            - C{pimul}  constraint multipliers
+            - C{info}   solver specific termination code
+            - C{output} solver specific output information
+               - C{alg} algorithm code of solver used
+        - C{var}
+            - C{val}    optimization variable values, by named block
+                - C{Va}     voltage angles
+                - C{Vm}     voltage magnitudes (AC only)
+                - C{Pg}     real power injections
+                - C{Qg}     reactive power injections (AC only)
+                - C{y}      constrained cost variable (only if have pwl costs)
+                - (other) any user defined variable blocks
+            - C{mu}     variable bound shadow prices, by named block
+                - C{l}  lower bound shadow prices
+                    - C{Va}, C{Vm}, C{Pg}, C{Qg}, C{y}, (other)
+                - C{u}  upper bound shadow prices
+                    - C{Va}, C{Vm}, C{Pg}, C{Qg}, C{y}, (other)
+        - C{nln}    (AC only)
+            - C{mu}     shadow prices on nonlinear constraints, by named block
+                - C{l}  lower bounds
+                    - C{Pmis}   real power mismatch equations
+                    - C{Qmis}   reactive power mismatch equations
+                    - C{Sf}     flow limits at "from" end of branches
+                    - C{St}     flow limits at "to" end of branches
+                - C{u}  upper bounds
+                    - C{Pmis}, C{Qmis}, C{Sf}, C{St}
+        - C{lin}
+            - C{mu}     shadow prices on linear constraints, by named block
+                - C{l}  lower bounds
+                    - C{Pmis}   real power mistmatch equations (DC only)
+                    - C{Pf}     flow limits at "from" end of branches (DC only)
+                    - C{Pt}     flow limits at "to" end of branches (DC only)
+                    - C{PQh}    upper portion of gen PQ-capability curve(AC only)
+                    - C{PQl}    lower portion of gen PQ-capability curve(AC only)
+                    - C{vl}     constant power factor constraint for loads
+                    - C{ycon}   basin constraints for CCV for pwl costs
+                    - (other) any user defined constraint blocks
+                - C{u}  upper bounds
+                    - C{Pmis}, C{Pf}, C{Pf}, C{PQh}, C{PQl}, C{vl}, C{ycon},
+                    - (other)
+        - C{cost}       user defined cost values, by named block
 
     @see: L{runopf}, L{dcopf}, L{uopf}, L{caseformat}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ##----- initialization -----
     t0 = time()         ## start timer

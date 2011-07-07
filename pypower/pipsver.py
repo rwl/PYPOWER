@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""PIPS version info.
+"""
+
 def pipsver(*args):
     """ Returns PIPS version info for current installation.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
-
     ver = {'Name': 'PIPS',
            'Version': '1.0',
            'Release':  '',

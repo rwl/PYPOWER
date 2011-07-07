@@ -14,14 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Runs a DC optimal power flow.
+"""
+
 from ppoption import ppoption
 from runopf import runopf
 
 def rundcopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
-    """ Runs a DC optimal power flow.
+    """Runs a DC optimal power flow.
 
     @see: L{runopf}, L{runduopf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
     ppopt = ppoption(ppopt, PF_DC=True)

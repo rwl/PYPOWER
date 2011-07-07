@@ -14,14 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Runs a DC optimal power flow with unit-decommitment heuristic.
+"""
+
 from ppoption import ppoption
 from runuopf import runuopf
 
+
 def runduopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
-    """ Runs a DC optimal power flow with unit-decommitment heuristic.
+    """Runs a DC optimal power flow with unit-decommitment heuristic.
 
     @see: L{rundcopf}, L{runuopf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
     ppopt = ppoption(ppopt, PF_DC=True)

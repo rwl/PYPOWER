@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Solves combined unit decommitment / optimal power flow.
+"""
+
 from time import time
 
 from copy import deepcopy
@@ -32,21 +35,20 @@ from idx_gen import GEN_STATUS, PG, QG, PMIN, MU_PMIN
 
 
 def uopf(*args):
-    """ Solves combined unit decommitment / optimal power flow.
+    """Solves combined unit decommitment / optimal power flow.
 
     Solves a combined unit decommitment and optimal power flow for a single
     time period. Uses an algorithm similar to dynamic programming. It proceeds
-    through a sequence of stages, where stage N has N generators shut down,
-    starting with N=0. In each stage, it forms a list of candidates (gens at
-    their Pmin limits) and computes the cost with each one of them shut down.
-    It selects the least cost case as the starting point for the next stage,
-    continuing until there are no more candidates to be shut down or no
-    more improvement can be gained by shutting something down.
-    If VERBOSE in ppopt (see PPOPTION) is true, it prints progress
+    through a sequence of stages, where stage C{N} has C{N} generators shut
+    down, starting with C{N=0}. In each stage, it forms a list of candidates
+    (gens at their C{Pmin} limits) and computes the cost with each one of them
+    shut down. It selects the least cost case as the starting point for the
+    next stage, continuing until there are no more candidates to be shut down
+    or no more improvement can be gained by shutting something down.
+    If C{verbose} in ppopt (see L{ppoption} is C{true}, it prints progress
     info, if it is > 1 it prints the output of each individual opf.
 
     @see: L{opf}, L{runuopf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ##----- initialization -----
     t0 = time()                                 ## start timer

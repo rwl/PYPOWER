@@ -52,7 +52,7 @@ def mosek_options(overrides=None, ppopt=None):
     Example:
 
     If PPOPT['MOSEK_OPT'] = 3, then after setting the default MOSEK options,
-    L{modek_options} will execute the following user-defined function
+    L{mosek_options} will execute the following user-defined function
     to allow option overrides::
 
         opt = mosek_user_options_3(opt, ppopt)

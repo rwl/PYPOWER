@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Computes total cost for generators at given output level.
+"""
+
 from numpy import zeros, arange
 from numpy import flatnonzero as find
 
@@ -22,15 +25,12 @@ from idx_cost import PW_LINEAR, POLYNOMIAL, COST, NCOST, MODEL
 
 
 def totcost(gencost, Pg):
-    """ Computes total cost for generators at given output level.
+    """Computes total cost for generators at given output level.
 
-    Computes total cost for generators given
-    a matrix in gencost format and a column vector or matrix of generation
-    levels. The return value has the same dimensions as PG. Each row
-    of GENCOST is used to evaluate the cost at the points specified in the
-    corresponding row of PG.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    Computes total cost for generators given a matrix in gencost format and
+    a column vector or matrix of generation levels. The return value has the
+    same dimensions as PG. Each row of C{gencost} is used to evaluate the
+    cost at the points specified in the corresponding row of C{Pg}.
     """
     ng, m = gencost.shape
     totalcost = zeros(ng)

@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
+"""Saves a PYPOWER case file.
+"""
+
+from sys import stderr
 
 from numpy import array, c_, r_
 from scipy.io import savemat
@@ -27,21 +30,17 @@ from idx_brch import *
 from idx_area import *
 from idx_cost import *
 
-logger = logging.getLogger(__name__)
 
 def savecase(fname, comment, ppc, version=2):
-    """ Saves a PYPOWER case file, given a filename and the data.
+    """Saves a PYPOWER case file, given a filename and the data.
 
-    Writes a PYPOWER case file, given a filename and data struct or list of
-    data matrices. The FNAME parameter is the name of the file to be created or
-    overwritten. Returns the filename,
-    with extension added if necessary. The optional COMMENT argument is
-    either string (single line comment) or a cell array of strings which
+    Writes a PYPOWER case file, given a filename and data dict. The C{fname}
+    parameter is the name of the file to be created or overwritten. Returns
+    the filename, with extension added if necessary. The optional C{comment}
+    argument is either string (single line comment) or a list of strings which
     are inserted as comments. When using a PYPOWER case dict, if the
-    optional VERSION argument is '1' it will modify the data matrices to
+    optional C{version} argument is '1' it will modify the data matrices to
     version 1 format before saving.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc_ver = ppc["version"] = version
     baseMVA, bus, gen, branch = ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"]
@@ -96,7 +95,7 @@ def savecase(fname, comment, ppc, version=2):
         try:
             fd = open(fname, "wb")
         except Exception, detail:
-            logger.error("savecase: %s." % detail)
+            stderr.write("savecase: %s.\n" % detail)
             return fname
 
         ## function header, etc.
@@ -221,7 +220,7 @@ def savecase(fname, comment, ppc, version=2):
                 n2 =     max(gencost[gencost[:, MODEL] == POLYNOMIAL, NCOST]);
                 n = max(r_[n1, n2]);
                 if gencost.shape[1] < n + 4:
-                    logger.error('savecase: gencost data claims it has more columns than it does')
+                    stderr.write('savecase: gencost data claims it has more columns than it does\n')
                 template = '\t%d\t%g\t%g\t%d'
                 for i in range(n):
                     template = template + '\t%g'

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Total load in each load zone.
+"""
+
 from sys import stderr
 
 from numpy import zeros, ones, array, arange
@@ -28,30 +31,32 @@ from idx_gen import QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
 
 
 def total_load(bus, gen=None, load_zone=None, which_type=None):
-    """ Returns vector of total load in each load zone.
+    """Returns vector of total load in each load zone.
 
-    @param bus: standard BUS matrix with nb rows, where the fixed active
-        and reactive loads are specified in columns PD and QD
-    @param gen: (optional) standard GEN matrix with ng rows, where the
-        dispatchable loads are specified by columns PG, QG, PMIN,
-        QMIN and QMAX (in rows for which ISLOAD(GEN) returns true).
-        If GEN is empty, it assumes there are no dispatchable loads.
-    @param load_zone: (optional) nb element vector where the value of
-        each element is either zero or the index of the load zone
-        to which the corresponding bus belongs. If LOAD_ZONE(b) = k
-        then the loads at bus b will added to the values of PD(k) and
-        QD(k). If LOAD_ZONE is empty, the default is defined as the areas
-        specified in the BUS matrix, i.e. LOAD_ZONE = BUS(:, BUS_AREA)
-        and load will have dimension = MAX(BUS(:, BUS_AREA)). If
-        LOAD_ZONE = 'all', the result is a scalar with the total system
-        load.
-    @param whic_type: (default is 'BOTH' if GEN is provided, else 'FIXED')
-        'FIXED'        : sum only fixed loads
-        'DISPATCHABLE' : sum only dispatchable loads
-        'BOTH'         : sum both fixed and dispatchable loads
+    @param bus: standard C{bus} matrix with C{nb} rows, where the fixed active
+    and reactive loads are specified in columns C{PD} and C{QD}
+
+    @param gen: (optional) standard C{gen} matrix with C{ng} rows, where the
+    dispatchable loads are specified by columns C{PG}, C{QG}, C{PMIN},
+    C{QMIN} and C{QMAX} (in rows for which C{isload(GEN)} returns C{True}).
+    If C{gen} is empty, it assumes there are no dispatchable loads.
+
+    @param load_zone: (optional) C{nb} element vector where the value of
+    each element is either zero or the index of the load zone
+    to which the corresponding bus belongs. If C{load_zone(b) = k}
+    then the loads at bus C{b} will added to the values of C{Pd[k]} and
+    C{Qd[k]}. If C{load_zone} is empty, the default is defined as the areas
+    specified in the C{bus} matrix, i.e. C{load_zone =  bus[:, BUS_AREA]}
+    and load will have dimension C{= max(bus[:, BUS_AREA])}. If
+    C{load_zone = 'all'}, the result is a scalar with the total system
+    load.
+
+    @param which_type: (default is 'BOTH' if C{gen} is provided, else 'FIXED')
+        - 'FIXED'        : sum only fixed loads
+        - 'DISPATCHABLE' : sum only dispatchable loads
+        - 'BOTH'         : sum both fixed and dispatchable loads
 
     @see: L{scale_load}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     nb = bus.shape[0]       ## number of buses
 

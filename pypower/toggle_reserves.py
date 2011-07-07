@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Enable or disable fixed reserve requirements.
+"""
+
 from sys import stderr
 
 from pprint import pprint
@@ -37,32 +40,35 @@ def toggle_reserves(ppc, on_off):
     Enables or disables a set of OPF userfcn callbacks to implement
     co-optimization of reserves with fixed zonal reserve requirements.
 
-    These callbacks expect to find a 'reserves' field in the input MPC,
-    where MPC.reserves is a struct with the following fields:
-        zones   nrz x ng, zone(i, j) = 1, if gen j belongs to zone i
-                                       0, otherwise
-        req     nrz x 1, zonal reserve requirement in MW
-        cost    (ng or ngr) x 1, cost of reserves in $/MW
-        qty     (ng or ngr) x 1, max quantity of reserves in MW (optional)
-    where nrz is the number of reserve zones and ngr is the number of
-    generators belonging to at least one reserve zone and ng is the total
+    These callbacks expect to find a 'reserves' field in the input C{ppc},
+    where C{ppc['reserves']} is a dict with the following fields:
+        - C{zones}   C{nrz x ng}, C{zone(i, j) = 1}, if gen C{j} belongs
+        to zone C{i} 0, otherwise
+        - C{req}     C{nrz x 1}, zonal reserve requirement in MW
+        - C{cost}    (C{ng} or C{ngr}) C{x 1}, cost of reserves in $/MW
+        - C{qty}     (C{ng} or C{ngr}) C{x 1}, max quantity of reserves
+        in MW (optional)
+    where C{nrz} is the number of reserve zones and C{ngr} is the number of
+    generators belonging to at least one reserve zone and C{ng} is the total
     number of generators.
 
     The 'int2ext' callback also packages up results and stores them in
-    the following output fields of results.reserves:
-        R       - ng x 1, reserves provided by each gen in MW
-        Rmin    - ng x 1, lower limit on reserves provided by each gen, (MW)
-        Rmax    - ng x 1, upper limit on reserves provided by each gen, (MW)
-        mu.l    - ng x 1, shadow price on reserve lower limit, ($/MW)
-        mu.u    - ng x 1, shadow price on reserve upper limit, ($/MW)
-        mu.Pmax - ng x 1, shadow price on Pg + R <= Pmax constraint, ($/MW)
-        prc     - ng x 1, reserve price for each gen equal to maximum of the
-                          shadow prices on the zonal requirement constraint
-                          for each zone the generator belongs to
+    the following output fields of C{results['reserves']}:
+        - C{R}       - C{ng x 1}, reserves provided by each gen in MW
+        - C{Rmin}    - C{ng x 1}, lower limit on reserves provided by
+        each gen, (MW)
+        - C{Rmax}    - C{ng x 1}, upper limit on reserves provided by
+        each gen, (MW)
+        - C{mu.l}    - C{ng x 1}, shadow price on reserve lower limit, ($/MW)
+        - C{mu.u}    - C{ng x 1}, shadow price on reserve upper limit, ($/MW)
+        - C{mu.Pmax} - C{ng x 1}, shadow price on C{Pg + R <= Pmax}
+        constraint, ($/MW)
+        - C{prc}     - C{ng x 1}, reserve price for each gen equal to
+        maximum of the shadow prices on the zonal requirement constraint
+        for each zone the generator belongs to
 
-    @see: C{runopf_w_res}, C{add_userfcn}, C{remove_userfcn}, C{run_userfcn},
-        C{t_case30_userfcns}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: L{runopf_w_res}, L{add_userfcn}, L{remove_userfcn}, L{run_userfcn},
+        L{t.t_case30_userfcns}
     """
     if on_off == 'on':
         ## check for proper reserve inputs
@@ -158,10 +164,10 @@ def userfcn_reserves_formulation(om, *args):
     a 'reserves' field in the ppc stored in om, as described above.
     By the time it is passed to this callback, ppc['reserves'] should
     have two additional fields:
-        igr     1 x ngr, indices of generators available for reserves
-        rgens   1 x ng, 1 if gen avaiable for reserves, 0 otherwise
-    It is also assumed that if cost or qty were ngr x 1, they have been
-    expanded to ng x 1 and that everything has been converted to
+        - C{igr}     C{1 x ngr}, indices of generators available for reserves
+        - C{rgens}   C{1 x ng}, 1 if gen avaiable for reserves, 0 otherwise
+    It is also assumed that if cost or qty were C{ngr x 1}, they have been
+    expanded to C{ng x 1} and that everything has been converted to
     internal indexing, i.e. all gens are on-line (by the 'ext2int'
     callback). The optional args are not currently used.
     """
@@ -279,7 +285,7 @@ def userfcn_reserves_int2ext(results, *args):
 
 def userfcn_reserves_printpf(results, fd, ppopt, *args):
     """This is the 'printpf' stage userfcn callback that pretty-prints the
-    results. It expects a results struct, a file descriptor and a PYPOWER
+    results. It expects a C{results} dict, a file descriptor and a PYPOWER
     options vector. The optional args are not currently used.
     """
     ##-----  print results  -----
@@ -359,10 +365,10 @@ def userfcn_reserves_printpf(results, fd, ppopt, *args):
 
 
 def userfcn_reserves_savecase(ppc, fd, prefix, *args):
-    """This is the 'savecase' stage userfcn callback that prints the M-file
-    code to save the 'reserves' field in the case file. It expects a
+    """This is the 'savecase' stage userfcn callback that prints the Python
+    file code to save the 'reserves' field in the case file. It expects a
     PYPOWER case dict (ppc), a file descriptor and variable prefix
-    (usually 'ppc.'). The optional args are not currently used.
+    (usually 'ppc'). The optional args are not currently used.
     """
     r = ppc['reserves']
 

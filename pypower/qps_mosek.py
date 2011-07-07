@@ -14,9 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Quadratic Program Solver based on MOSEK.
+"""
+
 from sys import stdout, stderr
 
-from numpy import array, NaN, Inf, zeros, shape, tril
+from numpy import array, Inf, zeros, shape, tril
 from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
@@ -29,64 +32,61 @@ except ImportError:
 
 from pypower.mosek_options import mosek_options
 
+
 def qps_mosek(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
               x0=None, opt=None):
     """Quadratic Program Solver based on MOSEK.
 
     A wrapper function providing a PYPOWER standardized interface for using
-    MOSEKOPT to solve the following QP (quadratic programming) problem:
+    MOSEKOPT to solve the following QP (quadratic programming) problem::
 
-        min 1/2 X'*H*X + C'*X
-         X
+        min 1/2 x'*H*x + c'*x
+         x
 
-    subject to
+    subject to::
 
-        L <= A*X <= U       (linear constraints)
-        XMIN <= X <= XMAX   (variable bounds)
+        l <= A*x <= u       (linear constraints)
+        xmin <= x <= xmax   (variable bounds)
 
-    Inputs (all optional except H, C, A and L):
-        H : matrix (possibly sparse) of quadratic cost coefficients
-        C : vector of linear cost coefficients
-        A, L, U : define the optional linear constraints. Default
-            values for the elements of L and U are -Inf and Inf,
-            respectively.
-        XMIN, XMAX : optional lower and upper bounds on the
-            X variables, defaults are -Inf and Inf, respectively.
-        X0 : optional starting value of optimization vector X
-        OPT : optional options structure with the following fields,
-            all of which are also optional (default values shown in
-            parentheses)
-            verbose (0) - controls level of progress output displayed
-                0 = no progress output
-                1 = some progress output
-                2 = verbose progress output
-            max_it (0) - maximum number of iterations allowed
-                0 = use algorithm default
-            mosek_opt - options struct for MOSEK, values in
-                verbose and max_it override these options
-        PROBLEM : The inputs can alternatively be supplied in a single
-            PROBLEM struct with fields corresponding to the input arguments
-            described above: H, c, A, l, u, xmin, xmax, x0, opt
+    Inputs (all optional except C{H}, C{C}, C{A} and C{L}):
+        - C{H} : matrix (possibly sparse) of quadratic cost coefficients
+        - C{C} : vector of linear cost coefficients
+        - C{A, l, u} : define the optional linear constraints. Default
+        values for the elements of L and U are -Inf and Inf, respectively.
+        - xmin, xmax : optional lower and upper bounds on the
+        C{x} variables, defaults are -Inf and Inf, respectively.
+        - C{x0} : optional starting value of optimization vector C{x}
+        - C{opt} : optional options structure with the following fields,
+        all of which are also optional (default values shown in parentheses)
+            - C{verbose} (0) - controls level of progress output displayed
+                - 0 = no progress output
+                - 1 = some progress output
+                - 2 = verbose progress output
+            - C{max_it} (0) - maximum number of iterations allowed
+                - 0 = use algorithm default
+            - C{mosek_opt} - options struct for MOSEK, values in
+            C{verbose} and C{max_it} override these options
+        - C{problem} : The inputs can alternatively be supplied in a single
+        C{problem} struct with fields corresponding to the input arguments
+        described above: C{H, c, A, l, u, xmin, xmax, x0, opt}
 
     Outputs:
-        X : solution vector
-        F : final objective function value
-        EXITFLAG : exit flag
-              1 = success
-              0 = terminated at maximum number of iterations
-             -1 = primal or dual infeasible
-            < 0 = the negative of the MOSEK return code
-        OUTPUT : output struct with the following fields:
-            r - MOSEK return code
-            res - MOSEK result struct
-        LAMBDA : struct containing the Langrange and Kuhn-Tucker
-            multipliers on the constraints, with fields:
-            mu_l - lower (left-hand) limit on linear constraints
-            mu_u - upper (right-hand) limit on linear constraints
-            lower - lower bound on optimization variables
-            upper - upper bound on optimization variables
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+        - C{x} : solution vector
+        - C{f} : final objective function value
+        - C{exitflag} : exit flag
+              - 1 = success
+              - 0 = terminated at maximum number of iterations
+              - -1 = primal or dual infeasible
+              < 0 = the negative of the MOSEK return code
+        - C{output} : output dict with the following fields:
+            - C{r} - MOSEK return code
+            - C{res} - MOSEK result dict
+        - C{lmbda} : dict containing the Langrange and Kuhn-Tucker
+        multipliers on the constraints, with fields:
+            - C{mu_l} - lower (left-hand) limit on linear constraints
+            - C{mu_u} - upper (right-hand) limit on linear constraints
+            - C{lower} - lower bound on optimization variables
+            - C{upper} - upper bound on optimization variables
     """
     ##----- input argument handling  -----
     ## gather inputs

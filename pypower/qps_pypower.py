@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Quadratic Program Solver for PYPOWER.
+"""
+
 import sys
 
 from pypower.qps_pips import qps_pips
@@ -27,70 +30,69 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
     """Quadratic Program Solver for PYPOWER.
 
     A common wrapper function for various QP solvers.
-    Solves the following QP (quadratic programming) problem:
+    Solves the following QP (quadratic programming) problem::
 
-        min 1/2 X'*H*X + C'*X
-         X
+        min 1/2 x'*H*x + c'*x
+         x
 
-    subject to
+    subject to::
 
-        L <= A*X <= U       (linear constraints)
-        XMIN <= X <= XMAX   (variable bounds)
+        l <= A*x <= u       (linear constraints)
+        xmin <= x <= xmax   (variable bounds)
 
-    Inputs (all optional except H, C, A and L):
-        H : matrix (possibly sparse) of quadratic cost coefficients
-        C : vector of linear cost coefficients
-        A, L, U : define the optional linear constraints. Default
-            values for the elements of L and U are -Inf and Inf,
-            respectively.
-        XMIN, XMAX : optional lower and upper bounds on the
-            X variables, defaults are -Inf and Inf, respectively.
-        X0 : optional starting value of optimization vector X
-        OPT : optional options structure with the following fields,
-            all of which are also optional (default values shown in
-            parentheses)
-            alg (0) - determines which solver to use
-                  0 = automatic, first available of BPMPD_MEX, CPLEX, MIPS
-                100 = BPMPD_MEX
-                200 = MIPS, MATLAB Interior Point Solver
-                      pure MATLAB implementation of a primal-dual
-                      interior point method
-                250 = MIPS-sc, a step controlled variant of MIPS
-                300 = Optimization Toolbox, QUADPROG or LINPROG
-                400 = IPOPT
-                500 = CPLEX
-                600 = MOSEK
-            verbose (0) - controls level of progress output displayed
-                0 = no progress output
-                1 = some progress output
-                2 = verbose progress output
-            max_it (0) - maximum number of iterations allowed
-                0 = use algorithm default
-            bp_opt - options vector for BP
-            cplex_opt - options struct for CPLEX
-            ipopt_opt - options struct for IPOPT
-            pips_opt - options struct for QPS_MIPS
-            mosek_opt - options struct for MOSEK
-            ot_opt - options struct for QUADPROG/LINPROG
-        PROBLEM : The inputs can alternatively be supplied in a single
-            PROBLEM struct with fields corresponding to the input arguments
-            described above: H, c, A, l, u, xmin, xmax, x0, opt
+    Inputs (all optional except C{H}, C{c}, C{A} and C{l}):
+        - C{H} : matrix (possibly sparse) of quadratic cost coefficients
+        - C{c} : vector of linear cost coefficients
+        - C{A, l, u} : define the optional linear constraints. Default
+        values for the elements of C{l} and C{u} are -Inf and Inf,
+        respectively.
+        - C{xmin}, C{xmax} : optional lower and upper bounds on the
+        C{x} variables, defaults are -Inf and Inf, respectively.
+        - C{x0} : optional starting value of optimization vector C{x}
+        - C{opt} : optional options structure with the following fields,
+        all of which are also optional (default values shown in parentheses)
+            - C{alg} (0) - determines which solver to use
+                -   0 = automatic, first available of BPMPD_MEX, CPLEX, MIPS
+                - 100 = BPMPD_MEX
+                - 200 = MIPS, MATLAB Interior Point Solver
+                pure MATLAB implementation of a primal-dual
+                interior point method
+                - 250 = MIPS-sc, a step controlled variant of MIPS
+                - 300 = Optimization Toolbox, QUADPROG or LINPROG
+                - 400 = IPOPT
+                - 500 = CPLEX
+                - 600 = MOSEK
+            - C{verbose} (0) - controls level of progress output displayed
+                - 0 = no progress output
+                - 1 = some progress output
+                - 2 = verbose progress output
+            - C{max_it} (0) - maximum number of iterations allowed
+                - 0 = use algorithm default
+            - C{bp_opt} - options vector for BP
+            - C{cplex_opt} - options dict for CPLEX
+            - C{ipopt_opt} - options dict for IPOPT
+            - C{pips_opt} - options dict for L{qps_pips}
+            - C{mosek_opt} - options dict for MOSEK
+            - C{ot_opt} - options dict for QUADPROG/LINPROG
+        - C{problem} : The inputs can alternatively be supplied in a single
+        C{problem} dict with fields corresponding to the input arguments
+        described above: C{H, c, A, l, u, xmin, xmax, x0, opt}
 
     Outputs:
-        X : solution vector
-        F : final objective function value
-        EXITFLAG : exit flag
-            1 = converged
-            0 or negative values = algorithm specific failure codes
-        OUTPUT : output struct with the following fields:
-            alg - algorithm code of solver used
-            (others) - algorithm specific fields
-        LAMBDA : struct containing the Langrange and Kuhn-Tucker
-            multipliers on the constraints, with fields:
-            mu_l - lower (left-hand) limit on linear constraints
-            mu_u - upper (right-hand) limit on linear constraints
-            lower - lower bound on optimization variables
-            upper - upper bound on optimization variables
+        - C{x} : solution vector
+        - C{f} : final objective function value
+        - C{exitflag} : exit flag
+            - 1 = converged
+            - 0 or negative values = algorithm specific failure codes
+        - C{output} : output struct with the following fields:
+            - C{alg} - algorithm code of solver used
+            - (others) - algorithm specific fields
+        - C{lmbda} : dict containing the Langrange and Kuhn-Tucker
+        multipliers on the constraints, with fields:
+            - C{mu_l} - lower (left-hand) limit on linear constraints
+            - C{mu_u} - upper (right-hand) limit on linear constraints
+            - C{lower} - lower bound on optimization variables
+            - C{upper} - upper bound on optimization variables
 
 
     Example from U{http://www.uc.edu/sashtml/iml/chap8/sect12.htm}:
@@ -116,8 +118,6 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         True
         >>> solution["output"]["iterations"]
         10
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ##----- input argument handling  -----
     ## gather inputs

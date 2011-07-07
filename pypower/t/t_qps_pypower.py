@@ -31,7 +31,7 @@ from pypower.t.t_skip import t_skip
 
 
 def t_qps_pypower(quiet=False):
-    """Tests of C[qps_pypower} QP solvers.
+    """Tests of C{qps_pypower} QP solvers.
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     """

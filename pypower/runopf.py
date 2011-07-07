@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Runs an optimal power flow.
+"""
+
 from sys import stdout, stderr
 
 from ppoption import ppoption
@@ -23,10 +26,9 @@ from savecase import savecase
 
 
 def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
-    """ Runs an optimal power flow.
+    """Runs an optimal power flow.
 
     @see: L{rundcopf}, L{runuopf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
     ppopt = ppoption(ppopt)

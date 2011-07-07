@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Quadratic Program Solver based on CPLEX.
+"""
+
 from sys import stdout, stderr
 
 from numpy import array, NaN, Inf, ones, zeros, shape, finfo, arange, r_
@@ -29,60 +32,58 @@ except ImportError:
 
 from pypower.cplex_options import cplex_options
 
+
 EPS = finfo(float).eps
+
 
 def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
     """Quadratic Program Solver based on CPLEX.
 
     A wrapper function providing a PYPOWER standardized interface for using
-    CPLEXQP or CPLEXLP to solve the following QP (quadratic programming)
-    problem:
+    C{cplexqp} or C{cplexlp} to solve the following QP (quadratic programming)
+    problem::
 
-        min 1/2 X'*H*X + C'*X
-         X
+        min 1/2 X'*H*x + c'*x
+         x
 
-    subject to
+    subject to::
 
-        L <= A*X <= U       (linear constraints)
-        XMIN <= X <= XMAX   (variable bounds)
+        l <= A*x <= u       (linear constraints)
+        xmin <= x <= xmax   (variable bounds)
 
-    Inputs (all optional except H, C, A and L):
-        H : matrix (possibly sparse) of quadratic cost coefficients
-        C : vector of linear cost coefficients
-        A, L, U : define the optional linear constraints. Default
-            values for the elements of L and U are -Inf and Inf,
-            respectively.
-        XMIN, XMAX : optional lower and upper bounds on the
-            X variables, defaults are -Inf and Inf, respectively.
-        X0 : optional starting value of optimization vector X
-        OPT : optional options structure with the following fields,
-            all of which are also optional (default values shown in
-            parentheses)
-            verbose (0) - controls level of progress output displayed
-                0 = no progress output
-                1 = some progress output
-                2 = verbose progress output
-            cplex_opt - options struct for CPLEX, value in
-                verbose overrides these options
-        PROBLEM : The inputs can alternatively be supplied in a single
-            PROBLEM struct with fields corresponding to the input arguments
-            described above: H, c, A, l, u, xmin, xmax, x0, opt
+    Inputs (all optional except C{H}, C{c}, C{A} and C{l}):
+        - C{H} : matrix (possibly sparse) of quadratic cost coefficients
+        - C{c} : vector of linear cost coefficients
+        - C{A, l, u} : define the optional linear constraints. Default
+        values for the elements of L and U are -Inf and Inf, respectively.
+        - C{xmin, xmax} : optional lower and upper bounds on the
+        C{x} variables, defaults are -Inf and Inf, respectively.
+        - C{x0} : optional starting value of optimization vector C{x}
+        - C{opt} : optional options structure with the following fields,
+        all of which are also optional (default values shown in parentheses)
+            - C{verbose} (0) - controls level of progress output displayed
+                - 0 = no progress output
+                - 1 = some progress output
+                - 2 = verbose progress output
+            - C{cplex_opt} - options dict for CPLEX, value in
+            verbose overrides these options
+        - C{problem} : The inputs can alternatively be supplied in a single
+        C{problem} dict with fields corresponding to the input arguments
+        described above: C{H, c, A, l, u, xmin, xmax, x0, opt}
 
     Outputs:
-        X : solution vector
-        F : final objective function value
-        EXITFLAG : CPLEXQP/CPLEXLP exit flag
-            (see CPLEXQP and CPLEXLP documentation for details)
-        OUTPUT : CPLEXQP/CPLEXLP output struct
-            (see CPLEXQP and CPLEXLP documentation for details)
-        LAMBDA : struct containing the Langrange and Kuhn-Tucker
-            multipliers on the constraints, with fields:
-            mu_l - lower (left-hand) limit on linear constraints
-            mu_u - upper (right-hand) limit on linear constraints
-            lower - lower bound on optimization variables
-            upper - upper bound on optimization variables
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+        - C{x} : solution vector
+        - C{f} : final objective function value
+        - C{exitflag} : CPLEXQP/CPLEXLP exit flag
+        (see C{cplexqp} and C{cplexlp} documentation for details)
+        - C{output} : CPLEXQP/CPLEXLP output dict
+        (see C{cplexqp} and C{cplexlp} documentation for details)
+        - C{lmbda} : dict containing the Langrange and Kuhn-Tucker
+        multipliers on the constraints, with fields:
+            - mu_l - lower (left-hand) limit on linear constraints
+            - mu_u - upper (right-hand) limit on linear constraints
+            - lower - lower bound on optimization variables
+            - upper - upper bound on optimization variables
     """
     ##----- input argument handling  -----
     ## gather inputs

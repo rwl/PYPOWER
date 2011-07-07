@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Python Interior Point Solver (PIPS).
+"""
+
 from numpy import array, Inf, any, isnan, ones, r_, finfo, \
     zeros, dot, absolute, log, flatnonzero as find
 

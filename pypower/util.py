@@ -13,6 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""PYPOWER utilities.
+"""
+
 
 def sub2ind(shape, I, J, row_major=False):
     """Returns the linear indices of subscripts

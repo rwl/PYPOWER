@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Quadratic Program Solver based on IPOPT.
+"""
+
 from sys import stderr
 
 from numpy import Inf, ones, zeros, shape, tril
@@ -32,67 +35,61 @@ from pypower.ipopt_options import ipopt_options
 def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
     """Quadratic Program Solver based on IPOPT.
 
-    Uses IPOPT to solve the following QP (quadratic programming) problem:
+    Uses IPOPT to solve the following QP (quadratic programming) problem::
 
-        min 1/2 X'*H*X + C'*X
-         X
+        min 1/2 x'*H*x + c'*x
+         x
 
-    subject to
+    subject to::
 
-        L <= A*X <= U       (linear constraints)
-        XMIN <= X <= XMAX   (variable bounds)
+        l <= A*x <= u       (linear constraints)
+        xmin <= x <= xmax   (variable bounds)
 
-    Inputs (all optional except H, C, A and L):
-        H : matrix (possibly sparse) of quadratic cost coefficients
-        C : vector of linear cost coefficients
-        A, L, U : define the optional linear constraints. Default
-            values for the elements of L and U are -Inf and Inf,
-            respectively.
-        XMIN, XMAX : optional lower and upper bounds on the
-            X variables, defaults are -Inf and Inf, respectively.
-        X0 : optional starting value of optimization vector X
-        OPT : optional options structure with the following fields,
-            all of which are also optional (default values shown in
-            parentheses)
-            verbose (0) - controls level of progress output displayed
-                0 = no progress output
-                1 = some progress output
-                2 = verbose progress output
-            max_it (0) - maximum number of iterations allowed
-                0 = use algorithm default
-            ipopt_opt - options struct for IPOPT, values in
-                verbose and max_it override these options
-        PROBLEM : The inputs can alternatively be supplied in a single
-            PROBLEM struct with fields corresponding to the input arguments
-            described above: H, c, A, l, u, xmin, xmax, x0, opt
+    Inputs (all optional except C{H}, C{C}, C{A} and C{L}):
+        - C{H} : matrix (possibly sparse) of quadratic cost coefficients
+        - C{C} : vector of linear cost coefficients
+        - C{A, l, u} : define the optional linear constraints. Default
+        values for the elements of C{l} and C{u} are -Inf and Inf,
+        respectively.
+        - C{xmin, xmax} : optional lower and upper bounds on the
+        C{x} variables, defaults are -Inf and Inf, respectively.
+        - C{x0} : optional starting value of optimization vector C{x}
+        - C{opt} : optional options structure with the following fields,
+        all of which are also optional (default values shown in parentheses)
+            - C{verbose} (0) - controls level of progress output displayed
+                - 0 = no progress output
+                - 1 = some progress output
+                - 2 = verbose progress output
+            - C{max_it} (0) - maximum number of iterations allowed
+                - 0 = use algorithm default
+            - C{ipopt_opt} - options struct for IPOPT, values in
+            C{verbose} and C{max_it} override these options
+        - C{problem} : The inputs can alternatively be supplied in a single
+        C{problem} dict with fields corresponding to the input arguments
+        described above: C{H, c, A, l, u, xmin, xmax, x0, opt}
 
     Outputs:
-        X : solution vector
-        F : final objective function value
-        EXITFLAG : exit flag
-            1 = first order optimality conditions satisfied
-            0 = maximum number of iterations reached
-            -1 = numerically failed
-        OUTPUT : output struct with the following fields:
-            iterations - number of iterations performed
-            hist - struct array with trajectories of the following:
-                    feascond, gradcond, compcond, costcond, gamma,
-                    stepsize, obj, alphap, alphad
-            message - exit message
-        lmbda : struct containing the Langrange and Kuhn-Tucker
-            multipliers on the constraints, with fields:
-            mu_l - lower (left-hand) limit on linear constraints
-            mu_u - upper (right-hand) limit on linear constraints
-            lower - lower bound on optimization variables
-            upper - upper bound on optimization variables
+        - C{x} : solution vector
+        - C{f} : final objective function value
+        - C{exitflag} : exit flag
+            - 1 = first order optimality conditions satisfied
+            - 0 = maximum number of iterations reached
+            - -1 = numerically failed
+        - C{output} : output struct with the following fields:
+            - C{iterations} - number of iterations performed
+            - C{hist} - dict list with trajectories of the following:
+            C{feascond}, C{gradcond}, C{compcond}, C{costcond}, C{gamma},
+            C{stepsize}, C{obj}, C{alphap}, C{alphad}
+            - message - exit message
+        - C{lmbda} : dict containing the Langrange and Kuhn-Tucker
+        multipliers on the constraints, with fields:
+            - C{mu_l} - lower (left-hand) limit on linear constraints
+            - C{mu_u} - upper (right-hand) limit on linear constraints
+            - C{lower} - lower bound on optimization variables
+            - C{upper} - upper bound on optimization variables
 
-    Note the calling syntax is almost identical to that of QUADPROG
-    from MathWorks' Optimization Toolbox. The main difference is that
-    the linear constraints are specified with A, L, U instead of
-    A, B, Aeq, Beq.
-
-    Calling syntax options:
-        [x, f, exitflag, output, lmbda] = ...
+    Calling syntax options::
+        x, f, exitflag, output, lmbda = \
             qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt)
 
         x = qps_ipopt(H, c, A, l, u)
@@ -103,30 +100,29 @@ def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
                         H, c, A, l, u, xmin, xmax, x0, opt
                         all fields except 'c', 'A' and 'l' or 'u' are optional
         x = qps_ipopt(...)
-        [x, f] = qps_ipopt(...)
-        [x, f, exitflag] = qps_ipopt(...)
-        [x, f, exitflag, output] = qps_ipopt(...)
-        [x, f, exitflag, output, lmbda] = qps_ipopt(...)
+        x, f = qps_ipopt(...)
+        x, f, exitflag = qps_ipopt(...)
+        x, f, exitflag, output = qps_ipopt(...)
+        x, f, exitflag, output, lmbda = qps_ipopt(...)
 
-    Example: (problem from from http://www.jmu.edu/docs/sasdoc/sashtml/iml/chap8/sect12.htm)
+    Example::
         H = [   1003.1  4.3     6.3     5.9;
                 4.3     2.2     2.1     3.9;
                 6.3     2.1     3.5     4.8;
-                5.9     3.9     4.8     10  ];
-        c = zeros(4,1);
-        A = [   1       1       1       1;
-                0.17    0.11    0.10    0.18    ];
-        l = [1; 0.10];
-        u = [1; Inf];
-        xmin = zeros(4,1);
-        x0 = [1; 0; 0; 1];
-        opt = struct('verbose', 2);
-        [x, f, s, out, lam] = qps_ipopt(H, c, A, l, u, xmin, [], x0, opt);
+                5.9     3.9     4.8     10  ]
+        c = zeros((4, 1))
+        A = [   1       1       1       1
+                0.17    0.11    0.10    0.18    ]
+        l = [1, 0.10]
+        u = [1, Inf]
+        xmin = zeros((4, 1))
+        x0 = [1, 0, 0, 1]
+        opt = {'verbose': 2)
+        x, f, s, out, lam = qps_ipopt(H, c, A, l, u, xmin, [], x0, opt)
 
-    @see: C{pyipopt}, C{pyipopt_options}
+    Problem from U{http://www.jmu.edu/docs/sasdoc/sashtml/iml/chap8/sect12.htm}
 
-    @see: U{https://projects.coin-or.org/Ipopt/}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: C{pyipopt}, L{ipopt_options}
     """
     ##----- input argument handling  -----
     ## gather inputs

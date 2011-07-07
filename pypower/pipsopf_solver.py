@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, ones, zeros, Inf, pi, exp, conj, r_
+"""Solves AC optimal power flow using PIPS.
+"""
+
+from numpy import ones, zeros, Inf, pi, exp, conj, r_
 from numpy import flatnonzero as find
 
 from idx_bus import BUS_TYPE, REF, VM, VA, MU_VMAX, MU_VMIN, LAM_P, LAM_Q
@@ -32,13 +35,13 @@ from util import sub2ind
 def pipsopf_solver(om, ppopt, out_opt=None):
     """Solves AC optimal power flow using PIPS.
 
-    Inputs are an OPF model object, a MATPOWER options vector and
-    a struct containing fields (can be empty) for each of the desired
+    Inputs are an OPF model object, a PYPOWER options vector and
+    a dict containing keys (can be empty) for each of the desired
     optional output fields.
 
-    outputs are a RESULTS struct, SUCCESS flag and RAW output struct.
+    outputs are a C{results} dict, C{success} flag and C{raw} output dict.
 
-    RESULTS is a MATPOWER case struct (ppc) with the usual baseMVA, bus
+    C{results} is a PYPOWER case dict (ppc) with the usual baseMVA, bus
     branch, gen, gencost fields, along with the following additional
     fields:
         - C{order}      see 'help ext2int' for details of this field
@@ -55,15 +58,15 @@ def pipsopf_solver(om, ppopt, out_opt=None):
                 - C{l}  lower bounds on linear constraints
                 - C{u}  upper bounds on linear constraints
 
-    SUCCESS     1 if solver converged successfully, 0 otherwise
+    C{success} is C{True} if solver converged successfully, C{False} otherwise
 
-    RAW         raw output in form returned by MINOS
-        .xr     final value of optimization variables
-        .pimul  constraint multipliers
-        ["iN"]fo   solver specific termination code
-        .output solver specific output information
+    C{raw} is a raw output dict in form returned by MINOS
+        - xr     final value of optimization variables
+        - pimul  constraint multipliers
+        - info   solver specific termination code
+        - output solver specific output information
 
-    @see: L{opf}, L{mips}
+    @see: L{opf}, L{pips}
     """
     ##----- initialization -----
     ## optional output
@@ -95,7 +98,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     ppc = om.get_ppc()
     baseMVA, bus, gen, branch, gencost = \
         ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"], ppc["gencost"]
-    vv, ll, nn, _ = om.get_idx()
+    vv, _, nn, _ = om.get_idx()
 
     ## problem dimensions
     nb = bus.shape[0]          ## number of buses
@@ -106,7 +109,7 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     A, l, u = om.linear_constraints()
 
     ## bounds on optimization vars
-    x0, xmin, xmax = om.getv()
+    _, xmin, xmax = om.getv()
 
     ## build admittance matrices
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)

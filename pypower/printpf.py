@@ -14,15 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Prints power flow results.
+"""
+
 from sys import stdout
 
 from numpy import \
-    array, ones, zeros, r_, sort, exp, pi, diff, real, imag, arange, min, \
+    ones, zeros, r_, sort, exp, pi, diff, arange, min, \
     argmin, argmax, logical_or, real, imag
 
 from numpy import flatnonzero as find
-
-from scipy.sparse import csr_matrix as sparse
 
 from idx_bus import BUS_I, BUS_TYPE, PD, QD, GS, BS, BUS_AREA, VM, VA, \
     VMAX, VMIN, LAM_P, LAM_Q, MU_VMAX, MU_VMIN
@@ -40,32 +41,30 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             et=None, fd=None, ppopt=None):
     """Prints power flow results.
 
-    Prints power flow and optimal power flow results to FD (a file
-    descriptor which defaults to STDOUT), with the details of what
-    gets printed controlled by the optional ppopt argument, which is a
-    PYPOWER options vector (see PPOPTION for details).
+    Prints power flow and optimal power flow results to C{fd} (a file
+    descriptor which defaults to C{stdout}), with the details of what
+    gets printed controlled by the optional C{ppopt} argument, which is a
+    PYPOWER options vector (see L{ppoption} for details).
 
-    The data can either be supplied in a single RESULTS struct, or
-    in the individual arguments: BASEMVA, BUS, GEN, BRANCH, F, SUCCESS
-    and ET, where F is the OPF objective function value, SUCCESS is
-    true if the solution converged and false otherwise, and ET is the
-    elapsed time for the computation in seconds. If F is given, it is
-    assumed that the output is from an OPF run, otherwise it is assumed
-    to be a simple power flow run.
+    The data can either be supplied in a single C{results} dict, or
+    in the individual arguments: C{baseMVA}, C{bus}, C{gen}, C{branch}, C{f},
+    C{success} and C{et}, where C{f} is the OPF objective function value,
+    C{success} is C{True} if the solution converged and C{False} otherwise,
+    and C{et} is the elapsed time for the computation in seconds. If C{f} is
+    given, it is assumed that the output is from an OPF run, otherwise it is
+    assumed to be a simple power flow run.
 
-    Examples:
-        ppopt = ppoptions('OUT_GEN', 1, 'OUT_BUS', 0, 'OUT_BRANCH', 0)
+    Examples::
+        ppopt = ppoptions(OUT_GEN=1, OUT_BUS=0, OUT_BRANCH=0)
         fd = open(fname, 'w+b')
-        results = runopf(mpc)
+        results = runopf(ppc)
         printpf(results)
         printpf(results, fd)
-        printpf(results, fd, mpopt)
+        printpf(results, fd, ppopt)
         printpf(baseMVA, bus, gen, branch, f, success, et)
         printpf(baseMVA, bus, gen, branch, f, success, et, fd)
-        printpf(baseMVA, bus, gen, branch, f, success, et, fd, mpopt)
+        printpf(baseMVA, bus, gen, branch, f, success, et, fd, ppopt)
         fd.close()
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ##----- initialization -----
     ## default arguments

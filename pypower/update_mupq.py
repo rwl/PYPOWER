@@ -14,22 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Updates values of generator limit shadow prices.
+"""
+
 from pypower.idx_gen import MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
 
 
 def update_mupq(baseMVA, gen, mu_PQh, mu_PQl, data):
     """Updates values of generator limit shadow prices.
 
-    Updates the values of MU_PMIN, MU_PMAX, MU_QMIN, MU_QMAX based
+    Updates the values of C{MU_PMIN}, C{MU_PMAX}, C{MU_QMIN}, C{MU_QMAX} based
     on any shadow prices on the sloped portions of the generator
     capability curve constraints.
 
-    MU_PQH - shadow prices on upper sloped portion of capability curves
-    MU_PQL - shadow prices on lower sloped portion of capability curves
-    DATA   - "data" dict returned by MAKEAPQ
+    @param mu_PQh: shadow prices on upper sloped portion of capability curves
+    @param mu_PQl: shadow prices on lower sloped portion of capability curves
+    @param data: "data" dict returned by L{makeApq}
 
     @see: C{makeApq}.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ipqh, ipql, Apqhdata, Apqldata = \
         data['ipqh'], data['ipql'], data['h'], data['l']

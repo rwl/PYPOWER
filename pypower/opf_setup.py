@@ -14,10 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Constructs an OPF model object from a PYPOWER case dict.
+"""
+
 from sys import stdout, stderr
 
 from numpy import array, any, delete, unique, arange, nonzero, pi, \
-    r_, c_, ones, Inf
+    r_, ones, Inf
 from numpy import flatnonzero as find
 
 from scipy.sparse import hstack, csr_matrix as sparse
@@ -41,11 +44,10 @@ from pypower.idx_brch import RATE_A
 def opf_setup(ppc, ppopt):
     """Constructs an OPF model object from a PYPOWER case dict.
 
-    Assumes that ppc is a MATPOWER case struct with internal indexing,
+    Assumes that ppc is a PYPOWER case dict with internal indexing,
     all equipment in-service, etc.
 
-    @see: C{opf}, C{ext2int}, C{opf_execute}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: L{opf}, L{ext2int}, L{opf_execute}
     """
     ## options
     dc  = ppopt['PF_DC']        ## 1 = DC OPF, 0 = AC OPF

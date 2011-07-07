@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""PYPOWER version info.
+"""
+
 def ppver(*args):
     """ Returns PYPOWER version info for current installation.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
 
     ver = {'Name': 'PYTPOWER',

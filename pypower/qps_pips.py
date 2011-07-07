@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Uses the Python Interior Point Solver (PIPS) to solve QP (quadratic
+programming) problems.
+"""
+
 from numpy import Inf, ones, zeros, dot
 
 from scipy.sparse import csr_matrix as sparse
@@ -37,8 +41,6 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
     MathWorks' Optimization Toolbox. The main difference is that the linear
     constraints are specified with C{A}, C{L}, C{U} instead of C{A}, C{B},
     C{Aeq}, C{Beq}.
-
-    See also L{pips}.
 
     Example from U{http://www.uc.edu/sashtml/iml/chap8/sect12.htm}:
 
@@ -131,7 +133,7 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
                    - C{upper} - upper bound on optimization variables
 
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: L{pips}
     """
     if isinstance(H, dict):
         p = H

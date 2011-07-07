@@ -40,6 +40,11 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
     Hessian evaluation function for AC optimal power flow, suitable
     for use with L{pips}.
 
+    Examples::
+        Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt)
+        Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il)
+        Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il, cost_mult)
+
     @param x: optimization vector
     @param lmbda: C{eqnonlin} - Lagrange multipliers on power balance
     equations. C{ineqnonlin} - Kuhn-Tucker multipliers on constrained
@@ -47,7 +52,7 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
     @param om: OPF model object
     @param Ybus: bus admittance matrix
     @param Yf: admittance matrix for "from" end of constrained branches
-    @param: admittance matrix for "to" end of constrained branches
+    @param Yt: admittance matrix for "to" end of constrained branches
     @param ppopt: PYPOWER options vector
     @param il: (optional) vector of branch indices corresponding to
     branches with flow limits (all others are assumed to be unconstrained).
@@ -57,11 +62,6 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
     (default = 1).
 
     @return: Hessian of the Lagrangian.
-
-    Examples::
-        Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt)
-        Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il)
-        Lxx = opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il, cost_mult)
 
     @see: L{opf_costfcn}, L{opf_consfcn}
     """

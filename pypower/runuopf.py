@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Runs an optimal power flow with unit-decommitment heuristic.
+"""
+
 from sys import stderr
 
 from ppoption import ppoption
@@ -23,10 +26,9 @@ from savecase import savecase
 
 
 def runuopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
-    """ Runs an optimal power flow with unit-decommitment heuristic.
+    """Runs an optimal power flow with unit-decommitment heuristic.
 
     @see: L{rundcopf}, L{runuopf}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
     ppopt = ppoption(ppopt)

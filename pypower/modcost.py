@@ -80,7 +80,7 @@ def polyshift(c, a):
     C{d = polyshift(c, a)} shifts to the right by C{a}, the polynomial whose
     coefficients are given in the column vector C{c}.
 
-    Example: For any polynomial with C{n} coefficients in C[c}, and any values
+    Example: For any polynomial with C{n} coefficients in C{c}, and any values
     for C{x} and shift C{a}, the C{f - f0} should be zero::
         x = rand
         a = rand

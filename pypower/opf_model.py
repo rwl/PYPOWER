@@ -430,7 +430,7 @@ class opf_model(object):
         """Builds and saves the full generalized cost parameters.
 
         Builds the full set of cost parameters from the individual named
-        sub-sets added via L{add_cost}. Skips the building process if it has
+        sub-sets added via L{add_costs}. Skips the building process if it has
         already been done, unless a second input argument is present.
 
         These cost parameters can be retrieved by calling L{get_cost_params}

@@ -14,17 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Removes a userfcn from the list to be called for a case.
+"""
+
 def remove_userfcn(ppc, stage, fcn):
     """Removes a userfcn from the list to be called for a case.
 
     A userfcn is a callback function that can be called automatically by
     PYPOWER at one of various stages in a simulation. This function removes
-    the last instance of the userfcn for the given STAGE with the function
-    handle specified by FCN.
+    the last instance of the userfcn for the given C{stage} with the function
+    handle specified by C{fcn}.
 
-    @see: C{add_userfcn}, C{run_userfcn}, C{toggle_reserves},
-          C{toggle_iflims}, C{runopf_w_res}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: L{add_userfcn}, L{run_userfcn}, L{toggle_reserves},
+          L{toggle_iflims}, L{runopf_w_res}
     """
     n = len(ppc['userfcn'][stage])
 

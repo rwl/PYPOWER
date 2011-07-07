@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Enable or disable set of interface flow constraints.
+"""
+
 from sys import stderr
 
 from pprint import pprint
@@ -34,30 +37,29 @@ def toggle_iflims(ppc, on_off):
     Enables or disables a set of OPF userfcn callbacks to implement
     interface flow limits based on a DC flow model.
 
-    These callbacks expect to find an 'if' field in the input MPC, where
-    MPC.if is a struct with the following fields:
-        map     n x 2, defines each interface in terms of a set of
-                branch indices and directions. Interface I is defined
-                by the set of rows whose 1st col is equal to I. The
-                2nd column is a branch index multiplied by 1 or -1
-                respectively for lines whose orientation is the same
-                as or opposite to that of the interface.
-        lims    nif x 3, defines the DC model flow limits in MW
-                for specified interfaces. The 2nd and 3rd columns specify
-                the lower and upper limits on the (DC model) flow
-                across the interface, respectively. Normally, the lower
-                limit is negative, indicating a flow in the opposite
-                direction.
+    These callbacks expect to find an 'if' field in the input C{ppc}, where
+    C{ppc['if']} is a dict with the following fields:
+        - C{map}     C{n x 2}, defines each interface in terms of a set of
+        branch indices and directions. Interface I is defined
+        by the set of rows whose 1st col is equal to I. The
+        2nd column is a branch index multiplied by 1 or -1
+        respectively for lines whose orientation is the same
+        as or opposite to that of the interface.
+        - C{lims}    C{nif x 3}, defines the DC model flow limits in MW
+        for specified interfaces. The 2nd and 3rd columns specify
+        the lower and upper limits on the (DC model) flow
+        across the interface, respectively. Normally, the lower
+        limit is negative, indicating a flow in the opposite
+        direction.
 
     The 'int2ext' callback also packages up results and stores them in
-    the following output fields of results.if:
-        P       - nif x 1, actual flow across each interface in MW
-        mu.l    - nif x 1, shadow price on lower flow limit, ($/MW)
-        mu.u    - nif x 1, shadow price on upper flow limit, ($/MW)
+    the following output fields of C{results['if']}:
+        - C{P}       - C{nif x 1}, actual flow across each interface in MW
+        - C{mu.l}    - C{nif x 1}, shadow price on lower flow limit, ($/MW)
+        - C{mu.u}    - C{nif x 1}, shadow price on upper flow limit, ($/MW)
 
-    @see: C{add_userfcn}, C{remove_userfcn}, C{run_userfcn},
-        C{t_case30_userfcns}.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @see: L{add_userfcn}, L{remove_userfcn}, L{run_userfcn},
+        L{t.t_case30_userfcns}.
     """
     if on_off == 'on':
         ## check for proper reserve inputs
@@ -163,10 +165,10 @@ def userfcn_iflims_formulation(om, *args):
 def userfcn_iflims_int2ext(results, *args):
     """This is the 'int2ext' stage userfcn callback that converts everything
     back to external indexing and packages up the results. It expects to
-    find an 'if' field in the results struct as described for ppc above.
+    find an 'if' field in the C{results} dict as described for ppc above.
     It also expects the results to contain solved branch flows and linear
     constraints named 'iflims' which are used to populate output fields
-    in results.if. The optional args are not currently used.
+    in C{results['if']}. The optional args are not currently used.
     """
     ## get internal ifmap
     ifmap = results['if']['map']
@@ -196,7 +198,7 @@ def userfcn_iflims_int2ext(results, *args):
 
 def userfcn_iflims_printpf(results, fd, ppopt, *args):
     """This is the 'printpf' stage userfcn callback that pretty-prints the
-    results. It expects a results struct, a file descriptor and a MATPOWER
+    results. It expects a C{results} dict, a file descriptor and a PYPOWER
     options vector. The optional args are not currently used.
     """
     ##-----  print results  -----
@@ -233,10 +235,10 @@ def userfcn_iflims_printpf(results, fd, ppopt, *args):
 
 
 def userfcn_iflims_savecase(ppc, fd, prefix, *args):
-    """This is the 'savecase' stage userfcn callback that prints the M-file
-    code to save the 'if' field in the case file. It expects a
+    """This is the 'savecase' stage userfcn callback that prints the Python
+    file code to save the 'if' field in the case file. It expects a
     PYPOWER case dict (ppc), a file descriptor and variable prefix
-    (usually 'ppc.'). The optional args are not currently used.
+    (usually 'ppc'). The optional args are not currently used.
     """
     ifmap = ppc['if']['map']
     iflims = ppc['if']['lims']

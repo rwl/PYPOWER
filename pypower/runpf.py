@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Runs a power flow.
+"""
+
 from sys import stdout
 
 import logging
@@ -48,26 +51,26 @@ from idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 logger = logging.getLogger(__name__)
 
 def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
-    """ Runs a power flow.
+    """Runs a power flow.
 
     Runs a power flow [full AC Newton's method by default] and optionally
-    returns the solved values in the data matrices, a flag which is true if
+    returns the solved values in the data matrices, a flag which is C{True} if
     the algorithm was successful in finding a solution, and the elapsed
-    time in seconds. All input arguments are optional. If casename is
-    provided it specifies the name of the input data file or struct
+    time in seconds. All input arguments are optional. If C{casename} is
+    provided it specifies the name of the input data file or dict
     containing the power flow data. The default value is 'case9'.
 
     If the ppopt is provided it overrides the default PYPOWER options
     vector and can be used to specify the solution algorithm and output
     options among other things. If the 3rd argument is given the pretty
-    printed output will be apped to the file whose name is given in
-    fname. If solvedcase is specified the solved case will be written to a
-    case file in PYPOWER format with the specified name. If solvedcase
-    s with '.mat' it saves the case as a MAT-file otherwise it saves it
-    as an M-file.
+    printed output will be appended to the file whose name is given in
+    C{fname}. If C{solvedcase} is specified the solved case will be written
+    to a case file in PYPOWER format with the specified name. If C{solvedcase}
+    ends with '.mat' it saves the case as a MAT-file otherwise it saves it
+    as a Python-file.
 
-    If the ENFORCE_Q_LIMS options is set to true [default is false] then if
-    any generator reactive power limit is violated after running the AC
+    If the C{ENFORCE_Q_LIMS} options is set to C{True} [default is false] then
+    if any generator reactive power limit is violated after running the AC
     power flow, the corresponding bus is converted to a PQ bus, with Qg at
     the limit, and the case is re-run. The voltage magnitude at the bus
     will deviate from the specified value in order to satisfy the reactive
@@ -75,8 +78,6 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     remaining PV bus will be used as the slack bus for the next iteration.
     This may result in the real power output at this generator being
     slightly off from the specified values.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## default arguments
     ppopt = ppoption(ppopt)

@@ -94,7 +94,7 @@ def add_userfcn(ppc, stage, fcn, args=None, allow_multiple=False):
     @param allow_multiple: (optional) if True, allows the same function to
         be added more than once.
 
-    @see: L{run_userfcn}, L{remove_userfcn}, L{toogle_reserves},
+    @see: L{run_userfcn}, L{remove_userfcn}, L{toggle_reserves},
           L{toggle_iflims}, L{runopf_w_res}.
     """
     if args is None:

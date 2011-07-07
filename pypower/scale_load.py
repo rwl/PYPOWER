@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Scales fixed and/or dispatchable loads.
+"""
+
 from sys import stderr
 
 from numpy import array, zeros, arange, in1d, ix_
@@ -28,57 +31,52 @@ from idx_gen import PG, QG, QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
 
 
 def scale_load(load, bus, gen=None, load_zone=None, opt=None):
-    """ Scales fixed and/or dispatchable loads.
-
-    @param load: Each element specifies the amount of scaling for the
-        corresponding load zone, either as a direct scale factor
-        or as a target quantity. If there are nz load zones this
-        vector has nz elements.
-    @param bus: Standard BUS matrix with nb rows, where the fixed active
-        and reactive loads available for scaling are specified in
-        columns PD and QD
-    @param gen: (optional) standard GEN matrix with ng rows, where the
-        dispatchable loads available for scaling are specified by
-        columns PG, QG, PMIN, QMIN and QMAX (in rows for which
-        ISLOAD(GEN) returns true). If GEN is empty, it assumes
-        there are no dispatchable loads.
-    @param load_zone: (optional) nb element vector where the value of
-        each element is either zero or the index of the load zone
-        to which the corresponding bus belongs. If LOAD_ZONE(b) = k
-        then the loads at bus b will be scaled according to the
-        value of LOAD(k). If LOAD_ZONE(b) = 0, the loads at bus b
-        will not be modified. If LOAD_ZONE is empty, the default is
-        determined by the dimensions of the LOAD vector. If LOAD is
-        a scalar, a single system-wide zone including all buses is
-        used, i.e. LOAD_ZONE = ONES(nb, 1). If LOAD is a vector, the
-        default LOAD_ZONE is defined as the areas specified in the
-        BUS matrix, i.e. LOAD_ZONE = BUS(:, BUS_AREA), and LOAD
-        should have dimension = MAX(BUS(:, BUS_AREA)).
-    @param opt: (optional) struct with three possible fields, 'scale',
-        'pq' and 'which' that determine the behavior as follows:
-
-        OPT.scale (default is 'FACTOR')
-            'FACTOR'   : LOAD consists of direct scale factors, where
-                         LOAD(k) = scale factor R(k) for zone k
-            'QUANTITY' : LOAD consists of target quantities, where
-                         LOAD(k) = desired total active load in MW for
-                         zone k after scaling by an appropriate R(k)
-
-        OPT.pq    (default is 'PQ')
-            'PQ' : scale both active and reactive loads
-            'P'  : scale only active loads
-
-        OPT.which (default is 'BOTH' if GEN is provided, else 'FIXED')
-            'FIXED'        : scale only fixed loads
-            'DISPATCHABLE' : scale only dispatchable loads
-            'BOTH'         : scale both fixed and dispatchable loads
+    """Scales fixed and/or dispatchable loads.
 
     Assumes consecutive bus numbering when dealing with dispatchable loads.
 
-    @see: L{total_load}
-    @see: U{http://www.pserc.cornell.edu/matpower/}
-    """
+    @param load: Each element specifies the amount of scaling for the
+        corresponding load zone, either as a direct scale factor
+        or as a target quantity. If there are C{nz} load zones this
+        vector has C{nz} elements.
+    @param bus: Standard C{bus} matrix with C{nb} rows, where the fixed active
+        and reactive loads available for scaling are specified in
+        columns C{PD} and C{QD}
+    @param gen: (optional) standard C{gen} matrix with C{ng} rows, where the
+        dispatchable loads available for scaling are specified by
+        columns C{PG}, C{QG}, C{PMIN}, C{QMIN} and C{QMAX} (in rows for which
+        C{isload(gen)} returns C{true}). If C{gen} is empty, it assumes
+        there are no dispatchable loads.
+    @param load_zone: (optional) C{nb} element vector where the value of
+        each element is either zero or the index of the load zone
+        to which the corresponding bus belongs. If C{load_zone[b] = k}
+        then the loads at bus C{b} will be scaled according to the
+        value of C{load[k]}. If C{load_zone[b] = 0}, the loads at bus C{b}
+        will not be modified. If C{load_zone} is empty, the default is
+        determined by the dimensions of the C{load} vector. If C{load} is
+        a scalar, a single system-wide zone including all buses is
+        used, i.e. C{load_zone = ones(nb)}. If C{load} is a vector, the
+        default C{load_zone} is defined as the areas specified in the
+        C{bus} matrix, i.e. C{load_zone = bus[:, BUS_AREA]}, and C{load}
+        should have dimension C{= max(bus[:, BUS_AREA])}.
+    @param opt: (optional) dict with three possible fields, 'scale',
+        'pq' and 'which' that determine the behavior as follows:
+            - C{scale} (default is 'FACTOR')
+                - 'FACTOR'   : C{load} consists of direct scale factors, where
+                C{load[k] =} scale factor C{R[k]} for zone C{k}
+                - 'QUANTITY' : C{load} consists of target quantities, where
+                C{load[k] =} desired total active load in MW for
+                zone C{k} after scaling by an appropriate C{R(k)}
+            - C{pq}    (default is 'PQ')
+                - 'PQ' : scale both active and reactive loads
+                - 'P'  : scale only active loads
+            - C{which} (default is 'BOTH' if GEN is provided, else 'FIXED')
+                - 'FIXED'        : scale only fixed loads
+                - 'DISPATCHABLE' : scale only dispatchable loads
+                - 'BOTH'         : scale both fixed and dispatchable loads
 
+    @see: L{total_load}
+    """
     nb = bus.shape[0]   ## number of buses
 
     ##-----  process inputs  -----
