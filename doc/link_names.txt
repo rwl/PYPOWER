@@ -1,0 +1,9 @@
+.. This file contains commonly used link targets and name substitutions.
+
+.. _Python: http://www.python.org
+.. _Setuptools: http://peak.telecommunity.com/DevCenter/setuptools
+.. _SciPy: http://www.scipy.org
+.. _MATPOWER: http://www.pserc.cornell.edu/matpower/
+.. _Git: http://git-scm.com/
+.. _GitHub: http://github.com/rwl/PYPOWER
+.. _`GNU General Public License`: http://www.gnu.org/licenses/

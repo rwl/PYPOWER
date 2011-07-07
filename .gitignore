@@ -5,4 +5,5 @@
 build/
 dist/
 PYPOWER.egg-info/
-api/
+doc/api/
+doc/.build/*

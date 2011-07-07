@@ -21,19 +21,11 @@ It can be easy_installed using setuptools_::
 
   $ easy_install PYPOWER
 
-Alternatively, download and unpack the tarball and install::
+Alternatively, `download http://pypi.python.org/pypi/PYPOWER#downloads`_ and
+unpack the tarball and install::
 
   $ tar zxf PYPOWER-4.0.tar.gz
   $ python setup.py install
-
-On UNIX systems, use sudo for the latter command if you need to install the
-scripts to a directory that requires root privileges::
-
-  $ sudo python setup.py install
-
-The development Git_ repository can be cloned from GitHub_::
-
-  $ git clone http://github.com/rwl/PYPOWER.git
 
 Using PYPOWER
 -------------
