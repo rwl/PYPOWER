@@ -72,7 +72,7 @@ def test_pypower(verbose=False):
 #    tests.append('t_auction_mips')
 #    tests.append('t_runmarket')
 
-    return t_run_tests(tests, verbose)
+    t_run_tests(tests, verbose)
 
 
 def test_pf(verbose=False):
@@ -106,6 +106,8 @@ def test_opf(verbose=False, *others):
     tests.append('t_opf_pips')
     tests.append('t_opf_pips_sc')
 
+    tests.append('t_runopf_w_res')
+
     tests.append('t_makePTDF')
     tests.append('t_makeLODF')
     tests.append('t_total_load')
@@ -114,10 +116,6 @@ def test_opf(verbose=False, *others):
     tests.extend(others)
 
     return t_run_tests(tests, verbose)
-
-
-def test_opf_w_res(verbose=False):
-    return test_opf(verbose, ['t_runopf_w_res'])
 
 
 if __name__ == '__main__':

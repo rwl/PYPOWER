@@ -118,3 +118,4 @@ from .uopf import uopf
 from .update_mupq import update_mupq
 
 from .t.test_pypower import test_pypower
+from .t.t_case30_userfcns import t_case30_userfcns

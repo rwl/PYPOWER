@@ -17,16 +17,21 @@
 """
 
 import sys
+from sys import stderr
 
 from optparse import OptionParser, OptionGroup, OptionValueError
 
 from pypower.api import \
-    ppver, ppoption, runpf, runopf, runuopf, runopf_w_res, case9
+    ppver, ppoption, runpf, runopf, runuopf, runopf_w_res
+
+from pypower.api import \
+    case4gs, case6ww, case9, case9Q, case14, case24_ieee_rts, case30, \
+    case30Q, case30pwl, case39, case57, case118, case300, t_case30_userfcns
 
 from pypower.ppoption import \
     PF_OPTIONS, OPF_OPTIONS, OUTPUT_OPTIONS, PDIPM_OPTIONS
 
-from pypower.t.test_pypower import test_pf, test_opf, test_opf_w_res
+from pypower.t.test_pypower import test_pf, test_opf
 
 
 TYPE_MAP = {bool: 'choice', float: 'float', int: 'int'}
@@ -34,8 +39,11 @@ TYPE_MAP = {bool: 'choice', float: 'float', int: 'int'}
 AFFIRMATIVE = ('True', 'Yes', 'true', 'yes', '1', 'Y', 'y')
 NEGATIVE = ('False', 'No', 'false', 'no', '0', 'N', 'n')
 
-CASES = ('case4gs', 'case6ww', 'case9', 'case9Q', 'case14', 'case24_ieee_rts',
-    'case30', 'case30Q', 'case30pwl', 'case39', 'case57', 'case118', 'case300')
+CASES = {'case4gs': case4gs, 'case6ww': case6ww, 'case9': case9,
+    'case9Q': case9Q, 'case14': case14, 'case24_ieee_rts': case24_ieee_rts,
+    'case30': case30, 'case30Q': case30Q, 'case30pwl': case30pwl,
+    'case39': case39, 'case57': case57, 'case118': case118, 'case300': case300,
+    'case30_userfcns': t_case30_userfcns}
 
 
 def option_callback(option, opt, value, parser, *args, **kw_args):
@@ -83,28 +91,46 @@ def parse_options(args, usage, opf=False):
     """
     v = ppver('all')
     parser = OptionParser(
-        usage="""usage: %%prog [casedata] [options] [fname] [solvedcase]
+        usage="""usage: %%prog [options] [casedata]
 
 %s
 
 If 'casedata' is provided it specifies the name of the input data file
-containing the case data. The default value is 'case9'. If 'fname' is given
-the pretty printed output will be appended to the file. If 'solvedcase' is
-specified the solved case will be written to a case file in PYPOWER format
-with the specified name. If solvedcase ends with '.mat' it saves the case as
-a MAT-file otherwise it saves it as a Python file.""" % usage,
-        version='PYPOWER (%%prog) Version %s, %s' % (v["Version"], v["Date"])
+containing the case data.""" % usage,
+        version='PYPOWER (%%prog) Version %s, %s' % (v["Version"], v["Date"]),
+        epilog="""Examples:
+
+"""
     )
 
     parser.add_option("-t", "--test", action="store_true", dest="test",
         default=False, help="run tests")
 
+    parser.add_option("-c", "--testcase", default='case9', choices=CASES.keys(),
+        help="built-in test case (choose from: %s)" % str(CASES.keys())[1:-1])
+
+    parser.add_option("-o", "--outfile", dest='fname', default='',
+        type='string', help="""pretty printed output will be
+appended to a file with the name specified. Defaults to stdout.""")
+
+    parser.add_option("-s", "--solvedcase", default='', type='string',
+        help="""the solved case will be written
+to a case file with the specified name in PYPOWER format. If solvedcase ends
+with '.mat' the case is saves  as a MAT-file otherwise it saves it as a Python
+file.""")
 
     ppopt = ppoption()
 
     if opf:
         opf_options = OptionGroup(parser, 'OPF Options')
         pdipm_options = OptionGroup(parser, 'PDIPM Options')
+
+        opf_options.add_option("-u", "--uopf", action="store_true",
+            help="""runs an optimal power flow with the unit-decommitment
+heuristic""")
+
+        opf_options.add_option("-r", "--w_res", action="store_true",
+            help="""runs an optimal power flow with fixed zonal reserves""")
 
         add_options(opf_options, OPF_OPTIONS, ppopt)
         add_options(pdipm_options, PDIPM_OPTIONS, ppopt)
@@ -127,20 +153,24 @@ a MAT-file otherwise it saves it as a Python file.""" % usage,
 
     options, args = parser.parse_args(args)
 
-    casedata, fname, solvedcase = case9(), '', ''  # defaults
+#    casedata, fname, solvedcase = case9(), '', ''  # defaults
 
     nargs = len(args)
-    if nargs > 3:
+    if nargs > 1:
+        stderr.write('Too many arguments')
         parser.print_help()
         sys.exit(2)
-    elif nargs == 3:
-        casedata, fname, solvedcase = args
-    elif nargs == 2:
-        casedata, fname, = args
     elif nargs == 1:
         casedata = args[0]
+    else:
+        try:
+            casedata = CASES[options.testcase]()
+        except KeyError:
+            stderr.write("Invalid case choice: %r (choose from %s)\n" % \
+                (options.testcase, CASES.keys()))
+            sys.exit(2)
 
-    return options, casedata, ppopt, fname, solvedcase
+    return options, casedata, ppopt, options.fname, options.solvedcase
 
 
 def exit(success):
@@ -161,29 +191,38 @@ def opf(args=sys.argv[1:]):
     usage = 'Runs an optimal power flow.'
     options, casedata, ppopt, fname, solvedcase = \
             parse_options(args, usage, True)
+
     if options.test:
         sys.exit(test_opf())
-    r = runopf(casedata, ppopt, fname, solvedcase)
+
+    if options.uopf:
+        if options.w_res:
+            stderr.write('uopf and opf_w_res are mutex\n')
+        r = runuopf(casedata, ppopt, fname, solvedcase)
+    elif options.w_res:
+        r = runopf_w_res(casedata, ppopt, fname, solvedcase)
+    else:
+        r = runopf(casedata, ppopt, fname, solvedcase)
     exit(r['success'])
 
 
-def uopf(args=sys.argv[1:]):
-    usage = 'Solves combined unit decommitment / optimal power flow.'
-    options, casedata, ppopt, fname, solvedcase = \
-            parse_options(args, usage, True)
-    if options.test:
-        sys.exit(test_opf())
-    r = runuopf(casedata, ppopt, fname, solvedcase)
-    exit(r['success'])
+#def uopf(args=sys.argv[1:]):
+#    usage = 'Solves combined unit decommitment / optimal power flow.'
+#    options, casedata, ppopt, fname, solvedcase = \
+#            parse_options(args, usage, True)
+#    if options.test:
+#        sys.exit(test_opf())
+#    r = runuopf(casedata, ppopt, fname, solvedcase)
+#    exit(r['success'])
 
 
-def opf_w_res(args=sys.argv[1:]):
-    usage = 'Runs an optimal power flow with fixed zonal reserves.'
-    options, casedata, ppopt, fname, solvedcase = \
-            parse_options(args, usage, True)
-    if options.test: sys.exit(test_opf_w_res())
-    r = runopf_w_res(casedata, ppopt, fname, solvedcase)
-    exit(r['success'])
+#def opf_w_res(args=sys.argv[1:]):
+#    usage = 'Runs an optimal power flow with fixed zonal reserves.'
+#    options, casedata, ppopt, fname, solvedcase = \
+#            parse_options(args, usage, True)
+#    if options.test: sys.exit(test_opf_w_res())
+#    r = runopf_w_res(casedata, ppopt, fname, solvedcase)
+#    exit(r['success'])
 
 
 if __name__ == '__main__':

@@ -23,9 +23,7 @@ f.close()
 
 entry_points = [
     'pf = pypower.main:pf',
-    'opf = pypower.main:opf',
-    'uopf = pypower.main:uopf',
-    'opf_w_res = pypower.main:opf_w_res'
+    'opf = pypower.main:opf'
 ]
 
 setup(name="PYPOWER",
