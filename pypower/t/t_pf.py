@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for power flow solvers.
+"""
+
 from os.path import dirname, join
 
 from numpy import array, r_
@@ -35,8 +38,6 @@ from pypower.t.t_end import t_end
 
 def t_pf(quiet=False):
     """Tests for power flow solvers.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(25, quiet)
 

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for C{makeLODF}.
+"""
+
 from os.path import dirname, join
 
 from numpy import arange, r_
@@ -35,8 +38,6 @@ from pypower.t.t_end import t_end
 
 def t_makeLODF(quiet=False):
     """Tests for C{makeLODF}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ntests = 31
     t_begin(ntests, quiet)

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for step-controlled PIPS-based AC optimal power flow.
+"""
+
 from os.path import dirname, join
 
 from numpy import array, ones, zeros, Inf, r_, ix_, argsort, arange
@@ -46,8 +49,6 @@ from pypower.t.t_end import t_end
 
 def t_opf_pips_sc(quiet=False):
     """Tests for step-controlled PIPS-based AC optimal power flow.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     num_tests = 101
 

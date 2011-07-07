@@ -14,7 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Skips a number of tests.
+"""
+
 from pypower.t.t_globals import TestGlobals
+
 
 def t_skip(cnt, msg=''):
     """Skips a number of tests.

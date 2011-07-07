@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for 30 bus, 6 gen case w/reserves & iflims.
+"""
+
 from numpy import array
 
 
@@ -25,9 +28,7 @@ def t_case30_userfcns():
     The reserve data is defined in the fields of ppc.reserves and the
     interface flow limit data in ppc.if at the bottom of the file.
 
-    @rtype: dict
     @return: Power flow data for 30 bus, 6 gen case w/reserves & iflims.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {}
 

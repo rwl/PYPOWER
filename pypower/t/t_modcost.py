@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for code in C{modcost}.
+"""
+
 from numpy import array
 
 from pypower.totcost import totcost
@@ -26,8 +29,6 @@ from pypower.t.t_end import t_end
 
 def t_modcost(quiet=False):
     """Tests for code in C{modcost}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     n_tests = 80
 

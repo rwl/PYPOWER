@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import pi, random, ones, zeros, real, exp
+"""Numerical tests of 2nd derivative code.
+"""
+
+from numpy import pi, random, ones, zeros, exp
 from scipy.sparse import csr_matrix as sparse
 
 from pypower.case30 import case30
@@ -42,8 +45,6 @@ from pypower.t.t_end import t_end
 
 def t_hessian(quiet=False):
     """Numerical tests of 2nd derivative code.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(44, quiet)
 

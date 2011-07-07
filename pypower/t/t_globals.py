@@ -13,6 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Global test counters.
+"""
+
 class TestGlobals(object):
     t_quiet = False
     t_num_of_tests = 0

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for code in C{runmkt}, C{smartmkt} and C{auction}.
+"""
+
 from numpy import array, ones, flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
@@ -30,10 +33,9 @@ from pypower.t.t_is import t_is
 from pypower.t.t_skip import t_skip
 from pypower.t.t_end import t_end
 
+
 def t_runmarket(quiet=False):
     """Tests for code in C{runmkt}, C{smartmkt} and C{auction}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     n_tests = 20
 

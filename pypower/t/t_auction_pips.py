@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for code in auction.py, using PIPS solver.
+"""
+
 from numpy import array, copy, ones, diag, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
@@ -22,10 +25,9 @@ from pypower.ppoption import ppoption
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
 
-def t_auction_mips(quiet=False):
-    """Tests for code in auction.m, using MIPS solver.
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+def t_auction_pips(quiet=False):
+    """Tests for code in auction.py, using PIPS solver.
     """
     n_tests = 183
 

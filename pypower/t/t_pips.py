@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests of PIPS NLP solver.
+"""
+
 from math import sqrt
 
 from numpy import zeros, ones, array, eye, prod, dot, asscalar, Inf
@@ -186,8 +189,6 @@ def hess7(x, lam, sigma=1):
 
 def t_pips(quiet=False):
     """Tests of pips NLP solver.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(60, quiet)
 

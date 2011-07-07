@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for code in C{scale_load}.
+"""
+
 from os.path import dirname, join
 
 from numpy import array, zeros, in1d, vstack, flatnonzero as find
@@ -33,8 +36,6 @@ from pypower.t.t_end import t_end
 
 def t_scale_load(quiet=False):
     """Tests for code in C{scale_load}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     n_tests = 275
 

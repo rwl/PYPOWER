@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests C{runopf_w_res} and the associated callbacks.
+"""
+
 from os.path import dirname, join
 
 from numpy import delete
@@ -31,8 +34,6 @@ from pypower.t.t_end import t_end
 
 def t_runopf_w_res(quiet=False):
     """Tests C{runopf_w_res} and the associated callbacks.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(46, quiet)
 

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for C{makePTDF}.
+"""
+
 from os.path import dirname, join
 
 from numpy import ones, zeros, eye, arange, dot, matrix, flatnonzero as find
@@ -35,8 +38,6 @@ from pypower.t.t_end import t_end
 
 def t_makePTDF(quiet=False):
     """Tests for C{makePTDF}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ntests = 24
     t_begin(ntests, quiet)

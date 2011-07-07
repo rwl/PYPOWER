@@ -14,12 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for testing auction code.
+"""
+
 from numpy import array
+
 
 def t_auction_case():
     """Power flow data for testing auction code.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ##-----  Power Flow Data  -----##
     ## system MVA base

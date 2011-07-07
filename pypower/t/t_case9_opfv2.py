@@ -14,15 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Power flow data for 9 bus, 3 generator case.
+"""
+
 from numpy import array
+
 
 def t_case9_opfv2():
     """Power flow data for 9 bus, 3 generator case.
     Please see L{caseformat} for details on the case file format.
 
-    @rtype: PYPOWER case object
     @return: Power flow data for 9 bus, 3 generator case, with OPF data.
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {}
 

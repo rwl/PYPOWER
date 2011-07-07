@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Run a series of tests.
+"""
+
 import sys
 
 from time import time
@@ -29,8 +32,6 @@ def t_run_tests(test_names, verbose=False):
     Runs a set of tests whose names
     are given in the list C{test_names}. If the optional parameter
     C{verbose} is true, it prints the details of the individual tests.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ## figure out padding for printing
     if not verbose:

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests if a condition is true.
+"""
+
 from pypower.t.t_globals import TestGlobals
 
 
@@ -25,8 +28,6 @@ def t_ok(cond, msg=''):
     the failed tests count. Prints 'ok' or 'not ok' followed by the
     C{msg}, unless the global variable t_quiet is true. Intended to be
     called between calls to C{t_begin} and C{t_end}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if msg:
         if isinstance(msg, list):

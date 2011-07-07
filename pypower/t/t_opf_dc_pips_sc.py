@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for DC optimal power flow using PIPS-sc solver.
+"""
+
 from os.path import dirname, join
 
 from numpy import array, ones, Inf, arange, r_
@@ -42,8 +45,6 @@ from pypower.t.t_end import t_end
 
 def t_opf_dc_pips_sc(quiet=False):
     """Tests for DC optimal power flow using PIPS-sc solver.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     num_tests = 23
 

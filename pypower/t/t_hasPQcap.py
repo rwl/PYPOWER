@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for C{hasPQcap}.
+"""
+
 from numpy import array
 
 from pypower.hasPQcap import hasPQcap
@@ -25,8 +28,6 @@ from pypower.t.t_end import t_end
 
 def t_hasPQcap(quiet=False):
     """Tests for C{hasPQcap}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(4, quiet)
 

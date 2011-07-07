@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Finish running tests and print statistics.
+"""
+
 import sys
 
 from time import time
@@ -26,8 +29,6 @@ def t_end():
 
     Checks the global counters that were updated by calls to C{t_ok}
     and C{t_is} and prints out a summary of the test results.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     TestGlobals.t_counter -= 1
 

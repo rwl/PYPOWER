@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from os.path import dirname, join
+"""Tests C{ext2int} and C{int2ext}.
+"""
 
 from numpy import ones, delete, c_, r_
 
@@ -32,12 +33,8 @@ from pypower.t.t_case_int import t_case_int
 
 def t_ext2int2ext(quiet=False):
     """Tests C{ext2int} and C{int2ext}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(85, quiet)
-
-    tdir = dirname(__file__)
 
     ##-----  ppc = ext2int/int2ext(ppc)  -----
     t = 'ppc = ext2int(ppc) : '

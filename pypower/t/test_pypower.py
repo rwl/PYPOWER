@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Run all PYPOWER tests.
+"""
+
 from pypower.t.t_run_tests import t_run_tests
 
 
@@ -21,8 +24,6 @@ def test_pypower(verbose=False):
     """Run all PYPOWER tests.
 
     Prints the details of the individual tests if verbose is true.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     tests = []
 

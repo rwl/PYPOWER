@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Numerical tests of partial derivative code.
+"""
+
 from numpy import ones, conj, eye, exp, pi, array
 
 from pypower.case30 import case30
@@ -37,8 +40,6 @@ from pypower.t.t_is import t_is
 
 def t_jacobian(quiet=False):
     """Numerical tests of partial derivative code.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(28, quiet)
 
@@ -61,7 +62,7 @@ def t_jacobian(quiet=False):
     V = Vm * exp(1j * Va)
     f = branch[:, F_BUS].astype(int)       ## list of "from" buses
     t = branch[:, T_BUS].astype(int)       ## list of "to" buses
-    nl = len(f)
+    #nl = len(f)
     nb = len(V)
     pert = 1e-8
 

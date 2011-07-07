@@ -14,17 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Global test counters initialization.
+"""
+
 from time import time
 
 from pypower.t.t_globals import TestGlobals
+
 
 def t_begin(num_of_tests, quiet=False):
     """Initializes the global test counters, setting everything up to
     execute C{num_of_tests} tests using C{t_ok} and C{t_is}. If C{quiet}
     is true, it will not print anything for the individual tests, only a
     summary when C{t_end} is called.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
 
     TestGlobals.t_quiet = quiet

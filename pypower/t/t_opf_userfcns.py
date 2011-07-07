@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for userfcn callbacks (reserves/iflims) w/OPF.
+"""
+
 from os.path import dirname, join
 
 from pypower.ppoption import ppoption
@@ -35,8 +38,6 @@ def t_opf_userfcns(quiet=False):
     """Tests for userfcn callbacks (reserves/iflims) w/OPF.
 
     Includes high-level tests of reserves and iflims implementations.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(38, quiet)
 

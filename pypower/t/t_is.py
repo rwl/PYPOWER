@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests if two matrices are identical to some tolerance.
+"""
+
 from numpy import array, max, abs, nonzero, argmax, zeros
 
 from pypower.t.t_ok import t_ok
@@ -29,8 +32,6 @@ def t_is(got, expected, prec=5, msg=''):
     otherwise increments the failed tests count. Prints 'ok' or 'not ok'
     followed by the MSG, unless the global variable t_quiet is true.
     Intended to be called between calls to C{t_begin} and C{t_end}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     if isinstance(got, int) or isinstance(got, float):
         got = array([got], float)

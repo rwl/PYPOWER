@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Tests for code in C{off2case}.
+"""
+
 from numpy import array, zeros, ix_, r_, c_, flatnonzero as find
 
 from pypower.isload import isload
@@ -28,8 +31,6 @@ from pypower.t.t_end import t_end
 
 def t_off2case(quiet=False):
     """Tests for code in C{off2case}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     n_tests = 35
 

@@ -14,12 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
-from numpy import array, zeros, ones, arange, r_
+"""Case data in external format.
+"""
+
+from numpy import array, ones, arange, r_
+
 
 def t_case_ext():
     """Case data in external format used to test C{ext2int} and C{int2ext}.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     ppc = {}
 
