@@ -3,7 +3,7 @@ Introduction
 ============
 
 PYPOWER is a power flow and Optimal Power Flow (OPF) solver. It is a port of
-MATPOWER_ by PSERC (Cornell) to the Python_ programming language. Current
+MATPOWER_ to the Python_ programming language. Current
 features include:
 
 * DC and AC (Newton's method & Fast Decoupled) power flow and
@@ -21,7 +21,7 @@ It can be easy_installed using setuptools_::
 
   $ easy_install PYPOWER
 
-Alternatively, `download http://pypi.python.org/pypi/PYPOWER#downloads`_ and
+Alternatively, `download <http://pypi.python.org/pypi/PYPOWER#downloads>`_ and
 unpack the tarball and install::
 
   $ tar zxf PYPOWER-4.0.tar.gz
@@ -40,7 +40,7 @@ on the IEEE 14 bus test case::
 
   $ pf -c case14
 
-Alternatively, the path to a PYPOWER case data file can be specified.::
+Alternatively, the path to a PYPOWER case data file can be specified::
 
   $ pf /path/to/case14.py
 
@@ -64,7 +64,7 @@ by the Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 .. _Python: http://www.python.org
-.. _Setuptools: http://peak.telecommunity.com/DevCenter/setuptools
+.. _setuptools: http://peak.telecommunity.com/DevCenter/setuptools
 .. _SciPy: http://www.scipy.org
 .. _MATPOWER: http://www.pserc.cornell.edu/matpower/
 .. _Git: http://git-scm.com/
