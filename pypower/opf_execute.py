@@ -57,7 +57,7 @@ def opf_execute(om, ppopt):
 
     if verbose > 0:
         v = ppver('all')
-        stdout.write('\nPYPOWER Version %s, %s' % (v['Version'], v['Date']))
+        stdout.write('PYPOWER Version %s, %s' % (v['Version'], v['Date']))
 
     ##-----  run DC OPF solver  -----
     if dc:

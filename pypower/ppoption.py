@@ -105,6 +105,7 @@ OUTPUT_OPTIONS = [
 
     ('out_gen', False, '''print generator detail
 (OUT_BUS also includes gen info)'''),
+
     ('out_all_lim', -1, '''control constraint info output:
 -1 - individual flags control what constraint info prints,
 0 - no constraint info (overrides individual flags),

@@ -97,10 +97,7 @@ def parse_options(args, usage, opf=False):
 
 If 'casedata' is provided it specifies the name of the input data file
 containing the case data.""" % usage,
-        version='PYPOWER (%%prog) Version %s, %s' % (v["Version"], v["Date"]),
-        epilog="""Examples:
-
-"""
+        version='PYPOWER (%%prog) Version %s, %s' % (v["Version"], v["Date"])
     )
 
     parser.add_option("-t", "--test", action="store_true", dest="test",
@@ -204,25 +201,6 @@ def opf(args=sys.argv[1:]):
     else:
         r = runopf(casedata, ppopt, fname, solvedcase)
     exit(r['success'])
-
-
-#def uopf(args=sys.argv[1:]):
-#    usage = 'Solves combined unit decommitment / optimal power flow.'
-#    options, casedata, ppopt, fname, solvedcase = \
-#            parse_options(args, usage, True)
-#    if options.test:
-#        sys.exit(test_opf())
-#    r = runuopf(casedata, ppopt, fname, solvedcase)
-#    exit(r['success'])
-
-
-#def opf_w_res(args=sys.argv[1:]):
-#    usage = 'Runs an optimal power flow with fixed zonal reserves.'
-#    options, casedata, ppopt, fname, solvedcase = \
-#            parse_options(args, usage, True)
-#    if options.test: sys.exit(test_opf_w_res())
-#    r = runopf_w_res(casedata, ppopt, fname, solvedcase)
-#    exit(r['success'])
 
 
 if __name__ == '__main__':

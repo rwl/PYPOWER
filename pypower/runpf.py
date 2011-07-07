@@ -17,9 +17,7 @@
 """Runs a power flow.
 """
 
-from sys import stdout
-
-import logging
+from sys import stdout, stderr
 
 from time import time
 
@@ -48,7 +46,6 @@ from idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PQ
 from idx_brch import PF, PT, QF, QT
 from idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 
-logger = logging.getLogger(__name__)
 
 def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     """Runs a power flow.
@@ -112,7 +109,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     t0 = time()
     if verbose > 0:
         v = ppver('all')
-        stdout.write('\nPYPOWER Version %s, %s' % (v["Version"], v["Date"]))
+        stdout.write('PYPOWER Version %s, %s' % (v["Version"], v["Date"]))
 
     if dc:                               # DC formulation
         if verbose:
@@ -177,9 +174,9 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
             elif alg == 4:
                 V, success, _ = gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt)
             else:
-                logger.error('Only Newton''s method, fast-decoupled, and '
+                stderr.write('Only Newton''s method, fast-decoupled, and '
                              'Gauss-Seidel power flow algorithms currently '
-                             'implemented.')
+                             'implemented.\n')
 
             ## update data matrices with solution
             bus, gen, branch = pfsoln(baseMVA, bus, gen, branch, Ybus, Yf, Yt, V, ref, pv, pq)
@@ -275,7 +272,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         try:
             fd = open(fname, "wb")
         except Exception, detail:
-            logger.error("Error opening %s: %s." % (fname, detail))
+            stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
             if fd is not None:
                 printpf(results, fd, ppopt)
