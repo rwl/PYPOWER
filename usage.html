@@ -44,22 +44,145 @@
             
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>Installing PYPOWER creates <tt class="docutils literal"><span class="pre">pf</span></tt> and <tt class="docutils literal"><span class="pre">opf</span></tt> commands. To list the command
-options:</p>
+<p>PYPOWER provides a Command Line Interface (CLI) and a Python Application
+Programming Interface (API).</p>
+<div class="section" id="command-line-interface">
+<h2>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p>Following the <a class="reference external" href="install.html#installation"><em>Installation</em></a> instructions adds <tt class="docutils literal"><span class="pre">pf</span></tt> and <tt class="docutils literal"><span class="pre">opf</span></tt>
+to the command path. To print usage info type:</p>
 <div class="highlight-python"><pre>$ pf -h</pre>
 </div>
-<p>PYPOWER includes a selection of test cases. For example, to run a power flow
-on the IEEE 14 bus test case:</p>
+<p>All available options will be printed:</p>
+<div class="highlight-python"><pre>Usage: pf [options] [casedata]
+
+Runs a power flow.
+
+If 'casedata' is provided it specifies the name of the input data file
+containing the case data.
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -t, --test            run tests
+  -c TESTCASE, --testcase=TESTCASE
+                        built-in test case (choose from: 'case30_userfcns',
+                        'case118', 'case9', 'case30Q', 'case30pwl', 'case6ww',
+                        'case57', 'case39', 'case14', 'case9Q', 'case30',
+                        'case300', 'case4gs', 'case24_ieee_rts')
+  -o FNAME, --outfile=FNAME
+                        pretty printed output will be appended to a file with
+                        the name specified. Defaults to stdout.
+  -s SOLVEDCASE, --solvedcase=SOLVEDCASE
+                        the solved case will be written to a case file with
+                        the specified name in PYPOWER format. If solvedcase
+                        ends with '.mat' the case is saves  as a MAT-file
+                        otherwise it saves it as a Python file.
+
+  Power Flow Options:
+    --pf_alg=PF_ALG     power flow algorithm: 1 - Newton's method, 2 - Fast-
+                        Decoupled (XB version), 3 - Fast-Decoupled (BX
+                        version), 4 - Gauss Seidel [default: 1]
+    --pf_tol=PF_TOL     termination tolerance on per unit P &amp; Q mismatch
+                        [default: 1e-08]
+    --pf_max_it=PF_MAX_IT
+                        maximum number of iterations for Newton's method
+                        [default: 10]
+    --pf_max_it_fd=PF_MAX_IT_FD
+                        maximum number of iterations for fast decoupled method
+                        [default: 30]
+    --pf_max_it_gs=PF_MAX_IT_GS
+                        maximum number of iterations for Gauss-Seidel method
+                        [default: 1000]
+    --enforce_q_lims=ENFORCE_Q_LIMS
+                        enforce gen reactive power limits, at expense of |V|
+                        [default: False]
+    --pf_dc=PF_DC       use DC power flow formulation, for power flow and OPF:
+                        False - use AC formulation &amp; corresponding algorithm
+                        opts, True  - use DC formulation, ignore AC algorithm
+                        options [default: False]
+
+  Output Options:
+    --verbose=VERBOSE   amount of progress info printed: 0 - print no progress
+                        info, 1 - print a little progress info, 2 - print a
+                        lot of progress info, 3 - print all progress info
+                        [default: 1]
+    --out_all=OUT_ALL   controls printing of results: -1 - individual flags
+                        control what prints, 0 - don't print anything
+                        (overrides individual flags, except OUT_RAW), 1 -
+                        print everything     (overrides individual flags,
+                        except OUT_RAW) [default: -1]
+    --out_sys_sum=OUT_SYS_SUM
+                        print system summary [default: True]
+    --out_area_sum=OUT_AREA_SUM
+                        print area summaries [default: False]
+    --out_bus=OUT_BUS   print bus detail [default: True]
+    --out_branch=OUT_BRANCH
+                        print branch detail [default: True]
+    --out_gen=OUT_GEN   print generator detail (OUT_BUS also includes gen
+                        info) [default: False]
+    --out_all_lim=OUT_ALL_LIM
+                        control constraint info output: -1 - individual flags
+                        control what constraint info prints, 0 - no constraint
+                        info (overrides individual flags), 1 - binding
+                        constraint info (overrides individual flags), 2 - all
+                        constraint info (overrides individual flags) [default:
+                        -1]
+    --out_v_lim=OUT_V_LIM
+                        control output of voltage limit info: 0 - don't print,
+                        1 - print binding constraints only, 2 - print all
+                        constraints (same options for OUT_LINE_LIM,
+                        OUT_PG_LIM, OUT_QG_LIM) [default: 1]
+    --out_line_lim=OUT_LINE_LIM
+                        control output of line limit info [default: 1]
+    --out_pg_lim=OUT_PG_LIM
+                        control output of gen P limit info [default: 1]
+    --out_qg_lim=OUT_QG_LIM
+                        control output of gen Q limit info [default: 1]
+    --out_raw=OUT_RAW   print raw data [default: False]
+    --return_raw_der=RETURN_RAW_DER
+                        return constraint and derivative info in
+                        results['raw'] (in keys g, dg, df, d2f)) [default: 0]</pre>
+</div>
+<p>PYPOWER includes a selection of test cases. For example, to run a power flow on
+the <a class="reference external" href="http://pypower.org/api/pypower.case14-module.html">IEEE 14 bus</a> test
+case:</p>
 <div class="highlight-python"><pre>$ pf -c case14</pre>
 </div>
-<p>Alternatively, the path to a PYPOWER case data file can be specified.:</p>
+<p>Alternatively, the path to a <a class="reference external" href="http://pypower.org/api/pypower.caseformat-module.html">PYPOWER case data</a> file can be
+specified:</p>
 <div class="highlight-python"><pre>$ pf /path/to/case14.py</pre>
 </div>
 <p>The <tt class="docutils literal"><span class="pre">opf</span></tt> command has the same calling syntax. For example, to solve an OPF
-for the IEEE Reliability Test System and write the solved case to file:</p>
+for the <a class="reference external" href="http://pypower.org/api/pypower.case24_ieee_rts-module.html">IEEE Reliability Test System</a> and write the
+solved case to file:</p>
 <div class="highlight-python"><pre>$ opf -c case24_ieee_rts --solvedcase=rtsout.py</pre>
 </div>
-<p>For further information please refer to the <a href="#id1"><span class="problematic" id="id2">`API documentation`_</span></a>.</p>
+</div>
+<div class="section" id="application-programming-interface">
+<h2>Application Programming Interface<a class="headerlink" href="#application-programming-interface" title="Permalink to this headline">¶</a></h2>
+<p>The Python API for PYPOWER can be accessed using the <tt class="docutils literal"><span class="pre">pypower.api</span></tt>
+package:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">pypower.api</span> <span class="kn">import</span> <span class="n">case9</span><span class="p">,</span> <span class="n">ppoption</span><span class="p">,</span> <span class="n">runpf</span><span class="p">,</span> <span class="n">printpf</span>
+</pre></div>
+</div>
+<p>To load the 9 bus test case, solve an AC power flow using the fast-decoupled
+method and print the results:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="gp">In [2]: </span><span class="n">ppc</span> <span class="o">=</span> <span class="n">case9</span><span class="p">()</span>
+
+<span class="gp">In [3]: </span><span class="n">ppopt</span> <span class="o">=</span> <span class="n">ppoption</span><span class="p">(</span><span class="n">PF_ALG</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="gp">In [4]: </span><span class="n">r</span> <span class="o">=</span> <span class="n">runpf</span><span class="p">(</span><span class="n">ppc</span><span class="p">,</span> <span class="n">ppopt</span><span class="p">)</span>
+
+<span class="gp">In [5]: </span><span class="n">printpf</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For additional information refer to the Python documentation for each of the
+functions. E.g:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="gp">In [6]: </span><span class="n">help</span> <span class="n">runpf</span>
+</pre></div>
+</div>
+<p>Alternatively, refer to the on-line <a class="reference external" href="http://www.pypower.org/api">API documentation</a>.</p>
+</div>
 </div>
 
 
@@ -68,6 +191,15 @@ for the IEEE Reliability Test System and write the solved case to file:</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Usage</a><ul>
+<li><a class="reference external" href="#command-line-interface">Command Line Interface</a></li>
+<li><a class="reference external" href="#application-programming-interface">Application Programming Interface</a></li>
+</ul>
+</li>
+</ul>
+
             <h4>Previous topic</h4>
             <p class="topless"><a href="install.html"
                                   title="previous chapter">Installation</a></p>

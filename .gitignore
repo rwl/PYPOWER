@@ -1,3 +1,9 @@
 *.pyc
 doc/.build
 doc/api
+dist/
+build/
+PYPOWER.egg-info
+.project
+.pydevproject
+.settings/
