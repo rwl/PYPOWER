@@ -27,7 +27,7 @@ entry_points = [
 ]
 
 setup(name="PYPOWER",
-      version="4.0.0",
+      version="4.0.1",
       description="Solves power flow and optimal power flow problems",
       author="Richard Lincoln",
       author_email="r.w.lincoln@gmail.com",
