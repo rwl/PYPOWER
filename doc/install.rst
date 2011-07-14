@@ -8,7 +8,7 @@ PYPOWER depends upon:
 * Python_ 2.5 or later and
 * SciPy_ 0.7 or later.
 
-It can be easy_installed using setuptools_::
+It can be installed using setuptools_::
 
   $ easy_install PYPOWER
 

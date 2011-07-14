@@ -5,7 +5,7 @@ PYPOWER documentation
 
   Download `PDF <http://www.pypower.org/PYPOWER.pdf>`_
 
-Contents:
+  Contents:
 
 .. toctree::
   :maxdepth: 2
@@ -14,6 +14,7 @@ Contents:
   copyright
   install
   usage
+  support
 
 .. only:: html
 

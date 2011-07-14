@@ -1,7 +1,7 @@
 Introduction
 ============
 
-PYPOWER is a power flow and Optimal Power Flow (OPF) solver. Current features
+PYPOWER is a power flow and optimal power flow (OPF) solver. Current features
 include:
 
 * DC and AC (Newton's method & Fast Decoupled) power flow and
