@@ -204,4 +204,5 @@ def opf(args=sys.argv[1:]):
 
 
 if __name__ == '__main__':
-    pf(['-c', 'case9', '--out_all=-1', '-s', '/tmp/out.py'])
+    pf(['-h'])
+#    pf(['-c', 'case9', '--out_all=-1', '-s', '/tmp/out.py'])
