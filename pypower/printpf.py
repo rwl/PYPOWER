@@ -103,14 +103,15 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     isDC            = ppopt['PF_DC']        ## use DC formulation?
     OUT_ALL         = ppopt['OUT_ALL']
     OUT_ANY         = OUT_ALL == 1     ## set to true if any pretty output is to be generated
-    OUT_SYS_SUM     = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_SYS_SUM'])
-    OUT_AREA_SUM    = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_AREA_SUM'])
-    OUT_BUS         = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_BUS'])
-    OUT_BRANCH      = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_BRANCH'])
-    OUT_GEN         = OUT_ALL == 1 | (OUT_ALL == -1 & ppopt['OUT_GEN'])
-    OUT_ANY         = OUT_ANY | (OUT_ALL == -1 &
-                        (OUT_SYS_SUM | OUT_AREA_SUM | OUT_BUS |
-                         OUT_BRANCH | OUT_GEN))
+    OUT_SYS_SUM     = (OUT_ALL == 1) or ((OUT_ALL == -1) and ppopt['OUT_SYS_SUM'])
+    OUT_AREA_SUM    = (OUT_ALL == 1) or ((OUT_ALL == -1) and ppopt['OUT_AREA_SUM'])
+    OUT_BUS         = (OUT_ALL == 1) or ((OUT_ALL == -1) and ppopt['OUT_BUS'])
+    OUT_BRANCH      = (OUT_ALL == 1) or ((OUT_ALL == -1) and ppopt['OUT_BRANCH'])
+    OUT_GEN         = (OUT_ALL == 1) or ((OUT_ALL == -1) and ppopt['OUT_GEN'])
+    OUT_ANY         = OUT_ANY | ((OUT_ALL == -1) and
+                        (OUT_SYS_SUM or OUT_AREA_SUM or OUT_BUS or
+                         OUT_BRANCH or OUT_GEN))
+
     if OUT_ALL == -1:
         OUT_ALL_LIM = ppopt['OUT_ALL_LIM']
     elif OUT_ALL == 1:
@@ -118,7 +119,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     else:
         OUT_ALL_LIM = 0
 
-    OUT_ANY         = OUT_ANY | OUT_ALL_LIM >= 1
+    OUT_ANY         = OUT_ANY or (OUT_ALL_LIM >= 1)
     if OUT_ALL_LIM == -1:
         OUT_V_LIM       = ppopt['OUT_V_LIM']
         OUT_LINE_LIM    = ppopt['OUT_LINE_LIM']
@@ -130,7 +131,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         OUT_PG_LIM      = OUT_ALL_LIM
         OUT_QG_LIM      = OUT_ALL_LIM
 
-    OUT_ANY         = OUT_ANY | (OUT_ALL_LIM == -1 & (OUT_V_LIM | OUT_LINE_LIM | OUT_PG_LIM | OUT_QG_LIM))
+    OUT_ANY         = OUT_ANY or ((OUT_ALL_LIM == -1) and (OUT_V_LIM or OUT_LINE_LIM or OUT_PG_LIM or OUT_QG_LIM))
     OUT_RAW         = ppopt['OUT_RAW']
     ptol = 1e-6        ## tolerance for displaying shadow prices
 

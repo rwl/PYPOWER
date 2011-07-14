@@ -40,3 +40,5 @@ setup(name="PYPOWER",
       test_suite="pypower.t.test_pypower.test_pypower",
       zip_safe=True,
       **kwds)
+
+# python setup.py sdist bdist_egg bdist_wininst bdist_msi upload
