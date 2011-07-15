@@ -15,12 +15,35 @@
 
 from time import time
 
-from numpy import array, ones, zeros, argsort, arange, r_, c_
+from numpy import array, ones, zeros, argsort, arange, r_, c_, pi, arctan2, sin, cos, linalg, finfo, delete, Inf, exp, conj
+from numpy import flatnonzero as find
 
 from scipy.sparse import vstack, hstack, csc_matrix as sparse
 
 from pypower.ppoption import ppoption
 from pypower.loadcase import loadcase
+from pypower.ext2int import ext2int
+from pypower.bustypes import bustypes
+from pypower.isload import isload
+from pypower.hasPQcap import hasPQcap
+from pypower.makeAy import makeAy
+from pypower.makeYbus import makeYbus
+from pypower.consfmin import consfmin
+from pypower.int2ext import int2ext
+from pypower.printpf import printpf
+
+from pypower.idx_bus import MU_VMIN, MU_VMAX, BUS_TYPE, REF, LAM_P, LAM_Q, VMIN, VMAX, VA, VM
+
+from pypower.idx_gen import \
+    GEN_STATUS, GEN_BUS, QMIN, QMAX, QG, PG, PMIN, QC1MAX, QC2MAX, \
+    PC2, PC1, QC2MIN, QC1MIN, PMAX, VG, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
+
+from pypower.idx_brch import MU_ANGMAX, MU_ANGMIN, BR_STATUS, ANGMIN, ANGMAX, F_BUS, T_BUS, PF, QF, PT, QT, MU_SF, MU_ST
+
+from pypower.idx_cost import MODEL, PW_LINEAR
+
+
+EPS = finfo(float).eps
 
 
 def fmincopf(*args):
@@ -455,9 +478,9 @@ def fmincopf(*args):
     # Insert y columns in Au and N as necessary
     if ny > 0:
         if nz > 0:
-            Au = hstack([ Au[:, :qgend], sparse((nusr, ny)), Au[:, qgend + aragne(nz)] ])
+            Au = hstack([ Au[:, :qgend], sparse((nusr, ny)), Au[:, qgend + arange(nz)] ])
             if len(N) > 0:
-                N = hstack([ N[:, :qgend], sparse((N.shape[0], ny)), N[:, qgend + arage(nz)] ])
+                N = hstack([ N[:, :qgend], sparse((N.shape[0], ny)), N[:, qgend + arange(nz)] ])
         else:
             Au = hstack([ Au, sparse((nusr, ny)) ])
             if len(N) > 0:
@@ -546,10 +569,10 @@ def fmincopf(*args):
 
     # Divide l <= A*x <= u into less than, equal to, greater than, doubly-bounded
     # sets.
-    ieq = find( abs(u - l) <= eps )
+    ieq = find( abs(u - l) <= EPS )
     igt = find( u >= 1e10 )  # unlimited ceiling
     ilt = find( l <= -1e10 ) # unlimited bottom
-    ibx = find( (abs(u-l) > eps) & (u < 1e10) & (l > -1e10))
+    ibx = find( (abs(u-l) > EPS) & (u < 1e10) & (l > -1e10))
     Af  = hstack([ A[ilt, :], -A[igt, :], A[ibx, :], -A[ibx, :] ])
     bf  = r_[ u[ilt], -l[igt], u[ibx], -l[ibx]]
     Afeq = A[ieq, :]
@@ -593,14 +616,14 @@ def fmincopf(*args):
     # basic optimset options needed for fmincon
     # fmoptions = optimset('GradObj', 'on', 'Hessian', 'on', 'LargeScale', 'on', ...
     #                    'GradConstr', 'on')
-    fmoptions = optimset('GradObj', 'on', 'LargeScale', 'off', 'GradConstr', 'on')
-    fmoptions = optimset(fmoptions, 'MaxIter', ppopt(19), 'TolCon', ppopt(16) )
-    fmoptions = optimset(fmoptions, 'TolX', ppopt(17), 'TolFun', ppopt(18) )
-    fmoptions.MaxFunEvals = 4 * fmoptions.MaxIter
-    if ppopt['VERBOSE'] == 0:
-        fmoptions.Display = 'off'
-    else:
-        fmoptions.Display = 'iter'
+#    fmoptions = optimset('GradObj', 'on', 'LargeScale', 'off', 'GradConstr', 'on')
+#    fmoptions = optimset(fmoptions, 'MaxIter', ppopt(19), 'TolCon', ppopt(16) )
+#    fmoptions = optimset(fmoptions, 'TolX', ppopt(17), 'TolFun', ppopt(18) )
+#    fmoptions.MaxFunEvals = 4 * fmoptions.MaxIter
+#    if ppopt['VERBOSE'] == 0:
+#        fmoptions.Display = 'off'
+#    else:
+#        fmoptions.Display = 'iter'
 
     Af = Af.todense()
     Afeq = Afeq.todense()
@@ -758,7 +781,7 @@ def fmincopf(*args):
         branchout[offbranch, MU_ST] = tmp
 
     et = time() - t1
-    if (nargout == 0) & ( success ):
+    if success:
         printpf(baseMVA, bus, genout, branchout, f, info, et, 1, ppopt)
 
     return busout, genout, branchout, f, success, info, et, g, jac, x, pimul

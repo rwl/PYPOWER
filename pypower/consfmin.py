@@ -30,8 +30,8 @@ from dSbr_dV import dSbr_dV
 from dAbr_dV import dAbr_dV
 
 
-def opf_consfcn(x, baseMVA, bus, gen, gencost, branch, areas, Ybus, Yf, Yt,
-                ppopt, parms, ccost, N, fparm, H, Cw, return_partials=True):
+def consfmin(x, baseMVA, bus, gen, gencost, branch, areas, Ybus, Yf, Yt,
+             ppopt, parms, ccost, N, fparm, H, Cw, return_partials=True):
     """Evaluates nonlinear constraints and their Jacobian for OPF.
     """
     ## constant
