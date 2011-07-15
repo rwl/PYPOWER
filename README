@@ -45,9 +45,9 @@ Alternatively, the path to a PYPOWER case data file can be specified::
   $ pf /path/to/case14.py
 
 The ``opf`` command has the same calling syntax. For example, to solve an OPF
-for the IEEE Reliability Test System and write the solved case to file::
+and write the solved case to file::
 
-  $ opf -c case24_ieee_rts --solvedcase=rtsout.py
+  $ opf -c case14 --solvedcase=out.py
 
 For further information please refer to http://www.pypower.org/ and the
 `API documentation`_.
@@ -67,10 +67,8 @@ Copyright (C) 1996-2011 Power System Engineering Research Center
 
 Copyright (C) 2010-2011 Richard Lincoln
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the `GNU General Public License`_ as published
-by the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+This program is licensed under the Apache License, Version 2.0; you may not
+use this file except in compliance with this License.
 
 Links
 -----

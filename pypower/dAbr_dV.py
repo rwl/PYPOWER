@@ -1,84 +1,89 @@
 # Copyright (C) 1996-2011 Power System Engineering Research Center
 # Copyright (C) 2010-2011 Richard Lincoln
 #
-# PYPOWER is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published
-# by the Free Software Foundation, either version 3 of the License,
-# or (at your option) any later version.
+# Licensed under the Apache License, Version 2.0 (the "License")
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# PYPOWER is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-"""Partial derivatives of squared flow magnitudes w.r.t voltage.
+"""Partial derivatives of apparent power flows w.r.t voltage.
 """
 
-from scipy.sparse import csr_matrix
+from numpy import ones, diag, flatnonzero as find
+
+from scipy.sparse import issparse, spdiags
 
 
 def dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St):
-    """Partial derivatives of squared flow magnitudes w.r.t voltage.
+    """Partial derivatives of apparent power flows w.r.t voltage.
 
-    Returns four matrices containing partial derivatives of the square of
-    the branch flow magnitudes at "from" & "to" ends of each branch w.r.t
+    Returns four matrices containing partial derivatives of apparent power
+    flows at "from" & "to" ends of each branch w.r.t
     voltage magnitude and voltage angle respectively (for all buses), given
     the flows and flow sensitivities. Flows could be complex current or
     complex or real power. Notation below is based on complex power. The
     following explains the expressions used to form the matrices:
 
-    Let Af refer to the square of the apparent power at the "from" end of
-    each branch::
-
-        Af = abs(Sf)**2
-           = Sf .* conj(Sf)
-           = Pf**2 + Qf**2
-
-    then ...
+    Let Af refer to the apparent power at the "from" end of each line,
+    i.e. Af = abs(Sf), then ...
 
     Partial w.r.t real power::
-        dAf/dPf = 2 * diag(Pf)
+        dAf/dPf = diag(real(Sf) ./ Af)
 
     Partial w.r.t reactive power::
-        dAf/dQf = 2 * diag(Qf)
+        dAf/dQf = diag(imag(Sf) ./ Af)
 
     Partial w.r.t Vm & Va::
         dAf/dVm = dAf/dPf * dPf/dVm + dAf/dQf * dQf/dVm
         dAf/dVa = dAf/dPf * dPf/dVa + dAf/dQf * dQf/dVa
 
     Derivations for "to" bus are similar.
-
-    For more details on the derivations behind the derivative code used
-    in PYPOWER information, see:
-
-    [TN2]  R. D. Zimmerman, I{"AC Power Flows, Generalized OPF Costs and
-    their Derivatives using Complex Matrix Notation"}, MATPOWER
-    Technical Note 2, February 2010.
-    U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
-
-    @return: The partial derivatives of the squared flow magnitudes w.r.t
-             voltage magnitude and voltage angle given the flows and flow
-             sensitivities. Flows could be complex current or complex or
-             real power.
-    @see: L{dIbr_dV}, L{dSbr_dV}
     """
-    il = range(len(Sf))
+    ## dimensions
+    nl = len(Sf)
 
-    dAf_dPf = csr_matrix((2 * Sf.real, (il, il)))
-    dAf_dQf = csr_matrix((2 * Sf.imag, (il, il)))
-    dAt_dPt = csr_matrix((2 * St.real, (il, il)))
-    dAt_dQt = csr_matrix((2 * St.imag, (il, il)))
+    ##----- compute apparent powers -----
+    Af = abs(Sf)
+    At = abs(St)
 
-    # Partial derivative of apparent power magnitude w.r.t voltage
-    # phase angle.
-    dAf_dVa = dAf_dPf * dSf_dVa.real + dAf_dQf * dSf_dVa.imag
-    dAt_dVa = dAt_dPt * dSt_dVa.real + dAt_dQt * dSt_dVa.imag
-    # Partial derivative of apparent power magnitude w.r.t. voltage
-    # amplitude.
+    ##----- partials w.r.t. real and reactive power flows -----
+    ## Careful!  Need to make partial equal to 1 for lines w/ zero flow
+    ##           to avoid division by zero errors (1 comes from L'Hopital)
+    ## initialize to all ones
+    nPf = ones(nl)
+    nQf = ones(nl)
+    nPt = ones(nl)
+    nQt = ones(nl)
+    ## use actual partials for non-zero flows
+    i = find(Af)                       ## find non-zeros of "from" flows
+    nPf[i] = Sf[i].real / Af[i]
+    nQf[i] = Sf[i].imag / Af[i]
+    i = find(At)                       ## find non-zeros of "to" flows
+    nPt[i] = St[i].real / At[i]
+    nQt[i] = St[i].imag / At[i]
+    ## put into diagonal matrices
+    if issparse(dSf_dVa):        ## sparse version (if dSf_dVa is sparse)
+        dAf_dPf = spdiags(nPf, 0, nl, nl, 'csc')
+        dAf_dQf = spdiags(nQf, 0, nl, nl, 'csc')
+        dAt_dPt = spdiags(nPt, 0, nl, nl, 'csc')
+        dAt_dQt = spdiags(nQt, 0, nl, nl, 'csc')
+    else:                        ## dense version
+        dAf_dPf = diag(nPf)
+        dAf_dQf = diag(nQf)
+        dAt_dPt = diag(nPt)
+        dAt_dQt = diag(nQt)
+
+    ## partials w.r.t. voltage magnitudes and angles
     dAf_dVm = dAf_dPf * dSf_dVm.real + dAf_dQf * dSf_dVm.imag
+    dAf_dVa = dAf_dPf * dSf_dVa.real + dAf_dQf * dSf_dVa.imag
     dAt_dVm = dAt_dPt * dSt_dVm.real + dAt_dQt * dSt_dVm.imag
+    dAt_dVa = dAt_dPt * dSt_dVa.real + dAt_dQt * dSt_dVa.imag
 
     return dAf_dVa, dAf_dVm, dAt_dVa, dAt_dVm

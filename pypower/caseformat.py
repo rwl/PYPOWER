@@ -1,57 +1,39 @@
 # Copyright (C) 1996-2011 Power System Engineering Research Center
 # Copyright (C) 2010-2011 Richard Lincoln
 #
-# PYPOWER is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published
-# by the Free Software Foundation, either version 3 of the License,
-# or (at your option) any later version.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# PYPOWER is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Defines the PYPOWER case file format.
 
-A PYPOWER case file is a Python file or MAT-file that defines or returns
-a dict named ppc, referred to as a "PYPOWER case dict". The keys
-of this dict are C{baseMVA}, C{bus}, C{gen}, C{branch}, and (optional)
-C{gencost}. With the exception of C{baseMVA}, a scalar, each data variable
-is an array, where a row corresponds to a single bus, branch, gen, etc. The
-format of the data is similar to the PTI format described in
+A PYPOWER case file is a Python file or MAT-file which defines the variables
+baseMVA, bus, gen, branch, areas, and gencost. With the exception of baseMVA,
+a scalar, each data variable is a matrix, where a row corresponds to a single
+bus, branch, gen, etc. The format of the data is similar to the PTI format
+described in
 
 U{http://www.ee.washington.edu/research/pstca/formats/pti.txt}
 
 PYPOWER Case Version Information:
 =================================
 
-There are two versions of the PYPOWER case file format. The current
-version of PYPOWER uses version 2 of the PYPOWER case format
-internally, and includes a 'version' field with a value of '2' to make
-the version explicit. Earlier versions of PYPOWER used the version 1
-case format, which defined the data matrices as individual variables,
-as opposed to keys of a dict. Case files in version 1 format with
-OPF data also included an (unused) 'areas' variable. While the version 1
-format has now been deprecated, it is still be handled automatically by
-L{loadcase} and L{savecase} which are able to load and save case files in both
-version 1 and version 2 formats.
+The PYPOWER case file format defines the data matrices as individual variables.
+Case files with OPF data also include an (unused) 'areas' variable.
 
 See also L{idx_bus}, L{idx_brch}, L{idx_gen}, L{idx_area} and L{idx_cost}
 regarding constants which can be used as named column indices for the data
 matrices. Also described in the first three are additional results columns
 that are added to the bus, branch and gen matrices by the power flow and OPF
 solvers.
-
-The case dict also also allows for additional fields to be included.
-The OPF is designed to recognize fields named C{A}, C{l}, C{u}, C{H}, C{Cw},
-C{N}, C{fparm}, C{z0}, C{zl} and C{zu} as parameters used to directly extend
-the OPF formulation (see L{opf} for details). Other user-defined fields may
-also be included and will be automatically loaded by the L{loadcase} function
-and, given an appropriate 'savecase' callback function (see
-L{add_userfcn}), saved by the L{savecase} function.
 
 Bus Data Format
 ---------------
@@ -122,6 +104,14 @@ Branch Data Format
   12.  minimum angle difference, angle(Vf) - angle(Vt) (degrees)
   13.  maximum angle difference, angle(Vf) - angle(Vt) (degrees)
 
+Area Data Format
+----------------
+
+(this data is not used by PYPOWER and is no longer necessary for
+version 2 case files with OPF data).
+  1.   C{i}, area number
+  2.   C{price_ref_bus}, reference bus for that area
+
 Generator Cost Data Format
 --------------------------
 
@@ -145,14 +135,6 @@ power costs in the same format.
        C{n+1} coefficients of an C{n}-th order polynomial cost function,
        starting with highest order, where cost is
        C{f(p) = cn*p^n + ... + c1*p + c0}
-
-Area Data Format (deprecated)
------------------------------
-
-(this data is not used by PYPOWER and is no longer necessary for
-version 2 case files with OPF data).
-  1.   C{i}, area number
-  2.   C{price_ref_bus}, reference bus for that area
 
 @see: L{loadcase}, L{savecase}, L{idx_bus}, L{idx_brch}, L{idx_gen},
     L{idx_area} L{idx_cost}

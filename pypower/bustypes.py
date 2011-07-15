@@ -1,18 +1,17 @@
 # Copyright (C) 1996-2011 Power System Engineering Research Center
 # Copyright (C) 2010-2011 Richard Lincoln
 #
-# PYPOWER is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published
-# by the Free Software Foundation, either version 3 of the License,
-# or (at your option) any later version.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# PYPOWER is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Builds index lists of each type of bus.
 """
@@ -23,15 +22,16 @@ from scipy.sparse import csr_matrix as sparse
 from idx_bus import BUS_TYPE, REF, PV, PQ
 from idx_gen import GEN_BUS, GEN_STATUS
 
+
 def bustypes(bus, gen):
     """Builds index lists of each type of bus (C{REF}, C{PV}, C{PQ}).
 
     Generators with "out-of-service" status are treated as L{PQ} buses with
-    zero generation (regardless of C{Pg}/C{Qg} values in gen). Expects C{bus}
-    and C{gen} have been converted to use internal consecutive bus numbering.
+    zero generation (regardless of C{Pg}/C{Qg} values in gen).
 
-    @param bus: bus data
-    @param gen: generator data
+    @param bus: bus data converted to use internal consecutive bus numbering
+    @param gen: generator data converted to use internal consecutive bus
+    numbering
     @return: index lists of each bus type
     """
     # get generator status
