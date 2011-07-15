@@ -50,18 +50,10 @@ def dSbus_dV(Ybus, V):
                = -j * diag(V) * conj(Ybus * diag(V))
                                         + conj(diag(Ibus)) * j * diag(V)
                = j * diag(V) * conj(diag(Ibus) - Ybus * diag(V))
-
-    For more details on the derivations behind the derivative code used
-    in PYPOWER information, see:
-
-    [TN2]  R. D. Zimmerman, "AC Power Flows, Generalized OPF Costs and
-    their Derivatives using Complex Matrix Notation", MATPOWER
-    Technical Note 2, February 2010.
-    U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
     """
-    ib = range(len(V))
-
     if issparse(Ybus):
+        ib = range(len(V))
+
         Ibus = Ybus * V
 
         diagV = sparse((V, (ib, ib)))

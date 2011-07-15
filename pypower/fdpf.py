@@ -40,8 +40,6 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     Uses default options if this parameter is not given. Returns the
     final complex voltages, a flag which indicates whether it converged
     or not, and the number of iterations performed.
-
-    @see: L{runpf}
     """
     if ppopt is None:
         ppopt = ppoption()
@@ -71,10 +69,6 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     ## check tolerance
     normP = linalg.norm(P, Inf)
     normQ = linalg.norm(Q, Inf)
-    if verbose > 0:
-        alg = ppopt['PF_ALG']
-        s = 'XB' if alg == 2 else 'BX'
-        sys.stdout.write('(fast-decoupled, %s)\n' % s)
     if verbose > 1:
         sys.stdout.write('\niteration     max mismatch (p.u.)  ')
         sys.stdout.write('\ntype   #        P            Q     ')

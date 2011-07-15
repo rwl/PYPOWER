@@ -21,6 +21,7 @@ from scipy.sparse import issparse, csr_matrix as sparse
 
 from idx_brch import F_BUS, T_BUS
 
+
 def dSbr_dV(branch, Yf, Yt, V):
     """Computes partial derivatives of power flows w.r.t. voltage.
 
@@ -61,14 +62,6 @@ def dSbr_dV(branch, Yf, Yt, V):
                         + conj(diag(If)) * sparse(range(nl), f, V(f)/abs(V(f)))
 
     Derivations for "to" bus are similar.
-
-    For more details on the derivations behind the derivative code used
-    in PYPOWER information, see:
-
-    [TN2]  R. D. Zimmerman, "AC Power Flows, Generalized OPF Costs and
-    their Derivatives using Complex Matrix Notation", MATPOWER
-    Technical Note 2, February 2010.
-    U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
     """
     ## define
     f = branch[:, F_BUS].astype(int)       ## list of "from" buses

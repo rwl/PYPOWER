@@ -16,7 +16,7 @@
 """Computes partial derivatives of branch currents w.r.t. voltage.
 """
 
-from numpy import diag, asmatrix, asarray
+from numpy import diag, asmatrix, asarray, arange
 from scipy.sparse import issparse, csr_matrix as sparse
 
 
@@ -44,14 +44,14 @@ def dIbr_dV(branch, Yf, Yt, V):
 
     Derivations for "to" bus are similar.
     """
-    i = range(len(V))
+    nb = len(V)
 
     Vnorm = V / abs(V)
-
-    if issparse(Yf):
-        diagV = sparse((V, (i, i)))
-        diagVnorm = sparse((Vnorm, (i, i)))
-    else:
+    if issparse(Yf):             ## sparse version (if Yf is sparse)
+        i = arange(nb)
+        diagV       = sparse((V, (i, i)))
+        diagVnorm   = sparse((Vnorm, (i, i)))
+    else:                        ## dense version
         diagV       = asmatrix( diag(V) )
         diagVnorm   = asmatrix( diag(Vnorm) )
 
@@ -60,7 +60,7 @@ def dIbr_dV(branch, Yf, Yt, V):
     dIt_dVa = Yt * 1j * diagV
     dIt_dVm = Yt * diagVnorm
 
-    # Compute currents.
+    ## compute currents
     if issparse(Yf):
         If = Yf * V
         It = Yt * V

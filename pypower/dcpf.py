@@ -36,7 +36,6 @@ def dcpf(B, Pbus, Va0, ref, pv, pq):
     ## initialize result vector
     Va = copy(Va0)
 
-    ## update angles for non-reference buses
     Va[pvpq] = spsolve(B[pvpq.T, pvpq], Pbus[pvpq] - B[pvpq.T, ref] * Va0[ref])
 
     return Va
