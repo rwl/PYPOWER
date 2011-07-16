@@ -28,8 +28,6 @@ def makeSbus(baseMVA, bus, gen):
 
     Returns the vector of complex bus power injections, that is, generation
     minus load. Power is expressed in per unit.
-
-    @see: L{makeYbus}
     """
     ## generator info
     on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?

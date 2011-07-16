@@ -36,8 +36,6 @@ def makeBdc(baseMVA, bus, branch):
     voltage angles by::
         Pf = Bf * Va + Pfinj
     Does appropriate conversions to p.u.
-
-    @see: L{dcpf}
     """
     ## constants
     nb = bus.shape[0]          ## number of buses

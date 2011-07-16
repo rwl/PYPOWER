@@ -19,7 +19,7 @@
 from sys import stderr
 
 from numpy import ones, conj, nonzero, any, exp, pi, r_
-from scipy.sparse import csr_matrix
+from scipy.sparse import vstack, spdiags, csc_matrix as sparse
 
 from idx_bus import BUS_I, GS, BS
 from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, BR_STATUS, SHIFT, TAP
@@ -33,8 +33,6 @@ def makeYbus(baseMVA, bus, branch):
     vector, yield the vector currents injected into each line from the
     "from" and "to" buses respectively of each line. Does appropriate
     conversions to p.u.
-
-    @see: L{makeSbus}
     """
     ## constants
     nb = bus.shape[0]          ## number of buses
@@ -75,21 +73,21 @@ def makeYbus(baseMVA, bus, branch):
     f = branch[:, F_BUS]                           ## list of "from" buses
     t = branch[:, T_BUS]                           ## list of "to" buses
     ## connection matrix for line & from buses
-    Cf = csr_matrix((ones(nl), (range(nl), f)), (nl, nb))
+    Cf = sparse((ones(nl), (range(nl), f)), (nl, nb))
     ## connection matrix for line & to buses
-    Ct = csr_matrix((ones(nl), (range(nl), t)), (nl, nb))
+    Ct = sparse((ones(nl), (range(nl), t)), (nl, nb))
+
+    Ybus = spdiags(Ysh, 0, nb, nb) + \
+        Cf * spdiags(Yff, 0, nl, nl) * Cf.T + \
+        Cf * spdiags(Yft, 0, nl, nl) * Ct.T + \
+        Ct * spdiags(Ytf, 0, nl, nl) * Cf.T + \
+        Ct * spdiags(Ytt, 0, nl, nl) * Ct.T
 
     ## build Yf and Yt such that Yf * V is the vector of complex branch currents injected
     ## at each branch's "from" bus, and Yt is the same for the "to" bus end
     i = r_[range(nl), range(nl)]                   ## double set of row indices
 
-    Yf = csr_matrix((r_[Yff, Yft], (i, r_[f, t])), (nl, nb))
-    Yt = csr_matrix((r_[Ytf, Ytt], (i, r_[f, t])), (nl, nb))
-    # Yf = spdiags(Yff, 0, nl, nl) * Cf + spdiags(Yft, 0, nl, nl) * Ct
-    # Yt = spdiags(Ytf, 0, nl, nl) * Cf + spdiags(Ytt, 0, nl, nl) * Ct
-
-    ## build Ybus
-    Ybus = Cf.T * Yf + Ct.T * Yt + \
-        csr_matrix((Ysh, (range(nb), range(nb))), (nb, nb))
+    Yf = sparse((vstack([Yff, Yft]), (i, r_[f, t])), (nl, nb))
+    Yt = sparse((vstack([Ytf, Ytt]), (i, r_[f, t])), (nl, nb))
 
     return Ybus, Yf, Yt
