@@ -39,8 +39,6 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     if this parameter is not given. Returns the final complex voltages,
     a flag which indicates whether it converged or not, and the number
     of iterations performed.
-
-    @see: L{runpf}
     """
     ## default arguments
     if ppopt is None:
@@ -70,8 +68,6 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
 
     ## check tolerance
     normF = linalg.norm(F, Inf)
-    if verbose > 0:
-        sys.stdout.write('(Gauss-Seidel)\n')
     if verbose > 1:
         sys.stdout.write('\n it    max P & Q mismatch (p.u.)')
         sys.stdout.write('\n----  ---------------------------')
@@ -120,7 +116,7 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
 
     if verbose:
         if not converged:
-            sys.stdout.write('Gauss-Seidel power did not converge in %d '
-                             'iterations.' % i)
+            sys.stdout.write('\nGauss-Seidel power did not converge in %d '
+                             'iterations.\n' % i)
 
     return V, converged, i

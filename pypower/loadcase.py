@@ -32,7 +32,7 @@ from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
 
 
 def loadcase(casefile,
-        return_as_obj=True, expect_gencost=True, expect_areas=True):
+        return_as_dict=True, expect_opf_data=True):
     """Returns the individual data matrices or an dict containing them
     as values.
 
@@ -56,9 +56,8 @@ def loadcase(casefile,
     assumed to be a PYPOWER case file in version 1 format, and will be
     converted to version 2 format.
     """
-    if return_as_obj == True:
-        expect_gencost = False
-        expect_areas = False
+    if return_as_dict == True:
+        expect_opf_data = False
 
     info = 0
 
@@ -112,7 +111,7 @@ def loadcase(casefile,
                 try:
                     execfile(rootname + extension)
 
-                    try:                      ## assume it returns an object
+                    try:                      ## assume it returns a dict
                         s = eval(fname)()
                     except ValueError, e:
                         info = 4
@@ -121,7 +120,7 @@ def loadcase(casefile,
                     if info == 0 and not isinstance(s, dict):
                         s = {}
                         s['version'] = '1'
-                        if expect_gencost:
+                        if expect_opf_data:
                             try:
                                 s['baseMVA'], s['bus'], s['gen'], s['branch'], \
                                 s['areas'], s['gencost'] = eval(fname)()
@@ -129,7 +128,7 @@ def loadcase(casefile,
                                 info = 4
                                 lasterr = str(e)
                         else:
-                            if return_as_obj:
+                            if return_as_dict:
                                 try:
                                     s['baseMVA'], s['bus'], s['gen'], \
                                         s['branch'], s['areas'], \
@@ -166,17 +165,13 @@ def loadcase(casefile,
     # check contents of dict
     if info == 0:
         # check for required keys
-        if (s['baseMVA'] == None or s['bus'] == None \
-            or s['gen'] == None or s['branch'] == None) or \
-            (expect_gencost and s['gencost'] == None) or \
-            (expect_areas and s['areas'] == None):
+        if ('baseMVA' not in s or 'bus' not in s \
+            or 'gen' not in s or 'branch' not in s) or \
+            (expect_opf_data and 'gencost' not in s or \
+            'areas' not in s):
             info = 5  ## missing some expected fields
             err5 = 'missing data'
         else:
-            ## remove empty areas if not needed
-            if hasattr(s, 'areas') and (len(s['areas']) == 0) and (not expect_areas):
-                del s['areas']
-
             ## all fields present, copy to ppc
             ppc = deepcopy(s)
             if not hasattr(ppc, 'version'):  ## hmm, struct with no 'version' field
@@ -191,33 +186,30 @@ def loadcase(casefile,
                 ppc['version'] = '2'
 
     if info == 0:  # no errors
-        if return_as_obj:
+        if return_as_dict:
             return ppc
         else:
             result = [ppc['baseMVA'], ppc['bus'], ppc['gen'], ppc['branch']]
-            if expect_gencost:
-                if expect_areas:
+            if 'gencost' in ppc:
                     result.extend([ppc['areas'], ppc['gencost']])
-                else:
-                    result.extend([ppc['gencost']])
             return result
     else:  # error encountered
         if info == 1:
-            sys.stderr.write('Input arg should be a case or a string '
-                             'containing a filename\n')
+            raise ValueError, 'Input arg should be a case or a string ' + \
+                              'containing a filename\n'
         elif info == 2:
-            sys.stderr.write('Specified case not a valid file\n')
+            raise ValueError, 'Specified case not a valid file\n'
         elif info == 3:
-            sys.stderr.write('Specified MAT file does not exist\n')
+            raise ValueError, 'Specified MAT file does not exist\n'
         elif info == 4:
-            sys.stderr.write('Specified Python file does not exist\n')
+            raise ValueError, 'Specified Python file does not exist\n'
         elif info == 5:
-            sys.stderr.write('Syntax error or undefined data '
-                             'matrix(ices) in the file\n')
+            raise ValueError, 'Syntax error or undefined data ' + \
+                              'matrix(ices) in the file\n'
         else:
-            sys.stderr.write('Unknown error encountered loading case.\n')
+            raise ValueError, 'Unknown error encountered loading case.\n'
 
-        sys.stderr.write(lasterr + '\n')
+        raise ValueError, lasterr + '\n'
 
         return info
 
@@ -225,11 +217,6 @@ def loadcase(casefile,
 def ppc_1to2(gen, branch):
     ##-----  gen  -----
     ## use the version 1 values for column names
-    if gen.shape[1] >= APF:
-        sys.stderr.write('ppc_1to2: gen matrix appears to already be in '
-                         'version 2 format\n')
-        return gen, branch
-
     shift = MU_PMAX - PMIN - 1
     tmp = array([MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN]) - shift
     mu_Pmax, mu_Pmin, mu_Qmax, mu_Qmin = tmp
