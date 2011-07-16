@@ -305,7 +305,7 @@ def fmincopf(*args):
     Qlim = (gen[vload, QMIN] == 0) * gen[vload, QMAX] + \
         (gen[vload, QMAX] == 0) * gen[vload, QMIN]
     if any( abs( gen[vload, QG] - gen[vload, PG] * Qlim / gen[vload, PMIN] ) > 1e-4 ):
-        errstr = '#s\n' \
+        errstr = '%s\n' \
             'For a dispatchable load, PG and QG must be consistent' \
             'with the power factor defined by PMIN and the Q limits.'
         raise ValueError, errstr
