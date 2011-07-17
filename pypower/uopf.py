@@ -18,11 +18,8 @@
 
 from time import time
 
-from copy import deepcopy
-
 from numpy import flatnonzero as find
 
-from opf_args import opf_args2
 from ppoption import ppoption
 from isload import isload
 from totcost import totcost
@@ -33,7 +30,7 @@ from idx_bus import PD
 from idx_gen import GEN_STATUS, PG, QG, PMIN, MU_PMIN
 
 
-def uopf(*args):
+def uopf(baseMVA, bus, gen, gencost, branch, areas, ppopt=None):
     """Solves combined unit decommitment / optimal power flow.
 
     Solves a combined unit decommitment and optimal power flow for a single
@@ -49,11 +46,9 @@ def uopf(*args):
 
     @see: L{opf}, L{runuopf}
     """
-    ##----- initialization -----
-    t0 = time()                                 ## start timer
-
-    ## process input arguments
-    ppc, ppopt = opf_args2(*args)
+    ## default arguments
+    if ppopt is None:
+        ppopt = ppoption()
 
     ## options
     verbose = ppopt["VERBOSE"]
@@ -61,15 +56,16 @@ def uopf(*args):
         ppopt = ppoption(ppopt, VERBOSE=verbose - 1)
 
     ##-----  do combined unit commitment/optimal power flow  -----
+    t0 = time()                                 ## start timer
 
     ## check for sum(Pmin) > total load, decommit as necessary
-    on   = find( (ppc["gen"][:, GEN_STATUS] > 0) & ~isload(ppc["gen"]) )   ## gens in service
-    onld = find( (ppc["gen"][:, GEN_STATUS] > 0) &  isload(ppc["gen"]) )   ## disp loads in serv
-    load_capacity = sum(ppc["bus"][:, PD]) - sum(ppc["gen"][onld, PMIN])   ## total load capacity
-    Pmin = ppc["gen"][on, PMIN]
+    on   = find( (gen[:, GEN_STATUS] > 0) & ~isload(gen) )   ## gens in service
+    onld = find( (gen[:, GEN_STATUS] > 0) &  isload(gen) )   ## disp loads in serv
+    load_capacity = sum(bus[:, PD]) - sum(gen[onld, PMIN])   ## total load capacity
+    Pmin = gen[on, PMIN]
     while sum(Pmin) > load_capacity:
         ## shut down most expensive unit
-        avgPmincost = totcost(ppc["gencost"][on, :], Pmin) / Pmin
+        avgPmincost = totcost(gencost[on, :], Pmin) / Pmin
         _, i = fairmax(avgPmincost)   ## pick one with max avg cost at Pmin
         i = on[i]                     ## convert to generator index
 
@@ -77,25 +73,33 @@ def uopf(*args):
             print 'Shutting down generator %d so all Pmin limits can be satisfied.\n' % i
 
         ## set generation to zero
-        ppc["gen"][i, [PG, QG, GEN_STATUS]] = 0
+        gen[i, [PG, QG, GEN_STATUS]] = 0
 
         ## update minimum gen capacity
-        on  = find( (ppc["gen"][:, GEN_STATUS] > 0) & ~isload(ppc["gen"]) )   ## gens in service
-        Pmin = ppc["gen"][on, PMIN]
+        on  = find( (gen[:, GEN_STATUS] > 0) & ~isload(gen) )   ## gens in service
+        Pmin = gen[on, PMIN]
 
     ## run initial opf
-    results = opf(ppc, ppopt)
+    bus, gen, branch, f, success, _, _ = opf(baseMVA, bus, gen, branch,
+                                   areas, gencost, ppopt)
 
     ## best case so far
-    results1 = deepcopy(results)
+    bus1 = bus.copy()
+    gen1 = gen.copy()
+    branch1 = branch.copy()
+    success1 = success
+    f1 = f
 
     ## best case for this stage (ie. with n gens shut down, n=0,1,2 ...)
-    results0 = deepcopy(results1)
-    ppc["bus"] = results0["bus"].copy()     ## use these V as starting point for OPF
+    bus0 = bus1.copy()
+    gen0 = gen1.copy()
+    branch0 = branch1.copy()
+    success0 = success1
+    f0 = f1
 
     while True:
         ## get candidates for shutdown
-        candidates = find((results0["gen"][:, MU_PMIN] > 0) & (results0["gen"][:, PMIN] > 0))
+        candidates = find((gen0[:, MU_PMIN] > 0) & (gen0[:, PMIN] > 0))
         if len(candidates) == 0:
             break
 
@@ -105,17 +109,22 @@ def uopf(*args):
 
         for k in candidates:
             ## start with best for this stage
-            ppc["gen"] = results0["gen"].copy()
+            gen = gen0.copy()
 
             ## shut down gen k
-            ppc["gen"][k, [PG, QG, GEN_STATUS]] = 0
+            gen[k, [PG, QG, GEN_STATUS]] = 0
 
             ## run opf
-            results = opf(ppc, ppopt)
+            bus, gen, branch, f, success, _, _ = opf(baseMVA, bus0, gen, branch0,
+                                           areas, gencost, ppopt)
 
             ## something better?
-            if results['success'] and (results["f"] < results1["f"]):
-                results1 = deepcopy(results)
+            if success and (f < f1):
+                bus1 = bus.copy()
+                gen1 = gen.copy()
+                branch1 = branch.copy()
+                success1 = success
+                f1 = f
                 k1 = k
                 done = False   ## make sure we check for further decommitment
 
@@ -127,13 +136,13 @@ def uopf(*args):
             if verbose:
                 print 'Shutting down generator %d.\n' % k1
 
-            results0 = deepcopy(results1)
-            ppc["bus"] = results0["bus"].copy()     ## use these V as starting point for OPF
+            bus0 = bus1.copy()
+            gen0 = gen1.copy()
+            branch0 = branch1.copy()
+            success0 = success1
+            f0 = f1
 
     ## compute elapsed time
     et = time() - t0
 
-    ## finish preparing output
-    results0['et'] = et
-
-    return results0
+    return bus0, gen0, branch0, f0, success0, et
