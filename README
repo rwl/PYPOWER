@@ -86,7 +86,6 @@ Links
 .. _MATPOWER: http://www.pserc.cornell.edu/matpower/
 .. _Git: http://git-scm.com/
 .. _GitHub: http://github.com/rwl/PYPOWER
-.. _`GNU General Public License`: http://www.gnu.org/licenses/
 .. _`API documentation`: http://www.pypower.org/api
 .. _PyCIM: http://www.pycim.org
 .. _MatDyn: http://www.esat.kuleuven.be/electa/teaching/matdyn/

@@ -32,9 +32,9 @@ def pfsoln(baseMVA, bus0, gen0, branch0, Ybus, Yf, Yt, V, ref, pv, pq):
     """Updates bus, gen, branch data structures to match power flow soln.
     """
     ## initialize return values
-    bus     = bus0
-    gen     = gen0
-    branch  = branch0
+    bus     = bus0.copy()
+    gen     = gen0.copy()
+    branch  = branch0.copy()
 
     ##----- update bus voltages -----
     bus[:, VM] = abs(V)

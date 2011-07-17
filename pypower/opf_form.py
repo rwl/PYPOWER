@@ -1,5 +1,5 @@
-# Copyright (C) 2010-2011 Power System Engineering Research Center
-# Copyright (C) 2009-2011 Richard Lincoln
+# Copyright (C) 1996-2011 Power System Engineering Research Center
+# Copyright (C) 2010-2011 Richard Lincoln
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""PIPS version info.
+"""Which OPF formulation is used by alg.
 """
 
-def pipsver(*args):
-    """ Returns PIPS version info for current installation.
-    """
-    ver = {'Name': 'PIPS',
-           'Version': '1.0',
-           'Release':  '',
-           'Date': '07-Feb-2011'}
+from numpy import fix
 
-    return ver
+
+def opf_form(alg):
+    """Which OPF formulation is used by alg.
+
+    Returns a formulation code given an algorithm code.
+    The codes are:
+        1 - standard, polynomial costs handled in the objective function
+        2 - CCV, piece-wise linear costs handled via constrainted cost vars
+        5 - generalized, includes both of above and more
+    """
+    return fix(alg / 100)

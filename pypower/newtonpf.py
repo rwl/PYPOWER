@@ -43,8 +43,6 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     this parameter is not given. Returns the final complex voltages, a
     flag which indicates whether it converged or not, and the number of
     iterations performed.
-
-    @see: L{runpf}
     """
     ## default arguments
     if ppopt is None:

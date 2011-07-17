@@ -32,7 +32,6 @@ from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, RATE_A, \
     TAP, SHIFT, BR_STATUS, PF, QF, PT, QT, MU_SF, MU_ST
 
 from isload import isload
-from run_userfcn import run_userfcn
 from ppoption import ppoption
 
 
@@ -43,58 +42,16 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     Prints power flow and optimal power flow results to C{fd} (a file
     descriptor which defaults to C{stdout}), with the details of what
     gets printed controlled by the optional C{ppopt} argument, which is a
-    PYPOWER options vector (see L{ppoption} for details).
-
-    The data can either be supplied in a single C{results} dict, or
-    in the individual arguments: C{baseMVA}, C{bus}, C{gen}, C{branch}, C{f},
-    C{success} and C{et}, where C{f} is the OPF objective function value,
-    C{success} is C{True} if the solution converged and C{False} otherwise,
-    and C{et} is the elapsed time for the computation in seconds. If C{f} is
-    given, it is assumed that the output is from an OPF run, otherwise it is
-    assumed to be a simple power flow run.
-
-    Examples::
-        ppopt = ppoptions(OUT_GEN=1, OUT_BUS=0, OUT_BRANCH=0)
-        fd = open(fname, 'w+b')
-        results = runopf(ppc)
-        printpf(results)
-        printpf(results, fd)
-        printpf(results, fd, ppopt)
-        printpf(baseMVA, bus, gen, branch, f, success, et)
-        printpf(baseMVA, bus, gen, branch, f, success, et, fd)
-        printpf(baseMVA, bus, gen, branch, f, success, et, fd, ppopt)
-        fd.close()
+    PYPOWER options vector (see L{ppoption} for details). Uses default
+    options if this parameter is not given. The objective function value
+    is given in f and the elapsed time (seconds to compute opf) in et.
     """
     ##----- initialization -----
     ## default arguments
-    if isinstance(baseMVA, dict):
-        have_results_struct = 1
-        results = baseMVA
-        if gen is None:
-            ppopt = ppoption()   ## use default options
-        else:
-            ppopt = gen
-        if (ppopt['OUT_ALL'] == 0) and (ppopt['OUT_RAW'] == 0):
-            return     ## nothin' to see here, bail out now
-        if bus is None:
+    if ppopt is None:
+        ppopt = ppoption()   ## use default options
+        if fd is None:
             fd = stdout         ## print to stdout by default
-        else:
-            fd = bus
-        baseMVA, bus, gen, branch, success, et = \
-            results["baseMVA"], results["bus"], results["gen"], \
-            results["branch"], results["success"], results["et"]
-        if 'f' in results:
-            f = results["f"]
-        else:
-            f = None
-    else:
-        have_results_struct = 0
-        if ppopt is None:
-            ppopt = ppoption()   ## use default options
-            if fd is None:
-                fd = stdout         ## print to stdout by default
-        if ppopt['OUT_ALL'] == 0 and ppopt['OUT_RAW'] == 0:
-            return     ## nothin' to see here, bail out now
 
     isOPF = f is not None    ## FALSE -> only simple PF data, TRUE -> OPF data
 
@@ -687,10 +644,6 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                         fd.write('      -   ')
                     fd.write('%6d' % branch[i, T_BUS])
             fd.write('\n')
-
-    ## execute userfcn callbacks for 'printpf' stage
-    if have_results_struct & results.has_key('userfcn'):
-        run_userfcn(results["userfcn"], 'printpf', results, fd, ppopt)
 
     ## print raw data for Perl database interface
     if OUT_RAW:

@@ -16,8 +16,6 @@
 """Splits the gencost variable into two pieces if costs are given for Qg.
 """
 
-from sys import stderr
-
 from numpy import array, arange
 
 
@@ -41,6 +39,6 @@ def pqcost(gencost, ng, on=None):
         pcost = gencost[on, :]
         qcost = gencost[on + ng, :]
     else:
-        stderr.write('pqcost: gencost has wrong number of rows\n')
+        raise ValueError, 'pqcost: gencost has wrong number of rows\n'
 
     return pcost, qcost
