@@ -31,7 +31,7 @@ from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
 
 
 def loadcase(casefile,
-        return_as_dict=True, expect_opf_data=True):
+        return_as_dict=False, expect_opf_data=True):
     """Returns the individual data matrices or an dict containing them
     as values.
 

@@ -16,7 +16,7 @@
 """Runs a power flow.
 """
 
-from sys import stdout, stderr
+from sys import stderr
 
 from time import time
 
@@ -84,18 +84,10 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     dc = ppopt["PF_DC"]             ## use DC formulation?
 
     ## read data
-    ppc = loadcase(casedata)
-
-    ## add zero columns to branch for flows if needed
-    if ppc["branch"].shape[1] < QT:
-        ppc["branch"] = c_[ppc["branch"],
-                           zeros((ppc["branch"].shape[0],
-                                  QT - ppc["branch"].shape[1] + 1))]
+    baseMVA, bus, gen, branch = loadcase(casedata, expect_opf_data=False)
 
     ## convert to internal indexing
-    ppc = ext2int(ppc)
-    baseMVA, bus, gen, branch = \
-        ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"]
+    i2e, bus, gen, branch = ext2int(bus, gen, branch)
 
     ## get bus index lists of each type of bus
     ref, pv, pq = bustypes(bus, gen)
@@ -106,14 +98,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
 
     ##-----  run the power flow  -----
     t0 = time()
-    if verbose > 0:
-        v = ppver('all')
-        stdout.write('PYPOWER Version %s, %s' % (v["Version"], v["Date"]))
-
     if dc:                               # DC formulation
-        if verbose:
-            stdout.write(' -- DC Power Flow\n')
-
         ## initial state
         Va0 = bus[:, VA] * (pi / 180)
 
@@ -141,9 +126,6 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
 
         success = 1
     else:                                ## AC formulation
-        if verbose > 0:
-            stdout.write(' -- AC Power Flow ')    ## solver name and \n added later
-
         ## initial state
         # V0    = ones(bus.shape[0])            ## flat start
         V0  = bus[:, VM] * exp(1j * pi/180 * bus[:, VA])
@@ -173,9 +155,9 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
             elif alg == 4:
                 V, success, _ = gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt)
             else:
-                stderr.write('Only Newton''s method, fast-decoupled, and '
-                             'Gauss-Seidel power flow algorithms currently '
-                             'implemented.\n')
+                raise ValueError, 'Only Newton''s method, fast-decoupled, and ' + \
+                             'Gauss-Seidel power flow algorithms currently ' + \
+                             'implemented.\n'
 
             ## update data matrices with solution
             bus, gen, branch = pfsoln(baseMVA, bus, gen, branch, Ybus, Yf, Yt, V, ref, pv, pq)
@@ -251,39 +233,30 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
                 ## adjust voltage angles to make original ref bus correct
                 bus[:, VA] = bus[:, VA] - bus[ref0, VA] + Varef0
 
-    ppc["et"] = time() - t0
-    ppc["success"] = success
+    et = time() - t0
 
     ##-----  output results  -----
     ## convert back to original bus numbering & print results
-    ppc["bus"], ppc["gen"], ppc["branch"] = bus, gen, branch
-    results = int2ext(ppc)
-
-    ## zero out result fields of out-of-service gens & branches
-    if len(results["order"]["gen"]["status"]["off"]) > 0:
-        results["gen"][ix_(results["order"]["gen"]["status"]["off"], [PG, QG])] = 0
-
-    if len(results["order"]["branch"]["status"]["off"]) > 0:
-        results["branch"][ix_(results["order"]["branch"]["status"]["off"], [PF, QF, PT, QT])] = 0
+    bus, gen, branch = int2ext(i2e, bus, gen, branch)
 
     if fname:
         fd = None
         try:
             fd = open(fname, "wb")
         except Exception, detail:
-            stderr.write("Error opening %s: %s.\n" % (fname, detail))
+            raise IOError, "Error opening %s: %s.\n" % (fname, detail)
         finally:
             if fd is not None:
-                printpf(results, fd, ppopt)
+                printpf(baseMVA, bus, gen, branch, None, success, et, 1, ppopt)
                 fd.close()
 
-    printpf(results, stdout, ppopt)
+    printpf(baseMVA, bus, gen, branch, None, success, et, 1, ppopt)
 
     ## save solved case
     if solvedcase:
-        savecase(solvedcase, results)
+        savecase(solvedcase, baseMVA, bus, gen, branch)
 
-    return results, success
+    return baseMVA, bus, gen, branch, success, et
 
 
 if __name__ == '__main__':

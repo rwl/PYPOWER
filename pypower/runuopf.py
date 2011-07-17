@@ -18,22 +18,30 @@
 
 from sys import stderr
 
-from ppoption import ppoption
-from uopf import uopf
-from printpf import printpf
-from savecase import savecase
+from pypower.ppoption import ppoption
+from pypower.uopf import uopf
+from pypower.printpf import printpf
+from pypower.savecase import savecase
+from pypower.loadcase import loadcase
+from pypower.ext2int import ext2int
+from pypower.int2ext import int2ext
 
 
-def runuopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def runuopf(casename='case9', ppopt=None, fname='', solvedcase=''):
     """Runs an optimal power flow with unit-decommitment heuristic.
-
-    @see: L{rundcopf}, L{runuopf}
     """
     ## default arguments
     ppopt = ppoption(ppopt)
 
-    ##-----  run the unit de-commitment / optimal power flow  -----
-    r = uopf(casedata, ppopt)
+    ## read data & convert to internal bus numbering
+    baseMVA, bus, gen, branch, areas, gencost = loadcase(casename)
+    i2e, bus, gen, branch, areas = ext2int(bus, gen, branch, areas)
+
+    ## run unit commitment / optimal power flow
+    bus, gen, branch, f, success, et = uopf(baseMVA, bus, gen, gencost, branch, areas, ppopt)
+
+    ## convert back to original bus numbering & print results
+    bus, gen, branch, areas = int2ext(i2e, bus, gen, branch, areas)
 
     ##-----  output results  -----
     if fname:
@@ -44,13 +52,13 @@ def runuopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
             stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
             if fd is not None:
-                printpf(r, fd, ppopt)
+                printpf(baseMVA, bus, gen, branch, f, success, et, fd, ppopt)
                 fd.close()
 
-    printpf(r, ppopt=ppopt)
+    printpf(baseMVA, bus, gen, branch, f, success, et, fd, ppopt)
 
     ## save solved case
     if solvedcase:
-        savecase(solvedcase, r)
+        savecase(solvedcase, solvedcase, baseMVA, bus, gen, branch, areas, gencost)
 
-    return r
+    return baseMVA, bus, gen, gencost, branch, f, success, et

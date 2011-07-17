@@ -19,10 +19,9 @@
 from ppoption import ppoption
 from runopf import runopf
 
+
 def rundcopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     """Runs a DC optimal power flow.
-
-    @see: L{runopf}, L{runduopf}
     """
     ## default arguments
     ppopt = ppoption(ppopt, PF_DC=True)

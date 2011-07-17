@@ -26,8 +26,6 @@ from savecase import savecase
 
 def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     """Runs an optimal power flow.
-
-    @see: L{rundcopf}, L{runuopf}
     """
     ## default arguments
     ppopt = ppoption(ppopt)

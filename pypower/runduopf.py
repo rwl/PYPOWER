@@ -22,8 +22,6 @@ from runuopf import runuopf
 
 def runduopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     """Runs a DC optimal power flow with unit-decommitment heuristic.
-
-    @see: L{rundcopf}, L{runuopf}
     """
     ## default arguments
     ppopt = ppoption(ppopt, PF_DC=True)
