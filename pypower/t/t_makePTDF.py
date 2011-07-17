@@ -24,7 +24,7 @@ from scipy.sparse import csr_matrix as sparse
 
 from pypower.ppoption import ppoption
 from pypower.rundcopf import rundcopf
-from pypower.ext2int import ext2int1
+from pypower.ext2int import ext2int
 from pypower.makePTDF import makePTDF
 from pypower.idx_gen import GEN_BUS, PG
 from pypower.idx_bus import PD
@@ -47,9 +47,8 @@ def t_makePTDF(quiet=False):
 
     ## load case
     ppopt = ppoption(VERBOSE=verbose, OUT_ALL=0)
-    r = rundcopf(casefile, ppopt)
-    baseMVA, bus, gen, branch = r['baseMVA'], r['bus'], r['gen'], r['branch']
-    _, bus, gen, branch = ext2int1(bus, gen, branch)
+    baseMVA, bus, gen, branch = rundcopf(casefile, ppopt)
+    _, bus, gen, branch = ext2int(bus, gen, branch)
     nb  = bus.shape[0]
     nbr = branch.shape[0]
     ng  = gen.shape[0]

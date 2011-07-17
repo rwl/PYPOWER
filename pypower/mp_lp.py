@@ -22,6 +22,8 @@ from numpy import array, r_, zeros, ones, flatnonzero as find
 
 from scipy.sparse import issparse, csc_matrix as sparse
 
+from pypower.have_fcn import have_fcn
+
 
 def mp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
     """Linear program solver.

@@ -24,8 +24,8 @@ from pypower.api import \
     ppver, ppoption, runpf, runopf, runuopf, runopf_w_res
 
 from pypower.api import \
-    case4gs, case6ww, case9, case9Q, case14, case24_ieee_rts, case30, \
-    case30Q, case30pwl, case39, case57, case118, case300, t_case30_userfcns
+    case4gs, case6ww, case9, case9Q, case14, case30, \
+    case30Q, case30pwl, case39, case57, case118, case300
 
 from pypower.ppoption import \
     PF_OPTIONS, OPF_OPTIONS, OUTPUT_OPTIONS, PDIPM_OPTIONS
@@ -39,10 +39,9 @@ AFFIRMATIVE = ('True', 'Yes', 'true', 'yes', '1', 'Y', 'y')
 NEGATIVE = ('False', 'No', 'false', 'no', '0', 'N', 'n')
 
 CASES = {'case4gs': case4gs, 'case6ww': case6ww, 'case9': case9,
-    'case9Q': case9Q, 'case14': case14, 'case24_ieee_rts': case24_ieee_rts,
+    'case9Q': case9Q, 'case14': case14,
     'case30': case30, 'case30Q': case30Q, 'case30pwl': case30pwl,
-    'case39': case39, 'case57': case57, 'case118': case118, 'case300': case300,
-    'case30_userfcns': t_case30_userfcns}
+    'case39': case39, 'case57': case57, 'case118': case118, 'case300': case300}
 
 
 def option_callback(option, opt, value, parser, *args, **kw_args):

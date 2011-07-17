@@ -16,7 +16,9 @@
 """Tests if two matrices are identical to some tolerance.
 """
 
-from numpy import array, max, abs, nonzero, argmax, zeros
+from sys import stdout
+
+from numpy import array, max, abs
 
 from pypower.t.t_ok import t_ok
 from pypower.t.t_globals import TestGlobals
@@ -52,47 +54,13 @@ def t_is(got, expected, prec=5, msg=''):
 
     t_ok(condition, msg)
     if (not condition and not TestGlobals.t_quiet):
-        s = ''
+
         if max_diff != 0:
-            idx = nonzero(abs(got_minus_expected) >= 10**(-prec))
-            if len(idx) == 1:  # 1D array
-                idx = (idx[0], zeros( len(got_minus_expected) ))
-            i, j = idx
-
-            k = i + (j-1) * expected.shape[0]
-
-            got = got.flatten()
-            expected = expected.flatten()
-            got_minus_expected = got_minus_expected.flatten()
-
-            kk = argmax( abs(got_minus_expected[ k.astype(int) ]) )
-
-            s += '  row     col          got             expected          got - exp\n'
-            s += '-------  ------  ----------------  ----------------  ----------------'
-            for u in range(len(i)):
-                s += '\n%6d  %6d  %16g  %16g  %16g' % \
-                    (i[u], j[u], got[k[u]], expected[k[u]], got_minus_expected[k[u]])
-                if u == kk:
-                    s += '  *'
-            s += '\nmax diff @ (%d,%d) = %g > allowed tol of %g\n\n' % \
-                (i[kk], j[kk], max_diff, 10**(-prec))
-        else:
-            s += '    dimension mismatch:\n'
-
-            if len(got.shape) == 1:  # 1D array
-                s += '             got: %d\n' % got.shape
-            else:
-                s += '             got: %d x %d\n' % got.shape
-
-            if len(expected.shape) == 1:  # 1D array
-                s += '        expected: %d\n' % expected.shape
-            else:
-                s += '        expected: %d x %d\n' % expected.shape
-
-        print s
-
-if __name__ == '__main__':
-    a = array([[1,2,3], [4,5,6]])
-    b = array([[2,3,4], [5,6,7]])
-    TestGlobals.t_quiet = False
-    t_is(a, b)
+            print got
+            print expected
+            print got_minus_expected
+            stdout.write('max diff = %g (allowed tol = %g)\n\n' % (max_diff, 10**(-prec)))
+    else:
+        stdout.write('    dimension mismatch:\n')
+        stdout.write('             got: %d x %d\n' % got.shape)
+        stdout.write('        expected: %d x %d\n\n' % expected.shape)

@@ -13,20 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for code in auction.py, using PIPS solver.
+"""Tests for code in auction.py, using IPOPT solver.
 """
 
-from numpy import array, copy, ones, diag, flatnonzero as find
+from numpy import array, zeros, ones, diag, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
 from pypower.ppoption import ppoption
+from pypower.isload import isload
+
+from pypower.idx_bus import LAM_P
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
+from pypower.t.t_skip import t_skip
+from pypower.t.t_end import t_end
 
 
 def t_auction_pips(quiet=False):
-    """Tests for code in auction.py, using PIPS solver.
+    """Tests for code in auction.py, using IPOPT solver.
     """
     n_tests = 183
 
@@ -76,7 +81,7 @@ def t_auction_pips(quiet=False):
 
     t = 'one marginal offer @ $50, auction_type = 5'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1150, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1150, 100, [], [], ppopt)
     cq5 = cq.copy()
     cp5 = cp.copy()
     i2e = bus.bus_i
@@ -109,14 +114,14 @@ def t_auction_pips(quiet=False):
 
     t = 'one marginal offer @ $50, auction_type = 1'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1110, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1110, 100, [], [], ppopt)
     cp1 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5, 6, [t, ' : prices'] )
 
     t = 'one marginal offer @ $50, auction_type = 2'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1120, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1120, 100, [], [], ppopt)
     cp2 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G, :], cp5[G, :] * fro_X, 8, [t, ' : gen prices'] )
@@ -125,14 +130,14 @@ def t_auction_pips(quiet=False):
 
     t = 'one marginal offer @ $50, auction_type = 3'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1130, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1130, 100, [], [], ppopt)
     cp3 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5 * lab_X, 8, [t, ' : prices'] )
 
     t = 'one marginal offer @ $50, auction_type = 4'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1140, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1140, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G[0], :], p[G[0], 1], 8, [t, ' : gen 1 price'] )
     t_is( cp[G[1:6], :], cp5[G[1:6], :] * frb_X, 8, [t, ' : gen 2-6 prices'] )
@@ -140,7 +145,7 @@ def t_auction_pips(quiet=False):
 
     t = 'one marginal offer @ $50, auction_type = 6'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1160, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1160, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp3, 8, [t, ' : prices'] )
     p2 = p.copy()
@@ -150,28 +155,28 @@ def t_auction_pips(quiet=False):
         [100, 100,   0]
     ])
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1160, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1160, 100, [], [], ppopt)
     t_is( cq, cq5, 5, [t, ' : quantities'] )
     t_is( cp[G, :], cp5[G, :] * fro_X, 4, [t, ' : gen prices'] )
     t_is( cp[L, :], cp5[L, :] * fro_X, 4, [t, ' : load prices'] ) ## load 3 not clipped as in FRO
 
     t = 'one marginal offer @ $50, auction_type = 7'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1170, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1170, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5 * (lao_X + lab_X) / 2, 8, [t, ' : prices'] )
     t_is( cp, (cp1 + cp3) / 2, 8, [t, ' : prices'] )
 
     t = 'one marginal offer @ $50, auction_type = 8'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1180, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1180, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G, :], cp1[G, :], 8, [t, ' : gen prices'] )
     t_is( cp[L, :], cp3[L, :], 8, [t, ' : load prices'] )
 
     t = 'one marginal offer @ $50, auction_type = 0'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1100, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1100, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, p, 8, [t, ' : prices'] )
 
@@ -180,7 +185,7 @@ def t_auction_pips(quiet=False):
     p[L[1], 1] = 55
     t = 'one marginal bid @ $55, auction_type = 5'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1150, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1150, 100, [], [], ppopt)
     cq5 = cq.copy()
     cp5 = cp.copy()
     Qfudge =  zeros(p.shape)
@@ -205,14 +210,14 @@ def t_auction_pips(quiet=False):
 
     t = 'one marginal bid @ $55, auction_type = 1'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1110, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1110, 100, [], [], ppopt)
     cp1 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5 * lao_X, 8, [t, ' : prices'] )
 
     t = 'one marginal bid @ $55, auction_type = 2'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1120, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1120, 100, [], [], ppopt)
     cp2 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G, :], cp5[G, :] * fro_X, 8, [t, ' : gen prices'] )
@@ -222,14 +227,14 @@ def t_auction_pips(quiet=False):
 
     t = 'one marginal bid @ $55, auction_type = 3'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1130, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1130, 100, [], [], ppopt)
     cp3 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5, 7, [t, ' : prices'] )
 
     t = 'one marginal bid @ $55, auction_type = 4'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1140, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1140, 100, [], [], ppopt)
     cp4 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G[0], :], 50, 5, [t, ' : gen 1 price'] )
@@ -238,7 +243,7 @@ def t_auction_pips(quiet=False):
 
     t = 'one marginal bid @ $55, auction_type = 6'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1160, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1160, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp1, 8, [t, ' : prices'] )
 
@@ -252,28 +257,28 @@ def t_auction_pips(quiet=False):
         [0, 0, 100]
     ])
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1160, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1160, 100, [], [], ppopt)
     t_is( cq, cq5, 3, [t, ' : quantities'] )
     t_is( cp[G, :], cp5[G, :] * frb_X, 3, [t, ' : gen prices'] )  ## gen 1, not clipped this time
     t_is( cp[L, :], cp4[L, :], 3, [t, ' : load prices'] )
 
     t = 'one marginal bid @ $55, auction_type = 7'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1170, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1170, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5 * (lao_X + lab_X) / 2, 8, [t, ' : prices'] )
     t_is( cp, (cp1 + cp3) / 2, 8, [t, ' : prices'] )
 
     t = 'one marginal bid @ $55, auction_type = 8'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1180, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1180, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G, :], cp1[G, :], 8, [t, ' : gen prices'] )
     t_is( cp[L, :], cp3[L, :], 8, [t, ' : load prices'] )
 
     t = 'one marginal bid @ $55, auction_type = 0'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1100, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1100, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, p, 8, [t, ' : prices'] )
 
@@ -282,7 +287,7 @@ def t_auction_pips(quiet=False):
     p[L[1], 1] = 54.5
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 5'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1150, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1150, 100, [], [], ppopt)
     cq5 = cq.copy()
     cp5 = cp.copy()
     Qfudge =  zeros(p.shape)
@@ -307,14 +312,14 @@ def t_auction_pips(quiet=False):
 
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 1'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1110, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1110, 100, [], [], ppopt)
     cp1 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5, 4, [t, ' : prices'] )
 
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 2'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1120, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1120, 100, [], [], ppopt)
     cp2 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G, :], cp5[G, :] * fro_X, 5, [t, ' : gen prices'] )
@@ -324,14 +329,14 @@ def t_auction_pips(quiet=False):
 
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 3'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1130, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1130, 100, [], [], ppopt)
     cp3 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5, 6, [t, ' : prices'] )
 
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 4'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1140, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1140, 100, [], [], ppopt)
     cp4 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G[0], :], 50, 5, [t, ' : gen 1 price'] )
@@ -341,25 +346,25 @@ def t_auction_pips(quiet=False):
 
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 6'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1160, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1160, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5, 4, [t, ' : prices'] )
 
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 7'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1170, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1170, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5, 4, [t, ' : prices'] )
 
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 8'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1180, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1180, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5, 4, [t, ' : prices'] )
 
     t = 'marginal offer @ $50, bid @ $54.50, auction_type = 0'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1100, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1100, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, p, 8, [t, ' : prices'] )
 
@@ -370,7 +375,7 @@ def t_auction_pips(quiet=False):
     p2 = p.copy()
     p2[G[0], 1:3] = [65, 65]
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1150, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1150, 100, [], [], ppopt)
     Qfudge =  zeros(p.shape)
     Qfudge[L, :] = diag(gen.Qg[L] / gen.Pg[L] * bus.lam_Q[Lbus]) * ones(p[L, :].shape)
 
@@ -393,7 +398,7 @@ def t_auction_pips(quiet=False):
 
     t = 'gen 1 @ Pmin, marginal bid @ $60, auction_type = 1'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1110, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1110, 100, [], [], ppopt)
     cp1 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G[0], :], 65, 8, [t, ' : gen 1 price'] )
@@ -402,7 +407,7 @@ def t_auction_pips(quiet=False):
 
     t = 'gen 1 @ Pmin, marginal bid @ $60, auction_type = 2'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1120, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1120, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G[0], :], 65, 8, [t, ' : gen 1 price'] )
     t_is( cp[G[1:6], :], cp_lam[G[1:6], :] * fro_X, 8, [t, ' : gen 2-6 prices'] )
@@ -411,7 +416,7 @@ def t_auction_pips(quiet=False):
 
     t = 'gen 1 @ Pmin, marginal bid @ $60, auction_type = 3'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1130, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1130, 100, [], [], ppopt)
     cp3 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G[0], :], 65, 8, [t, ' : gen 1 price'] )
@@ -420,7 +425,7 @@ def t_auction_pips(quiet=False):
 
     t = 'gen 1 @ Pmin, marginal bid @ $60, auction_type = 4'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1140, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1140, 100, [], [], ppopt)
     cp4 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G[0], :], 65, 5, [t, ' : gen 1 price'] )
@@ -429,13 +434,13 @@ def t_auction_pips(quiet=False):
 
     t = 'gen 1 @ Pmin, marginal bid @ $60, auction_type = 6'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1160, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1160, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp4, 8, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal bid @ $60, auction_type = 7'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1170, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1170, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G[0], :], 65, 4, [t, ' : gen 1 price'] )
     t_is( cp[G[1:6], :], cp_lam[G[1:6], :] * (lao_X + lab_X) / 2, 8, [t, ' : gen 2-6 prices'] )
@@ -444,14 +449,14 @@ def t_auction_pips(quiet=False):
 
     t = 'gen 1 @ Pmin, marginal bid @ $60, auction_type = 8'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1180, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1180, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G, :], cp1[G, :], 8, [t, ' : prices'] )
     t_is( cp[L, :], cp3[L, :], 8, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal bid @ $60, auction_type = 0'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1100, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1100, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, p2, 8, [t, ' : prices'] )
 
@@ -464,7 +469,7 @@ def t_auction_pips(quiet=False):
         [100, 100,   0]
     ])
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1150, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1150, 100, [], [], ppopt)
     Qfudge =  zeros(p.shape)
     Qfudge[L, :] = diag(gen.Qg[L] / gen.Pg[L] * bus.lam_Q[Lbus]) * ones(p[L, :].shape)
 
@@ -487,54 +492,54 @@ def t_auction_pips(quiet=False):
 
     t = 'gen 1 @ Pmin, marginal offer @ $60, auction_type = 1'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1110, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1110, 100, [], [], ppopt)
     cp1 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp5, 6, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal offer @ $60, auction_type = 2'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1120, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1120, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp_lam * fro_X, 8, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal offer @ $60, auction_type = 3'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1130, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1130, 100, [], [], ppopt)
     cp3 = cp.copy()
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp_lam * lab_X, 8, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal offer @ $60, auction_type = 4'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1140, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1140, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G, 0], [654042444660], 4, [t, ' : gen prices'] )
     t_is( cp[L, :], cp_lam[L, :] * frb_X, 8, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal offer @ $60, auction_type = 6'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1160, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1160, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp_lam * fro_X, 8, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal offer @ $60, auction_type = 7'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1170, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1170, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, cp_lam * (lao_X + lab_X) / 2, 8, [t, ' : prices'] )
     t_is( cp, (cp_lam + cp3) / 2, 7, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal offer @ $60, auction_type = 8'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1180, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1180, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp[G, :], cp5[G, :], 7, [t, ' : prices'] )
     t_is( cp[L, :], cp3[L, :], 8, [t, ' : prices'] )
 
     t = 'gen 1 @ Pmin, marginal offer @ $60, auction_type = 0'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p2, 1100, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p2, 1100, 100, [], [], ppopt)
     t_is( cq, cq5, 8, [t, ' : quantities'] )
     t_is( cp, p2, 8, [t, ' : prices'] )
 
@@ -544,7 +549,7 @@ def t_auction_pips(quiet=False):
 
     t = 'price of decommited gen, auction_type = 5'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1150, 200, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1150, 200, [], [], ppopt)
     cp5 = cp.copy()
     Qfudge =  zeros(p.shape)
     Qfudge[L, :] = diag(gen.Qg[L] / gen.Pg[L] * bus.lam_Q[Lbus]) * ones(p[L, :].shape)
@@ -574,37 +579,37 @@ def t_auction_pips(quiet=False):
 
     t = 'price of decommited gen, auction_type = 1'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1110, 200, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1110, 200, [], [], ppopt)
     t_is(cp[1, 0], 59.194, 3, t)
 
     t = 'price of decommited gen, auction_type = 2'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1120, 200, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1120, 200, [], [], ppopt)
     t_is(cp[1, 0], cp5[1, 0] * fro_X, 3, t)
 
     t = 'price of decommited gen, auction_type = 3'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1130, 200, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1130, 200, [], [], ppopt)
     t_is(cp[1, 0], cp5[1, 0] * lab_X, 3, t)
 
     t = 'price of decommited gen, auction_type = 4'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1140, 200, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1140, 200, [], [], ppopt)
     t_is(cp[1, 0], cp5[1, 0] * frb_X, 3, t)
 
     t = 'price of decommited gen, auction_type = 6'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1160, 200, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1160, 200, [], [], ppopt)
     t_is(cp[1, 0], cp5[1, 0] * fro_X, 3, t)
 
     t = 'price of decommited gen, auction_type = 7'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1170, 200, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1170, 200, [], [], ppopt)
     t_is(cp[1, 0], cp5[1, 0] * (lao_X + lab_X) / 2, 3, t)
 
     t = 'price of decommited gen, auction_type = 0'
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1100, 200, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1100, 200, [], [], ppopt)
     t_is(cp[1, 0], 120, 3, t)
 
     t = 'single block, marginal offer @ $50, auction_type = 5'
@@ -633,7 +638,7 @@ def t_auction_pips(quiet=False):
     ])
 
     MVAbase, cq, cp, bus, gen, gencost, branch, f, dispatch, success, et = \
-        runmkt('t_auction_case', q, p, 1150, 100, [], [], mpopt)
+        runmkt('t_auction_case', q, p, 1150, 100, [], [], ppopt)
     t_is( cq[G[0]], 35.32, 2, t )
     t_is( cq[G[1:6]], q[G[1:6]], 8, [t, ' : gen qtys'] )
     t_is( cp[G[0]], 50, 4, t )

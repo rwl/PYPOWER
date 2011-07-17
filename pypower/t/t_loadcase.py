@@ -20,16 +20,11 @@ import os
 
 from os.path import dirname, join
 
-from numpy import zeros
-
 from scipy.io import savemat
 
 from pypower.loadcase import loadcase
 from pypower.ppoption import ppoption
 from pypower.runpf import runpf
-
-from pypower.idx_gen import PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX
-from pypower.idx_brch import ANGMAX, ANGMIN
 
 from pypower.t.t_case9_pf import t_case9_pf
 from pypower.t.t_case9_pfv2 import t_case9_pfv2
@@ -44,8 +39,6 @@ from pypower.t.t_end import t_end
 
 def t_loadcase(quiet=False):
     """Test that C{loadcase} works with an object as well as case file.
-
-    @see: U{http://www.pserc.cornell.edu/matpower/}
     """
     t_begin(240, quiet)
 
@@ -68,21 +61,10 @@ def t_loadcase(quiet=False):
 
     ## read version 2 OPF data matrices
     ppc = t_case9_opfv2()
+    baseMVA, bus, gen, branch, areas, gencost = ppc['baseMVA'], ppc['bus'], \
+        ppc['gen'], ppc['branch'], ppc['areas'], ppc['gencost']
     ## save as .mat file
     savemat(matfilev2 + '.mat', {'ppc': ppc}, oned_as='column')
-
-    ## prepare expected matrices for v1 load
-    ## (missing gen cap curve & branch ang diff lims)
-    tmp1 = (ppc['baseMVA'], ppc['bus'].copy(), ppc['gen'].copy(), ppc['branch'].copy(),
-        ppc['areas'].copy(), ppc['gencost'].copy())
-    tmp2 = (ppc['baseMVA'], ppc['bus'].copy(), ppc['gen'].copy(), ppc['branch'].copy(),
-        ppc['areas'].copy(), ppc['gencost'].copy())
-    ## remove capability curves, angle difference limits
-    tmp1[2][1:3, [PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX]] = zeros((2,6))
-    tmp1[3][0, ANGMAX] = 360
-    tmp1[3][8, ANGMIN] = -360
-
-    baseMVA, bus, gen, branch, areas, gencost = tmp1
 
     ##-----  load OPF data into individual matrices  -----
     t = 'loadcase(opf_PY_file_v1) without .py extension : '
@@ -125,9 +107,6 @@ def t_loadcase(quiet=False):
     t_is(areas1,    areas,      12, [t, 'areas'])
     t_is(gencost1,  gencost,    12, [t, 'gencost'])
 
-    ## prepare expected matrices for v2 load
-    baseMVA, bus, gen, branch, areas, gencost = tmp2
-
     t = 'loadcase(opf_PY_file_v2) without .py extension : '
     baseMVA1, bus1, gen1, branch1, areas1, gencost1 = \
             loadcase(casefilev2, False)
@@ -168,9 +147,6 @@ def t_loadcase(quiet=False):
     t_is(areas1,    areas,      12, [t, 'areas'])
     t_is(gencost1,  gencost,    12, [t, 'gencost'])
 
-    ## prepare expected matrices for v1 load
-    baseMVA, bus, gen, branch, areas, gencost = tmp1
-
     t = 'loadcase(opf_struct_v1) (no version): '
     baseMVA1, bus1, gen1, branch1, areas1, gencost1 = t_case9_opf()
     c = {}
@@ -197,9 +173,6 @@ def t_loadcase(quiet=False):
     t_is(branch2,   branch,     12, [t, 'branch'])
     t_is(areas2,    areas,      12, [t, 'areas'])
     t_is(gencost2,  gencost,    12, [t, 'gencost'])
-
-    ## prepare expected matrices for v2 load
-    baseMVA, bus, gen, branch, areas, gencost = tmp2
 
     t = 'loadcase(opf_struct_v2) (no version): '
     c = {}
@@ -234,9 +207,7 @@ def t_loadcase(quiet=False):
     t_is(areas2,    areas,      12, [t, 'areas'])
     t_is(gencost2,  gencost,    12, [t, 'gencost'])
 
-    ##-----  load OPF data into struct  -----
-    ## prepare expected matrices for v1 load
-    baseMVA, bus, gen, branch, areas, gencost = tmp1
+    ##-----  load OPF data into dict  -----
 
     t = 'ppc = loadcase(opf_PY_file_v1) without .py extension : '
     ppc1 = loadcase(casefile)
@@ -274,9 +245,6 @@ def t_loadcase(quiet=False):
     t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
     t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
-    ## prepare expected matrices for v2 load
-    baseMVA, bus, gen, branch, areas, gencost = tmp2
-
     t = 'ppc = loadcase(opf_PY_file_v2) without .m extension : '
     ppc1 = loadcase(casefilev2)
     t_is(ppc1['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
@@ -313,9 +281,6 @@ def t_loadcase(quiet=False):
     t_is(ppc1['areas'],    areas,      12, [t, 'areas'])
     t_is(ppc1['gencost'],  gencost,    12, [t, 'gencost'])
 
-    ## prepare expected matrices for v1 load
-    baseMVA, bus, gen, branch, areas, gencost = tmp1
-
     t = 'ppc = loadcase(opf_struct_v1) (no version): '
     baseMVA1, bus1, gen1, branch1, areas1, gencost1 = t_case9_opf()
     c = {}
@@ -333,7 +298,7 @@ def t_loadcase(quiet=False):
     t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
     t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
 
-    t = 'ppc = loadcase(opf_struct_v1) (version=''1''): '
+    t = 'ppc = loadcase(opf_struct_v1) (version=\'1\'): '
     c['version']   = '1'
     ppc2 = loadcase(c)
     t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
@@ -342,9 +307,6 @@ def t_loadcase(quiet=False):
     t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
     t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
     t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
-
-    ## prepare expected matrices for v2 load
-    baseMVA, bus, gen, branch, areas, gencost = tmp2
 
     t = 'ppc = loadcase(opf_struct_v2) (no version): '
     c = {}
@@ -362,24 +324,6 @@ def t_loadcase(quiet=False):
     t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
     t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
     t_ok(ppc2['version'] == '2', [t, 'version'])
-
-    t = 'ppc = loadcase(opf_struct_v2) (version=''2''): '
-    c = {}
-    c['baseMVA']   = baseMVA
-    c['bus']       = bus.copy()
-    c['gen']       = gen.copy()
-    c['branch']    = branch.copy()
-    c['areas']     = areas.copy()
-    c['gencost']   = gencost.copy()
-    c['version']   = '2'
-    ppc2 = loadcase(c)
-    t_is(ppc2['baseMVA'],  baseMVA,    12, [t, 'baseMVA'])
-    t_is(ppc2['bus'],      bus,        12, [t, 'bus'])
-    t_is(ppc2['gen'],      gen,        12, [t, 'gen'])
-    t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
-    t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
-    t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
-
 
     ## read version 1 PF data matrices
     baseMVA, bus, gen, branch = t_case9_pf()

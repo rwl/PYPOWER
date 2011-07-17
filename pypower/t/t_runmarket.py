@@ -141,5 +141,4 @@ def t_runmarket(quiet=False):
     t_is( co['Q']['prc'], offers['Q']['prc'], 8, [t, ' : gen Q prices'] )
     t_is( cb['Q']['prc'], bids['Q']['prc'], 8, [t, ' : load Q prices'] )
 
-
-    t_end
+    t_end()
