@@ -103,6 +103,9 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
 
     ## zero out some data to make printout consistent for DC case
     if isDC:
+        bus = bus.copy()
+        gen = gen.copy()
+        branch = branch.copy()
         bus[:, r_[QD, BS]]          = zeros((nb, 2))
         gen[:, r_[QG, QMAX, QMIN]]  = zeros((ng, 3))
         branch[:, r_[BR_R, BR_B]]   = zeros((nl, 2))

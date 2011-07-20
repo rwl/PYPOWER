@@ -41,7 +41,7 @@ import pypower.api
 def t_jacobian(quiet=False):
     """Numerical tests of partial derivative code.
     """
-    t_begin(28, quiet)
+    t_begin(12, quiet)
 
     ppdir = dirname(pypower.api.__file__)
     casefile = join(ppdir, 'case30')

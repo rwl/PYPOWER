@@ -116,6 +116,11 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase='',
         ## "run" the power flow
         Va = dcpf(B, Pbus, Va0, ref, pv, pq)
 
+        # add columns of zeros as necessary
+        if branch.shape[1] < QT:
+            branch = c_[branch,
+                    zeros((branch.shape[0], QT - branch.shape[1] + 1))]
+
         ## update data matrices with solution
         branch[:, [QF, QT]] = zeros((branch.shape[0], 2))
         branch[:, PF] = (Bf * Va + Pfinj) * baseMVA

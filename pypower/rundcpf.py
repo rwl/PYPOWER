@@ -20,10 +20,11 @@ from ppoption import ppoption
 from runpf import runpf
 
 
-def rundcpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def rundcpf(casedata='case9', ppopt=None, fname='', solvedcase='',
+            expect_opf_data=True):
     """Runs a DC power flow.
     """
     ## default arguments
     ppopt = ppoption(ppopt, PF_DC=True)
 
-    return runpf(casedata, ppopt, fname, solvedcase)
+    return runpf(casedata, ppopt, fname, solvedcase, expect_opf_data)

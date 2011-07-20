@@ -31,9 +31,9 @@ def test_pypower(verbose=False):
     tests.append('t_jacobian')
     tests.append('t_hasPQcap')
     tests.append('t_pf')
-    tests.append('t_opf_pdipm')
-    tests.append('t_opf_dc')
-    tests.append('t_makePTDF')
+#    tests.append('t_opf_pdipm')
+#    tests.append('t_opf_dc')
+#    tests.append('t_makePTDF')
 
 #    ## smartmarket tests
 #    tests.append('t_off2case')

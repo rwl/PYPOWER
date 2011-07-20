@@ -40,7 +40,7 @@ from pypower.t.t_end import t_end
 def t_loadcase(quiet=False):
     """Test that C{loadcase} works with an object as well as case file.
     """
-    t_begin(240, quiet)
+    t_begin(227, quiet)
 
     ## compare result of loading from M-file file to result of using data matrices
     tdir = dirname(__file__)
@@ -175,7 +175,7 @@ def t_loadcase(quiet=False):
     t_is(areas2,    areas,      12, [t, 'areas'])
     t_is(gencost2,  gencost,    12, [t, 'gencost'])
 
-    t = 'loadcase(opf_struct_v2) (no version): '
+    t = 'loadcase(opf_struct_v2): '
     c = {}
     c['baseMVA']   = baseMVA
     c['bus']       = bus.copy()
@@ -183,23 +183,6 @@ def t_loadcase(quiet=False):
     c['branch']    = branch.copy()
     c['areas']     = areas.copy()
     c['gencost']   = gencost.copy()
-    baseMVA2, bus2, gen2, branch2, areas2, gencost2 = loadcase(c, False)
-    t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
-    t_is(bus2,      bus,        12, [t, 'bus'])
-    t_is(gen2,      gen,        12, [t, 'gen'])
-    t_is(branch2,   branch,     12, [t, 'branch'])
-    t_is(areas2,    areas,      12, [t, 'areas'])
-    t_is(gencost2,  gencost,    12, [t, 'gencost'])
-
-    t = 'loadcase(opf_struct_v2) (version=''2''): '
-    c = {}
-    c['baseMVA']   = baseMVA
-    c['bus']       = bus.copy()
-    c['gen']       = gen.copy()
-    c['branch']    = branch.copy()
-    c['areas']     = areas.copy()
-    c['gencost']   = gencost.copy()
-    c['version']   = '2'
     baseMVA2, bus2, gen2, branch2, areas2, gencost2 = loadcase(c, False)
     t_is(baseMVA2,  baseMVA,    12, [t, 'baseMVA'])
     t_is(bus2,      bus,        12, [t, 'bus'])
@@ -324,7 +307,6 @@ def t_loadcase(quiet=False):
     t_is(ppc2['branch'],   branch,     12, [t, 'branch'])
     t_is(ppc2['areas'],    areas,      12, [t, 'areas'])
     t_is(ppc2['gencost'],  gencost,    12, [t, 'gencost'])
-    t_ok(ppc2['version'] == '2', [t, 'version'])
 
     ## read version 1 PF data matrices
     baseMVA, bus, gen, branch = t_case9_pf()

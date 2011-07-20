@@ -56,8 +56,7 @@ def t_pf(quiet=False):
     ## run Newton PF
     t = 'Newton PF : ';
     ppopt = ppoption(ppopt, PF_ALG=1)
-    results, success = runpf(casefile, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(casefile, ppopt, expect_opf_data=False)
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 6, [t, 'bus'])
     t_is(gen, gen_soln, 6, [t, 'gen'])
@@ -66,8 +65,7 @@ def t_pf(quiet=False):
     ## run fast-decoupled PF (XB version)
     t = 'Fast Decoupled (XB) PF : ';
     ppopt = ppoption(ppopt, PF_ALG=2)
-    results, success = runpf(casefile, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(casefile, ppopt, expect_opf_data=False)
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 6, [t, 'bus'])
     t_is(gen, gen_soln, 6, [t, 'gen'])
@@ -76,8 +74,7 @@ def t_pf(quiet=False):
     ## run fast-decoupled PF (BX version)
     t = 'Fast Decoupled (BX) PF : ';
     ppopt = ppoption(ppopt, PF_ALG=3)
-    results, success = runpf(casefile, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(casefile, ppopt, expect_opf_data=False)
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 6, [t, 'bus'])
     t_is(gen, gen_soln, 6, [t, 'gen'])
@@ -86,8 +83,7 @@ def t_pf(quiet=False):
     ## run Gauss-Seidel PF
     t = 'Gauss-Seidel PF : ';
     ppopt = ppoption(ppopt, PF_ALG=4)
-    results, success = runpf(casefile, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(casefile, ppopt, expect_opf_data=False)
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 5, [t, 'bus'])
     t_is(gen, gen_soln, 5, [t, 'gen'])
@@ -102,8 +98,7 @@ def t_pf(quiet=False):
 
     ## run DC PF
     t = 'DC PF : '
-    results, success = rundcpf(casefile, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = rundcpf(casefile, ppopt, expect_opf_data=False)
     t_ok(success, [t, 'success'])
     t_is(bus, bus_soln, 6, [t, 'bus'])
     t_is(gen, gen_soln, 6, [t, 'gen'])
@@ -112,35 +107,30 @@ def t_pf(quiet=False):
     ## check Qg distribution, when Qmin = Qmax
     t = 'check Qg : '
     ppopt = ppoption(ppopt, PF_ALG=1, VERBOSE=0)
-    ppc = loadcase(casefile)
+    ppc = loadcase(casefile, True, False)
     ppc['gen'][0, [QMIN, QMAX]] = [20, 20]
-    results, success = runpf(ppc, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(ppc, ppopt, expect_opf_data=False)
     t_is(gen[0, QG], 24.07, 2, [t, 'single gen, Qmin = Qmax'])
 
     ppc['gen'] = r_[array([ ppc['gen'][0, :] ]), ppc['gen']]
     ppc['gen'][0, [QMIN, QMAX]] = [10, 10]
     ppc['gen'][1, [QMIN, QMAX]] = [ 0, 50]
-    results, success = runpf(ppc, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(ppc, ppopt, expect_opf_data=False)
     t_is(gen[0:2, QG], [10, 14.07], 2, [t, '2 gens, Qmin = Qmax for one'])
 
     ppc['gen'][0, [QMIN, QMAX]] = [10, 10]
     ppc['gen'][1, [QMIN, QMAX]] = [-50, -50]
-    results, success = runpf(ppc, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(ppc, ppopt, expect_opf_data=False)
     t_is(gen[0:2, QG], [12.03, 12.03], 2, [t, '2 gens, Qmin = Qmax for both'])
 
     ppc['gen'][0, [QMIN, QMAX]] = [0,  50]
     ppc['gen'][1, [QMIN, QMAX]] = [0, 100]
-    results, success = runpf(ppc, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(ppc, ppopt, expect_opf_data=False)
     t_is(gen[0:2, QG], [8.02, 16.05], 2, [t, '2 gens, proportional'])
 
     ppc['gen'][0, [QMIN, QMAX]] = [-50, 0]
     ppc['gen'][1, [QMIN, QMAX]] = [50, 150]
-    results, success = runpf(ppc, ppopt)
-    bus, gen, branch = results['bus'], results['gen'], results['branch']
+    _, bus, gen, branch, success, _ = runpf(ppc, ppopt, expect_opf_data=False)
     t_is(gen[0:2, QG], [-50 + 8.02, 50 + 16.05], 2, [t, '2 gens, proportional'])
 
     t_end()
