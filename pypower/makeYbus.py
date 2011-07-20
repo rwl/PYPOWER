@@ -87,7 +87,7 @@ def makeYbus(baseMVA, bus, branch):
     ## at each branch's "from" bus, and Yt is the same for the "to" bus end
     i = r_[range(nl), range(nl)]                   ## double set of row indices
 
-    Yf = sparse((vstack([Yff, Yft]), (i, r_[f, t])), (nl, nb))
-    Yt = sparse((vstack([Ytf, Ytt]), (i, r_[f, t])), (nl, nb))
+    Yf = sparse((r_[Yff, Yft], (i, r_[f, t])), (nl, nb))
+    Yt = sparse((r_[Ytf, Ytt], (i, r_[f, t])), (nl, nb))
 
     return Ybus, Yf, Yt

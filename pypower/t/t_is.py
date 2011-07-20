@@ -35,12 +35,12 @@ def t_is(got, expected, prec=5, msg=''):
     Intended to be called between calls to C{t_begin} and C{t_end}.
     """
     if isinstance(got, int) or isinstance(got, float):
-        got = array([got], float)
+        got = array([[got]], float)
     elif isinstance(got, list) or isinstance(got, tuple):
         got = array(got, float)
 
     if isinstance(expected, int) or isinstance(expected, float):
-        expected = array([expected], float)
+        expected = array([[expected]], float)
     elif isinstance(expected, list) or isinstance(expected, tuple):
         expected = array(expected, float)
 
@@ -60,7 +60,7 @@ def t_is(got, expected, prec=5, msg=''):
             print expected
             print got_minus_expected
             stdout.write('max diff = %g (allowed tol = %g)\n\n' % (max_diff, 10**(-prec)))
-    else:
-        stdout.write('    dimension mismatch:\n')
-        stdout.write('             got: %d x %d\n' % got.shape)
-        stdout.write('        expected: %d x %d\n\n' % expected.shape)
+        else:
+            stdout.write('    dimension mismatch:\n')
+            stdout.write('             got: %d x %d\n' % got.shape)
+            stdout.write('        expected: %d x %d\n\n' % expected.shape)

@@ -101,6 +101,12 @@ def pfsoln(baseMVA, bus0, gen0, branch0, Ybus, Yf, Yt, V, ref, pv, pq):
     Sf = V[ branch[br, F_BUS].astype(int) ] * conj(Yf[br, :] * V) * baseMVA
     ## complex power injected at "to" bus
     St = V[ branch[br, T_BUS].astype(int) ] * conj(Yt[br, :] * V) * baseMVA
+
+    # add columns of zeros as necessary
+    if branch.shape[1] < QT:
+        branch = c_[branch,
+                zeros((branch.shape[0], QT - branch.shape[1] + 1))]
+
     branch[ ix_(br, [PF, QF, PT, QT]) ] = c_[Sf.real, Sf.imag, St.real, St.imag]
     branch[ ix_(out, [PF, QF, PT, QT]) ] = zeros((len(out), 4))
 

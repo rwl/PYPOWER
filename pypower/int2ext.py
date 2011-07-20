@@ -22,7 +22,7 @@ from idx_brch import F_BUS, T_BUS
 from idx_area import PRICE_REF_BUS
 
 
-def int2ext(i2e, bus, gen, branch, areas):
+def int2ext(i2e, bus, gen, branch, areas=None):
     """Converts from the consecutive internal bus numbers back to the originals
     using the mapping provided by the C{i2e} vector returned from C{ext2int}.
     """

@@ -101,7 +101,7 @@ def loadcase(casefile,
                         for k, v in d.iteritems():
                             s[k] = v
 
-                    s['baseMVA'] = s['baseMVA'][0]  # convert array to float
+                    s['baseMVA'] = s['baseMVA'][0, 0]  # convert array to float
 
                 except IOError, e:
                     info = 3
@@ -166,8 +166,8 @@ def loadcase(casefile,
         # check for required keys
         if ('baseMVA' not in s or 'bus' not in s \
             or 'gen' not in s or 'branch' not in s) or \
-            (expect_opf_data and 'gencost' not in s or \
-            'areas' not in s):
+            (expect_opf_data and ('gencost' not in s or \
+            'areas' not in s)):
             info = 5  ## missing some expected fields
             err5 = 'missing data'
         else:
