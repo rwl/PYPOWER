@@ -46,7 +46,8 @@ from idx_brch import PF, PT, QF, QT
 from idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 
 
-def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def runpf(casedata='case9', ppopt=None, fname='', solvedcase='',
+          expect_opf_data=True):
     """Runs a power flow.
 
     Runs a power flow [full AC Newton's method by default] and optionally
@@ -84,7 +85,10 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     dc = ppopt["PF_DC"]             ## use DC formulation?
 
     ## read data
-    baseMVA, bus, gen, branch = loadcase(casedata, expect_opf_data=False)
+    if expect_opf_data:
+        baseMVA, bus, gen, branch, _, _ = loadcase(casedata, expect_opf_data=expect_opf_data)
+    else:
+        baseMVA, bus, gen, branch = loadcase(casedata, expect_opf_data=expect_opf_data)
 
     ## convert to internal indexing
     i2e, bus, gen, branch = ext2int(bus, gen, branch)

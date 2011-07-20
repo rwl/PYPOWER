@@ -16,9 +16,10 @@
 """Numerical tests of partial derivative code.
 """
 
+from os.path import dirname, join
+
 from numpy import ones, conj, eye, exp, pi, array
 
-from pypower.case30 import case30
 from pypower.ppoption import ppoption
 from pypower.loadcase import loadcase
 from pypower.ext2int import ext2int
@@ -34,19 +35,22 @@ from pypower.t.t_begin import t_begin
 from pypower.t.t_end import t_end
 from pypower.t.t_is import t_is
 
+import pypower.api
+
 
 def t_jacobian(quiet=False):
     """Numerical tests of partial derivative code.
     """
     t_begin(28, quiet)
 
+    ppdir = dirname(pypower.api.__file__)
+    casefile = join(ppdir, 'case30')
+
     ## run powerflow to get solved case
     ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
-    ppc = loadcase(case30())
+    ppc = loadcase(casefile, return_as_dict=True)
 
-    results, _ = runpf(ppc, ppopt)
-    baseMVA, bus, gen, branch = \
-        results['baseMVA'], results['bus'], results['gen'], results['branch']
+    baseMVA, bus, gen, branch, _, _ = runpf(ppc, ppopt)
 
     ## switch to internal bus numbering and build admittance matrices
     _, bus, gen, branch = ext2int(bus, gen, branch)

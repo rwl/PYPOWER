@@ -68,7 +68,6 @@ from .rundcopf import rundcopf
 from .rundcpf import rundcpf
 from .runduopf import runduopf
 from .runopf import runopf
-from .runopf_w_res import runopf_w_res
 from .runpf import runpf
 from .runuopf import runuopf
 from .savecase import savecase

@@ -18,8 +18,8 @@
 
 from sys import stderr
 
-from numpy import ones, conj, nonzero, any, exp, pi, r_
-from scipy.sparse import vstack, spdiags, csc_matrix as sparse
+from numpy import ones, conj, nonzero, any, exp, pi, r_, arange
+from scipy.sparse import spdiags, csc_matrix as sparse
 
 from idx_bus import BUS_I, GS, BS
 from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, BR_STATUS, SHIFT, TAP
@@ -73,9 +73,9 @@ def makeYbus(baseMVA, bus, branch):
     f = branch[:, F_BUS]                           ## list of "from" buses
     t = branch[:, T_BUS]                           ## list of "to" buses
     ## connection matrix for line & from buses
-    Cf = sparse((ones(nl), (range(nl), f)), (nl, nb))
+    Cf = sparse((ones(nl), (f, arange(nl))), (nb, nl))
     ## connection matrix for line & to buses
-    Ct = sparse((ones(nl), (range(nl), t)), (nl, nb))
+    Ct = sparse((ones(nl), (t, arange(nl))), (nb, nl))
 
     Ybus = spdiags(Ysh, 0, nb, nb) + \
         Cf * spdiags(Yff, 0, nl, nl) * Cf.T + \

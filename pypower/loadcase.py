@@ -16,8 +16,6 @@
 """Loads a PYPOWER case dictionary.
 """
 
-import sys
-
 from os.path import basename, splitext, exists
 
 from copy import deepcopy
@@ -26,7 +24,7 @@ from numpy import array, zeros, ones, c_
 
 from scipy.io import loadmat
 
-from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, APF
+from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
 from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
 
 
@@ -195,20 +193,20 @@ def loadcase(casefile,
     else:  # error encountered
         if info == 1:
             raise ValueError, 'Input arg should be a case or a string ' + \
-                              'containing a filename\n'
+                              'containing a filename'
         elif info == 2:
-            raise ValueError, 'Specified case not a valid file\n'
+            raise ValueError, 'Specified case not a valid file'
         elif info == 3:
-            raise ValueError, 'Specified MAT file does not exist\n'
+            raise ValueError, 'Specified MAT file does not exist'
         elif info == 4:
-            raise ValueError, 'Specified Python file does not exist\n'
+            raise ValueError, 'Specified Python file does not exist'
         elif info == 5:
             raise ValueError, 'Syntax error or undefined data ' + \
-                              'matrix(ices) in the file\n'
+                              'matrix(ices) in the file'
         else:
-            raise ValueError, 'Unknown error encountered loading case.\n'
+            raise ValueError, 'Unknown error encountered loading case.'
 
-        raise ValueError, lasterr + '\n'
+        raise ValueError, lasterr
 
         return info
 

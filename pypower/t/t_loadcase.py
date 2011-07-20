@@ -543,11 +543,13 @@ def t_loadcase(quiet=False):
 
     t = 'runpf(my_PY_file)'
     ppopt = ppoption(VERBOSE=0, OUT_ALL=0)
-    baseMVA3, bus3, gen3, branch3, success, _ = runpf(pfcasefile, ppopt)
+    baseMVA3, bus3, gen3, branch3, success, _ = runpf(pfcasefile, ppopt,
+                                                      expect_opf_data=False)
     t_ok( success, t )
 
     t = 'runpf(my_object)'
-    baseMVA4, bus4, gen4, branch4, success, _ = runpf(c, ppopt)
+    baseMVA4, bus4, gen4, branch4, success, _ = runpf(c, ppopt,
+                                                      expect_opf_data=False)
     t_ok( success, t )
 
     t = 'runpf result comparison : '
@@ -558,7 +560,7 @@ def t_loadcase(quiet=False):
 
     t = 'runpf(modified_dict)'
     c['gen'][2, 1] = c['gen'][2, 1] + 1            ## increase gen 3 output by 1
-    _, _, gen5, _, success, _ = runpf(c, ppopt)
+    _, _, gen5, _, success, _ = runpf(c, ppopt, expect_opf_data=False)
     t_is(gen5[0, 1], gen4[0, 1] - 1, 1, t)   ## slack bus output should decrease by 1
 
     t_end()
