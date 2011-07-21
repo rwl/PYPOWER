@@ -154,8 +154,8 @@ def opf_costfcn(x, om, return_hessian=False):
         qcost = array([])
 
     ## polynomial generator costs
-    d2f_dPg2 = sparse((ng, 1))               ## w.r.t. p.u. Pg
-    d2f_dQg2 = sparse((ng, 1))               ## w.r.t. p.u. Qg
+    d2f_dPg2 = zeros(ng)               ## w.r.t. p.u. Pg
+    d2f_dQg2 = zeros(ng)               ## w.r.t. p.u. Qg
     ipolp = find(pcost[:, MODEL] == POLYNOMIAL)
     d2f_dPg2[ipolp] = \
             baseMVA**2 * polycost(pcost[ipolp, :], Pg[ipolp]*baseMVA, 2)

@@ -93,8 +93,8 @@ def opf_execute(om, ppopt):
             try:
                 __import__('pyipopt')
                 results, success, raw = ipoptopf_solver(om, ppopt)
-            except:
-                stderr.write('opf_execute: OPF_ALG %d requires IPOPT (see https://projects.coin-or.org/Ipopt/)\n' % alg)
+            except ImportError:
+                raise ImportError, 'OPF_ALG %d requires IPOPT (see https://projects.coin-or.org/Ipopt/)' % alg
         else:
             stderr.write('opf_execute: OPF_ALG %d is not a valid algorithm code\n' % alg)
 

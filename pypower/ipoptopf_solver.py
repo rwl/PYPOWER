@@ -20,7 +20,7 @@
 from numpy import array, ones, zeros, shape, Inf, pi, exp, conj, r_, arange, tril
 from numpy import flatnonzero as find
 
-from scipy.sparse import csr_matrix as sparse
+from scipy.sparse import vstack, hstack, csr_matrix as sparse
 from scipy.sparse import eye as speye
 
 try:
@@ -38,7 +38,6 @@ from pypower.makeYbus import makeYbus
 from pypower.opf_costfcn import opf_costfcn
 from pypower.opf_consfcn import opf_consfcn
 from pypower.opf_hessfcn import opf_hessfcn
-from pypower.pips import pips
 from pypower.util import sub2ind
 from pypower.ipopt_options import ipopt_options
 
@@ -131,12 +130,13 @@ def ipoptopf_solver(om, ppopt):
         ipwl = find(gencost[:, MODEL] == PW_LINEAR)
 #        PQ = r_[gen[:, PMAX], gen[:, QMAX]]
 #        c = totcost(gencost[ipwl, :], PQ[ipwl])
-        c = gencost(sub2ind(shape(gencost), ipwl, NCOST + 2 * gencost[ipwl, NCOST]))    ## largest y-value in CCV data
+        ## largest y-value in CCV data
+        c = gencost.flatten('F')[sub2ind(shape(gencost), ipwl, NCOST + 2 * gencost[ipwl, NCOST])]
         x0[vv['i1']['y']:vv['iN']['y']] = max(c) + 0.1 * abs(max(c))
 #        x0[vv['i1']['y']:vv['iN']['y']) = c + 0.1 * abs(c)
 
     ## find branches with flow limits
-    il = find(branch[:, RATE_A] != 0 & branch[:, RATE_A] < 1e10)
+    il = find((branch[:, RATE_A] != 0) & (branch[:, RATE_A] < 1e10))
     nl2 = len(il)           ## number of constrained lines
 
     ##-----  run opf  -----
@@ -148,43 +148,43 @@ def ipoptopf_solver(om, ppopt):
     Cf = sparse((ones(nl), (arange(nl), f)), (nl, nb))      ## connection matrix for line & from buses
     Ct = sparse((ones(nl), (arange(nl), t)), (nl, nb))      ## connection matrix for line & to buses
     Cl = Cf + Ct
-    Cb = Cl.T * Cl + speye(nb)
+    Cb = Cl.T * Cl + speye(nb, nb)
     Cl2 = Cl[il, :]
-    Cg = sparse((1, (gen[:, GEN_BUS], arange(ng))), (nb, ng))
+    Cg = sparse((ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))
     nz = nx - 2 * (nb + ng)
     nxtra = nx - 2 * nb
-    Js = [
-        [Cb,      Cb,      Cg,              sparse((nb, ng)),   sparse((nb, nz))],
-        [Cb,      Cb,      sparse((nb, ng)),   Cg,              sparse((nb, nz))],
-        [Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))],
-        [Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))],
-        [A]
-    ]
+    Js = vstack([
+        hstack([Cb,      Cb,      Cg,              sparse((nb, ng)),   sparse((nb, nz))]),
+        hstack([Cb,      Cb,      sparse((nb, ng)),   Cg,              sparse((nb, nz))]),
+        hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))]),
+        hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))]),
+        A
+    ])
     f, _, d2f = opf_costfcn(x0, om, True)
-    Hs = tril(d2f + [
-        [Cb,  Cb,  sparse((nb, nxtra))],
-        [Cb,  Cb,  sparse((nb, nxtra))],
-        [sparse(nxtra,nx)]
+    Hs = d2f + vstack([
+        hstack([Cb,  Cb,  sparse((nb, nxtra))]),
+        hstack([Cb,  Cb,  sparse((nb, nxtra))]),
+        sparse((nxtra, nx))
     ])
 
     ## set options struct for IPOPT
     options = {}
-    options['ipopt'] = ipopt_options([], ppopt)
+#    options['ipopt'] = ipopt_options([], ppopt)
 
     ## extra data to pass to functions
-    options['auxdata'] = {
-        'om':       om, \
-        'Ybus':     Ybus, \
-        'Yf':       Yf[il, :], \
-        'Yt':       Yt[il, :], \
-        'ppopt':    ppopt, \
-        'il':       il, \
-        'A':        A, \
-        'nA':       nA, \
-        'neqnln':   2 * nb, \
-        'niqnln':   2 * nl2, \
-        'Js':       Js, \
-        'Hs':       Hs
+    userdata = {
+        'om':       om,
+        'Ybus':     Ybus,
+        'Yf':       Yf[il, :],
+        'Yt':       Yt[il, :],
+        'ppopt':    ppopt,
+        'il':       il,
+        'A':        A,
+        'nA':       nA,
+        'neqnln':   2 * nb,
+        'niqnln':   2 * nl2,
+#        'Js':       Js,
+#        'Hs':       Hs
     }
 
     # ## check Jacobian and Hessian structure
@@ -207,36 +207,62 @@ def ipoptopf_solver(om, ppopt):
     # end
 
     ## define variable and constraint bounds
-    options['lb'] = xmin
-    options['ub'] = xmax
-    options['cl'] = r_[zeros(2 * nb), -Inf * ones(2 * nl2), l]
-    options['cu'] = r_[zeros(2 * nb),       zeros(2 * nl2), u]
+    # n is the number of variables
+    n = x0.shape[0]
+    # xl is the lower bound of x as bounded constraints
+    xl = ll
+    # xu is the upper bound of x as bounded constraints
+    xu = uu
 
-    ## assign function handles
-    funcs = {}
-    funcs['objective']         = objective
-    funcs['gradient']          = gradient
-    funcs['constraints']       = constraints
-    funcs['jacobian']          = jacobian
-    funcs['hessian']           = hessian
-    funcs['jacobianstructure'] = lambda d: Js
-    funcs['hessianstructure']  = lambda d: Hs
-    #funcs['jacobianstructure'] = jacobianstructure
-    #funcs['hessianstructure']  = hessianstructure
+    neqnln = 2 * nb
+    niqnln = 2 * nl2
+    nA = A.shape[0]
 
-    ## run the optimization
-    x, info = pyipopt(x0, funcs, options)
+    # number of constraints
+    m = neqnln + niqnln + nA
+    # lower bound of constraint
 
-    if info['status'] == 0 | info['status'] == 1:
+    ## replace Inf with numerical proxies
+    l[l == -Inf] = -1e10
+    u[u ==  Inf] =  1e10
+    gl = r_[zeros(neqnln), -1e10 * ones(niqnln), l]
+
+#    gl = r_[zeros(neqnln), -Inf * ones(niqnln), l]
+    # upper bound of constraints
+    gu = r_[zeros(neqnln),       zeros(niqnln), u]
+
+    # number of nonzeros in Jacobi matrix
+    nnzj = Js.nnz
+    # number of non-zeros in Hessian matrix, you can set it to 0
+    nnzh = Hs.nnz
+
+#    nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, eval_f, eval_grad_f, eval_g, eval_jac_g, eval_h)
+    nnzh = 0
+    nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, eval_f, eval_grad_f, eval_g, eval_jac_g)
+
+#    nlp.int_option("max_iter", 20)
+#    nlp.num_option("tol", 1e-8)
+#    nlp.str_option("print_options_documentation", "yes")
+
+    #import pdb; pdb.set_trace()
+
+    ## run the optimizationInf
+    # returns final solution x, upper and lower bound for multiplier, final
+    # objective function obj and the return status of ipopt
+    x, zl, zu, obj, status = nlp.solve(x0, userdata)
+
+    nlp.close()
+
+    if status == 0 | status == 1:
         success = 1
     else:
         success = 0
 
     output = {}
-    if 'iter' in info:
-        output['iterations'] = info['iter']
-    else:
-        output['iterations'] = array([])
+#    if 'iter' in info:
+#        output['iterations'] = info['iter']
+#    else:
+    output['iterations'] = array([])
 
     f, _ = opf_costfcn(x, om)
 
@@ -325,44 +351,66 @@ def ipoptopf_solver(om, ppopt):
     return results, success, raw
 
 
-def objective(x, d):
-    f,  _ = opf_costfcn(x, d.om)
+def eval_f(x, user_data=None):
+    """Calculates the objective value.
+
+    @param x: input vector
+    """
+    f,  _ = opf_costfcn(x, user_data['om'])
     return f
 
 
-def gradient(x, d):
-    f, df = opf_costfcn(x, d['om'])
+def eval_grad_f(x, user_data=None):
+    """Calculates gradient for objective function.
+    """
+    f, df = opf_costfcn(x, user_data['om'])
     return f, df
 
 
-def constraints(x, d):
-    hn, gn = opf_consfcn(x, d['om'], d['Ybus'], d['Yf'], d['Yt'], d['ppopt'], d['il'])
-    if len(d['A']) == 0:
+def eval_g(x, user_data=None):
+    """Calculates the constraint values and returns an array.
+    """
+    hn, gn = opf_consfcn(x, user_data['om'], user_data['Ybus'], user_data['Yf'],
+                         user_data['Yt'], user_data['ppopt'], user_data['il'])
+    if len(user_data['A']) == 0:
         c = r_[gn, hn]
     else:
-        c = r_[gn, hn, d['A'] * x]
+        c = r_[gn, hn, user_data['A'] * x]
     return c
 
 
-def jacobian(x, d):
-    _, _, dhn, dgn = opf_consfcn(x, d['om'], d['Ybus'], d['Yf'], d['Yt'], d['ppopt'], d['il'])
-    J = r_[dgn.T, dhn.T, d['A']]
-    return J
+def eval_jac_g(x, flag, user_data=None):
+    """Calculates the Jacobi matrix.
+
+    If the flag is true, returns a tuple (row, col) to indicate the
+    sparse Jacobi matrix's structure.
+    If the flag is false, returns the values of the Jacobi matrix
+    with length nnzj.
+    """
+    _, _, dhn, dgn = opf_consfcn(x, user_data['om'], user_data['Ybus'],
+                                 user_data['Yf'], user_data['Yt'],
+                                 user_data['ppopt'], user_data['il'])
+    J = vstack([dgn.T, dhn.T, user_data['A']], 'coo')
+    if flag:
+        return (J.row, J.col)
+    else:
+        return J.data
 
 
-def hessian(x, sigma, lmbda, d):
+def eval_h(x, lagrange, obj_factor, flag, user_data=None):
+    """Calculates the Hessian matrix (optional).
+
+    If omitted, set nnzh to 0 and Ipopt will use approximated Hessian
+    which will make the convergence slower.
+    """
     lam = {}
-    lam['eqnonlin']   = lmbda[:d['neqnln']]
-    lam['ineqnonlin'] = lmbda[d['neqnln'] + arange(d['niqnln'])]
-    H = tril(opf_hessfcn(x, lam, d['om'], d['Ybus'], d['Yf'], d['Yt'], d['ppopt'], d['il'], sigma))
-    return H
+    lam['eqnonlin']   = lagrange[:user_data['neqnln']]
+    lam['ineqnonlin'] = lagrange[arange(user_data['niqnln']) + user_data['neqnln']]
+    H = opf_hessfcn(x, lam, user_data['om'], user_data['Ybus'], user_data['Yf'],
+                    user_data['Yt'], user_data['ppopt'], user_data['il'], obj_factor)
+    H = H.tocoo()
+    if flag:
+        return (H.row, H.col)
+    else:
+        return H.data
 
-
-#def jacobianstructure(d):
-#    Js = d['Js']
-#    return Js
-#
-#
-#def hessianstructure(d):
-#    Hs = d['Hs']
-#    return Hs
