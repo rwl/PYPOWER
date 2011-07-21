@@ -159,13 +159,13 @@ def ipoptopf_solver(om, ppopt):
         hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))]),
         hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))]),
         A
-    ])
+    ], 'coo')
     f, _, d2f = opf_costfcn(x0, om, True)
     Hs = d2f + vstack([
         hstack([Cb,  Cb,  sparse((nb, nxtra))]),
         hstack([Cb,  Cb,  sparse((nb, nxtra))]),
         sparse((nxtra, nx))
-    ])
+    ], 'coo')
 
     ## set options struct for IPOPT
     options = {}
@@ -183,8 +183,8 @@ def ipoptopf_solver(om, ppopt):
         'nA':       nA,
         'neqnln':   2 * nb,
         'niqnln':   2 * nl2,
-#        'Js':       Js,
-#        'Hs':       Hs
+        'Js':       Js,
+        'Hs':       Hs
     }
 
     # ## check Jacobian and Hessian structure
@@ -246,7 +246,7 @@ def ipoptopf_solver(om, ppopt):
 
     #import pdb; pdb.set_trace()
 
-    ## run the optimizationInf
+    ## run the optimization
     # returns final solution x, upper and lower bound for multiplier, final
     # objective function obj and the return status of ipopt
     x, zl, zu, obj, status = nlp.solve(x0, userdata)
@@ -387,13 +387,13 @@ def eval_jac_g(x, flag, user_data=None):
     If the flag is false, returns the values of the Jacobi matrix
     with length nnzj.
     """
-    _, _, dhn, dgn = opf_consfcn(x, user_data['om'], user_data['Ybus'],
-                                 user_data['Yf'], user_data['Yt'],
-                                 user_data['ppopt'], user_data['il'])
-    J = vstack([dgn.T, dhn.T, user_data['A']], 'coo')
     if flag:
-        return (J.row, J.col)
+        return (user_data['Js'].row, user_data['Js'].col)
     else:
+        _, _, dhn, dgn = opf_consfcn(x, user_data['om'], user_data['Ybus'],
+                                     user_data['Yf'], user_data['Yt'],
+                                     user_data['ppopt'], user_data['il'])
+        J = vstack([dgn.T, dhn.T, user_data['A']], 'coo')
         return J.data
 
 
@@ -403,14 +403,13 @@ def eval_h(x, lagrange, obj_factor, flag, user_data=None):
     If omitted, set nnzh to 0 and Ipopt will use approximated Hessian
     which will make the convergence slower.
     """
-    lam = {}
-    lam['eqnonlin']   = lagrange[:user_data['neqnln']]
-    lam['ineqnonlin'] = lagrange[arange(user_data['niqnln']) + user_data['neqnln']]
-    H = opf_hessfcn(x, lam, user_data['om'], user_data['Ybus'], user_data['Yf'],
-                    user_data['Yt'], user_data['ppopt'], user_data['il'], obj_factor)
-    H = H.tocoo()
     if flag:
-        return (H.row, H.col)
+        return (user_data['Hs'].row, user_data['Hs'].col)
     else:
-        return H.data
+        lam = {}
+        lam['eqnonlin']   = lagrange[:user_data['neqnln']]
+        lam['ineqnonlin'] = lagrange[arange(user_data['niqnln']) + user_data['neqnln']]
+        H = opf_hessfcn(x, lam, user_data['om'], user_data['Ybus'], user_data['Yf'],
+                        user_data['Yt'], user_data['ppopt'], user_data['il'], obj_factor)
+        return H.tocoo().data
 
