@@ -8,3 +8,7 @@
 .. _GitHub: http://github.com/rwl/PYPOWER
 .. _`GNU General Public License`: http://www.gnu.org/licenses/
 .. _`API documentation`: http://www.pypower.org/api
+.. _PyIPOPT: http://code.google.com/p/pyipopt/
+.. _IPOPT: https://projects.coin-or.org/Ipopt
+.. _MUMPS: http://graal.ens-lyon.fr/MUMPS/
+.. _lp_solve: http://sourceforge.net/projects/lpsolve/

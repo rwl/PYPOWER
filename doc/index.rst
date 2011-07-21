@@ -14,6 +14,7 @@ PYPOWER documentation
   copyright
   install
   usage
+  solvers
   support
 
 .. only:: html
