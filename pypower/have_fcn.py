@@ -21,4 +21,17 @@ def have_fcn(tag):
 
     Returns 1 if the optional functionality is available, 0 otherwise.
     """
-    raise NotImplementedError
+    if tag == 'pyipopt':
+        try:
+            __import__('pyipopt')
+            return True
+        except ImportError:
+            return False
+    elif tag == 'nlopt':
+        try:
+            __import__('nlopt')
+            return True
+        except ImportError:
+            return False
+    else:
+        raise ValueError, 'invlaid function tag [%s]' % tag

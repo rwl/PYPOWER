@@ -18,7 +18,7 @@
 
 from time import time
 
-from numpy import array, zeros, ones, arange, c_, r_, copy, any, pi, diag
+from numpy import array, zeros, ones, arange, c_, r_, copy, any, pi, diag, Inf
 from numpy import flatnonzero as find
 
 from scipy.sparse import vstack, hstack, csr_matrix as sparse
@@ -223,14 +223,34 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
         Acc                                                ## cost constraints
     ])
 
-    bb = r_[
+#    bb = r_[
+#        Va[ref],                                            ## reference angle
+#        -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
+#        -gen[on, PMIN] / baseMVA,                           ## lower limit on Pg
+#        gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
+#        branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
+#        branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
+#        bcc                                                ## cost constraints
+#    ]
+
+    ll = r_[
         Va[ref],                                            ## reference angle
         -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
-        -gen[on, PMIN] / baseMVA,                           ## lower limit on Pg
+        gen[on, PMIN] / baseMVA,                            ## lower limit on Pg
+        -Inf * ones(ng),                                    ## upper limit on Pg
+        -Inf * ones(nl),                                    ## flow limit on Pf
+        -Inf * ones(nl),                                    ## flow limit on Pt
+        -Inf * ones(bcc.shape)                              ## cost constraints
+    ]
+
+    uu = r_[
+        Va[ref],                                            ## reference angle
+        -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
+        Inf * ones(on),                           ## lower limit on Pg
         gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
         branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
         branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
-        bcc                                                ## cost constraints
+        bcc                                                 ## cost constraints
     ]
 
     #hstack([sparse((ng, nb)), -speye(ng, ng), sparse((ng, nc))]).todense()
@@ -261,7 +281,7 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
         AA = AA.todense()
         H  = H.todense()
 
-    x, lmbda, _, success = mp_qp(H, c, AA, bb, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
+    x, lmbda, _, success = mp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
 
     info = success;
 
