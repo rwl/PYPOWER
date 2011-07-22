@@ -64,6 +64,8 @@ from .ppoption import ppoption
 from .ppver import ppver
 from .pqcost import pqcost
 from .printpf import printpf
+from .pp_lp import pp_lp
+from .pp_qp import pp_qp
 from .rundcopf import rundcopf
 from .rundcpf import rundcpf
 from .runduopf import runduopf

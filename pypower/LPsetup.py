@@ -18,7 +18,7 @@ from numpy import array, arange, linalg, r_, flatnonzero as find
 from scipy.sparse import hstack
 
 from pypower.opf_slvr import opf_slvr
-from pypower.mp_lp import mp_lp
+from pypower.pp_lp import pp_lp
 from pypower.LPrelax import LPrelax
 
 
@@ -47,7 +47,7 @@ def LPsetup(a, f, b, nequs, vlb, vub, idx_workc, ppopt):
     # ----- solve LP directly -----
 
     if opf_slvr(alg) == 3:           ## sparse LP with full constraints
-        x, duals = mp_lp(f, a, b, vlb, vub, array([]), nequs, -1)
+        x, duals = pp_lp(f, a, b, vlb, vub, array([]), nequs, -1)
         duals = duals[:len(b)]                   # built-in LP solver has more elements in duals than we want
         idx_workc = array([])
         idx_bindc = array([])

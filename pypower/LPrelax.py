@@ -16,7 +16,7 @@
 from numpy import array, zeros, ones, flatnonzero as find
 
 from pypower.opf_slvr import opf_slvr
-from pypower.mp_lp import mp_lp
+from pypower.pp_lp import pp_lp
 
 
 def LPrelax(a, f, b, nequs, vlb, vub, idx_workc, ppopt):
@@ -35,7 +35,7 @@ def LPrelax(a, f, b, nequs, vlb, vub, idx_workc, ppopt):
         atemp = a[idx_workc, :]
         btemp = b[idx_workc]
 
-        x2, duals = mp_lp(f, atemp, btemp, vlb, vub, array([]), nequs, -1)
+        x2, duals = pp_lp(f, atemp, btemp, vlb, vub, array([]), nequs, -1)
 
         diffs = b - a * x2                 # diffs should be normalized by what means? under development
         idx_bindc = find(diffs < 1.0e-8)

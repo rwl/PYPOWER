@@ -33,5 +33,11 @@ def have_fcn(tag):
             return True
         except ImportError:
             return False
+    elif tag in ['lp_solve', 'lpsolve', 'lpsolve55']:
+        try:
+            __import__('lpsolve55')
+            return True
+        except ImportError:
+            return False
     else:
         raise ValueError, 'invlaid function tag [%s]' % tag

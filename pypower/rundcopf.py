@@ -16,14 +16,22 @@
 """Runs a DC optimal power flow.
 """
 
-from ppoption import ppoption
-from runopf import runopf
+from os.path import dirname, join
+
+from pypower.ppoption import ppoption
+from pypower.runopf import runopf
 
 
-def rundcopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def rundcopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs a DC optimal power flow.
     """
     ## default arguments
+    if casedata is None:
+        casedata = join(dirname(__file__), 'case9')
     ppopt = ppoption(ppopt, PF_DC=True)
 
     return runopf(casedata, ppopt, fname, solvedcase)
+
+
+if __name__ == '__main__':
+    rundcopf()

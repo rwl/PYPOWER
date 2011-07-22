@@ -16,8 +16,6 @@
 """Quadratic program solver.
 """
 
-import pyipopt
-
 from sys import stdout
 
 from numpy import array, r_, zeros, Inf, ones, dot, flatnonzero as find
@@ -28,10 +26,14 @@ from pypower.have_fcn import have_fcn
 
 
 def qp_f(x, user_data=None):
+    """Calculates the objective value.
+    """
     return 0.5 * dot(x * user_data['H'], x) + dot(user_data['f'], x)
 
 
 def qp_grad_f(x, user_data=None):
+    """Calculates gradient for objective function.
+    """
     return user_data['H'] * x + user_data['f']
 
 
@@ -56,15 +58,24 @@ def qp_jac_g(x, flag, user_data=None):
         return Acoo.data
 
 
-def qp_h(x, lagrange, obj_factor, flag, user_data=None):
-    H = user_data['H'].tocoo()
+#def qp_h(x, lagrange, obj_factor, flag, user_data=None):
+##    print 'H', type(user_data)
+#    H = user_data['H'].tocoo()
+#    if flag:
+#        return (H.row, H.col)
+#    else:
+#        return H.data
+
+
+def qp_h(x, lagrange, obj_factor, flag, H):
+    H = H.tocoo()
     if flag:
         return (H.row, H.col)
     else:
         return H.data
 
 
-def mp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
+def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
     """Quadratic program solver.
 
     Solves the quadratic programming problem:
@@ -87,6 +98,8 @@ def mp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
         VUB =  Inf * ones(x0.shape)
 
     if have_fcn('pyipopt'):
+        import pyipopt
+
         userdata = {'H': H, 'f': f, 'A': A}
 
         # n is the number of variables
@@ -102,15 +115,38 @@ def mp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
         # upper bound of constraints
         gu = u
         # number of nonzeros in Jacobi matrix
-        nnzj = 0
+        nnzj = A.nnz
         # number of non-zeros in Hessian matrix, you can set it to 0
-        nnzh = 0
+        nnzh = H.nnz
 
-        nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, qp_f, qp_grad_f, qp_g, qp_jac_g, qp_h)
+#        nnzh = 0
+#        nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, qp_f, qp_grad_f, qp_g, qp_jac_g)
 
-        # returns final solution x, upper and lower bound for multiplier, final
+        eval_h = lambda x, lagrange, obj_factor, flag, userdata=None: qp_h(x, lagrange, obj_factor, flag, H)
+
+        nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, qp_f, qp_grad_f, qp_g, qp_jac_g, eval_h)
+
+
+        nlp.int_option("max_iter", 100)
+
+
+        # returns  x, upper and lower bound for multiplier, final
         # objective function obj and the return status of IPOPT
-        x, zl, zu, obj, status = nlp.solve(x0, userdata)
+        result = nlp.solve(x0, userdata)
+        ## final values for the primal variables
+        x = result[0]
+        ## final values for the lower bound multipliers
+        zl = result[1]
+        ## final values for the upper bound multipliers
+        zu = result[2]
+        ## final value of the objective
+        obj = result[3]
+        ## status of the algorithm
+        status = result[4]
+
+        nlp.close()
+
+        print obj
     elif have_fcn('nlopt'):
         raise NotImplementedError
     else:
@@ -312,6 +348,6 @@ def mp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
 #                    stdout.write('         Retrying with QP solver from Optimization Toolbox ...\n\n')
 #                    skip_bpmpd = 1         ## try again using another solver
 #                    xout, lambdaout, howout, success = \
-#                        mp_qp(H, f, A, b, VLB, VUB, x0, N, verbosein, skip_bpmpd)
+#                        pp_qp(H, f, A, b, VLB, VUB, x0, N, verbosein, skip_bpmpd)
 
     return xout, lambdaout, howout, success

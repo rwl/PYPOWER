@@ -32,7 +32,8 @@ from pypower.makeBdc import makeBdc
 from pypower.pqcost import pqcost
 from pypower.poly2pwl import poly2pwl
 from pypower.totcost import totcost
-from pypower.mp_qp import mp_qp
+from pypower.pp_qp import pp_qp
+from pypower.pp_lp import pp_lp
 from pypower.int2ext import int2ext
 from pypower.printpf import printpf
 
@@ -81,6 +82,8 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
             ppopt = bus_or_ppopt
         baseMVA, bus, gen, branch, areas, gencost = loadcase(casefile)
     else:
+        baseMVA = baseMVA_or_casedata
+        bus = bus_or_ppopt
         if ppopt is None:
             ppopt = ppoption()
 
@@ -194,13 +197,14 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     i9 = i8;        i10 = i8 + nl       ## i9:i10 - |Pt| line limit
     if formulation == 2:             ## piece-wise linear costs
         ## compute cost constraints [ Cp >= m * Pg + b ] => [ m * Pg - Cp <= -b ]
-        nsegs = pcost[:, NCOST] - 1;        ## number of cost constraints for each gen
-        ncc = sum(nsegs)                    ## total number of cost constraints
-        Acc = sparse((ncc, nb + ng + nc))
+        nsegs = pcost[:, NCOST].astype(int) - 1  ## number of cost constraints for each gen
+        ncc = sum(nsegs)                         ## total number of cost constraints
+        #Acc = sparse((ncc, nb + ng + nc))
+        Acc = zeros((ncc, nb + ng + nc))
         bcc = zeros(ncc)
         for i in range(ng):
             xx = pcost[i,       COST:( COST + 2*(nsegs[i]) + 1):2]
-            yy = pcost[i,   (COST+1):( COST + 2*(nsegs(i)) + 2):2]
+            yy = pcost[i,   (COST+1):( COST + 2*(nsegs[i]) + 2):2]
             k1 = arange(nsegs[i])
             k2 = arange(1, (nsegs[i] + 1))
             m = (yy[k2] - yy[k1]) / (xx[k2] - xx[k1])
@@ -209,29 +213,45 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
             Acc[sum(nsegs[:i - 1]) + arange(nsegs[i]), nb + ng + i]    = -ones(nsegs[i])
             bcc[sum(nsegs[:i - 1]) + arange(nsegs[i])]                 = -b
     else:                            ## polynomial costs
-        Acc = zeros((0, nb+ng+nc))  # FIXME: zero dimensional sparse matrices
-        bcc = zeros((0, 1))
+#        Acc = zeros((0, nb+ng+nc))  # FIXME: zero dimensional sparse matrices
+        bcc = array([])
 
-    AA = vstack([
-        sparse((ones(nb+ng+nc), ([1], ref)), (1, nb+ng+nc)),                     ## reference angle
-        hstack([B,  -sparse((ones(ng), (gen(on, GEN_BUS), arange(ng))), (nb, ng)), sparse((nb, nc))]),
-                                                                ## real power flow eqns
-        hstack([sparse((ng, nb)), -speye((ng, ng)), sparse((ng, nc))]),     ## lower limit on Pg
-        hstack([sparse((ng, nb)), speye((ng, ng)), sparse((ng, nc))]),      ## upper limit on Pg
-        hstack([ Bf, sparse((nl, ng + nc))]),                              ## flow limit on Pf
-        hstack([-Bf, sparse((nl, ng + nc))]),                             ## flow limit on Pt
-        Acc                                                ## cost constraints
-    ])
+    if nc > 0:
+        AA = vstack([
+            ## reference angle
+            sparse((ones(1), (zeros(1), ref)), (1, nb+ng+nc)),
+            ## real power flow eqns
+            hstack([B,  -sparse((ones(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng)), sparse((nb, nc))]),
+            ## lower limit on Pg
+            hstack([sparse((ng, nb)), -speye(ng, ng), sparse((ng, nc))]),
+            ## upper limit on Pg
+            hstack([sparse((ng, nb)),  speye(ng, ng), sparse((ng, nc))]),
+            ## flow limit on Pf
+            hstack([ Bf, sparse((nl, ng + nc))]),
+            ## flow limit on Pt
+            hstack([-Bf, sparse((nl, ng + nc))]),
+            ## cost constraints
+            Acc
+        ])
+    else:
+        AA = vstack([
+            sparse((ones(1), (zeros(1), ref)), (1, nb+ng)),
+            hstack([B,  -sparse((ones(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng))]),
+            hstack([sparse((ng, nb)), -speye(ng, ng)]),
+            hstack([sparse((ng, nb)),  speye(ng, ng)]),
+            hstack([ Bf, sparse((nl, ng))]),
+            hstack([-Bf, sparse((nl, ng))])
+        ])
 
-#    bb = r_[
-#        Va[ref],                                            ## reference angle
-#        -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
-#        -gen[on, PMIN] / baseMVA,                           ## lower limit on Pg
-#        gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
-#        branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
-#        branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
-#        bcc                                                ## cost constraints
-#    ]
+    bb = r_[
+        Va[ref],                                            ## reference angle
+        -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
+        -gen[on, PMIN] / baseMVA,                           ## lower limit on Pg
+        gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
+        branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
+        branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
+        bcc                                                ## cost constraints
+    ]
 
     ll = r_[
         Va[ref],                                            ## reference angle
@@ -246,7 +266,7 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     uu = r_[
         Va[ref],                                            ## reference angle
         -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
-        Inf * ones(on),                           ## lower limit on Pg
+        Inf * ones(ng),                           ## lower limit on Pg
         gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
         branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
         branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
@@ -277,11 +297,14 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     else:
         qpverbose = -1
 
-    if ppopt['SPARSE_QP'] == False: ## don't use sparse matrices
-        AA = AA.todense()
-        H  = H.todense()
+#    if ppopt['SPARSE_QP'] == False: ## don't use sparse matrices
+#        AA = AA.todense()
+#        H  = H.todense()
 
-    x, lmbda, _, success = mp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
+    if H.nnz:
+        x, lmbda, _, success = pp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
+    else:
+        x, lmbda, _, success = pp_lp(c, AA, bb, None, None, x, ppopt['OPF_NEQ'])
 
     info = success;
 

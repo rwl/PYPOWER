@@ -54,6 +54,7 @@ def totcost(gencost, Pg):
                         break
                     totalcost[i] = m * Pgen + b
 
-        totalcost[ipol] = polycost(gencost[ipol, :], Pg[ipol])
+        if ipol:
+            totalcost[ipol] = polycost(gencost[ipol, :], Pg[ipol])
 
     return totalcost
