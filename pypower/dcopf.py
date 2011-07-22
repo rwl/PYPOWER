@@ -18,7 +18,8 @@
 
 from time import time
 
-from numpy import array, zeros, ones, arange, c_, r_, copy, any, pi, diag, Inf
+from numpy import \
+    array, zeros, ones, arange, c_, r_, copy, any, pi, diag, Inf, sum, dot
 from numpy import flatnonzero as find
 
 from scipy.sparse import vstack, hstack, csr_matrix as sparse
@@ -198,6 +199,9 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     if formulation == 2:             ## piece-wise linear costs
         ## compute cost constraints [ Cp >= m * Pg + b ] => [ m * Pg - Cp <= -b ]
         nsegs = pcost[:, NCOST].astype(int) - 1  ## number of cost constraints for each gen
+
+        print "NSEG:", nsegs
+
         ncc = sum(nsegs)                         ## total number of cost constraints
         #Acc = sparse((ncc, nb + ng + nc))
         Acc = zeros((ncc, nb + ng + nc))
@@ -209,9 +213,9 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
             k2 = arange(1, (nsegs[i] + 1))
             m = (yy[k2] - yy[k1]) / (xx[k2] - xx[k1])
             b = yy[k1] - m * xx[k1]
-            Acc[sum(nsegs[:i - 1]) + arange(nsegs[i]), nb + i]         = m * baseMVA
-            Acc[sum(nsegs[:i - 1]) + arange(nsegs[i]), nb + ng + i]    = -ones(nsegs[i])
-            bcc[sum(nsegs[:i - 1]) + arange(nsegs[i])]                 = -b
+            Acc[sum(nsegs[:i]) + arange(nsegs[i]), nb + i]         = m * baseMVA
+            Acc[sum(nsegs[:i]) + arange(nsegs[i]), nb + ng + i]    = -ones(nsegs[i])
+            bcc[sum(nsegs[:i]) + arange(nsegs[i])]                 = -b
     else:                            ## polynomial costs
 #        Acc = zeros((0, nb+ng+nc))  # FIXME: zero dimensional sparse matrices
         bcc = array([])
@@ -284,11 +288,10 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
         c = r_[   zeros(nb + ng),
                   ones(nc)      ]
     else:                            ## polynomial costs
-        polycf = pcost[:, COST:COST + 3] * diag(r_[baseMVA**2, baseMVA, 1])  ## coeffs for Pg in p.u.
-        H = sparse((2 * polycf[:, 1], (arange(j3, j4), arange(j3, j4))), (nb+ng, nb+ng))
+        polycf = dot(pcost[:, COST:COST + 3], diag(r_[baseMVA**2, baseMVA, 1]))  ## coeffs for Pg in p.u.
+        H = sparse((2 * polycf[:, 0], (arange(j3, j4), arange(j3, j4))), (nb+ng, nb+ng))
         c = r_[   zeros(nb),
                   polycf[:, 1]    ]
-
 
     ## run QP solver
     ppopt['OPF_NEQ']   = nb + 1         ## set number of equality constraints
@@ -301,10 +304,10 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
 #        AA = AA.todense()
 #        H  = H.todense()
 
-    if H.nnz:
-        x, lmbda, _, success = pp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
-    else:
+    if formulation == 2:             ## piece-wise linear costs
         x, lmbda, _, success = pp_lp(c, AA, bb, None, None, x, ppopt['OPF_NEQ'])
+    else:
+        x, lmbda, _, success = pp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
 
     info = success;
 

@@ -76,7 +76,17 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
 
         lpsolve('delete_lp', lp)
 
-        print obj, x, duals, stat, ret
+#        pv, retrn = lpsolve('get_primal_solution', lp)
+#        total_iter = lpsolve('get_total_iter', lp)
+
+        print 'OBJ:', obj
+        print 'X', x
+        print 'DUALS', duals
+        print 'STATUS', stat
+        print 'RETVAL', ret
+
+        xout, lambdaout, howout, success = x, duals, ret, result == 1
+
 
     elif have_fcn('pyipopt'):
         raise NotImplementedError
