@@ -20,7 +20,7 @@ from sys import stdout
 
 from numpy import array, r_, zeros, Inf, ones, dot, flatnonzero as find
 
-from scipy.sparse import issparse, csc_matrix as sparse
+from scipy.sparse import issparse, tril, csc_matrix as sparse
 
 from pypower.have_fcn import have_fcn
 
@@ -67,12 +67,11 @@ def qp_jac_g(x, flag, user_data=None):
 #        return H.data
 
 
-def qp_h(x, lagrange, obj_factor, flag, H):
-    H = H.tocoo()
+def qp_h(x, lagrange, obj_factor, flag, Hl):
     if flag:
-        return (H.row, H.col)
+        return (Hl.row, Hl.col)
     else:
-        return H.data
+        return Hl.data
 
 
 def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
@@ -119,12 +118,19 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
         # number of non-zeros in Hessian matrix, you can set it to 0
         nnzh = H.nnz
 
-#        nnzh = 0
-#        nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, qp_f, qp_grad_f, qp_g, qp_jac_g)
+        use_finite_differences = 1
 
-        eval_h = lambda x, lagrange, obj_factor, flag, userdata=None: qp_h(x, lagrange, obj_factor, flag, H)
+        if use_finite_differences:
+            nnzh = 0
+            nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh,
+                                 qp_f, qp_grad_f, qp_g, qp_jac_g)
+        else:
+            Hl = tril(H, format='coo')
 
-        nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, qp_f, qp_grad_f, qp_g, qp_jac_g, eval_h)
+            eval_h = lambda x, lagrange, obj_factor, flag, userdata=None: qp_h(x, lagrange, obj_factor, flag, Hl)
+
+            nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh,
+                                 qp_f, qp_grad_f, qp_g, qp_jac_g, eval_h)
 
 
         nlp.int_option("max_iter", 100)
@@ -147,6 +153,9 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
         nlp.close()
 
         print obj
+        print x
+        print status
+
     elif have_fcn('nlopt'):
         raise NotImplementedError
     else:
@@ -348,6 +357,6 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
 #                    stdout.write('         Retrying with QP solver from Optimization Toolbox ...\n\n')
 #                    skip_bpmpd = 1         ## try again using another solver
 #                    xout, lambdaout, howout, success = \
-#                        pp_qp(H, f, A, b, VLB, VUB, x0, N, verbosein, skip_bpmpd)
+#                        mp_qp(H, f, A, b, VLB, VUB, x0, N, verbosein, skip_bpmpd)
 
     return xout, lambdaout, howout, success

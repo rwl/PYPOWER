@@ -216,18 +216,14 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
             Acc[sum(nsegs[:i]) + arange(nsegs[i]), nb + i]         = m * baseMVA
             Acc[sum(nsegs[:i]) + arange(nsegs[i]), nb + ng + i]    = -ones(nsegs[i])
             bcc[sum(nsegs[:i]) + arange(nsegs[i])]                 = -b
-    else:                            ## polynomial costs
-#        Acc = zeros((0, nb+ng+nc))  # FIXME: zero dimensional sparse matrices
-        bcc = array([])
 
-    if nc > 0:
         AA = vstack([
             ## reference angle
             sparse((ones(1), (zeros(1), ref)), (1, nb+ng+nc)),
             ## real power flow eqns
             hstack([B,  -sparse((ones(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng)), sparse((nb, nc))]),
             ## lower limit on Pg
-            hstack([sparse((ng, nb)), -speye(ng, ng), sparse((ng, nc))]),
+#            hstack([sparse((ng, nb)), -speye(ng, ng), sparse((ng, nc))]),
             ## upper limit on Pg
             hstack([sparse((ng, nb)),  speye(ng, ng), sparse((ng, nc))]),
             ## flow limit on Pf
@@ -237,52 +233,75 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
             ## cost constraints
             Acc
         ])
+
+        bb = r_[
+            Va[ref],                                            ## reference angle
+            -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
+            -gen[on, PMIN] / baseMVA,                           ## lower limit on Pg
+            gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
+            branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
+            branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
+            bcc                                                ## cost constraints
+        ]
+
+        ## run LP solver
+        ppopt['OPF_NEQ']   = nb + 1         ## set number of equality constraints
+        c = r_[   zeros(nb + ng),
+                  ones(nc)      ]
+
+        x, lmbda, _, success = pp_lp(c, AA, bb, None, None, x, ppopt['OPF_NEQ'])
     else:
         AA = vstack([
             sparse((ones(1), (zeros(1), ref)), (1, nb+ng)),
             hstack([B,  -sparse((ones(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng))]),
-            hstack([sparse((ng, nb)), -speye(ng, ng)]),
+#            hstack([sparse((ng, nb)), -speye(ng, ng)]),
             hstack([sparse((ng, nb)),  speye(ng, ng)]),
             hstack([ Bf, sparse((nl, ng))]),
             hstack([-Bf, sparse((nl, ng))])
         ])
 
-    bb = r_[
-        Va[ref],                                            ## reference angle
-        -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
-        -gen[on, PMIN] / baseMVA,                           ## lower limit on Pg
-        gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
-        branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
-        branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
-        bcc                                                ## cost constraints
-    ]
 
-    ll = r_[
-        Va[ref],                                            ## reference angle
-        -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
-        gen[on, PMIN] / baseMVA,                            ## lower limit on Pg
-        -Inf * ones(ng),                                    ## upper limit on Pg
-        -Inf * ones(nl),                                    ## flow limit on Pf
-        -Inf * ones(nl),                                    ## flow limit on Pt
-        -Inf * ones(bcc.shape)                              ## cost constraints
-    ]
+        ll = r_[
+            Va[ref],                                            ## reference angle
+            -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
+            gen[on, PMIN] / baseMVA,                            ## lower limit on Pg
+#            -Inf * ones(ng),                                    ## upper limit on Pg
+            -Inf * ones(nl),                                    ## flow limit on Pf
+            -Inf * ones(nl),                                    ## flow limit on Pt
+#            -Inf * ones(bcc.shape)                              ## cost constraints
+        ]
 
-    uu = r_[
-        Va[ref],                                            ## reference angle
-        -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
-        Inf * ones(ng),                           ## lower limit on Pg
-        gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
-        branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
-        branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
-        bcc                                                 ## cost constraints
-    ]
+        uu = r_[
+            Va[ref],                                            ## reference angle
+            -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
+#            Inf * ones(ng),                                     ## lower limit on Pg
+            gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
+            branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
+            branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
+#            bcc                                                 ## cost constraints
+        ]
+
+        ## set up objective function of the form:  0.5 * x'*H*x + c'*x
+        polycf = dot(pcost[:, COST:COST + 3], diag(r_[baseMVA**2, baseMVA, 1]))  ## coeffs for Pg in p.u.
+        H = sparse((2 * polycf[:, 0], (arange(j3, j4), arange(j3, j4))), (nb+ng, nb+ng))
+        c = r_[   zeros(nb),
+                  polycf[:, 1] ]
+
+        ## run QP solver
+        ppopt['OPF_NEQ']   = nb + 1         ## set number of equality constraints
+        if verbose > 1:                      ## print QP progress for verbose levels 2 & 3
+            qpverbose = 1
+        else:
+            qpverbose = -1
+
+        x, lmbda, _, success = pp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
+
 
     #hstack([sparse((ng, nb)), -speye(ng, ng), sparse((ng, nc))]).todense()
     #gen[on, PMAX] / baseMVA
     #-sparse((ones(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng) ).todense()
     #hstack([B, -sparse((opnes(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng)), sparse((nb, nc))]).todense().shape
 
-    ## set up objective function of the form:  0.5 * x'*H*x + c'*x
     if formulation == 2:             ## piece-wise linear costs
         H = sparse((nb + ng + nc, nb + ng + nc))
         c = r_[   zeros(nb + ng),
@@ -293,21 +312,14 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
         c = r_[   zeros(nb),
                   polycf[:, 1]    ]
 
-    ## run QP solver
-    ppopt['OPF_NEQ']   = nb + 1         ## set number of equality constraints
-    if verbose > 1:                      ## print QP progress for verbose levels 2 & 3
-        qpverbose = 1
-    else:
-        qpverbose = -1
-
 #    if ppopt['SPARSE_QP'] == False: ## don't use sparse matrices
 #        AA = AA.todense()
 #        H  = H.todense()
 
-    if formulation == 2:             ## piece-wise linear costs
-        x, lmbda, _, success = pp_lp(c, AA, bb, None, None, x, ppopt['OPF_NEQ'])
-    else:
-        x, lmbda, _, success = pp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
+#    if formulation == 2:             ## piece-wise linear costs
+#        x, lmbda, _, success = pp_lp(c, AA, bb, None, None, x, ppopt['OPF_NEQ'])
+#    else:
+#        x, lmbda, _, success = pp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
 
     info = success;
 
