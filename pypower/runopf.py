@@ -18,10 +18,11 @@
 
 from sys import stdout, stderr
 
-from ppoption import ppoption
-from opf import opf
-from printpf import printpf
-from savecase import savecase
+from pypower.ppoption import ppoption
+from pypower.loadcase import loadcase
+from pypower.opf import opf
+from pypower.printpf import printpf
+from pypower.savecase import savecase
 
 
 def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
@@ -30,8 +31,12 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     ## default arguments
     ppopt = ppoption(ppopt)
 
+    ## read data
+    baseMVA, bus, gen, branch, areas, gencost = loadcase(casedata)
+
     ##-----  run the optimal power flow  -----
-    r = opf(casedata, ppopt)
+    bus, gen, branch, f, success, _, et, _, _, _, _ = \
+            opf(baseMVA, bus, gen, branch, areas, gencost, ppopt)
 
     ##-----  output results  -----
     if fname:
@@ -42,13 +47,13 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
             stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
             if fd is not None:
-                printpf(r, fd, ppopt)
+                printpf(baseMVA, bus, gen, branch, f, success, et, fd, ppopt)
                 fd.close()
 
-    printpf(r, stdout, ppopt)
+    printpf(baseMVA, bus, gen, branch, f, success, et, stdout, ppopt)
 
     ## save solved case
     if solvedcase:
-        savecase(solvedcase, r)
+        savecase(solvedcase, baseMVA, bus, gen, branch, areas, gencost)
 
-    return r
+    return baseMVA, bus, gen, gencost, branch, f, success, et

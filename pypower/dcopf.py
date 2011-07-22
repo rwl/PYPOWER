@@ -199,9 +199,6 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     if formulation == 2:             ## piece-wise linear costs
         ## compute cost constraints [ Cp >= m * Pg + b ] => [ m * Pg - Cp <= -b ]
         nsegs = pcost[:, NCOST].astype(int) - 1  ## number of cost constraints for each gen
-
-        print "NSEG:", nsegs
-
         ncc = sum(nsegs)                         ## total number of cost constraints
         #Acc = sparse((ncc, nb + ng + nc))
         Acc = zeros((ncc, nb + ng + nc))
@@ -223,7 +220,7 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
             ## real power flow eqns
             hstack([B,  -sparse((ones(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng)), sparse((nb, nc))]),
             ## lower limit on Pg
-#            hstack([sparse((ng, nb)), -speye(ng, ng), sparse((ng, nc))]),
+            hstack([sparse((ng, nb)), -speye(ng, ng), sparse((ng, nc))]),
             ## upper limit on Pg
             hstack([sparse((ng, nb)),  speye(ng, ng), sparse((ng, nc))]),
             ## flow limit on Pf

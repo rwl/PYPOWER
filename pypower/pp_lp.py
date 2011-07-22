@@ -41,7 +41,7 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
         m, n = A.shape
         lp = lpsolve('make_lp', m, n)
 #        lpsolve('set_verbose', lp, IMPORTANT)
-        lpsolve('set_verbose', lp, DETAILED)
+#        lpsolve('set_verbose', lp, DETAILED)
         lpsolve('set_mat', lp, A.todense())  # FIXME: exploit sparsity
         lpsolve('set_rh_vec', lp, b)
         lpsolve('set_obj_fn', lp, f)
@@ -55,11 +55,13 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
             lpsolve('set_constr_type', lp, i + 1, con_type)
 
 
-        for i in range(n):
-            lpsolve('set_lowbo', lp, i + 1, VLB[i])
+        if (VLB is not None) and (len(VLB) > 0):
+            for i in range(n):
+                lpsolve('set_lowbo', lp, i + 1, VLB[i])
 
-        for i in range(n):
-            lpsolve('set_upbo', lp, i + 1, VUB[i])
+        if (VUB is not None) and (len(VUB) > 0):
+            for i in range(n):
+                lpsolve('set_upbo', lp, i + 1, VUB[i])
 
         ## TODO: Explore scaling alternatives
         #lpsolve('set_scaling', lp, scalemode)
@@ -69,23 +71,28 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
             [obj, x, duals, ret] = lpsolve('get_solution', lp)
             stat = result
         else:
+            raise
             obj = []
             x = []
             duals = []
             stat = result
 
+        pv, prim_ret = lpsolve('get_primal_solution', lp)
+        total_iter = lpsolve('get_total_iter', lp)
+
+
         lpsolve('delete_lp', lp)
 
-#        pv, retrn = lpsolve('get_primal_solution', lp)
-#        total_iter = lpsolve('get_total_iter', lp)
-
+        print 'nA', m
         print 'OBJ:', obj
-        print 'X', x
-        print 'DUALS', duals
+        print 'X', array(x)
+        print 'PRIMALS', len(pv), pv
+        print 'ITERATIONS', total_iter
+        print 'DUALS', len(duals), array(duals)
         print 'STATUS', stat
         print 'RETVAL', ret
 
-        xout, lambdaout, howout, success = x, duals, ret, result == 1
+        xout, lambdaout, howout, success = array(x), array(duals), ret, result == 1
 
 
     elif have_fcn('pyipopt'):
