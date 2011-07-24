@@ -74,7 +74,7 @@ def qp_h(x, lagrange, obj_factor, flag, Hl):
         return Hl.data
 
 
-def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
+def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein=False):
     """Quadratic program solver.
 
     Solves the quadratic programming problem:
@@ -98,6 +98,8 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
 
     if have_fcn('pyipopt'):
         import pyipopt
+
+        pyipopt.set_loglevel(2)
 
         userdata = {'H': H, 'f': f, 'A': A}
 
@@ -138,7 +140,8 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
 
         # returns  x, upper and lower bound for multiplier, final
         # objective function obj and the return status of IPOPT
-        result = nlp.solve(x0, userdata)
+        result = nlp.solve(x0, m, userdata)
+
         ## final values for the primal variables
         x = result[0]
         ## final values for the lower bound multipliers
@@ -149,12 +152,22 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein):
         obj = result[3]
         ## status of the algorithm
         status = result[4]
+        ## final multipliers for constraints
+        mG = result[5]
 
         nlp.close()
 
         print obj
-        print x
+        print len(x)
         print status
+        print len(mG)
+        print len(zl), len(zu)
+
+        xout = x
+        lambdaout = r_[mG, zu, zl]
+        howout = status
+        success = status == 0
+
 
     elif have_fcn('nlopt'):
         raise NotImplementedError
