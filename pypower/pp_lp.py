@@ -40,7 +40,7 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
 
         m, n = A.shape
         lp = lpsolve('make_lp', m, n)
-#        lpsolve('set_verbose', lp, IMPORTANT)
+        lpsolve('set_verbose', lp, IMPORTANT)
 #        lpsolve('set_verbose', lp, DETAILED)
         lpsolve('set_mat', lp, A.todense())  # FIXME: exploit sparsity
         lpsolve('set_rh_vec', lp, b)
@@ -67,32 +67,36 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
         #lpsolve('set_scaling', lp, scalemode)
 
         result = lpsolve('solve', lp)
-        if result == 0 or result == 1 or result == 11 or result == 12:
+        if result in [0, 1, 11, 12]:
             [obj, x, duals, ret] = lpsolve('get_solution', lp)
             stat = result
+            success = True
         else:
             raise
             obj = []
             x = []
             duals = []
             stat = result
+            success = False
 
         pv, prim_ret = lpsolve('get_primal_solution', lp)
+        duals2, dual_ret = lpsolve('get_dual_solution', lp)
         total_iter = lpsolve('get_total_iter', lp)
 
 
         lpsolve('delete_lp', lp)
 
-        print 'nA', m
-        print 'OBJ:', obj
-        print 'X', array(x)
-        print 'PRIMALS', len(pv), pv
-        print 'ITERATIONS', total_iter
-        print 'DUALS', len(duals), array(duals)
-        print 'STATUS', stat
-        print 'RETVAL', ret
+#        print 'nA', m
+#        print 'OBJ:', obj
+#        print 'X', array(x)
+#        print 'PRIMALS', len(pv), pv
+#        print 'ITERATIONS', total_iter
+#        print 'DUALS', len(duals), array(duals)
+#        print 'DUALS', len(duals2), array(duals2)
+#        print 'STATUS', stat
+#        print 'RETVAL', ret
 
-        xout, lambdaout, howout, success = array(x), array(duals), ret, result == 1
+        xout, lambdaout, howout = array(x), -1 * array(duals2), ret
 
 
     elif have_fcn('pyipopt'):
