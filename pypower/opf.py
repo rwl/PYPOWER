@@ -20,7 +20,7 @@ from sys import stdout
 
 from time import time
 
-from numpy import array, arange, r_
+from numpy import array, arange, r_, any
 from numpy import flatnonzero as find
 
 from pypower.ppoption import ppoption
@@ -32,6 +32,8 @@ from pypower.have_fcn import have_fcn
 from pypower.pqcost import pqcost
 from pypower.poly2pwl import poly2pwl
 from pypower.opf_slvr import opf_slvr
+from pypower.lpopf import lpopf
+from pypower.ipoptopf import ipoptopf
 
 from pypower.idx_gen import GEN_STATUS, QMIN, QMAX, PMIN, PMAX
 
@@ -300,16 +302,16 @@ def opf(*args):
         bus, gen, branch, f, success, info, et = dcopf(baseMVA, bus, gen,
                                                 branch, areas, gencost, ppopt)
     else:  # AC optimal power flow requested
-        if any(model != PW_LINEAR and model != POLYNOMIAL):
+        if any((model != PW_LINEAR) & (model != POLYNOMIAL)):
             raise ValueError, 'opf.m: unknown generator cost model in gencost data'
 
         if ppopt['OPF_ALG'] == 0:  # OPF_ALG not set, choose best option
-            if have_fcn('minopf'):
-                ppopt['OPF_ALG'] = 500  # MINOS generalized
-            elif have_fcn('pdipmopf'):
-                ppopt['OPF_ALG'] = 540  # PDIPM generalized
-            elif have_fcn('fmincon'):
-                ppopt['OPF_ALG'] = 520  # FMINCON generalized
+#            if have_fcn('minopf'):
+#                ppopt['OPF_ALG'] = 500  # MINOS generalized
+            if have_fcn('pyipopt'):
+                ppopt['OPF_ALG'] = 540   # PDIPM generalized
+#            elif have_fcn('fmincon'):
+#                ppopt['OPF_ALG'] = 520  # FMINCON generalized
             ## use default for this cost model
             elif any(i_pwln):      ## some piece-wise linear, use appropriate alg
                 ppopt['OPF_ALG'] = ppopt['OPF_ALG_PWL']
@@ -350,53 +352,56 @@ def opf(*args):
         ##-----  run opf  -----
         if formulation == 5:  # Generalized
             if alg == 500:       # MINOS
-                if not have_fcn('minopf'):
-                    raise ValueError, 'opf: OPF_ALG ' + str(alg) + ' requires MINOPF'
+                raise NotImplementedError
+#                if not have_fcn('minopf'):
+#                    raise ValueError, 'opf: OPF_ALG ' + str(alg) + ' requires MINOPF'
+#
+#                bus, gen, branch, f, success, info, et, g, jac, xr, pimul = \
+#                    mopf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
+#                         ppopt, N, fparm, H, Cw, z0, zl, zu)
 
-                bus, gen, branch, f, success, info, et, g, jac, xr, pimul = \
-                    mopf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
-                         ppopt, N, fparm, H, Cw, z0, zl, zu)
-
-            elif alg == 520:   # FMINCON
-                if not have_fcn('fmincon'):
+            elif alg == 520:   # IPOPT
+                if not have_fcn('pyipopt'):
                     raise ValueError, 'opf: OPF_ALG ' + str(alg) + ' requires ' + \
-                        'fmincon (Optimization Toolbox 2.x or later)'
+                        'PyIPOPT (see https://projects.coin-or.org/Ipopt)'
 
                 bus, gen, branch, f, success, info, et, g, jac, xr, pimul = \
-                    fmincopf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
+                    ipoptopf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
                              ppopt, N, fparm, H, Cw, z0, zl, zu)
 
             elif alg == 540 or alg == 545 or alg == 550:  # PDIPM_OPF, SCPDIPM_OPF, or TRALM_OPF
-                if alg == 540:       # PDIPM_OPF
-                    if not have_fcn('pdipmopf'):
-                        raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires PDIPMOPF'
-
-                elif alg == 545:       # SCPDIPM_OPF
-                    if not have_fcn('scpdipmopf'):
-                        raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires '
-                        'SCPDIPMOPF (see http://www.pserc.cornell.edu/tspopf/)'
-
-                elif alg == 550:       # TRALM_OPF
-                    if not have_fcn('tralmopf'):
-                        raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires TRALMOPF'
-
-                bus, gen, branch, f, success, info, et, g, jac, xr, pimul = \
-                    tspopf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
-                           ppopt, N, fparm, H, Cw, z0, zl, zu)
+                raise NotImplementedError
+#                if alg == 540:       # PDIPM_OPF
+#                    if not have_fcn('pdipmopf'):
+#                        raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires PDIPMOPF'
+#
+#                elif alg == 545:       # SCPDIPM_OPF
+#                    if not have_fcn('scpdipmopf'):
+#                        raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires '
+#                        'SCPDIPMOPF (see http://www.pserc.cornell.edu/tspopf/)'
+#
+#                elif alg == 550:       # TRALM_OPF
+#                    if not have_fcn('tralmopf'):
+#                        raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires TRALMOPF'
+#
+#                bus, gen, branch, f, success, info, et, g, jac, xr, pimul = \
+#                    tspopf(baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu,
+#                           ppopt, N, fparm, H, Cw, z0, zl, zu)
 
         else:
             if opf_slvr(alg) == 0:           ## use CONSTR
-                if not have_fcn('constr'):
-                    raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires '
-                    'constr (Optimization Toolbox 1.x/2.x)'
-
-                ## set some options
-                if ppopt['CONSTR_MAX_IT'] == 0:
-                    ppopt['CONSTR_MAX_IT'] = 2 * bus.shape[0] + 150  ## set max number of iterations for constr
-
-                ## run optimization
-                bus, gen, branch, f, success, info, et, g, jac = \
-                    copf(baseMVA, bus, gen, branch, areas, gencost, ppopt)
+                raise NotImplementedError
+#                if not have_fcn('constr'):
+#                    raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires '
+#                    'constr (Optimization Toolbox 1.x/2.x)'
+#
+#                ## set some options
+#                if ppopt['CONSTR_MAX_IT'] == 0:
+#                    ppopt['CONSTR_MAX_IT'] = 2 * bus.shape[0] + 150  ## set max number of iterations for constr
+#
+#                ## run optimization
+#                bus, gen, branch, f, success, info, et, g, jac = \
+#                    copf(baseMVA, bus, gen, branch, areas, gencost, ppopt)
 
             else:                            ## use LPCONSTR
                 bus, gen, branch, f, success, info, et = lpopf(baseMVA,

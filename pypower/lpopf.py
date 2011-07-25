@@ -94,13 +94,13 @@ def lpopf(baseMVA, bus, gen, branch, areas, gencost, ppopt):
 
     # If tables do not have multiplier/extra columns, append zero cols
     if bus.shape[1] < MU_VMIN + 1:
-        bus = c_[ bus, zeros(bus.shape[0], MU_VMIN - bus.shape[1] + 1) ]
+        bus = c_[ bus, zeros((bus.shape[0], MU_VMIN - bus.shape[1] + 1)) ]
 
     if gen.shape[1] < MU_QMIN + 1:
-        gen = c_[ gen, zeros(gen.shape[0], MU_QMIN - gen.shape[1] + 1) ]
+        gen = c_[ gen, zeros((gen.shape[0], MU_QMIN - gen.shape[1] + 1)) ]
 
     if branch.shape[1] < MU_ST + 1:
-        branch = c_[ branch, zeros(branch.shape[0], MU_ST - branch.shape[1]) ]
+        branch = c_[ branch, zeros((branch.shape[0], MU_ST - branch.shape[1])) ]
 
     # Filter out inactive generators and branches; save original bus & branch
     comgen = find(gen[:, GEN_STATUS] > 0)
@@ -172,7 +172,7 @@ def lpopf(baseMVA, bus, gen, branch, areas, gencost, ppopt):
         raise ValueError, 'copf.m: Standard formulation requested, but there are piece-wise linear costs in data'
 
     # Now go for it.
-    gbus = gen[:, GEN_BUS]        ## what buses are gens at?
+    gbus = gen[:, GEN_BUS].astype(int)        ## what buses are gens at?
 
     ## sizes of things
     nb = bus.shape[0]
@@ -205,7 +205,11 @@ def lpopf(baseMVA, bus, gen, branch, areas, gencost, ppopt):
         Cq = array([])
     else:
         Cp = totcost(pcost, Pg * baseMVA)
-        Cq = totcost(qcost, Qg * baseMVA)  ## empty if qcost is empty
+        if len(qcost) > 0:
+            Cq = totcost(qcost, Qg * baseMVA)
+        else:
+            ## empty if qcost is empty
+            Cq = array([])
 
     x = r_[angle(V[r_[pv, pq]]), abs(V), Pg, Qg, Cp, Cq]
 

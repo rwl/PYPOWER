@@ -52,7 +52,7 @@ def t_opf_lp(quiet=False):
     branch_soln = soln9_opf['branch_soln']
     f_soln = soln9_opf['f_soln']
 
-    if have_fcn('bpmpd') or have_fcn('linprog') or have_fcn('lp'):
+    if have_fcn('lpsolve') or have_fcn('pyipopt'):
         ## run dense LP-based OPF
         t = 'dense LP-based OPF : '
         ppopt = ppoption(OUT_ALL=0, VERBOSE=verbose, OPF_ALG=220)
@@ -83,7 +83,7 @@ def t_opf_lp(quiet=False):
         t_is(gen, gen_soln, 2, [t, 'gen'])
         t_is(branch, branch_soln, 2, [t, 'branch'])
     else:
-        t_skip(15, 'LP solver (BPMPD_MEX or Optimization Toolbox) not available')
+        t_skip(15, 'LP solver (LP Solve or IPOPT) not available')
 
     ## get solved AC power flow case from MAT-file
     soln9_opf_Plim = loadmat(join(tdir, 'soln9_opf_Plim.mat'), struct_as_record=False)

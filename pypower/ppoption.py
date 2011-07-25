@@ -54,6 +54,14 @@ primal/dual interior point method,
 545 - generalized formulation (except CCV), SC-MIPS
 step-controlled primal/dual interior point method'''),
 
+    ('opf_alg_poly', 0, '''default OPF algorithm for use with
+polynomial cost functions (used only if no solver available
+for generalized formulation)'''),
+
+    ('opf_alg_pwl', 200, '''default OPF algorithm for use with
+piece-wise linear cost functions (used only if no solver available
+for generalized formulation')'''),
+
     ('opf_poly2pwl_pts', 10, 'number of evaluation points to use when '
      'converting from polynomial to piece-wise linear costs)'),
 

@@ -21,23 +21,23 @@ def have_fcn(tag):
 
     Returns 1 if the optional functionality is available, 0 otherwise.
     """
-    if tag == 'pyipopt':
+    if tag.lower() in ['pyipopt', 'ipopt']:
         try:
             __import__('pyipopt')
             return True
         except ImportError:
             return False
-    elif tag == 'nlopt':
+    elif tag.lower() == 'nlopt':
         try:
             __import__('nlopt')
             return True
         except ImportError:
             return False
-    elif tag in ['lp_solve', 'lpsolve', 'lpsolve55']:
+    elif tag.lower() in ['lp_solve', 'lpsolve', 'lpsolve55']:
         try:
             __import__('lpsolve55')
             return True
         except ImportError:
             return False
     else:
-        raise ValueError, 'invlaid function tag [%s]' % tag
+        raise ValueError, 'invalid function name [%s]' % tag

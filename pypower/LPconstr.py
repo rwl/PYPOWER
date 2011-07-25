@@ -21,8 +21,8 @@ from numpy import flatnonzero as find
 from scipy.sparse import hstack, issparse, csc_matrix as sparse
 
 
-def LPconstr(FUN,x,idx_xi, ppopt, step0, VLB, VUB, GRADFUN, LPEQUSVR,
-             P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12,P13,P14,P15):
+def LPconstr(FUN, x, idx_xi, ppopt, step0, VLB, VUB, GRADFUN, LPEQUSVR, *args):
+#             P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12,P13,P14,P15):
     """Finds the solution of a nonlinear programming problem based on
     successive linear programs. The key is to set up the problem as follows::
 

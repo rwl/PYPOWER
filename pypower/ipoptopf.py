@@ -46,24 +46,24 @@ from pypower.idx_cost import MODEL, PW_LINEAR
 EPS = finfo(float).eps
 
 
-def fmincopf(*args):
+def ipoptopf(*args):
     """Solves an AC optimal power flow.
 
-    bus, gen, branch, f, success = fmincopf(casefile, ppopt)
+    bus, gen, branch, f, success = ipoptopf(casefile, ppopt)
 
-    bus, gen, branch, f, success = fmincopf(casefile, A, l, u, ppopt)
+    bus, gen, branch, f, success = ipoptopf(casefile, A, l, u, ppopt)
 
-    bus, gen, branch, f, success = fmincopf(baseMVA, bus, gen, branch,
+    bus, gen, branch, f, success = ipoptopf(baseMVA, bus, gen, branch,
                                    areas, gencost, ppopt)
 
-    bus, gen, branch, f, success = fmincopf(baseMVA, bus, gen, branch,
+    bus, gen, branch, f, success = ipoptopf(baseMVA, bus, gen, branch,
                                    areas, gencost, A, l, u, ppopt)
 
-    bus, gen, branch, f, success = fmincopf(baseMVA, bus, gen, branch,
+    bus, gen, branch, f, success = ipoptopf(baseMVA, bus, gen, branch,
                                    areas, gencost, A, l, u, ppopt,
                                    N, fparm, H, Cw)
 
-    bus, gen, branch, f, success = fmincopf(baseMVA, bus, gen, branch,
+    bus, gen, branch, f, success = ipoptopf(baseMVA, bus, gen, branch,
                                    areas, gencost, A, l, u, ppopt,
                                    N, fparm, H, Cw, z0, zl, zu)
     """
@@ -73,13 +73,13 @@ def fmincopf(*args):
     t1 = time()
     # passing filename or dict
     if isinstance(args[0], basestring) or isinstance(args[0], dict):
-        #---- fmincopf(baseMVA,  bus, gen, branch, areas, gencost, Au,    lbu, ubu, ppopt, N,  fparm, H, Cw, z0, zl, zu)
-        # 12  fmincopf(casefile, Au,  lbu, ubu,    ppopt, N,       fparm, H,   Cw,  z0,    zl, zu)
-        # 9   fmincopf(casefile, Au,  lbu, ubu,    ppopt, N,       fparm, H,   Cw)
-        # 5   fmincopf(casefile, Au,  lbu, ubu,    ppopt)
-        # 4   fmincopf(casefile, Au,  lbu, ubu)
-        # 2   fmincopf(casefile, ppopt)
-        # 1   fmincopf(casefile)
+        #---- ipoptopf(baseMVA,  bus, gen, branch, areas, gencost, Au,    lbu, ubu, ppopt, N,  fparm, H, Cw, z0, zl, zu)
+        # 12  ipoptopf(casefile, Au,  lbu, ubu,    ppopt, N,       fparm, H,   Cw,  z0,    zl, zu)
+        # 9   ipoptopf(casefile, Au,  lbu, ubu,    ppopt, N,       fparm, H,   Cw)
+        # 5   ipoptopf(casefile, Au,  lbu, ubu,    ppopt)
+        # 4   ipoptopf(casefile, Au,  lbu, ubu)
+        # 2   ipoptopf(casefile, ppopt)
+        # 1   ipoptopf(casefile)
         if nargin in [1, 2, 4, 5, 9, 12]:
             casefile = args[0]
             if nargin == 12:
@@ -160,17 +160,17 @@ def fmincopf(*args):
                 lbu   = array([])
                 Au    = array([])
         else:
-            raise ValueError, 'fmincopf: Incorrect input arg order, number or type\n'
+            raise ValueError, 'ipoptopf: Incorrect input arg order, number or type\n'
 
         baseMVA, bus, gen, branch, areas, gencost = loadcase(casefile)
     else:    # passing individual data matrices
-        #---- fmincopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
-        # 17  fmincopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
-        # 14  fmincopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu, ppopt, N, fparm, H, Cw)
-        # 10  fmincopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu, ppopt)
-        # 9   fmincopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu)
-        # 7   fmincopf(baseMVA, bus, gen, branch, areas, gencost, ppopt)
-        # 6   fmincopf(baseMVA, bus, gen, branch, areas, gencost)
+        #---- ipoptopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
+        # 17  ipoptopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu, ppopt, N, fparm, H, Cw, z0, zl, zu)
+        # 14  ipoptopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu, ppopt, N, fparm, H, Cw)
+        # 10  ipoptopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu, ppopt)
+        # 9   ipoptopf(baseMVA, bus, gen, branch, areas, gencost, Au,   lbu, ubu)
+        # 7   ipoptopf(baseMVA, bus, gen, branch, areas, gencost, ppopt)
+        # 6   ipoptopf(baseMVA, bus, gen, branch, areas, gencost)
         if nargin in [6, 7, 9, 10, 14, 17]:
             if nargin == 17:
                 baseMVA, bus, gen, branch, areas, gencost, Au, lbu, ubu, ppopt,  N, fparm, H, Cw, z0, zl, zu = args
@@ -224,15 +224,15 @@ def fmincopf(*args):
                 lbu = array([])
                 Au = array([])
         else:
-            raise ValueError, 'fmincopf: Incorrect input arg order, number or type\n'
+            raise ValueError, 'ipoptopf: Incorrect input arg order, number or type\n'
 
     if N.shape[0] > 0:
         if N.shape[0] != fparm.shape[0] or N.shape[0] != H.shape[0] or \
                 N.shape[0] != H.shape[1] or N.shape[0] != len(Cw):
-            raise ValueError, 'fmincopf: wrong dimensions in generalized cost parameters'
+            raise ValueError, 'ipoptopf: wrong dimensions in generalized cost parameters'
 
         if Au.shape[0] > 0 and N.shape[1] != Au.shape[1]:
-            raise ValueError, 'fmincopf: A and N must have the same number of columns'
+            raise ValueError, 'ipoptopf: A and N must have the same number of columns'
 
     if len(ppopt) == 0:
         ppopt = ppoption()
@@ -280,7 +280,7 @@ def fmincopf(*args):
 
     # Print a warning if there is more than one reference bus
     if find(bus[:, BUS_TYPE] == REF).shape[0] > 1:
-        errstr = '\nfmincopf: Warning: more than one reference bus detected in bus table data.\n' \
+        errstr = '\nipoptopf: Warning: more than one reference bus detected in bus table data.\n' \
                  '      For a system with islands, a reference bus in each island\n' \
                  '      might help convergence but in a fully connected system such\n' \
                  '      a situation is probably not reasonable.\n\n'
@@ -293,10 +293,10 @@ def fmincopf(*args):
     # value of Pmin and either Qmin (for inductive loads) or Qmax (for capacitive
     # loads). If both Qmin and Qmax are zero, this implies a unity power factor
     # without the need for an additional constraint.
-    vload = find( isload(gen) & (gen[:, QMIN] != 0 | gen[:, QMAX] != 0) )
+    vload = find( isload(gen) & ((gen[:, QMIN] != 0) | (gen[:, QMAX] != 0)) )
     # At least one of the Q limits must be zero (corresponding to Pmax == 0)
     if any( (gen[vload, QMIN] != 0) & (gen[vload, QMAX] != 0) ):
-        raise ValueError, 'fmincopf: Either Qmin or Qmax must be equal to zero for each dispatchable load.'
+        raise ValueError, 'ipoptopf: Either Qmin or Qmax must be equal to zero for each dispatchable load.'
 
     # Initial values of PG and QG must be consistent with specified power factor
     # This is to prevent a user from unknowingly using a case file which would
@@ -320,8 +320,7 @@ def fmincopf(*args):
     if ppopt['OPF_IGNORE_ANG_LIM']:
         nang = 0
     else:
-        iang = find((branch[:, ANGMIN] & branch[:, ANGMIN] > -360) |
-                    (branch[:, ANGMAX] & branch[:, ANGMAX] < 360))
+        iang = find((branch[:, ANGMIN] > -360) | (branch[:, ANGMAX] < 360))
         iangl = find(branch[iang, ANGMIN])
         iangh = find(branch[iang, ANGMAX])
         nang = len(iang)
@@ -343,31 +342,31 @@ def fmincopf(*args):
         Au = zeros((0, nx))
         if len(N) > 0:        # still need to check number of columns of N
             if N.shape[1] != nx:
-                raise ValueError, 'fmincopf: user supplied N matrix must have #d columns.' % nx
+                raise ValueError, 'ipoptopf: user supplied N matrix must have %d columns.' % nx
     else:
         nz = Au.shape[1] - nx                       # additional linear variables
         if nz < 0:
-            raise ValueError, 'fmincopf: user supplied A matrix must have at least #d columns.' % nx
+            raise ValueError, 'ipoptopf: user supplied A matrix must have at least %d columns.' % nx
     nxyz = nx + ny + nz                             # total # of vars of all types
 
     # Definition of indexes into optimization variable vector and constraint
     # vector.
-    thbas = 0;                thend    = thbas + nb - 1
-    vbas     = thend;         vend     = vbas + nb - 1
-    pgbas    = vend;          pgend    = pgbas + ng - 1
-    qgbas    = pgend;         qgend    = qgbas + ng - 1
-    ybas     = qgend;         yend     = ybas + ny - 1
-    zbas     = yend;          zend     = zbas + nz - 1
+    thbas = 0;                thend    = thbas + nb
+    vbas     = thend;         vend     = vbas + nb
+    pgbas    = vend;          pgend    = pgbas + ng
+    qgbas    = pgend;         qgend    = qgbas + ng
+    ybas     = qgend;         yend     = ybas + ny
+    zbas     = yend;          zend     = zbas + nz
 
-    pmsmbas = 0;              pmsmend = pmsmbas + nb - 1
-    qmsmbas = pmsmend;        qmsmend = qmsmbas + nb - 1
-    sfbas   = qmsmend;        sfend   = sfbas + nl - 1
-    stbas   = sfend;          stend   = stbas + nl - 1
-    usrbas  = stend;          usrend  = usrbas + nusr - 1 # warning: nusr could be 0
-    pqhbas  = usrend;         pqhend  = pqhbas + npqh - 1 # warning: npqh could be 0
-    pqlbas  = pqhend;         pqlend  = pqlbas + npql - 1 # warning: npql could be 0
-    vlbas   = pqlend;         vlend   = vlbas + nvl - 1   # warning: nvl could be 0
-    angbas  = vlend;          angend  = angbas + nang - 1 # # of Ay constraints.
+    pmsmbas = 0;              pmsmend = pmsmbas + nb
+    qmsmbas = pmsmend;        qmsmend = qmsmbas + nb
+    sfbas   = qmsmend;        sfend   = sfbas + nl
+    stbas   = sfend;          stend   = stbas + nl
+    usrbas  = stend;          usrend  = usrbas + nusr # warning: nusr could be 0
+    pqhbas  = usrend;         pqhend  = pqhbas + npqh # warning: npqh could be 0
+    pqlbas  = pqhend;         pqlend  = pqlbas + npql # warning: npql could be 0
+    vlbas   = pqlend;         vlend   = vlbas + nvl   # warning: nvl could be 0
+    angbas  = vlend;          angend  = angbas + nang # # of Ay constraints.
 
     # Let makeAy deal with any y-variable for piecewise-linear convex costs.
     # note that if there are z variables then Ay doesn't have the columns
@@ -381,7 +380,7 @@ def fmincopf(*args):
         by = array([])
 
     ncony = Ay.shape[0]
-    yconbas = angend;       yconend = yconbas + ncony - 1 # finally done with constraint indexing
+    yconbas = angend;       yconend = yconbas + ncony # finally done with constraint indexing
 
     # Make Aang, lang, uang for branch angle difference limits
     if nang > 0:
@@ -482,7 +481,8 @@ def fmincopf(*args):
             if len(N) > 0:
                 N = hstack([ N[:, :qgend], sparse((N.shape[0], ny)), N[:, qgend + arange(nz)] ])
         else:
-            Au = hstack([ Au, sparse((nusr, ny)) ])
+            if nusr:
+                Au = hstack([ Au, sparse((nusr, ny)) ])
             if len(N) > 0:
                 N = hstack([ N, sparse((N.shape[0], ny)) ])
 
@@ -490,13 +490,17 @@ def fmincopf(*args):
     # note the order of the constraints.
 
     if (ncony > 0):
-        A = vstack([ Au,
-                     Apqh,
-                     Apql,
-                     Avl,
-                     Aang,
-                     Ay,
-                     sparse((ones(ny), (ones(ny), arange(ybas, yend))), (1, nxyz)) ])  # "linear" cost
+        As = [ Au,
+               Apqh,
+               Apql,
+               Avl,
+               Aang,
+               Ay,
+               sparse((ones(ny), (zeros(ny), arange(ybas, yend))), (1, nxyz)) ]  # "linear" cost
+
+        print [a for a in As if a.shape[0] > 0]
+
+        A = vstack([a for a in As if a.shape[0] > 0])
         l = r_[ lbu,
                 lbpqh,
                 lbpql,
@@ -525,34 +529,34 @@ def fmincopf(*args):
 
     # Form a vector with basic info to pass on as a parameter
     parms = array([
-        nb,  # 1
-        ng,  # 2
-        nl,  # 3
-        ny,  # 4
-        nx,  # 5
-        nvl, # 6
-        nz,  # 7
-        nxyz,# 8
-        thbas,# 9
-        thend,# 10
-        vbas, # 11
-        vend, # 12
-        pgbas,# 13
-        pgend,# 14
-        qgbas,# 15
-        qgend,# 16
-        ybas, # 17
-        yend, # 18
-        zbas, # 19
-        zend, # 20
-        pmsmbas,# 21
-        pmsmend,# 22
-        qmsmbas,# 23
-        qmsmend,# 24
-        sfbas,  # 25
-        sfend,  # 26
-        stbas,  # 27
-        stend   # 28
+        nb,      # 1
+        ng,      # 2
+        nl,      # 3
+        ny,      # 4
+        nx,      # 5
+        nvl,     # 6
+        nz,      # 7
+        nxyz,    # 8
+        thbas,   # 9
+        thend,   # 10
+        vbas,    # 11
+        vend,    # 12
+        pgbas,   # 13
+        pgend,   # 14
+        qgbas,   # 15
+        qgend,   # 16
+        ybas,    # 17
+        yend,    # 18
+        zbas,    # 19
+        zend,    # 20
+        pmsmbas, # 21
+        pmsmend, # 22
+        qmsmbas, # 23
+        qmsmend, # 24
+        sfbas,   # 25
+        sfend,   # 26
+        stbas,   # 27
+        stend    # 28
     ])
 
     # If there are y variables the last row of A is a linear cost vector

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for PIPS-based AC optimal power flow.
+"""Tests for IPOPT-based AC optimal power flow.
 """
 
 from os.path import dirname, join
@@ -44,8 +44,8 @@ from pypower.t.t_ok import t_ok
 from pypower.t.t_end import t_end
 
 
-def t_opf_pdipm(quiet=False):
-    """Tests for PDIPM-based AC optimal power flow.
+def t_opf_ipopt(quiet=False):
+    """Tests for IPOPT-based AC optimal power flow.
     """
     num_tests = 101
 
@@ -55,10 +55,10 @@ def t_opf_pdipm(quiet=False):
     casefile = join(tdir, 't_case9_opf')
     verbose = 0#not quiet
 
-    t0 = 'PIPS : '
+    t0 = 'IPOPT : '
     ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,
                    PDIPM_COMPTOL=1e-8, PDIPM_COSTTOL=1e-9)
-    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=verbose, OPF_ALG=540)
+    ppopt = ppoption(ppopt, OUT_ALL=0, VERBOSE=verbose, OPF_ALG=520)
 
     ## set up indices
     ib_data     = r_[arange(BUS_AREA + 1), arange(BASE_KV, VMIN + 1)]
@@ -314,4 +314,4 @@ def t_opf_pdipm(quiet=False):
 
 
 if __name__ == '__main__':
-    t_opf_pdipm(quiet=False)
+    t_opf_ipopt(quiet=False)

@@ -52,8 +52,8 @@ def LPeqslvr(x, baseMVA, bus, gen, gencost, branch, Ybus, Yf, Yt, V,
     # parse x, update bus, gen
     bus[pvpq, VA] = x[:nb - 1] * 180 / pi
     bus[:, VM] = x[nb - 1:nb + nb - 1]
-    gen[on, PG] = x[2 * nb : 2 * nb - 1 + ng] * baseMVA
-    gen[on, QG] = x[2 * nb + ng : 2 * nb - 1 + 2 * ng] * baseMVA
+    gen[on, PG] = x[2 * nb - 1 : 2 * nb - 1 + ng] * baseMVA
+    gen[on, QG] = x[2 * nb + ng - 1 : 2 * nb - 1 + 2 * ng] * baseMVA
 
 
     # run load flow
@@ -82,7 +82,10 @@ def LPeqslvr(x, baseMVA, bus, gen, gencost, branch, Ybus, Yf, Yt, V,
         Cq = array([])
     else:
         Cp = totcost(pcost, Pg * baseMVA)
-        Cq = totcost(qcost, Qg * baseMVA)      ## empty if qcost is empty
+        if len(qcost > 0):
+            Cq = totcost(qcost, Qg * baseMVA)
+        else:
+            Cq = array([])  ## empty if qcost is empty
 
     x = r_[angle(V[pvpq]), abs(V), Pg, Qg, Cp, Cq]
 

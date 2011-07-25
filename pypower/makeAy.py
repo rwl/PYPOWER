@@ -49,7 +49,7 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     ny = iycost.shape[0]
 
     if ny == 0:
-        Ay = zeros((0, ybas+ny-1))
+        Ay = zeros((0, ybas + ny))
         by = array([])
         return Ay, by
 
@@ -67,7 +67,7 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     ## this should be the quickest.
 
     m = sum( gencost[iycost, NCOST].astype(int) )  ## total number of cost points
-    Ay = sparse((m - ny, ybas + ny - 1))
+    Ay = sparse((m - ny, ybas + ny))
     by = array([])
     ## First fill the Pg or Qg coefficients (since their columns come first)
     ## and the rhs
