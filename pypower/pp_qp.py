@@ -74,7 +74,8 @@ def qp_h(x, lagrange, obj_factor, flag, Hl):
         return Hl.data
 
 
-def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein=False):
+def pp_qp(H, f, A, b, VLB, VUB, x0, N,
+          use_finite_differences=True, **kw_args):
     """Quadratic program solver.
 
     Solves the quadratic programming problem:
@@ -99,7 +100,7 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein=False):
     if have_fcn('pyipopt'):
         import pyipopt
 
-        pyipopt.set_loglevel(2)
+        pyipopt.set_loglevel(1)
 
         userdata = {'H': H, 'f': f, 'A': A}
 
@@ -112,15 +113,14 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein=False):
         # number of linear constraints (zero nln)
         m = A.shape[0]
         # lower bound of constraint
-        gl = l
+        gl = -Inf * ones(m)
+        gl[:N] = b[:N]
         # upper bound of constraints
-        gu = u
+        gu = b
         # number of nonzeros in Jacobi matrix
         nnzj = A.nnz
         # number of non-zeros in Hessian matrix, you can set it to 0
         nnzh = H.nnz
-
-        use_finite_differences = 1
 
         if use_finite_differences:
             nnzh = 0
@@ -135,7 +135,13 @@ def pp_qp(H, f, A, l, u, VLB, VUB, x0, N, verbosein=False):
                                  qp_f, qp_grad_f, qp_g, qp_jac_g, eval_h)
 
 
-        nlp.int_option("max_iter", 100)
+        for k, v in kw_args.iteritems():
+            if isinstance(v, int):
+                nlp.int_option(k, v)
+            elif isinstance(v, basestring):
+                nlp.str_option(k, v)
+            else:
+                nlp.num_option(k, v)
 
 
         # returns  x, upper and lower bound for multiplier, final

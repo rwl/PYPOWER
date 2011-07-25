@@ -196,6 +196,7 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     i5 = i4;        i6 = i4 + ng        ## i5:i6 - Pmax, gen buses
     i7 = i6;        i8 = i6 + nl        ## i7:i8 - |Pf| line limit
     i9 = i8;        i10 = i8 + nl       ## i9:i10 - |Pt| line limit
+
     if formulation == 2:             ## piece-wise linear costs
         ## compute cost constraints [ Cp >= m * Pg + b ] => [ m * Pg - Cp <= -b ]
         nsegs = pcost[:, NCOST].astype(int) - 1  ## number of cost constraints for each gen
@@ -246,52 +247,41 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
         c = r_[   zeros(nb + ng),
                   ones(nc)      ]
 
-        x, lmbda, _, success = pp_lp(c, AA, bb, None, None, x, ppopt['OPF_NEQ'])
+        x, lmbda, _, success = pp_lp(c, AA, bb, None, None, x, ppopt['OPF_NEQ'],
+                                     skip_lpsolve=True, print_level=0)
     else:
         AA = vstack([
             sparse((ones(1), (zeros(1), ref)), (1, nb+ng)),
             hstack([B,  -sparse((ones(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng))]),
-#            hstack([sparse((ng, nb)), -speye(ng, ng)]),
+            hstack([sparse((ng, nb)), -speye(ng, ng)]),
             hstack([sparse((ng, nb)),  speye(ng, ng)]),
             hstack([ Bf, sparse((nl, ng))]),
             hstack([-Bf, sparse((nl, ng))])
         ])
 
-
-        ll = r_[
+        bb = r_[
             Va[ref],                                            ## reference angle
             -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
-            gen[on, PMIN] / baseMVA,                            ## lower limit on Pg
-#            -Inf * ones(ng),                                    ## upper limit on Pg
-            -Inf * ones(nl),                                    ## flow limit on Pf
-            -Inf * ones(nl),                                    ## flow limit on Pt
-#            -Inf * ones(bcc.shape)                              ## cost constraints
-        ]
-
-        uu = r_[
-            Va[ref],                                            ## reference angle
-            -(bus[:, PD] + bus[:, GS]) / baseMVA - Pbusinj,     ## real power flow eqns
-#            Inf * ones(ng),                                     ## lower limit on Pg
+            -gen[on, PMIN] / baseMVA,                           ## lower limit on Pg
             gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
             branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
             branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
-#            bcc                                                 ## cost constraints
         ]
 
         ## set up objective function of the form:  0.5 * x'*H*x + c'*x
         polycf = dot(pcost[:, COST:COST + 3], diag(r_[baseMVA**2, baseMVA, 1]))  ## coeffs for Pg in p.u.
         H = sparse((2 * polycf[:, 0], (arange(j3, j4), arange(j3, j4))), (nb+ng, nb+ng))
-        c = r_[   zeros(nb),
-                  polycf[:, 1] ]
+        c = r_[ zeros(nb), polycf[:, 1] ]
 
         ## run QP solver
-        ppopt['OPF_NEQ']   = nb + 1         ## set number of equality constraints
+        ppopt['OPF_NEQ'] = nb + 1            ## set number of equality constraints
         if verbose > 1:                      ## print QP progress for verbose levels 2 & 3
             qpverbose = 1
         else:
             qpverbose = -1
 
-        x, lmbda, _, success = pp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
+        x, lmbda, _, success = pp_qp(H, c, AA, bb, [], [], x, ppopt['OPF_NEQ'],
+                                       True, print_level=0)
 
 
     #hstack([sparse((ng, nb)), -speye(ng, ng), sparse((ng, nc))]).todense()
@@ -299,15 +289,15 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     #-sparse((ones(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng) ).todense()
     #hstack([B, -sparse((opnes(ng), (gen[on, GEN_BUS], arange(ng))), (nb, ng)), sparse((nb, nc))]).todense().shape
 
-    if formulation == 2:             ## piece-wise linear costs
-        H = sparse((nb + ng + nc, nb + ng + nc))
-        c = r_[   zeros(nb + ng),
-                  ones(nc)      ]
-    else:                            ## polynomial costs
-        polycf = dot(pcost[:, COST:COST + 3], diag(r_[baseMVA**2, baseMVA, 1]))  ## coeffs for Pg in p.u.
-        H = sparse((2 * polycf[:, 0], (arange(j3, j4), arange(j3, j4))), (nb+ng, nb+ng))
-        c = r_[   zeros(nb),
-                  polycf[:, 1]    ]
+#    if formulation == 2:             ## piece-wise linear costs
+#        H = sparse((nb + ng + nc, nb + ng + nc))
+#        c = r_[   zeros(nb + ng),
+#                  ones(nc)      ]
+#    else:                            ## polynomial costs
+#        polycf = dot(pcost[:, COST:COST + 3], diag(r_[baseMVA**2, baseMVA, 1]))  ## coeffs for Pg in p.u.
+#        H = sparse((2 * polycf[:, 0], (arange(j3, j4), arange(j3, j4))), (nb+ng, nb+ng))
+#        c = r_[   zeros(nb),
+#                  polycf[:, 1]    ]
 
 #    if ppopt['SPARSE_QP'] == False: ## don't use sparse matrices
 #        AA = AA.todense()

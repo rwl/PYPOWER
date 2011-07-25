@@ -23,9 +23,11 @@ from numpy import array, r_, zeros, Inf, ones, flatnonzero as find
 from scipy.sparse import issparse, csc_matrix as sparse
 
 from pypower.have_fcn import have_fcn
+from pypower.pp_qp import pp_qp
 
 
-def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
+def pp_lp(f, A, b, VLB, VUB, x0, N=0, skip_lpsolve=False,
+          **kw_args):
     """Linear program solver.
     """
     success = 0
@@ -35,7 +37,7 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
     if (VUB is None) or (len(VUB) == 0):
         VUB =  Inf * ones(x0.shape)
 
-    if have_fcn('lp_solve'):
+    if not skip_lpsolve and have_fcn('lp_solve'):
         from lpsolve55 import lpsolve, IMPORTANT, LE, EQ, GE, DETAILED
 
         m, n = A.shape
@@ -68,7 +70,7 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
 
         result = lpsolve('solve', lp)
         if result in [0, 1, 11, 12]:
-            [obj, x, duals, ret] = lpsolve('get_solution', lp)
+            obj, x, duals, ret = lpsolve('get_solution', lp)
             stat = result
             success = True
         else:
@@ -100,7 +102,10 @@ def pp_lp(f, A, b, VLB, VUB, x0, N=0, verbosein=False, skip_bpmpd=False):
 
 
     elif have_fcn('pyipopt'):
-        raise NotImplementedError
+        n = f.shape[0]
+        H = sparse((n, n))
+
+        xout, lambdaout, howout, success = pp_qp(H, f, A, b, VLB, VUB, x0, N, True, **kw_args)
     else:
         raise ValueError, 'no LP solver available'
 
