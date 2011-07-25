@@ -50,8 +50,8 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     ## default arguments
     if ppopt is None:
         ppopt = ppoption()   ## use default options
-        if fd is None:
-            fd = stdout         ## print to stdout by default
+    if fd is None:
+        fd = stdout          ## print to stdout by default
 
     isOPF = f is not None    ## FALSE -> only simple PF data, TRUE -> OPF data
 

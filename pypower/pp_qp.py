@@ -144,12 +144,10 @@ def pp_qp(H, f, A, b, VLB, VUB, x0, N,
                 nlp.num_option(k, v)
 
 
-        # returns  x, upper and lower bound for multiplier, final
-        # objective function obj and the return status of IPOPT
         result = nlp.solve(x0, m, userdata)
 
         ## final values for the primal variables
-        x = result[0]
+        xout = result[0]
         ## final values for the lower bound multipliers
         zl = result[1]
         ## final values for the upper bound multipliers
@@ -163,16 +161,26 @@ def pp_qp(H, f, A, b, VLB, VUB, x0, N,
 
         nlp.close()
 
-        print obj
-        print len(x)
-        print status
-        print len(mG)
-        print len(zl), len(zu)
+#        print obj
+#        print len(xout), xout
+#        print status
+#        print len(mG)
+#        print len(zl), len(zu)
 
-        xout = x
-        lambdaout = r_[mG, zu, zl]
+#        ## if negative, lowerbound was hit
+#        ilt = find(mG <= 0)
+#        ## if positive, the upperbound was hit
+#        igt = find(mG > 0)
+#        mulow = zeros(m)
+#        muupp = zeros(m)
+#        muupp[ilt] = -mG[ilt]
+#        mulow[igt] =  mG[igt]
+#        lambdaout = r_[mG, mulow, muupp]
+
+        lambdaout = r_[mG, zl, zu]
+
         howout = status
-        success = status == 0
+        success = (status == 0)
 
 
     elif have_fcn('nlopt'):

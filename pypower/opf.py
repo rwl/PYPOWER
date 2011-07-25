@@ -405,7 +405,7 @@ def opf(*args):
     ## compute elapsed time
     et = time() - t1
     if success:
-        printpf(baseMVA, bus, gen, branch, f, success, et, 1, ppopt)
+        printpf(baseMVA, bus, gen, branch, f, success, et, None, ppopt)
 
     buso = bus.copy()
 

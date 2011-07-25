@@ -19,7 +19,7 @@
 from time import time
 
 from numpy import \
-    array, zeros, ones, arange, c_, r_, copy, any, pi, diag, Inf, sum, dot
+    array, zeros, ones, arange, c_, r_, copy, any, pi, diag, sum, dot
 from numpy import flatnonzero as find
 
 from scipy.sparse import vstack, hstack, csr_matrix as sparse
@@ -239,7 +239,7 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
             gen[on, PMAX] / baseMVA,                            ## upper limit on Pg
             branch[:, RATE_A] / baseMVA - Pfinj,                ## flow limit on Pf
             branch[:, RATE_A] / baseMVA + Pfinj,                ## flow limit on Pt
-            bcc                                                ## cost constraints
+            bcc                                                 ## cost constraints
         ]
 
         ## run LP solver
@@ -248,7 +248,7 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
                   ones(nc)      ]
 
         x, lmbda, _, success = pp_lp(c, AA, bb, None, None, x, ppopt['OPF_NEQ'],
-                                     skip_lpsolve=True, print_level=0)
+                                     skip_lpsolve=False, print_level=0)
     else:
         AA = vstack([
             sparse((ones(1), (zeros(1), ref)), (1, nb+ng)),
@@ -308,11 +308,12 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
 #    else:
 #        x, lmbda, _, success = pp_qp(H, c, AA, ll, uu, array([]), array([]), x, ppopt['OPF_NEQ'], qpverbose)
 
-    info = success;
+    info = success
 
     ## update solution data
     Va = x[j1:j2]
     Pg = x[j3:j4]
+
     f = sum(totcost(pcost, Pg * baseMVA))
 
     ##-----  calculate return values  -----
@@ -364,6 +365,6 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     et = time() - t0
 
     if info > 0:
-        printpf(baseMVA, bus, geno, brancho, f, success, et, 1, ppopt)
+        printpf(baseMVA, bus, geno, brancho, f, success, et, None, ppopt)
 
     return buso, geno, brancho, f, success, info, et
