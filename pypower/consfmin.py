@@ -104,65 +104,71 @@ def eval_jac_g(x, flag, user_data=None):
     If the flag is false, returns the values of the Jacobi matrix
     with length nnzj.
     """
-    parms = user_data['parms']
-    gen = user_data['gen']
-    branch = user_data['branch']
-    Ybus = user_data['Ybus']
-    Yf = user_data['Yf']
-    Yt = user_data['Yt']
-    ppopt = user_data['ppopt']
+    if flag:
+        return (user_data['Js'].row, user_data['Js'].col)
+    else:
+        parms = user_data['parms']
+        gen = user_data['gen']
+        branch = user_data['branch']
+        Ybus = user_data['Ybus']
+        Yf = user_data['Yf']
+        Yt = user_data['Yt']
+        ppopt = user_data['ppopt']
 
-    ## unpack needed parameters
-    nb = parms['nb']
-    ng = parms['ng']
-    nl = parms['nl']
-    ny = parms['ny']
-    nz = parms['nz']
-    thbas = parms['thbas']
-    thend = parms['thend']
-    vbas  = parms['vbas']
-    vend  = parms['vend']
+        ## unpack needed parameters
+        nb = parms['nb']
+        ng = parms['ng']
+        nl = parms['nl']
+        ny = parms['ny']
+        nz = parms['nz']
+        thbas = parms['thbas']
+        thend = parms['thend']
+        vbas  = parms['vbas']
+        vend  = parms['vend']
 
 
-    ## reconstruct V
-    Va = x[thbas:thend]
-    Vm = x[vbas:vend]
-    V = Vm * exp(1j * Va)
+        ## reconstruct V
+        Va = x[thbas:thend]
+        Vm = x[vbas:vend]
+        V = Vm * exp(1j * Va)
 
-    ## compute partials of injected bus powers
-    dSbus_dVm, dSbus_dVa = dSbus_dV(Ybus, V)               ## w.r.t. V
-    dSbus_dPg = sparse((-1  * ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))    ## w.r.t. Pg
-    dSbus_dQg = sparse((-1j * ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))    ## w.r.t. Qg
+        ## compute partials of injected bus powers
+        dSbus_dVm, dSbus_dVa = dSbus_dV(Ybus, V)               ## w.r.t. V
+        dSbus_dPg = sparse((-1  * ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))    ## w.r.t. Pg
+        dSbus_dQg = sparse((-1j * ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))    ## w.r.t. Qg
 
-    ## construct Jacobian of equality constraints (power flow) and transpose it
-    dgeq = vstack([
-        ## equality constraints
-        hstack([dSbus_dVa.real, dSbus_dVm.real,
-            dSbus_dPg.real, dSbus_dQg.real, sparse((nb, ny + nz))]),  ## P mismatch
-        hstack([dSbus_dVa.imag, dSbus_dVm.imag,
-            dSbus_dPg.imag, dSbus_dQg.imag, sparse((nb, ny + nz))])   ## Q mismatch
-     ]).T
+        ## construct Jacobian of equality constraints (power flow) and transpose it
+        dgeq = vstack([
+            ## equality constraints
+            hstack([dSbus_dVa.real, dSbus_dVm.real,
+                dSbus_dPg.real, dSbus_dQg.real, sparse((nb, ny + nz))]),  ## P mismatch
+            hstack([dSbus_dVa.imag, dSbus_dVm.imag,
+                dSbus_dPg.imag, dSbus_dQg.imag, sparse((nb, ny + nz))])   ## Q mismatch
+         ]).T
 
-    ## compute partials of Flows w.r.t. V
-    if ppopt['OPF_FLOW_LIM'] == 2:     ## current
-        dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft = dIbr_dV(branch, Yf, Yt, V)
-    else:                  ## power
-        dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft = dSbr_dV(branch, Yf, Yt, V)
+        ## compute partials of Flows w.r.t. V
+        if ppopt['OPF_FLOW_LIM'] == 2:     ## current
+            dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft = dIbr_dV(branch, Yf, Yt, V)
+        else:                  ## power
+            dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft = dSbr_dV(branch, Yf, Yt, V)
 
-    if ppopt['OPF_FLOW_LIM'] == 1:     ## real part of flow (active power)
-        df_dVa = dFf_dVa.real
-        df_dVm = dFf_dVm.real
-        dt_dVa = dFt_dVa.real
-        dt_dVm = dFt_dVm.real
-    else:                  ## magnitude of flow (of complex power or current)
-        df_dVa, df_dVm, dt_dVa, dt_dVm = \
-              dAbr_dV(dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft)
+        if ppopt['OPF_FLOW_LIM'] == 1:     ## real part of flow (active power)
+            df_dVa = dFf_dVa.real
+            df_dVm = dFf_dVm.real
+            dt_dVa = dFt_dVa.real
+            dt_dVm = dFt_dVm.real
+        else:                  ## magnitude of flow (of complex power or current)
+            df_dVa, df_dVm, dt_dVa, dt_dVm = \
+                  dAbr_dV(dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft)
 
-    ## construct Jacobian of inequality constraints (branch limits)
-    ## and transpose it so fmincon likes it
-    dg = vstack([
-        hstack([df_dVa, df_dVm, sparse((nl, 2 * ng + ny + nz))]),  ## "from" flow limit
-        hstack([dt_dVa, dt_dVm, sparse((nl, 2 * ng + ny + nz))])   ## "to" flow limit
-    ]).T
+        ## construct Jacobian of inequality constraints (branch limits)
+        ## and transpose it so fmincon likes it
+        dg = vstack([
+            hstack([df_dVa, df_dVm, sparse((nl, 2 * ng + ny + nz))]),  ## "from" flow limit
+            hstack([dt_dVa, dt_dVm, sparse((nl, 2 * ng + ny + nz))])   ## "to" flow limit
+        ]).T
 
-    return vstack([ dgeq, dg ])  # true Jacobian organization
+        ## true Jacobian organization
+        J = vstack([ dgeq, dg, user_data['A'] ], 'coo')
+
+        return J.data

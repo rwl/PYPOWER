@@ -19,6 +19,7 @@ from numpy import array, ones, zeros, argsort, arange, r_, c_, pi, arctan2, sin,
 from numpy import flatnonzero as find
 
 from scipy.sparse import vstack, hstack, csc_matrix as sparse
+from scipy.sparse import eye as speye
 
 from pypower.ppoption import ppoption
 from pypower.loadcase import loadcase
@@ -501,8 +502,6 @@ def ipoptopf(*args, **kw_args):
                Ay,
                sparse((ones(ny), (zeros(ny), arange(ybas, yend))), (1, nxyz)) ]  # "linear" cost
 
-        print [a for a in As if a.shape[0] > 0]
-
         A = vstack([a for a in As if a.shape[0] > 0])
         l = r_[ lbu,
                 lbpqh,
@@ -650,7 +649,7 @@ def ipoptopf(*args, **kw_args):
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
 
     # Tolerances
-    if ppopt['CONSTR_MAX_IT'] == 0:   # # iterations
+    if ppopt['CONSTR_MAX_IT'] == 0:   ## number of iterations
         ppopt['CONSTR_MAX_IT'] = 150 + 2*nb
 
     # basic optimset options needed for fmincon
@@ -667,18 +666,50 @@ def ipoptopf(*args, **kw_args):
 #    Af = Af.todense()
 #    Afeq = Afeq.todense()
 
-    n = len(x0)
-    m = A.shape[0]
-    nnzj = A.nnz
-    nnzh = 0
+    ## build Jacobian and Hessian structure
+    nA = A.shape[0]                ## number of original linear constraints
+    nx = len(x0)
+    f = branch[:, F_BUS]                           ## list of "from" buses
+    t = branch[:, T_BUS]                           ## list of "to" buses
+    Cf = sparse((ones(nl), (arange(nl), f)), (nl, nb))      ## connection matrix for line & from buses
+    Ct = sparse((ones(nl), (arange(nl), t)), (nl, nb))      ## connection matrix for line & to buses
+    Cl = Cf + Ct
+    Cb = Cl.T * Cl + speye(nb, nb)
+    Cg = sparse((ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))
+    nz = nx - 2 * (nb + ng)
+    Js = vstack([
+        hstack([Cb, Cb, Cg,                   sparse((nb, ng)), sparse((nb, nz))]),
+        hstack([Cb, Cb, sparse((nb, ng)),     Cg,               sparse((nb, nz))]),
+        hstack([Cl, Cl, sparse((nl, 2 * ng)),                   sparse((nl, nz))]),
+        hstack([Cl, Cl, sparse((nl, 2 * ng)),                   sparse((nl, nz))]),
+        A
+    ], 'coo')
 
-    nlp = pyipopt.create(n, LB, UB, m, l, u, nnzj, nnzh,
+    n = len(x0)
+    ## number of equality constraints
+    neqnln = 2 * nb
+    ## number of inequality constraints
+    niqnln = 2 * nl
+    ## total number of constraints
+    m = Js.shape[0] #neqnln + niqnln + nA
+    assert Js.shape[0] == (neqnln + niqnln + nA)
+    ## lower bound of constraint
+    gl = r_[zeros(neqnln), -Inf * ones(niqnln), l]
+    ## upper bound of constraints
+    gu = r_[zeros(neqnln),       zeros(niqnln), u]
+    ## number of nonzeros in Jacobi matrix
+    nnzj = Js.nnz
+    ## number of non-zeros in Hessian matrix
+    nnzh = 0  ## Hessian approximation
+
+    nlp = pyipopt.create(n, LB, UB, m, gl, gu, nnzj, nnzh,
                          eval_f, eval_grad_f, eval_g, eval_jac_g)
 
-    user_data = {'baseMVA': baseMVA, 'bus': bus, 'gen': gen,
-            'gencost': gencost, 'branch': branch, 'areas': areas, 'Ybus': Ybus,
-            'Yf': Yf, 'Yt': Yt, 'ppopt': ppopt, 'parms': parms, 'ccost': ccost,
-            'N': N, 'fparm': fparm, 'H': H, 'Cw': Cw}
+    user_data = {'baseMVA': baseMVA, 'bus': bus, 'gen': gen, 'branch': branch,
+        'areas': areas, 'gencost': gencost, 'Ybus': Ybus, 'Yf': Yf, 'Yt': Yt,
+        'ppopt': ppopt, 'parms': parms,
+        'ccost': ccost, 'N': N, 'fparm': fparm, 'H': H, 'Cw': Cw,
+        'Js': Js}
 
     ## set IPOPT options
     if ppopt['VERBOSE'] >= 0:
