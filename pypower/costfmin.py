@@ -28,39 +28,25 @@ from pypower.pqcost import pqcost
 from pypower.idx_cost import MODEL, POLYNOMIAL, PW_LINEAR, COST, NCOST
 
 
-def costfmin(x, baseMVA, bus, gen, gencost, branch, areas,
-             Ybus, Yf, Yt, mpopt, parms, ccost, N, fparm, H, Cw):
-    """Evaluates objective function, gradient and Hessian for OPF.
+def eval_f(x, user_data=None):
+    """Calculates the objective value.
     """
+    parms = user_data['parms']
+    baseMVA = user_data['baseMVA']
+    gen = user_data['gen']
+    gencost = user_data['gencost']
+    ccost = user_data['ccost']
+    N = user_data['N']
+    H = user_data['H']
+    fparm = user_data['fparm']
+    Cw = user_data['Cw']
+
     ## unpack needed parameters
-    # nb = parms[0]
-    ng = parms[1]
-    # nl = parms[2]
-    ny = parms[3]
-    # nx = parms[4]
-    # nvl = parms[5]
-    nz = parms[6]
-    # nxyz = parms[7]
-    # thbas = parms[8]
-    # thend = parms[9]
-    # vbas = parms[10]
-    vend = parms[11]
-    pgbas = parms[12]
-    pgend = parms[13]
-    qgbas = parms[14]
-    qgend = parms[15]
-    # ybas = parms[16]
-    # yend = parms[17]
-    # zbas = parms[18]
-    # zend = parms[19]
-    # pmsmbas = parms[20]
-    # pmsmend = parms[21]
-    # qmsmbas = parms[22]
-    # qmsmend = parms[23]
-    # sfbas = parms[24]
-    # sfend = parms[25]
-    # stbas = parms[26]
-    # stend = parms[27]
+    ny = parms['ny']
+    pgbas = parms['pgbas']
+    pgend = parms['pgend']
+    qgbas = parms['qgbas']
+    qgend = parms['qgend']
 
     ## grab Pg & Qg
     Pg = x[pgbas:pgend]            ## active generation in p.u.
@@ -75,7 +61,6 @@ def costfmin(x, baseMVA, bus, gen, gencost, branch, areas,
     # use totcost only on polynomial cost; in the minimization problem
     # formulation, pwl cost is the sum of the y variables.
     ipol = find(gencost[:, MODEL] == POLYNOMIAL)   ## poly MW and MVAr costs
-    ipwl = find(gencost[:, MODEL] == PW_LINEAR)    ## pw_lin MW and MVAr costs
     xx = r_[ gen[:, PG], gen[:, QG] ]
     if len(ipol) > 0:
         f = sum( totcost(gencost[ipol, :], xx[ipol]) )  ## cost of poly P or Q
@@ -112,68 +97,108 @@ def costfmin(x, baseMVA, bus, gen, gencost, branch, areas,
         w = M * D * SQR * rr
         f = f + (w.T * H * w) / 2 + Cw.T * w
 
-    ##----- evaluate cost gradient -----
-    if nargout > 1:
-        ## polynomial cost of P and Q
-        df_dPgQg = zeros(2*ng, 1)
-        for i in ipol:
-            ## w.r.t p.u. Pg
-            df_dPgQg[i] = baseMVA * \
-                    polyval(polyder(gencost[i, COST:(COST + gencost[i, NCOST] - 1)]), xx[i])
+    return f
 
-        df = r_[  zeros(vend),          ## partial w.r.t. Va & Vm
-                  df_dPgQg,             ## partial w.r.t. polynomial cost Pg and Qg
-                  zeros(ny + nz)  ]
 
-        ## piecewise linear cost of P and Q
-        df = df + ccost.T  # As in MINOS, the linear cost row is additive wrt any nonlinear cost.
+def eval_grad_f(x, user_data=None):
+    """Calculates gradient for objective function.
+    """
+    parms = user_data['parms']
+    baseMVA = user_data['baseMVA']
+    gen = user_data['gen']
+    gencost = user_data['gencost']
+    ccost = user_data['ccost']
+    N = user_data['N']
+    H = user_data['H']
+    Cw = user_data['Cw']
 
-        ## generalized cost term
-        if len(N) > 0:
-            SQR2 = (eye(nw) + sparse(iQ, iQ, 1, nw, nw)) * SQR
-            df = df + ((H * w + Cw).T * (M * D * SQR2 * N)).T
+    ## unpack needed parameters
+    ng = parms['ng']
+    ny = parms['ny']
+    nz = parms['nz']
+    vend = parms['vend']
 
-            ## numerical check
-            if 0:    ## 1 to check, 0 to skip check
-                ddff = zeros(df.shape)
-                step = 1e-7
-                tol  = 1e-3
-                for k in range(len(x)):
-                    xx = x.copy()
-                    xx[k] = xx[k] + step
-                    ddff[k] = (costfmin(xx, baseMVA, bus, gen, gencost, branch, areas,
-                          Ybus, Yf, Yt, mpopt, parms, ccost, N, fparm, H, Cw) - f) / step
+    ipol = find(gencost[:, MODEL] == POLYNOMIAL)   ## poly MW and MVAr costs
+    xx = r_[ gen[:, PG], gen[:, QG] ]
 
-                if max(abs(ddff - df)) > tol:
-                    idx = find(abs(ddff - df) == max(abs(ddff - df)))
-                    stdout.write('\nMismatch in gradient\n')
-                    stdout.write('idx             df(num)         df              diff\n')
-                    stdout.write('%4d%16g%16g%16g\n' % (arange(len(df)), ddff, df, abs(ddff - df)))
-                    stdout.write('MAX\n')
-                    stdout.write('%4d%16g%16g%16g\n' % (idx, ddff(idx), df[idx], abs(ddff[idx] - df[idx])))
-                    stdout.write('\n')
+    ## polynomial cost of P and Q
+    df_dPgQg = zeros(2*ng, 1)
+    for i in ipol:
+        ## w.r.t p.u. Pg
+        df_dPgQg[i] = baseMVA * \
+                polyval(polyder(gencost[i, COST:(COST + gencost[i, NCOST] - 1)]), xx[i])
 
-    return f, df
+    df = r_[  zeros(vend),          ## partial w.r.t. Va & Vm
+              df_dPgQg,             ## partial w.r.t. polynomial cost Pg and Qg
+              zeros(ny + nz)  ]
 
+    ## piecewise linear cost of P and Q
+    df = df + ccost.T  # As in MINOS, the linear cost row is additive wrt any nonlinear cost.
+
+    ## generalized cost term
+    if len(N) > 0:
+        raise NotImplementedError
+#        nw = N.shape[0]
+#        SQR2 = (eye(nw) + sparse(iQ, iQ, 1, nw, nw)) * SQR
+#        df = df + ((H * w + Cw).T * (M * D * SQR2 * N)).T
+#
+#        ## numerical check
+#        if 0:    ## 1 to check, 0 to skip check
+#            ddff = zeros(df.shape)
+#            step = 1e-7
+#            tol  = 1e-3
+#            for k in range(len(x)):
+#                xx = x.copy()
+#                xx[k] = xx[k] + step
+#                ddff[k] = (eval_f(xx, user_data) - f) / step
+#
+#            if max(abs(ddff - df)) > tol:
+#                idx = find(abs(ddff - df) == max(abs(ddff - df)))
+#                stdout.write('\nMismatch in gradient\n')
+#                stdout.write('idx             df(num)         df              diff\n')
+#                stdout.write('%4d%16g%16g%16g\n' % (arange(len(df)), ddff, df, abs(ddff - df)))
+#                stdout.write('MAX\n')
+#                stdout.write('%4d%16g%16g%16g\n' % (idx, ddff(idx), df[idx], abs(ddff[idx] - df[idx])))
+#                stdout.write('\n')
+
+    return df
+
+
+
+def eval_h(x, lagrange, obj_factor, flag, user_data=None):
     # Currently PyIPOPT can't use the Hessian. When it does
     # the following must be fixed for mixed poly/pwl costs.
 
-    ## ---- evaluate cost Hessian -----
-    if nargout > 2:
-        pcost, qcost = pqcost(gencost, gen.shape[0])
+    parms = user_data['parms']
+    baseMVA = user_data['baseMVA']
+    gen = user_data['gen']
+    gencost = user_data['gencost']
 
-        d2f_dPg2 = zeros(ng)
-        d2f_dQg2 = zeros(ng)
+    ## unpack needed parameters
+    ng = parms['ng']
+    pgbas = parms['pgbas']
+    pgend = parms['pgend']
+    qgbas = parms['qgbas']
+    qgend = parms['qgend']
+
+    ## grab Pg & Qg
+    Pg = x[pgbas:pgend]            ## active generation in p.u.
+    Qg = x[qgbas:qgend]            ## reactive generation in p.u.
+
+    pcost, qcost = pqcost(gencost, gen.shape[0])
+
+    d2f_dPg2 = zeros(ng)
+    d2f_dQg2 = zeros(ng)
+    for i in range(ng):
+        d2f_dPg2[i] = polyval(polyder(polyder(pcost[i,COST:(COST + pcost[i, NCOST] - 1)])),
+                              Pg[i] * baseMVA) * baseMVA**2     ## w.r.t p.u. Pg
+
+    if len(qcost) > 0:          ## Qg is not free
         for i in range(ng):
-            d2f_dPg2[i] = polyval(polyder(polyder(pcost[i,COST:(COST + pcost[i, NCOST] - 1)])),
-                                  Pg[i] * baseMVA) * baseMVA**2     ## w.r.t p.u. Pg
+            d2f_dQg2[i] = polyval(polyder(polyder(qcost[i,COST:(COST + qcost[i, NCOST] - 1)])),
+                                  Qg[i] * baseMVA) * baseMVA**2     ## w.r.t p.u. Qg
 
-        if len(qcost) > 0:          ## Qg is not free
-            for i in range(ng):
-                d2f_dQg2[i] = polyval(polyder(polyder(qcost[i,COST:(COST + qcost[i, NCOST] - 1)])),
-                                      Qg[i] * baseMVA) * baseMVA**2     ## w.r.t p.u. Qg
+    i = arange(pgbas, qgend)
+    d2f = sparse((r_[d2f_dPg2, d2f_dQg2], (i, i)))
 
-        i = arange(pgbas, qgend)
-        d2f = sparse((r_[d2f_dPg2, d2f_dQg2], (i, i)))
-
-    return f, df, d2f
+    return d2f

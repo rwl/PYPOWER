@@ -28,9 +28,10 @@ from pypower.isload import isload
 from pypower.hasPQcap import hasPQcap
 from pypower.makeAy import makeAy
 from pypower.makeYbus import makeYbus
-from pypower.consfmin import consfmin
 from pypower.int2ext import int2ext
 from pypower.printpf import printpf
+from pypower.costfmin import eval_f, eval_grad_f
+from pypower.consfmin import eval_g, eval_jac_g
 
 from pypower.idx_bus import MU_VMIN, MU_VMAX, BUS_TYPE, REF, LAM_P, LAM_Q, VMIN, VMAX, VA, VM
 
@@ -46,7 +47,7 @@ from pypower.idx_cost import MODEL, PW_LINEAR
 EPS = finfo(float).eps
 
 
-def ipoptopf(*args):
+def ipoptopf(*args, **kw_args):
     """Solves an AC optimal power flow.
 
     bus, gen, branch, f, success = ipoptopf(casefile, ppopt)
@@ -67,6 +68,8 @@ def ipoptopf(*args):
                                    areas, gencost, A, l, u, ppopt,
                                    N, fparm, H, Cw, z0, zl, zu)
     """
+    import pyipopt
+
     nargin = len(args)
 
     # Sort out input arguments
@@ -525,39 +528,72 @@ def ipoptopf(*args):
 
     # --------------------------------------------------------------
     # Up to this point, the setup is MINOS-like.  We now adapt
-    # things for fmincon.
+    # things for pyipopt.
+
+#    # Form a vector with basic info to pass on as a parameter
+#    parms = array([
+#        nb,      # 1
+#        ng,      # 2
+#        nl,      # 3
+#        ny,      # 4
+#        nx,      # 5
+#        nvl,     # 6
+#        nz,      # 7
+#        nxyz,    # 8
+#        thbas,   # 9
+#        thend,   # 10
+#        vbas,    # 11
+#        vend,    # 12
+#        pgbas,   # 13
+#        pgend,   # 14
+#        qgbas,   # 15
+#        qgend,   # 16
+#        ybas,    # 17
+#        yend,    # 18
+#        zbas,    # 19
+#        zend,    # 20
+#        pmsmbas, # 21
+#        pmsmend, # 22
+#        qmsmbas, # 23
+#        qmsmend, # 24
+#        sfbas,   # 25
+#        sfend,   # 26
+#        stbas,   # 27
+#        stend    # 28
+#    ])
+
 
     # Form a vector with basic info to pass on as a parameter
-    parms = array([
-        nb,      # 1
-        ng,      # 2
-        nl,      # 3
-        ny,      # 4
-        nx,      # 5
-        nvl,     # 6
-        nz,      # 7
-        nxyz,    # 8
-        thbas,   # 9
-        thend,   # 10
-        vbas,    # 11
-        vend,    # 12
-        pgbas,   # 13
-        pgend,   # 14
-        qgbas,   # 15
-        qgend,   # 16
-        ybas,    # 17
-        yend,    # 18
-        zbas,    # 19
-        zend,    # 20
-        pmsmbas, # 21
-        pmsmend, # 22
-        qmsmbas, # 23
-        qmsmend, # 24
-        sfbas,   # 25
-        sfend,   # 26
-        stbas,   # 27
-        stend    # 28
-    ])
+    parms = {
+        'nb': nb,
+        'ng': ng,
+        'nl': nl,
+        'ny': ny,
+        'nx': nx,
+        'nvl': nvl,
+        'nz': nz,
+        'nxyz': nxyz,
+        'thbas': thbas,
+        'thend': thend,
+        'vbas': vbas,
+        'vend': vend,
+        'pgbas': pgbas,
+        'pgend': pgend,
+        'qgbas': qgbas,
+        'qgend': qgend,
+        'ybas': ybas,
+        'yend': yend,
+        'zbas': zbas,
+        'zend': zend,
+        'pmsmbas': pmsmbas,
+        'pmsmend': pmsmend,
+        'qmsmbas': qmsmbas,
+        'qmsmend': qmsmend,
+        'sfbas': sfbas,
+        'sfend': sfend,
+        'stbas': stbas,
+        'stend': stend
+    }
 
     # If there are y variables the last row of A is a linear cost vector
     # of length nxyz. Let us excise it from A explicitly if it exists;
@@ -574,36 +610,36 @@ def ipoptopf(*args):
     # Divide l <= A*x <= u into less than, equal to, greater than, doubly-bounded
     # sets.
     ieq = find( abs(u - l) <= EPS )
-    igt = find( u >= 1e10 )  # unlimited ceiling
-    ilt = find( l <= -1e10 ) # unlimited bottom
-    ibx = find( (abs(u-l) > EPS) & (u < 1e10) & (l > -1e10))
-    Af  = hstack([ A[ilt, :], -A[igt, :], A[ibx, :], -A[ibx, :] ])
-    bf  = r_[ u[ilt], -l[igt], u[ibx], -l[ibx]]
-    Afeq = A[ieq, :]
-    bfeq = u[ieq]
+    igt = find( u >=  1e10 )  # unlimited ceiling
+    ilt = find( l <= -1e10 )  # unlimited bottom
+    ibx = find( (abs(u - l) > EPS) & (u < 1e10) & (l > -1e10))
+#    Af  = hstack([ A[ilt, :], -A[igt, :], A[ibx, :], -A[ibx, :] ])
+#    bf  = r_[ u[ilt], -l[igt], u[ibx], -l[ibx]]
+#    Afeq = A[ieq, :]
+#    bfeq = u[ieq]
 
     # bounds on optimization vars; y vars unbounded
     UB = Inf * ones(nxyz)
     LB = -UB
-    LB[thbas + ref - 1] = bus[ref, VA] * pi / 180
-    UB[thbas + ref - 1] = bus[ref, VA] * pi / 180
-    LB[vbas:vend]   = bus[:, VMIN]
-    UB[vbas:vend]   = bus[:, VMAX]
-    LB[pgbas:pgend] = gen[:, PMIN] / baseMVA
-    UB[pgbas:pgend] = gen[:, PMAX] / baseMVA
-    LB[qgbas:qgend] = gen[:, QMIN] / baseMVA
-    UB[qgbas:qgend] = gen[:, QMAX] / baseMVA
-    if len(zl) > 0:
-        LB[zbas:zend] = zl
-
-    if len(zu) > 0:
-        UB[zbas:zend] = zu
+#    LB[thbas + ref] = bus[ref, VA] * pi / 180
+#    UB[thbas + ref] = bus[ref, VA] * pi / 180
+#    LB[vbas:vend]   = bus[:, VMIN]
+#    UB[vbas:vend]   = bus[:, VMAX]
+#    LB[pgbas:pgend] = gen[:, PMIN] / baseMVA
+#    UB[pgbas:pgend] = gen[:, PMAX] / baseMVA
+#    LB[qgbas:qgend] = gen[:, QMIN] / baseMVA
+#    UB[qgbas:qgend] = gen[:, QMAX] / baseMVA
+#    if len(zl) > 0:
+#        LB[zbas:zend] = zl
+#    if len(zu) > 0:
+#        UB[zbas:zend] = zu
 
     # Compute initial vector
     x0 = zeros(nxyz)
     x0[thbas:thend] = bus[:, VA] * pi / 180
     x0[vbas:vend]   = bus[:, VM]
-    x0[vbas + gen[:, GEN_BUS] - 1] = gen[:, VG]   # buses w. gens init V from gen data
+    # buses w. gens init V from gen data
+    x0[vbas + gen[:, GEN_BUS]] = gen[:, VG]
     x0[pgbas:pgend] = gen[:, PG] / baseMVA
     x0[qgbas:qgend] = gen[:, QG] / baseMVA
     # no ideas to initialize y variables
@@ -624,19 +660,79 @@ def ipoptopf(*args):
 #    fmoptions = optimset(fmoptions, 'MaxIter', ppopt(19), 'TolCon', ppopt(16) )
 #    fmoptions = optimset(fmoptions, 'TolX', ppopt(17), 'TolFun', ppopt(18) )
 #    fmoptions.MaxFunEvals = 4 * fmoptions.MaxIter
-#    if ppopt['VERBOSE'] == 0:
-#        fmoptions.Display = 'off'
+
 #    else:
 #        fmoptions.Display = 'iter'
 
-    Af = Af.todense()
-    Afeq = Afeq.todense()
+#    Af = Af.todense()
+#    Afeq = Afeq.todense()
 
-    x, f, info, output, lmbda, Jac = \
-        fmincon('costfmin', x0, Af, bf, Afeq, bfeq, LB, UB, 'consfmin', fmoptions,
-                baseMVA, bus, gen, gencost, branch, areas, Ybus, Yf, Yt, ppopt,
-                parms, ccost, N, fparm, H, Cw)
-    success = (info > 0)
+    n = len(x0)
+    m = A.shape[0]
+    nnzj = A.nnz
+    nnzh = 0
+
+    nlp = pyipopt.create(n, LB, UB, m, l, u, nnzj, nnzh,
+                         eval_f, eval_grad_f, eval_g, eval_jac_g)
+
+    user_data = {'baseMVA': baseMVA, 'bus': bus, 'gen': gen,
+            'gencost': gencost, 'branch': branch, 'areas': areas, 'Ybus': Ybus,
+            'Yf': Yf, 'Yt': Yt, 'ppopt': ppopt, 'parms': parms, 'ccost': ccost,
+            'N': N, 'fparm': fparm, 'H': H, 'Cw': Cw}
+
+    ## set IPOPT options
+    if ppopt['VERBOSE'] >= 0:
+        nlp.int_option('print_level', ppopt['VERBOSE'])
+    nlp.num_option('tol', ppopt['OPF_VIOLATION'])
+    nlp.num_option('constr_viol_tol', ppopt['CONSTR_TOL_X'])
+    nlp.int_option('maxiter', ppopt['CONSTR_MAX_IT'])
+
+    for k, v in kw_args.iteritems():
+        if isinstance(v, int):
+            nlp.int_option(k, v)
+        elif isinstance(v, basestring):
+            nlp.str_option(k, v)
+        else:
+            nlp.num_option(k, v)
+
+
+    result = nlp.solve(x0, m, user_data)
+
+    ## final values for the primal variables
+    x = result[0]
+    ## final values for the lower bound multipliers
+    zl = result[1]
+    ## final values for the upper bound multipliers
+    zu = result[2]
+    ## final value of the objective
+    f = result[3]
+    ## status of the algorithm
+    status = result[4]
+    ## final multipliers for constraints
+    mG = result[5]
+
+    nlp.close()
+
+#        print obj
+#        print len(xout), xout
+#        print status
+#        print len(mG)
+#        print len(zl), len(zu)
+
+#        ## if negative, lowerbound was hit
+#        ilt = find(mG <= 0)
+#        ## if positive, the upperbound was hit
+#        igt = find(mG > 0)
+#        mulow = zeros(m)
+#        muupp = zeros(m)
+#        muupp[ilt] = -mG[ilt]
+#        mulow[igt] =  mG[igt]
+#        lambdaout = r_[mG, mulow, muupp]
+
+    lmbda = r_[mG, zl, zu]
+
+    info = status
+    success = (status == 0)
 
     # Unpack optimal x
     bus[:, VA] = x[thbas:thend] * 180 / pi
@@ -706,30 +802,30 @@ def ipoptopf(*args):
         k = 0
         for i in ipqh:
             if muPmax[i] > 0:
-                gen[i, MU_PMAX] = gen[i, MU_PMAX] - pimul[pqhbas + k - 1] * Apqhdata[k, 0] / baseMVA
+                gen[i, MU_PMAX] = gen[i, MU_PMAX] - pimul[pqhbas + k] * Apqhdata[k, 0] / baseMVA
             elif muPmin[i] > 0:
-                gen[i, MU_PMIN] = gen[i, MU_PMIN] + pimul[pqhbas + k - 1] * Apqhdata[k, 0] / baseMVA
+                gen[i, MU_PMIN] = gen[i, MU_PMIN] + pimul[pqhbas + k] * Apqhdata[k, 0] / baseMVA
             else:
                 if Apqhdata[k, 0] >= 0:
-                    gen[i, MU_PMAX] = gen[i, MU_PMAX] - pimul[pqhbas + k - 1] * Apqhdata[k, 0] / baseMVA
+                    gen[i, MU_PMAX] = gen[i, MU_PMAX] - pimul[pqhbas + k] * Apqhdata[k, 0] / baseMVA
                 else:
-                    gen[i, MU_PMIN] = gen[i, MU_PMIN] + pimul[pqhbas + k - 1] * Apqhdata[k, 0] / baseMVA
+                    gen[i, MU_PMIN] = gen[i, MU_PMIN] + pimul[pqhbas + k] * Apqhdata[k, 0] / baseMVA
 
-            gen[i, MU_QMAX] = gen[i, MU_QMAX] - pimul[pqhbas + k - 1] * Apqhdata[k, 1] / baseMVA
+            gen[i, MU_QMAX] = gen[i, MU_QMAX] - pimul[pqhbas + k] * Apqhdata[k, 1] / baseMVA
             k = k + 1
 
     if success and (npql > 0):
         k = 0
         for i in range(ipql):
             if muPmax[i] > 0:
-                gen[i, MU_PMAX] = gen[i, MU_PMAX] - pimul[pqlbas + k - 1] * Apqldata[k, 0] / baseMVA
+                gen[i, MU_PMAX] = gen[i, MU_PMAX] - pimul[pqlbas + k] * Apqldata[k, 0] / baseMVA
             elif muPmin[i] > 0:
-                gen[i, MU_PMIN] = gen[i, MU_PMIN] + pimul[pqlbas + k - 1] * Apqldata[k, 0] / baseMVA
+                gen[i, MU_PMIN] = gen[i, MU_PMIN] + pimul[pqlbas + k] * Apqldata[k, 0] / baseMVA
             else:
                 if Apqldata[k, 0] >= 0:
-                    gen[i, MU_PMAX] = gen[i, MU_PMAX] - pimul[pqlbas + k - 1] * Apqldata[k, 0] / baseMVA
+                    gen[i, MU_PMAX] = gen[i, MU_PMAX] - pimul[pqlbas + k] * Apqldata[k, 0] / baseMVA
                 else:
-                    gen[i, MU_PMIN] = gen[i, MU_PMIN] + pimul[pqlbas + k - 1] * Apqldata[k, 0] / baseMVA
+                    gen[i, MU_PMIN] = gen[i, MU_PMIN] + pimul[pqlbas + k] * Apqldata[k, 0] / baseMVA
 
             gen[i, MU_QMIN] = gen[i, MU_QMIN] + pimul[pqlbas + k -1 ] * Apqldata[k, 1] / baseMVA
             k = k + 1
@@ -747,11 +843,11 @@ def ipoptopf(*args):
 
     # We are done with standard opf but we may need to provide the
     # constraints and their Jacobian also.
-    if nargout > 7:
-        g, geq, dg, dgeq = consfmin(x, baseMVA, bus, gen, gencost, branch, areas,\
-                                    Ybus, Yf, Yt, ppopt, parms, ccost)
-        g = r_[ geq, g ]
-        jac = vstack([ dgeq.T, dg.T ])  # true Jacobian organization
+    if False:
+        g = eval_g(x, user_data)
+        dg_row, dg_col = eval_jac_g(x, False, user_data)
+        dg_data = eval_jac_g(x, True, user_data)
+        jac = sparse((dg_data, (dg_row, dg_col)))
 
     # Go back to original data.
     # reorder generators
