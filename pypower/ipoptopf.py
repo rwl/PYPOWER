@@ -15,7 +15,10 @@
 
 from time import time
 
-from numpy import array, ones, zeros, argsort, arange, r_, c_, pi, arctan2, sin, cos, linalg, finfo, delete, Inf, exp, conj
+from numpy import \
+    array, ones, zeros, argsort, arange, r_, c_, pi, arctan2, sin, cos, \
+    linalg, finfo, delete, Inf, exp, conj, asarray
+
 from numpy import flatnonzero as find
 
 from scipy.sparse import vstack, hstack, csc_matrix as sparse
@@ -599,10 +602,12 @@ def ipoptopf(*args, **kw_args):
     # otherwise it is zero.
     if ny > 0:
         nn = A.shape[0]
-        ccost = A[nn, :].todense()
-        A = delete(A, nn, 0)
-        l = delete(l, nn)
-        u = delete(u, nn)
+        A = A.tolil()
+        ccost = A[nn - 1, :].todense()
+        ccost = asarray(ccost).flatten()
+        A = A[:nn - 1, :].tocoo()
+        l = delete(l, nn - 1)
+        u = delete(u, nn - 1)
     else:
         ccost = zeros((1, nxyz))
 
@@ -620,25 +625,25 @@ def ipoptopf(*args, **kw_args):
     # bounds on optimization vars; y vars unbounded
     UB = Inf * ones(nxyz)
     LB = -UB
-#    LB[thbas + ref] = bus[ref, VA] * pi / 180
-#    UB[thbas + ref] = bus[ref, VA] * pi / 180
-#    LB[vbas:vend]   = bus[:, VMIN]
-#    UB[vbas:vend]   = bus[:, VMAX]
-#    LB[pgbas:pgend] = gen[:, PMIN] / baseMVA
-#    UB[pgbas:pgend] = gen[:, PMAX] / baseMVA
-#    LB[qgbas:qgend] = gen[:, QMIN] / baseMVA
-#    UB[qgbas:qgend] = gen[:, QMAX] / baseMVA
-#    if len(zl) > 0:
-#        LB[zbas:zend] = zl
-#    if len(zu) > 0:
-#        UB[zbas:zend] = zu
+    LB[thbas + ref] = bus[ref, VA] * pi / 180
+    UB[thbas + ref] = bus[ref, VA] * pi / 180
+    LB[vbas:vend]   = bus[:, VMIN]
+    UB[vbas:vend]   = bus[:, VMAX]
+    LB[pgbas:pgend] = gen[:, PMIN] / baseMVA
+    UB[pgbas:pgend] = gen[:, PMAX] / baseMVA
+    LB[qgbas:qgend] = gen[:, QMIN] / baseMVA
+    UB[qgbas:qgend] = gen[:, QMAX] / baseMVA
+    if len(zl) > 0:
+        LB[zbas:zend] = zl
+    if len(zu) > 0:
+        UB[zbas:zend] = zu
 
     # Compute initial vector
     x0 = zeros(nxyz)
     x0[thbas:thend] = bus[:, VA] * pi / 180
     x0[vbas:vend]   = bus[:, VM]
     # buses w. gens init V from gen data
-    x0[vbas + gen[:, GEN_BUS]] = gen[:, VG]
+    x0[vbas + gen[:, GEN_BUS].astype(int)] = gen[:, VG]
     x0[pgbas:pgend] = gen[:, PG] / baseMVA
     x0[qgbas:qgend] = gen[:, QG] / baseMVA
     # no ideas to initialize y variables
@@ -668,7 +673,7 @@ def ipoptopf(*args, **kw_args):
 
     ## build Jacobian and Hessian structure
     nA = A.shape[0]                ## number of original linear constraints
-    nx = len(x0)
+    n = len(x0)
     f = branch[:, F_BUS]                           ## list of "from" buses
     t = branch[:, T_BUS]                           ## list of "to" buses
     Cf = sparse((ones(nl), (arange(nl), f)), (nl, nb))      ## connection matrix for line & from buses
@@ -676,16 +681,17 @@ def ipoptopf(*args, **kw_args):
     Cl = Cf + Ct
     Cb = Cl.T * Cl + speye(nb, nb)
     Cg = sparse((ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))
-    nz = nx - 2 * (nb + ng)
+    nzz = ny + nz
     Js = vstack([
-        hstack([Cb, Cb, Cg,                   sparse((nb, ng)), sparse((nb, nz))]),
-        hstack([Cb, Cb, sparse((nb, ng)),     Cg,               sparse((nb, nz))]),
-        hstack([Cl, Cl, sparse((nl, 2 * ng)),                   sparse((nl, nz))]),
-        hstack([Cl, Cl, sparse((nl, 2 * ng)),                   sparse((nl, nz))]),
+        hstack([Cb, Cb, Cg,                 Cg, sparse((nb, nzz))]),
+        hstack([Cb, Cb, Cg,                 Cg, sparse((nb, nzz))]),
+#        hstack([Cb, Cb, Cg,                 sparse((nb, ng)), sparse((nb, nzz))]),
+#        hstack([Cb, Cb, sparse((nb,   ng)), Cg,               sparse((nb, nzz))]),
+        hstack([Cl, Cl, sparse((nl, 2*ng)),     sparse((nl, nzz))]),
+        hstack([Cl, Cl, sparse((nl, 2*ng)),     sparse((nl, nzz))]),
         A
     ], 'coo')
 
-    n = len(x0)
     ## number of equality constraints
     neqnln = 2 * nb
     ## number of inequality constraints
@@ -699,6 +705,7 @@ def ipoptopf(*args, **kw_args):
     gu = r_[zeros(neqnln),       zeros(niqnln), u]
     ## number of nonzeros in Jacobi matrix
     nnzj = Js.nnz
+
     ## number of non-zeros in Hessian matrix
     nnzh = 0  ## Hessian approximation
 
@@ -709,14 +716,14 @@ def ipoptopf(*args, **kw_args):
         'areas': areas, 'gencost': gencost, 'Ybus': Ybus, 'Yf': Yf, 'Yt': Yt,
         'ppopt': ppopt, 'parms': parms,
         'ccost': ccost, 'N': N, 'fparm': fparm, 'H': H, 'Cw': Cw,
-        'Js': Js}
+        'Js': Js, 'A': A}
 
     ## set IPOPT options
-    if ppopt['VERBOSE'] >= 0:
-        nlp.int_option('print_level', ppopt['VERBOSE'])
-    nlp.num_option('tol', ppopt['OPF_VIOLATION'])
-    nlp.num_option('constr_viol_tol', ppopt['CONSTR_TOL_X'])
-    nlp.int_option('maxiter', ppopt['CONSTR_MAX_IT'])
+#    if ppopt['VERBOSE'] >= 0:
+#        nlp.int_option('print_level', ppopt['VERBOSE'])
+#    nlp.num_option('tol', ppopt['OPF_VIOLATION'])
+#    nlp.num_option('constr_viol_tol', ppopt['CONSTR_TOL_X'])
+    nlp.int_option('max_iter', 100)#ppopt['CONSTR_MAX_IT'])
 
     for k, v in kw_args.iteritems():
         if isinstance(v, int):
@@ -744,11 +751,11 @@ def ipoptopf(*args, **kw_args):
 
     nlp.close()
 
-#        print obj
-#        print len(xout), xout
-#        print status
-#        print len(mG)
-#        print len(zl), len(zu)
+    print 'OBJ:', f
+#    print len(x), x
+#    print status
+#    print len(mG)
+#    print len(zl), len(zu)
 
 #        ## if negative, lowerbound was hit
 #        ilt = find(mG <= 0)

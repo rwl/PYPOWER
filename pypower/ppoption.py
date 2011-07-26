@@ -67,6 +67,11 @@ for generalized formulation')'''),
 
     ('opf_violation', 5e-6, 'constraint violation tolerance'),
 
+    ('constr_tol_x', 1e-4, 'termination tol on x for copf & fmincopf'),
+
+    ('constr_max_it', 0, '''max number of iterations for copf & fmincopf
+[0 => 2*nb + 150]'''),
+
     ('opf_flow_lim', 0, '''qty to limit for branch flow constraints:
 0 - apparent power flow (limit in MVA),
 1 - active power flow (limit in MW),

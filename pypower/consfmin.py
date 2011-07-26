@@ -42,6 +42,7 @@ def eval_g(x, user_data=None):
     Yf = user_data['Yf']
     Yt = user_data['Yt']
     ppopt = user_data['ppopt']
+    A = user_data['A']
 
     ## unpack needed parameters
     thbas = parms['thbas']
@@ -80,20 +81,25 @@ def eval_g(x, user_data=None):
 
     ## then, the inequality constraints (branch flow limits)
     if ppopt['OPF_FLOW_LIM'] == 2:
-        g = r_[ abs(Yf * V) * branch[:, RATE_A] / baseMVA,     ## branch I limits (from bus)
-                abs(Yt * V) * branch[:, RATE_A] / baseMVA ]    ## branch I limits (to bus)
+        giq = r_[ abs(Yf * V) * branch[:, RATE_A] / baseMVA,     ## branch I limits (from bus)
+                  abs(Yt * V) * branch[:, RATE_A] / baseMVA ]    ## branch I limits (to bus)
     else:
         ## compute branch power flows
         Sf = V[ branch[:, F_BUS].astype(int) ] * conj(Yf * V)  ## complex power injected at "from" bus (p.u.)
         St = V[ branch[:, T_BUS].astype(int) ] * conj(Yt * V)  ## complex power injected at "to" bus (p.u.)
         if ppopt['OPF_FLOW_LIM'] == 1:   ## active power limit, P (Pan Wei)
-            g = r_[ Sf.real - branch[:, RATE_A] / baseMVA,   ## branch real power limits (from bus)
-                    St.real - branch[:, RATE_A] / baseMVA ]  ## branch real power limits (to bus)
+            giq = r_[ Sf.real - branch[:, RATE_A] / baseMVA,   ## branch real power limits (from bus)
+                      St.real - branch[:, RATE_A] / baseMVA ]  ## branch real power limits (to bus)
         else:                ## apparent power limit, |S|
-            g = r_[ abs(Sf) - branch[:, RATE_A] / baseMVA,   ## branch apparent power limits (from bus)
-                    abs(St) - branch[:, RATE_A] / baseMVA ]  ## branch apparent power limits (to bus)
+            giq = r_[ abs(Sf) - branch[:, RATE_A] / baseMVA,   ## branch apparent power limits (from bus)
+                      abs(St) - branch[:, RATE_A] / baseMVA ]  ## branch apparent power limits (to bus)
 
-    return r_[geq, g]
+    if A.nnz > 0:
+        g = r_[geq, giq, A * x]
+    else:
+        g = r_[geq, giq]
+
+    return g
 
 
 def eval_jac_g(x, flag, user_data=None):
@@ -105,6 +111,7 @@ def eval_jac_g(x, flag, user_data=None):
     with length nnzj.
     """
     if flag:
+        print 'J1', len(user_data['Js'].row)
         return (user_data['Js'].row, user_data['Js'].col)
     else:
         parms = user_data['parms']
@@ -114,6 +121,7 @@ def eval_jac_g(x, flag, user_data=None):
         Yf = user_data['Yf']
         Yt = user_data['Yt']
         ppopt = user_data['ppopt']
+        A = user_data['A']
 
         ## unpack needed parameters
         nb = parms['nb']
@@ -134,17 +142,28 @@ def eval_jac_g(x, flag, user_data=None):
 
         ## compute partials of injected bus powers
         dSbus_dVm, dSbus_dVa = dSbus_dV(Ybus, V)               ## w.r.t. V
+
         dSbus_dPg = sparse((-1  * ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))    ## w.r.t. Pg
         dSbus_dQg = sparse((-1j * ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))    ## w.r.t. Qg
+        # TODO: double check ^
 
-        ## construct Jacobian of equality constraints (power flow) and transpose it
+        ## construct Jacobian of equality constraints (power flow)
         dgeq = vstack([
             ## equality constraints
             hstack([dSbus_dVa.real, dSbus_dVm.real,
                 dSbus_dPg.real, dSbus_dQg.real, sparse((nb, ny + nz))]),  ## P mismatch
             hstack([dSbus_dVa.imag, dSbus_dVm.imag,
                 dSbus_dPg.imag, dSbus_dQg.imag, sparse((nb, ny + nz))])   ## Q mismatch
-         ]).T
+         ])
+
+#        neg_Cg = sparse((-ones(ng), (gen[:, GEN_BUS], range(ng))), (nb, ng))
+#        dgeq = vstack([
+#            ## equality constraints
+#            hstack([dSbus_dVa.real, dSbus_dVm.real,
+#                neg_Cg, sparse((nb, ng)), sparse((nb, ny + nz))]),  ## P mismatch
+#            hstack([dSbus_dVa.imag, dSbus_dVm.imag,
+#                sparse((nb, ng)), neg_Cg, sparse((nb, ny + nz))])   ## Q mismatch
+#         ])
 
         ## compute partials of Flows w.r.t. V
         if ppopt['OPF_FLOW_LIM'] == 2:     ## current
@@ -162,13 +181,12 @@ def eval_jac_g(x, flag, user_data=None):
                   dAbr_dV(dFf_dVa, dFf_dVm, dFt_dVa, dFt_dVm, Ff, Ft)
 
         ## construct Jacobian of inequality constraints (branch limits)
-        ## and transpose it so fmincon likes it
         dg = vstack([
             hstack([df_dVa, df_dVm, sparse((nl, 2 * ng + ny + nz))]),  ## "from" flow limit
             hstack([dt_dVa, dt_dVm, sparse((nl, 2 * ng + ny + nz))])   ## "to" flow limit
-        ]).T
+        ])
 
         ## true Jacobian organization
-        J = vstack([ dgeq, dg, user_data['A'] ], 'coo')
+        J = vstack([ dgeq, dg, A ], 'coo')
 
         return J.data

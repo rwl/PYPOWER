@@ -18,7 +18,8 @@
 
 from sys import stdout
 
-from numpy import arange, polyval, polyder, ones, zeros, r_, flatnonzero as find
+from numpy import arange, polyval, polyder, ones, zeros, dot, r_
+from numpy import flatnonzero as find
 
 from scipy.sparse import spdiags, eye, csc_matrix as sparse
 
@@ -69,7 +70,7 @@ def eval_f(x, user_data=None):
 
     ## piecewise linear cost of P and Q
     if ny > 0:
-        f = f + ccost * x
+        f = f + dot(ccost, x)
 
     ## generalized cost term
     if len(N) > 0:
@@ -95,7 +96,7 @@ def eval_f(x, user_data=None):
         SQR = sparse((r_[ones(len(iL)), rr(iQ)], (iLQ, iLQ)), (nw, nw))
 
         w = M * D * SQR * rr
-        f = f + (w.T * H * w) / 2 + Cw.T * w
+        f = f + dot(w * H, w) / 2 + dot(Cw, w)
 
     return f
 
@@ -122,11 +123,11 @@ def eval_grad_f(x, user_data=None):
     xx = r_[ gen[:, PG], gen[:, QG] ]
 
     ## polynomial cost of P and Q
-    df_dPgQg = zeros(2*ng, 1)
+    df_dPgQg = zeros(2*ng)
     for i in ipol:
         ## w.r.t p.u. Pg
         df_dPgQg[i] = baseMVA * \
-                polyval(polyder(gencost[i, COST:(COST + gencost[i, NCOST] - 1)]), xx[i])
+                polyval(polyder(gencost[i, COST:(COST + gencost[i, NCOST])]), xx[i])
 
     df = r_[  zeros(vend),          ## partial w.r.t. Va & Vm
               df_dPgQg,             ## partial w.r.t. polynomial cost Pg and Qg
@@ -190,12 +191,12 @@ def eval_h(x, lagrange, obj_factor, flag, user_data=None):
     d2f_dPg2 = zeros(ng)
     d2f_dQg2 = zeros(ng)
     for i in range(ng):
-        d2f_dPg2[i] = polyval(polyder(polyder(pcost[i,COST:(COST + pcost[i, NCOST] - 1)])),
+        d2f_dPg2[i] = polyval(polyder(polyder(pcost[i,COST:(COST + pcost[i, NCOST])])),
                               Pg[i] * baseMVA) * baseMVA**2     ## w.r.t p.u. Pg
 
     if len(qcost) > 0:          ## Qg is not free
         for i in range(ng):
-            d2f_dQg2[i] = polyval(polyder(polyder(qcost[i,COST:(COST + qcost[i, NCOST] - 1)])),
+            d2f_dQg2[i] = polyval(polyder(polyder(qcost[i,COST:(COST + qcost[i, NCOST])])),
                                   Qg[i] * baseMVA) * baseMVA**2     ## w.r.t p.u. Qg
 
     i = arange(pgbas, qgend)
