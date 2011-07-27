@@ -308,10 +308,10 @@ def opf(*args):
         if ppopt['OPF_ALG'] == 0:  # OPF_ALG not set, choose best option
 #            if have_fcn('minopf'):
 #                ppopt['OPF_ALG'] = 500  # MINOS generalized
+#            if have_fcn('pdipm'):
+#                ppopt['OPF_ALG'] = 540  # PDIPM generalized
             if have_fcn('pyipopt'):
-                ppopt['OPF_ALG'] = 540   # PDIPM generalized
-#            elif have_fcn('fmincon'):
-#                ppopt['OPF_ALG'] = 520  # FMINCON generalized
+                ppopt['OPF_ALG'] = 520  # IPOPT generalized
             ## use default for this cost model
             elif any(i_pwln):      ## some piece-wise linear, use appropriate alg
                 ppopt['OPF_ALG'] = ppopt['OPF_ALG_PWL']
@@ -370,7 +370,7 @@ def opf(*args):
                              ppopt, N, fparm, H, Cw, z0, zl, zu)
 
             elif alg == 540 or alg == 545 or alg == 550:  # PDIPM_OPF, SCPDIPM_OPF, or TRALM_OPF
-                raise NotImplementedError
+                raise NotImplementedError, 'PDIPM solver not implemented'
 #                if alg == 540:       # PDIPM_OPF
 #                    if not have_fcn('pdipmopf'):
 #                        raise ValueError, 'opf.m: OPF_ALG ' + str(alg) + ' requires PDIPMOPF'

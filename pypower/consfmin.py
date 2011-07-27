@@ -94,7 +94,7 @@ def eval_g(x, user_data=None):
             giq = r_[ abs(Sf) - branch[:, RATE_A] / baseMVA,   ## branch apparent power limits (from bus)
                       abs(St) - branch[:, RATE_A] / baseMVA ]  ## branch apparent power limits (to bus)
 
-    if A.nnz > 0:
+    if len(A) > 0:
         g = r_[geq, giq, A * x]
     else:
         g = r_[geq, giq]
@@ -148,13 +148,22 @@ def eval_jac_g(x, flag, user_data=None):
         # TODO: double check ^
 
         ## construct Jacobian of equality constraints (power flow)
-        dgeq = vstack([
-            ## equality constraints
-            hstack([dSbus_dVa.real, dSbus_dVm.real,
-                dSbus_dPg.real, dSbus_dQg.real, sparse((nb, ny + nz))]),  ## P mismatch
-            hstack([dSbus_dVa.imag, dSbus_dVm.imag,
-                dSbus_dPg.imag, dSbus_dQg.imag, sparse((nb, ny + nz))])   ## Q mismatch
-         ])
+        if (ny + nz) > 0:
+            dgeq = vstack([
+                ## equality constraints
+                hstack([dSbus_dVa.real, dSbus_dVm.real,
+                    dSbus_dPg.real, dSbus_dQg.real, sparse((nb, ny + nz))]),  ## P mismatch
+                hstack([dSbus_dVa.imag, dSbus_dVm.imag,
+                    dSbus_dPg.imag, dSbus_dQg.imag, sparse((nb, ny + nz))])   ## Q mismatch
+             ])
+        else:
+            dgeq = vstack([
+                ## equality constraints
+                hstack([dSbus_dVa.real, dSbus_dVm.real,
+                    dSbus_dPg.real, dSbus_dQg.real]),  ## P mismatch
+                hstack([dSbus_dVa.imag, dSbus_dVm.imag,
+                    dSbus_dPg.imag, dSbus_dQg.imag])   ## Q mismatch
+             ])
 
 #        neg_Cg = sparse((-ones(ng), (gen[:, GEN_BUS], range(ng))), (nb, ng))
 #        dgeq = vstack([
@@ -187,6 +196,9 @@ def eval_jac_g(x, flag, user_data=None):
         ])
 
         ## true Jacobian organization
-        J = vstack([ dgeq, dg, A ], 'coo')
+        if len(A) > 0:
+            J = vstack([ dgeq, dg, A ], 'coo')
+        else:
+            J = vstack([ dgeq, dg ], 'coo')
 
         return J.data

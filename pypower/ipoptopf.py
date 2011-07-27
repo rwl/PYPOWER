@@ -520,7 +520,11 @@ def ipoptopf(*args, **kw_args):
                 by,
                 1e10 ]
     else:
-        A = vstack([ Au, Apqh, Apql, Avl, Aang ])
+        As = [ Au, Apqh, Apql, Avl, Aang ]
+        if len([a for a in As if a.shape[0] > 0]) > 0:
+            A = vstack([a for a in As if a.shape[0] > 0])
+        else:
+            A = array([])
         l = r_[ lbu, lbpqh, lbpql, lvl, lang ]
         u = r_[ ubu, ubpqh, ubpql, uvl, uang ]
 
@@ -671,7 +675,7 @@ def ipoptopf(*args, **kw_args):
 #    Af = Af.todense()
 #    Afeq = Afeq.todense()
 
-    ## build Jacobian and Hessian structure
+    ## build Jacobian structure
     nA = A.shape[0]                ## number of original linear constraints
     n = len(x0)
     f = branch[:, F_BUS]                           ## list of "from" buses
@@ -682,15 +686,26 @@ def ipoptopf(*args, **kw_args):
     Cb = Cl.T * Cl + speye(nb, nb)
     Cg = sparse((ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))
     nzz = ny + nz
-    Js = vstack([
-        hstack([Cb, Cb, Cg,                 Cg, sparse((nb, nzz))]),
-        hstack([Cb, Cb, Cg,                 Cg, sparse((nb, nzz))]),
-#        hstack([Cb, Cb, Cg,                 sparse((nb, ng)), sparse((nb, nzz))]),
-#        hstack([Cb, Cb, sparse((nb,   ng)), Cg,               sparse((nb, nzz))]),
-        hstack([Cl, Cl, sparse((nl, 2*ng)),     sparse((nl, nzz))]),
-        hstack([Cl, Cl, sparse((nl, 2*ng)),     sparse((nl, nzz))]),
-        A
-    ], 'coo')
+    if nzz > 0:
+        Js = vstack([
+            hstack([Cb, Cb, Cg,                 Cg, sparse((nb, nzz))]),
+            hstack([Cb, Cb, Cg,                 Cg, sparse((nb, nzz))]),
+    #        hstack([Cb, Cb, Cg,                 sparse((nb, ng)), sparse((nb, nzz))]),
+    #        hstack([Cb, Cb, sparse((nb,   ng)), Cg,               sparse((nb, nzz))]),
+            hstack([Cl, Cl, sparse((nl, 2*ng)),     sparse((nl, nzz))]),
+            hstack([Cl, Cl, sparse((nl, 2*ng)),     sparse((nl, nzz))])
+        ], 'coo')
+    else:
+        Js = vstack([
+            hstack([Cb, Cb, Cg,                 Cg]),
+            hstack([Cb, Cb, Cg,                 Cg]),
+#            hstack([Cb, Cb, Cg,                 sparse((nb, ng))]),
+#            hstack([Cb, Cb, sparse((nb,   ng)), Cg,             ]),
+            hstack([Cl, Cl, sparse((nl, 2*ng)),   ]),
+            hstack([Cl, Cl, sparse((nl, 2*ng)),   ])
+        ], 'coo')
+    if A is not None and len(A) > 0:
+        Js = vstack([Js, A])
 
     ## number of equality constraints
     neqnln = 2 * nb
