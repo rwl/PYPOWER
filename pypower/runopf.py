@@ -19,18 +19,22 @@
 
 from sys import stdout, stderr
 
-from ppoption import ppoption
-from opf import opf
-from printpf import printpf
-from savecase import savecase
+from os.path import dirname, join
+
+from pypower.ppoption import ppoption
+from pypower.opf import opf
+from pypower.printpf import printpf
+from pypower.savecase import savecase
 
 
-def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def runopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs an optimal power flow.
 
     @see: L{rundcopf}, L{runuopf}
     """
     ## default arguments
+    if casedata is None:
+        casedata = join(dirname(__file__), 'case9')
     ppopt = ppoption(ppopt)
 
     ##-----  run the optimal power flow  -----
@@ -55,3 +59,8 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         savecase(solvedcase, r)
 
     return r
+
+
+if __name__ == '__main__':
+    ppopt = ppoption(OPF_ALG=580)
+    runopf(None, ppopt)

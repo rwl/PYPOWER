@@ -17,16 +17,20 @@
 """Runs a DC power flow.
 """
 
-from ppoption import ppoption
-from runpf import runpf
+from os.path import dirname, join
+
+from pypower.ppoption import ppoption
+from pypower.runpf import runpf
 
 
-def rundcpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def rundcpf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs a DC power flow.
 
     @see: L{runpf}
     """
     ## default arguments
+    if casedata is None:
+        casedata = join(dirname(__file__), 'case9')
     ppopt = ppoption(ppopt, PF_DC=True)
 
     return runpf(casedata, ppopt, fname, solvedcase)

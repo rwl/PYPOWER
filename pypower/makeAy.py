@@ -50,7 +50,7 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     ny = iycost.shape[0]
 
     if ny == 0:
-        Ay = zeros((0, ybas+ny-1))
+        Ay = zeros((0, ybas + ny - 1))  ## TODO: Check size (- 1)
         by = array([])
         return Ay, by
 

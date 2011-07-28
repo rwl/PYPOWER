@@ -17,16 +17,20 @@
 """Runs a DC optimal power flow with unit-decommitment heuristic.
 """
 
-from ppoption import ppoption
-from runuopf import runuopf
+from os.path import dirname, join
+
+from pypower.ppoption import ppoption
+from pypower.runuopf import runuopf
 
 
-def runduopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def runduopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs a DC optimal power flow with unit-decommitment heuristic.
 
     @see: L{rundcopf}, L{runuopf}
     """
     ## default arguments
+    if casedata is None:
+        casedata = join(dirname(__file__), 'case9')
     ppopt = ppoption(ppopt, PF_DC=True)
 
     return runuopf(casedata, ppopt, fname, solvedcase)

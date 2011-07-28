@@ -19,18 +19,22 @@
 
 from sys import stderr
 
-from ppoption import ppoption
-from uopf import uopf
-from printpf import printpf
-from savecase import savecase
+from os.path import dirname, join
+
+from pypower.ppoption import ppoption
+from pypower.uopf import uopf
+from pypower.printpf import printpf
+from pypower.savecase import savecase
 
 
-def runuopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def runuopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs an optimal power flow with unit-decommitment heuristic.
 
     @see: L{rundcopf}, L{runuopf}
     """
     ## default arguments
+    if casedata is None:
+        casedata = join(dirname(__file__), 'case9')
     ppopt = ppoption(ppopt)
 
     ##-----  run the unit de-commitment / optimal power flow  -----

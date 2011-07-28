@@ -19,35 +19,37 @@
 
 from sys import stdout, stderr
 
+from os.path import dirname, join
+
 from time import time
 
 from numpy import r_, c_, ix_, zeros, pi, ones, exp, argmax
 from numpy import flatnonzero as find
 
-from bustypes import bustypes
-from ext2int import ext2int
-from loadcase import loadcase
-from ppoption import ppoption
-from ppver import ppver
-from makeBdc import makeBdc
-from makeSbus import makeSbus
-from dcpf import dcpf
-from makeYbus import makeYbus
-from newtonpf import newtonpf
-from fdpf import fdpf
-from gausspf import gausspf
-from makeB import makeB
-from pfsoln import pfsoln
-from printpf import printpf
-from savecase import savecase
-from int2ext import int2ext
+from pypower.bustypes import bustypes
+from pypower.ext2int import ext2int
+from pypower.loadcase import loadcase
+from pypower.ppoption import ppoption
+from pypower.ppver import ppver
+from pypower.makeBdc import makeBdc
+from pypower.makeSbus import makeSbus
+from pypower.dcpf import dcpf
+from pypower.makeYbus import makeYbus
+from pypower.newtonpf import newtonpf
+from pypower.fdpf import fdpf
+from pypower.gausspf import gausspf
+from pypower.makeB import makeB
+from pypower.pfsoln import pfsoln
+from pypower.printpf import printpf
+from pypower.savecase import savecase
+from pypower.int2ext import int2ext
 
-from idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PQ
-from idx_brch import PF, PT, QF, QT
-from idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
+from pypower.idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PQ
+from pypower.idx_brch import PF, PT, QF, QT
+from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 
 
-def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
+def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs a power flow.
 
     Runs a power flow [full AC Newton's method by default] and optionally
@@ -77,6 +79,8 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     slightly off from the specified values.
     """
     ## default arguments
+    if casedata is None:
+        casedata = join(dirname(__file__), 'case9')
     ppopt = ppoption(ppopt)
 
     ## options

@@ -17,10 +17,11 @@
 """Solves AC optimal power flow using IPOPT.
 """
 
-from numpy import array, ones, zeros, shape, Inf, pi, exp, conj, r_, arange, tril
+from numpy import array, ones, zeros, shape, Inf, pi, exp, conj, r_, arange
 from numpy import flatnonzero as find
+from numpy.random import rand
 
-from scipy.sparse import vstack, hstack, csr_matrix as sparse
+from scipy.sparse import issparse, tril, vstack, hstack, csr_matrix as sparse
 from scipy.sparse import eye as speye
 
 try:
@@ -121,8 +122,8 @@ def ipoptopf_solver(om, ppopt):
 
     ## try to select an interior initial point
     ll = xmin.copy(); uu = xmax.copy()
-    ll[xmin == -Inf] = -1e10   ## replace Inf with numerical proxies
-    uu[xmax ==  Inf] =  1e10
+    ll[xmin == -Inf] = -2e19   ## replace Inf with numerical proxies
+    uu[xmax ==  Inf] =  2e19
     x0 = (ll + uu) / 2
     Varefs = bus[bus[:, BUS_TYPE] == REF, VA] * (pi / 180)
     x0[vv['i1']['Va']:vv['iN']['Va']] = Varefs[0]  ## angles set to first reference angle
@@ -141,7 +142,10 @@ def ipoptopf_solver(om, ppopt):
 
     ##-----  run opf  -----
     ## build Jacobian and Hessian structure
-    nA = shape(A)[0]                ## number of original linear constraints
+    if A is not None and issparse(A):
+        nA = A.shape[0]                ## number of original linear constraints
+    else:
+        nA = 0
     nx = len(x0)
     f = branch[:, F_BUS]                           ## list of "from" buses
     t = branch[:, T_BUS]                           ## list of "to" buses
@@ -153,19 +157,30 @@ def ipoptopf_solver(om, ppopt):
     Cg = sparse((ones(ng), (gen[:, GEN_BUS], arange(ng))), (nb, ng))
     nz = nx - 2 * (nb + ng)
     nxtra = nx - 2 * nb
-    Js = vstack([
-        hstack([Cb,      Cb,      Cg,              sparse((nb, ng)),   sparse((nb, nz))]),
-        hstack([Cb,      Cb,      sparse((nb, ng)),   Cg,              sparse((nb, nz))]),
-        hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))]),
-        hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))]),
-        A
-    ], 'coo')
+    if nz > 0:
+        Js = vstack([
+            hstack([Cb,      Cb,      Cg,              sparse((nb, ng)),   sparse((nb,  nz))]),
+            hstack([Cb,      Cb,      sparse((nb, ng)),   Cg,              sparse((nb,  nz))]),
+            hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))]),
+            hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),               sparse((nl2, nz))])
+        ], 'coo')
+    else:
+        Js = vstack([
+            hstack([Cb,      Cb,      Cg,              sparse((nb, ng))]),
+            hstack([Cb,      Cb,      sparse((nb, ng)),   Cg,          ]),
+            hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),           ]),
+            hstack([Cl2,     Cl2,     sparse((nl2, 2 * ng)),           ])
+        ], 'coo')
+
+    if A is not None and issparse(A):
+        Js = vstack([Js, A], 'coo')
+
     f, _, d2f = opf_costfcn(x0, om, True)
-    Hs = d2f + vstack([
+    Hs = tril(d2f + vstack([
         hstack([Cb,  Cb,  sparse((nb, nxtra))]),
         hstack([Cb,  Cb,  sparse((nb, nxtra))]),
         sparse((nxtra, nx))
-    ], 'coo')
+    ]), format='coo')
 
     ## set options struct for IPOPT
     options = {}
@@ -187,24 +202,20 @@ def ipoptopf_solver(om, ppopt):
         'Hs':       Hs
     }
 
-    # ## check Jacobian and Hessian structure
-    # xr                  = rand(size(x0))
-    # lmbda              = rand(2*nb+2*nl2, 1)
-    # options.auxdata.Js  = jacobian(xr, options.auxdata)
-    # options.auxdata.Hs  = tril(hessian(xr, 1, lmbda, options.auxdata))
-    # Js1 = options.auxdata.Js;
-    # options.auxdata.Js = Js;
-    # Hs1 = options.auxdata.Hs;
-    # [i1, j1, s] = find(Js)
-    # [i2, j2, s] = find(Js1)
-    # if length(i1) ~= length(i2) || norm(i1-i2) ~= 0 || norm(j1-j2) ~= 0
-    #     error('something''s wrong with the Jacobian structure')
-    # end
-    # [i1, j1, s] = find(Hs)
-    # [i2, j2, s] = find(Hs1)
-    # if length(i1) ~= length(i2) || norm(i1-i2) ~= 0 || norm(j1-j2) ~= 0
-    #     error('something''s wrong with the Hessian structure')
-    # end
+    ## check Jacobian and Hessian structure
+#    xr                  = rand(x0.shape)
+#    lmbda               = rand( 2 * nb + 2 * nl2)
+#    Js1 = eval_jac_g(x, flag, userdata) #(xr, options.auxdata)
+#    Hs1  = eval_h(xr, 1, lmbda, userdata)
+#    i1, j1, s = find(Js)
+#    i2, j2, s = find(Js1)
+#    if (len(i1) != len(i2)) | (norm(i1 - i2) != 0) | (norm(j1 - j2) != 0):
+#        raise ValueError, 'something''s wrong with the Jacobian structure'
+#
+#    i1, j1, s = find(Hs)
+#    i2, j2, s = find(Hs1)
+#    if (len(i1) != len(i2)) | (norm(i1 - i2) != 0) | (norm(j1 - j2) != 0):
+#        raise ValueError, 'something''s wrong with the Hessian structure'
 
     ## define variable and constraint bounds
     # n is the number of variables
@@ -216,18 +227,17 @@ def ipoptopf_solver(om, ppopt):
 
     neqnln = 2 * nb
     niqnln = 2 * nl2
-    nA = A.shape[0]
 
     # number of constraints
     m = neqnln + niqnln + nA
     # lower bound of constraint
 
     ## replace Inf with numerical proxies
-    l[l == -Inf] = -1e10
-    u[u ==  Inf] =  1e10
-    gl = r_[zeros(neqnln), -1e10 * ones(niqnln), l]
+#    l[l == -Inf] = -2e19
+#    u[u ==  Inf] =  2e19
+#    gl = r_[zeros(neqnln), -2e19 * ones(niqnln), l]
 
-#    gl = r_[zeros(neqnln), -Inf * ones(niqnln), l]
+    gl = r_[zeros(neqnln), -Inf * ones(niqnln), l]
     # upper bound of constraints
     gu = r_[zeros(neqnln),       zeros(niqnln), u]
 
@@ -236,11 +246,19 @@ def ipoptopf_solver(om, ppopt):
     # number of non-zeros in Hessian matrix, you can set it to 0
     nnzh = Hs.nnz
 
-#    nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, eval_f, eval_grad_f, eval_g, eval_jac_g, eval_h)
-    nnzh = 0
-    nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh, eval_f, eval_grad_f, eval_g, eval_jac_g)
+    eval_hessian = True
+    if eval_hessian:
+        hessian = lambda x, lagrange, obj_factor, flag, user_data=None: \
+                eval_h(x, lagrange, obj_factor, flag, userdata)
 
-#    nlp.int_option("max_iter", 20)
+        nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh,
+                             eval_f, eval_grad_f, eval_g, eval_jac_g, hessian)
+    else:
+        nnzh = 0
+        nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh,
+                             eval_f, eval_grad_f, eval_g, eval_jac_g)
+
+    nlp.int_option("max_iter", 100)
 #    nlp.num_option("tol", 1e-8)
 #    nlp.str_option("print_options_documentation", "yes")
 
@@ -249,7 +267,9 @@ def ipoptopf_solver(om, ppopt):
     ## run the optimization
     # returns final solution x, upper and lower bound for multiplier, final
     # objective function obj and the return status of ipopt
-    x, zl, zu, obj, status = nlp.solve(x0, userdata)
+    x, zl, zu, obj, status, zg = nlp.solve(x0, m, userdata)
+
+    info = {'x': x, 'zl': zl, 'zu': zu, 'obj': obj, 'status': status, 'lmbda': zg}
 
     nlp.close()
 
@@ -264,7 +284,8 @@ def ipoptopf_solver(om, ppopt):
 #    else:
     output['iterations'] = array([])
 
-    f, _ = opf_costfcn(x, om)
+#    f, _ = opf_costfcn(x, om)
+    f = obj
 
     ## update solution data
     Va = x[vv['i1']['Va']:vv['iN']['Va']]
@@ -275,19 +296,21 @@ def ipoptopf_solver(om, ppopt):
 
     ##-----  calculate return values  -----
     ## update voltages & generator outputs
-    bus[:, VA] = Va * 180/pi
+    bus[:, VA] = Va * 180 / pi
     bus[:, VM] = Vm
     gen[:, PG] = Pg * baseMVA
     gen[:, QG] = Qg * baseMVA
-    gen[:, VG] = Vm[gen[:, GEN_BUS]]
+    gen[:, VG] = Vm[gen[:, GEN_BUS].astype(int)]
 
     ## compute branch flows
-    Sf = V[branch[:, F_BUS]] * conj[Yf * V]  ## cplx pwr at "from" bus, p.u.
-    St = V[branch[:, T_BUS]] * conj[Yt * V]  ## cplx pwr at "to" bus, p.u.
-    branch[:, PF] = Sf.real() * baseMVA
-    branch[:, QF] = Sf.imag() * baseMVA
-    branch[:, PT] = St.real() * baseMVA
-    branch[:, QT] = St.imag() * baseMVA
+    f_br = branch[:, F_BUS].astype(int)
+    t_br = branch[:, T_BUS].astype(int)
+    Sf = V[f_br] * conj(Yf * V)  ## cplx pwr at "from" bus, p.u.
+    St = V[t_br] * conj(Yt * V)  ## cplx pwr at "to" bus, p.u.
+    branch[:, PF] = Sf.real * baseMVA
+    branch[:, QF] = Sf.imag * baseMVA
+    branch[:, PT] = St.real * baseMVA
+    branch[:, QT] = St.imag * baseMVA
 
     ## line constraint is actually on square of limit
     ## so we must fix multipliers
@@ -356,26 +379,36 @@ def eval_f(x, user_data=None):
 
     @param x: input vector
     """
-    f,  _ = opf_costfcn(x, user_data['om'])
+    om = user_data['om']
+    f,  _ = opf_costfcn(x, om)
     return f
 
 
 def eval_grad_f(x, user_data=None):
     """Calculates gradient for objective function.
     """
-    f, df = opf_costfcn(x, user_data['om'])
-    return f, df
+    om = user_data['om']
+    _, df = opf_costfcn(x, om)
+    return df
 
 
 def eval_g(x, user_data=None):
     """Calculates the constraint values and returns an array.
     """
-    hn, gn = opf_consfcn(x, user_data['om'], user_data['Ybus'], user_data['Yf'],
-                         user_data['Yt'], user_data['ppopt'], user_data['il'])
-    if len(user_data['A']) == 0:
-        c = r_[gn, hn]
+    om    = user_data['om']
+    Ybus  = user_data['Ybus']
+    Yf    = user_data['Yf']
+    Yt    = user_data['Yt']
+    ppopt = user_data['ppopt']
+    il    = user_data['il']
+    A     = user_data['A']
+
+    hn, gn, _, _ = opf_consfcn(x, om, Ybus, Yf, Yt, ppopt, il)
+
+    if A is not None and issparse(A):
+        c = r_[gn, hn, A * x]
     else:
-        c = r_[gn, hn, user_data['A'] * x]
+        c = r_[gn, hn]
     return c
 
 
@@ -388,12 +421,24 @@ def eval_jac_g(x, flag, user_data=None):
     with length nnzj.
     """
     if flag:
-        return (user_data['Js'].row, user_data['Js'].col)
+        Js = user_data['Js']
+        return (Js.row, Js.col)
     else:
-        _, _, dhn, dgn = opf_consfcn(x, user_data['om'], user_data['Ybus'],
-                                     user_data['Yf'], user_data['Yt'],
-                                     user_data['ppopt'], user_data['il'])
-        J = vstack([dgn.T, dhn.T, user_data['A']], 'coo')
+        om    = user_data['om']
+        Ybus  = user_data['Ybus']
+        Yf    = user_data['Yf']
+        Yt    = user_data['Yt']
+        ppopt = user_data['ppopt']
+        il    = user_data['il']
+        A     = user_data['A']
+
+        _, _, dhn, dgn = opf_consfcn(x, om, Ybus, Yf, Yt, ppopt, il)
+
+        if A is not None and issparse(A):
+            J = vstack([dgn.T, dhn.T, A], 'coo')
+        else:
+            J = vstack([dgn.T, dhn.T], 'coo')
+
         return J.data
 
 
@@ -404,12 +449,22 @@ def eval_h(x, lagrange, obj_factor, flag, user_data=None):
     which will make the convergence slower.
     """
     if flag:
-        return (user_data['Hs'].row, user_data['Hs'].col)
+        Hs = user_data['Hs']
+        return (Hs.row, Hs.col)
     else:
-        lam = {}
-        lam['eqnonlin']   = lagrange[:user_data['neqnln']]
-        lam['ineqnonlin'] = lagrange[arange(user_data['niqnln']) + user_data['neqnln']]
-        H = opf_hessfcn(x, lam, user_data['om'], user_data['Ybus'], user_data['Yf'],
-                        user_data['Yt'], user_data['ppopt'], user_data['il'], obj_factor)
-        return H.tocoo().data
+        neqnln = user_data['neqnln']
+        niqnln = user_data['niqnln']
+        om     = user_data['om']
+        Ybus   = user_data['Ybus']
+        Yf     = user_data['Yf']
+        Yt     = user_data['Yt']
+        ppopt  = user_data['ppopt']
+        il     = user_data['il']
 
+        lam = {}
+        lam['eqnonlin']   = lagrange[:neqnln]
+        lam['ineqnonlin'] = lagrange[arange(niqnln) + neqnln]
+
+        H = opf_hessfcn(x, lam, om, Ybus, Yf, Yt, ppopt, il, obj_factor)
+
+        return tril(H, format='coo').data
