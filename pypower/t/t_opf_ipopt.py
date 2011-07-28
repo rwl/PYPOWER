@@ -78,13 +78,11 @@ def t_opf_ipopt(quiet=False):
     bus_soln = soln9_opf['bus_soln']
     gen_soln = soln9_opf['gen_soln']
     branch_soln = soln9_opf['branch_soln']
-    f_soln = soln9_opf['f_soln'][0]
+    f_soln = soln9_opf['f_soln']
 
     ## run OPF
     t = t0
-    r = runopf(casefile, ppopt)
-    bus, gen, branch, f, success = \
-            r['bus'], r['gen'], r['branch'], r['f'], r['success']
+    _, bus, gen, _, branch, f, success, _ = runopf(casefile, ppopt)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -98,54 +96,49 @@ def t_opf_ipopt(quiet=False):
     t_is(branch[:, ibr_flow  ], branch_soln[:, ibr_flow  ],  3, [t, 'branch flow'])
     t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
 
-#    ## get solved AC power flow case from MAT-file
-#    soln9_opf_Plim = loadmat(join(tdir, 'soln9_opf_Plim.mat'), struct_as_record=True)
-#    ## defines bus_soln, gen_soln, branch_soln, f_soln
-#    bus_soln = soln9_opf_Plim['bus_soln']
-#    gen_soln = soln9_opf_Plim['gen_soln']
-#    branch_soln = soln9_opf_Plim['branch_soln']
-#    f_soln = soln9_opf_Plim['f_soln'][0]
-#
-#    ## run OPF with active power line limits
-#    t = ''.join([t0, '(P line lim) : '])
-#    ppopt1 = ppoption(ppopt, OPF_FLOW_LIM=1)
-#    r = runopf(casefile, ppopt1)
-#    bus, gen, branch, f, success = \
-#            r['bus'], r['gen'], r['branch'], r['f'], r['success']
-#    t_ok(success, [t, 'success'])
-#    t_is(f, f_soln, 3, [t, 'f'])
-#    t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
-#    t_is(   bus[:, ib_voltage],    bus_soln[:, ib_voltage],  3, [t, 'bus voltage'])
-#    t_is(   bus[:, ib_lam    ],    bus_soln[:, ib_lam    ],  3, [t, 'bus lambda'])
-#    t_is(   bus[:, ib_mu     ],    bus_soln[:, ib_mu     ],  2, [t, 'bus mu'])
-#    t_is(   gen[:, ig_data   ],    gen_soln[:, ig_data   ], 10, [t, 'gen data'])
-#    t_is(   gen[:, ig_disp   ],    gen_soln[:, ig_disp   ],  3, [t, 'gen dispatch'])
-#    t_is(   gen[:, ig_mu     ],    gen_soln[:, ig_mu     ],  3, [t, 'gen mu'])
-#    t_is(branch[:, ibr_data  ], branch_soln[:, ibr_data  ], 10, [t, 'branch data'])
-#    t_is(branch[:, ibr_flow  ], branch_soln[:, ibr_flow  ],  3, [t, 'branch flow'])
-#    t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
+    ## get solved AC power flow case from MAT-file
+    soln9_opf_Plim = loadmat(join(tdir, 'soln9_opf_Plim.mat'), struct_as_record=True)
+    bus_soln = soln9_opf_Plim['bus_soln']
+    gen_soln = soln9_opf_Plim['gen_soln']
+    branch_soln = soln9_opf_Plim['branch_soln']
+    f_soln = soln9_opf_Plim['f_soln']
+
+    ## run OPF with active power line limits
+    t = ''.join([t0, '(P line lim) : '])
+    ppopt1 = ppoption(ppopt, OPF_FLOW_LIM=1)
+    _, bus, gen, _, branch, f, success, _ = runopf(casefile, ppopt1)
+    t_ok(success, [t, 'success'])
+    t_is(f, f_soln, 3, [t, 'f'])
+    t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
+    t_is(   bus[:, ib_voltage],    bus_soln[:, ib_voltage],  3, [t, 'bus voltage'])
+    t_is(   bus[:, ib_lam    ],    bus_soln[:, ib_lam    ],  3, [t, 'bus lambda'])
+    t_is(   bus[:, ib_mu     ],    bus_soln[:, ib_mu     ],  2, [t, 'bus mu'])
+    t_is(   gen[:, ig_data   ],    gen_soln[:, ig_data   ], 10, [t, 'gen data'])
+    t_is(   gen[:, ig_disp   ],    gen_soln[:, ig_disp   ],  3, [t, 'gen dispatch'])
+    t_is(   gen[:, ig_mu     ],    gen_soln[:, ig_mu     ],  3, [t, 'gen mu'])
+    t_is(branch[:, ibr_data  ], branch_soln[:, ibr_data  ], 10, [t, 'branch data'])
+    t_is(branch[:, ibr_flow  ], branch_soln[:, ibr_flow  ],  3, [t, 'branch flow'])
+    t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
 
     ##-----  test OPF with quadratic gen costs moved to generalized costs  -----
-    ppc = loadcase(casefile)
+    ppc = loadcase(casefile, return_as_dict=True)
     ppc['gencost'] = array([
         [2,   1500, 0,   3,   0.11,    5,   0],
         [2,   2000, 0,   3,   0.085,   1.2, 0],
         [2,   3000, 0,   3,   0.1225,  1,   0]
     ])
-    r = runopf(ppc, ppopt)
-    bus_soln, gen_soln, branch_soln, f_soln, success = \
-            r['bus'], r['gen'], r['branch'], r['f'], r['success']
+    _, bus_soln, gen_soln, _, branch_soln, f_soln, success, _ = runopf(ppc, ppopt)
     branch_soln = branch_soln[:, :MU_ST + 1]
 
-    A = None
+    A = array([])
     l = array([])
     u = array([])
     nb = ppc['bus'].shape[0]      # number of buses
     ng = ppc['gen'].shape[0]      # number of gens
-    thbas = 0;                thend    = thbas + nb
+    thbas    = 0;         thend    = thbas + nb
     vbas     = thend;     vend     = vbas + nb
     pgbas    = vend;      pgend    = pgbas + ng
-#    qgbas    = pgend;     qgend    = qgbas + ng
+    #qgbas    = pgend;     qgend    = qgbas + ng
     nxyz = 2 * nb + 2 * ng
     N = sparse((ppc['baseMVA'] * ones(ng), (arange(ng), arange(pgbas, pgend))), (ng, nxyz))
     fparm = ones((ng, 1)) * array([[1, 0, 0, 1]])
@@ -156,9 +149,8 @@ def t_opf_ipopt(quiet=False):
 
     ## run OPF with quadratic gen costs moved to generalized costs
     t = ''.join([t0, 'w/quadratic generalized gen cost : '])
-    r = opf(ppc, A, l, u, ppopt, N, fparm, H, Cw)
-    f, bus, gen, branch, success = \
-            r['f'], r['bus'], r['gen'], r['branch'], r['success']
+    bus, gen, branch, f, success, _, _, _, _, _, _ = \
+            opf(ppc, A, l, u, ppopt, N, fparm, H, Cw)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -171,18 +163,16 @@ def t_opf_ipopt(quiet=False):
     t_is(branch[:, ibr_data  ], branch_soln[:, ibr_data  ], 10, [t, 'branch data'])
     t_is(branch[:, ibr_flow  ], branch_soln[:, ibr_flow  ],  3, [t, 'branch flow'])
     t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
-    t_is(r['cost']['usr'], f, 12, [t, 'user cost'])
 
     ##-----  run OPF with extra linear user constraints & costs  -----
     ## single new z variable constrained to be greater than or equal to
     ## deviation from 1 pu voltage at bus 1, linear cost on this z
     ## get solved AC power flow case from MAT-file
     soln9_opf_extras1 = loadmat(join(tdir, 'soln9_opf_extras1.mat'), struct_as_record=True)
-    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf_extras1['bus_soln']
     gen_soln = soln9_opf_extras1['gen_soln']
     branch_soln = soln9_opf_extras1['branch_soln']
-    f_soln = soln9_opf_extras1['f_soln'][0]
+    f_soln = soln9_opf_extras1['f_soln']
 
     row = [0, 0, 1, 1]
     col = [9, 24, 9, 24]
@@ -197,8 +187,7 @@ def t_opf_ipopt(quiet=False):
 
     t = ''.join([t0, 'w/extra constraints & costs 1 : '])
     r = opf(casefile, A, l, u, ppopt, N, fparm, H, Cw)
-    f, bus, gen, branch, success = \
-            r['f'], r['bus'], r['gen'], r['branch'], r['success']
+    bus, gen, branch, f, success, _, _, _, _, _, _ = r
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -211,28 +200,24 @@ def t_opf_ipopt(quiet=False):
     t_is(branch[:, ibr_data  ], branch_soln[:, ibr_data  ], 10, [t, 'branch data'])
     t_is(branch[:, ibr_flow  ], branch_soln[:, ibr_flow  ],  3, [t, 'branch flow'])
     t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
-    t_is(r['var']['val']['z'], 0.025419, 6, [t, 'user variable'])
-    t_is(r['cost']['usr'], 2.5419, 4, [t, 'user cost'])
 
     ##-----  test OPF with capability curves  -----
-    ppc = loadcase(join(tdir, 't_case9_opfv2'))
-    ## remove angle diff limits
-    ppc['branch'][0, ANGMAX] =  360
-    ppc['branch'][8, ANGMIN] = -360
+    ppc = loadcase(join(tdir, 't_case9_opfv2'), return_as_dict=True)
+
+    ppc['gen'][ix_(arange(1, 3), [PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX])] = \
+            array([[   0,   200, -20, 20,  -10, 10   ],
+                   [   0,   200, -30, 30,  -15, 15,  ]])
 
     ## get solved AC power flow case from MAT-file
     soln9_opf_PQcap = loadmat(join(tdir, 'soln9_opf_PQcap.mat'), struct_as_record=True)
-    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf_PQcap['bus_soln']
     gen_soln = soln9_opf_PQcap['gen_soln']
     branch_soln = soln9_opf_PQcap['branch_soln']
-    f_soln = soln9_opf_PQcap['f_soln'][0]
+    f_soln = soln9_opf_PQcap['f_soln']
 
     ## run OPF with capability curves
     t = ''.join([t0, 'w/capability curves : '])
-    r = runopf(ppc, ppopt)
-    bus, gen, branch, f, success = \
-            r['bus'], r['gen'], r['branch'], r['f'], r['success']
+    _, bus, gen, _, branch, f, success, _ = runopf(ppc, ppopt)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -247,24 +232,20 @@ def t_opf_ipopt(quiet=False):
     t_is(branch[:, ibr_mu    ], branch_soln[:, ibr_mu    ],  2, [t, 'branch mu'])
 
     ##-----  test OPF with angle difference limits  -----
-    ppc = loadcase(join(tdir, 't_case9_opfv2'))
-    ## remove capability curves
-    ppc['gen'][ix_(arange(1, 3),
-                   [PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX])] = zeros((2, 6))
+    ppc = loadcase(join(tdir, 't_case9_opfv2'), return_as_dict=True)
+    ppc['branch'][0, ANGMAX] = 2.48
+    ppc['branch'][8, ANGMIN] = -2
 
     ## get solved AC power flow case from MAT-file
     soln9_opf_ang = loadmat(join(tdir, 'soln9_opf_ang.mat'), struct_as_record=True)
-    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf_ang['bus_soln']
     gen_soln = soln9_opf_ang['gen_soln']
     branch_soln = soln9_opf_ang['branch_soln']
-    f_soln = soln9_opf_ang['f_soln'][0]
+    f_soln = soln9_opf_ang['f_soln']
 
     ## run OPF with angle difference limits
     t = ''.join([t0, 'w/angle difference limits : '])
-    r = runopf(ppc, ppopt)
-    bus, gen, branch, f, success = \
-            r['bus'], r['gen'], r['branch'], r['f'], r['success']
+    _, bus, gen, _, branch, f, success, _ = runopf(ppc, ppopt)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])
@@ -282,21 +263,18 @@ def t_opf_ipopt(quiet=False):
     ##-----  test OPF with ignored angle difference limits  -----
     ## get solved AC power flow case from MAT-file
     soln9_opf = loadmat(join(tdir, 'soln9_opf.mat'), struct_as_record=True)
-    ## defines bus_soln, gen_soln, branch_soln, f_soln
     bus_soln = soln9_opf['bus_soln']
     gen_soln = soln9_opf['gen_soln']
     branch_soln = soln9_opf['branch_soln']
-    f_soln = soln9_opf['f_soln'][0]
+    f_soln = soln9_opf['f_soln']
+
+    branch_soln[0, ANGMAX] = 2.48
+    branch_soln[8, ANGMIN] = -2
 
     ## run OPF with ignored angle difference limits
     t = ''.join([t0, 'w/ignored angle difference limits : '])
     ppopt1 = ppoption(ppopt, OPF_IGNORE_ANG_LIM=1)
-    r = runopf(ppc, ppopt1)
-    bus, gen, branch, f, success = \
-            r['bus'], r['gen'], r['branch'], r['f'], r['success']
-    ## ang limits are not in this solution data, so let's remove them
-    branch[0, ANGMAX] =  360
-    branch[8, ANGMIN] = -360
+    _, bus, gen, _, branch, f, success, _ = runopf(ppc, ppopt1)
     t_ok(success, [t, 'success'])
     t_is(f, f_soln, 3, [t, 'f'])
     t_is(   bus[:, ib_data   ],    bus_soln[:, ib_data   ], 10, [t, 'bus data'])

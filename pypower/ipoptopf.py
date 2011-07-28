@@ -51,7 +51,7 @@ from pypower.idx_cost import MODEL, PW_LINEAR
 EPS = finfo(float).eps
 
 
-def ipoptopf(*args, **kw_args):
+def ipoptopf(*args):
     """Solves an AC optimal power flow.
 
     bus, gen, branch, f, success = ipoptopf(casefile, ppopt)
@@ -344,10 +344,10 @@ def ipoptopf(*args, **kw_args):
     nvl   = vload.shape[0]                         # dispatchable loads
     npqh  = ipqh.shape[0]                          # general pq capability curves
     npql  = ipql.shape[0]
-    if len(Au) == 0:
+    if Au is None or (not issparse(Au) and len(Au) == 0):
         nz = 0
         Au = zeros((0, nx))
-        if len(N) > 0:        # still need to check number of columns of N
+        if N is not None and issparse(N):   # still need to check number of columns of N
             if N.shape[1] != nx:
                 raise ValueError, 'ipoptopf: user supplied N matrix must have %d columns.' % nx
     else:
@@ -485,12 +485,12 @@ def ipoptopf(*args, **kw_args):
     if ny > 0:
         if nz > 0:
             Au = hstack([ Au[:, :qgend], sparse((nusr, ny)), Au[:, qgend + arange(nz)] ])
-            if len(N) > 0:
+            if N is not None and issparse(N):
                 N = hstack([ N[:, :qgend], sparse((N.shape[0], ny)), N[:, qgend + arange(nz)] ])
         else:
             if nusr:
                 Au = hstack([ Au, sparse((nusr, ny)) ])
-            if len(N) > 0:
+            if N is not None and issparse(N):
                 N = hstack([ N, sparse((N.shape[0], ny)) ])
 
     # Now form the overall linear restriction matrix;
@@ -621,8 +621,6 @@ def ipoptopf(*args, **kw_args):
     if len(z0) > 0:
         x0[zbas:zend] = z0
 
-    print 'X0', A * x0
-
     # build admittance matrices
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
 
@@ -703,19 +701,19 @@ def ipoptopf(*args, **kw_args):
         'Js': Js, 'A': A}
 
     ## set IPOPT options
-#    if ppopt['VERBOSE'] >= 0:
-#        nlp.int_option('print_level', ppopt['VERBOSE'])
-#    nlp.num_option('tol', ppopt['OPF_VIOLATION'])
-#    nlp.num_option('constr_viol_tol', ppopt['CONSTR_TOL_X'])
-    nlp.int_option('max_iter', 100)#ppopt['CONSTR_MAX_IT'])
+    if ppopt['VERBOSE'] >= 0:
+        nlp.int_option('print_level', ppopt['VERBOSE'] * 5)
+    nlp.num_option('tol', ppopt['OPF_VIOLATION'])
+    nlp.num_option('constr_viol_tol', ppopt['CONSTR_TOL_X'])
+    nlp.int_option('max_iter', ppopt['CONSTR_MAX_IT'])
 
-    for k, v in kw_args.iteritems():
-        if isinstance(v, int):
-            nlp.int_option(k, v)
-        elif isinstance(v, basestring):
-            nlp.str_option(k, v)
-        else:
-            nlp.num_option(k, v)
+#    for k, v in kw_args.iteritems():
+#        if isinstance(v, int):
+#            nlp.int_option(k, v)
+#        elif isinstance(v, basestring):
+#            nlp.str_option(k, v)
+#        else:
+#            nlp.num_option(k, v)
 
 
     result = nlp.solve(x0, m, user_data)
@@ -731,27 +729,12 @@ def ipoptopf(*args, **kw_args):
     ## status of the algorithm
     status = result[4]
     ## final multipliers for constraints
-    mG = result[5]
+    zg = result[5]
 
     nlp.close()
 
-    print 'OBJ:', f
-#    print len(x), x
-#    print status
-#    print len(mG)
-#    print len(zl), len(zu)
-
-#        ## if negative, lowerbound was hit
-#        ilt = find(mG <= 0)
-#        ## if positive, the upperbound was hit
-#        igt = find(mG > 0)
-#        mulow = zeros(m)
-#        muupp = zeros(m)
-#        muupp[ilt] = -mG[ilt]
-#        mulow[igt] =  mG[igt]
-#        lambdaout = r_[mG, mulow, muupp]
-
-    lmbda = r_[mG, zl, zu]
+    eqnonlin = zg[:neqnln]
+    ineqnonlin = zg[neqnln:neqnln + niqnln]
 
     info = status
     success = (status == 0)
@@ -777,38 +760,40 @@ def ipoptopf(*args, **kw_args):
     branch[:, QT] = St.imag * baseMVA
 
     # Put in Lagrange multipliers
-    gen[:, MU_PMAX]  = lmbda.upper[pgbas:pgend] / baseMVA
-    gen[:, MU_PMIN]  = lmbda.lower[pgbas:pgend] / baseMVA
-    gen[:, MU_QMAX]  = lmbda.upper[qgbas:qgend] / baseMVA
-    gen[:, MU_QMIN]  = lmbda.lower[qgbas:qgend] / baseMVA
-    bus[:, LAM_P]    = lmbda.eqnonlin[:nb] / baseMVA
-    bus[:, LAM_Q]    = lmbda.eqnonlin[nb:2 * nb] / baseMVA
-    bus[:, MU_VMAX]  = lmbda.upper[vbas:vend]
-    bus[:, MU_VMIN]  = lmbda.lower[vbas:vend]
-    branch[:, MU_SF] = lmbda.ineqnonlin[:nl] / baseMVA
-    branch[:, MU_ST] = lmbda.ineqnonlin[nl:2 * nl] / baseMVA
+    gen[:, MU_PMAX]  = zu[pgbas:pgend] / baseMVA
+    gen[:, MU_PMIN]  = zl[pgbas:pgend] / baseMVA
+    gen[:, MU_QMAX]  = zu[qgbas:qgend] / baseMVA
+    gen[:, MU_QMIN]  = zl[qgbas:qgend] / baseMVA
+    bus[:, LAM_P]    = eqnonlin[:nb] / baseMVA
+    bus[:, LAM_Q]    = eqnonlin[nb:2 * nb] / baseMVA
+    bus[:, MU_VMAX]  = zu[vbas:vend]
+    bus[:, MU_VMIN]  = zl[vbas:vend]
+    branch[:, MU_SF] = ineqnonlin[:nl] / baseMVA
+    branch[:, MU_ST] = ineqnonlin[nl:2 * nl] / baseMVA
 
     # extract lambdas from linear constraints
-    nlt = len(ilt)
-    ngt = len(igt)
-    nbx = len(ibx)
-    lam = zeros(u.shape)
-    lam[ieq] = lmbda.eqlin
-    lam[ilt] = lmbda.ineqlin[:nlt]
-    lam[igt] = -lmbda.ineqlin[nlt + arange(ngt)]
-    lam[ibx] = lmbda.ineqlin[nlt + ngt + arange(nbx)] - lmbda.ineqlin[nlt + ngt + nbx + arange(nbx)]
+    lam = zg[neqnln + niqnln:]
+#    nlt = len(ilt)
+#    ngt = len(igt)
+#    nbx = len(ibx)
+#    lam = zeros(u.shape)
+#    lam[ieq] = lmbda.eqlin
+#    lam[ilt] = lmbda.ineqlin[:nlt]
+#    lam[igt] = -lmbda.ineqlin[nlt + arange(ngt)]
+#    lam[ibx] = lmbda.ineqlin[nlt + ngt + arange(nbx)] - lmbda.ineqlin[nlt + ngt + nbx + arange(nbx)]
 
     # stick in non-linear constraints too, so we can use the indexing variables
     # we've defined, and negate so it looks like the pimul from MINOS
     pimul = r_[
-      -lmbda.eqnonlin[:nb],
-      -lmbda.eqnonlin[nb:2 * nb],
-      -lmbda.ineqnonlin[:nl],
-      -lmbda.ineqnonlin[nl:2 * nl],
-      -lam,
-      -1,       ## dummy entry corresponding to linear cost row in A (in MINOS)
-      lmbda.lower - lmbda.upper
+        -eqnonlin[:nb],
+        -eqnonlin[nb:2 * nb],
+        -ineqnonlin[:nl],
+        -ineqnonlin[nl:2 * nl],
+        -lam,
+        -1,       ## dummy entry corresponding to linear cost row in A
+        zl - zu
     ]
+    #pimul = r_[-zg, -1, zl - zu]
 
     # If we succeeded and there were generators with general pq curve
     # characteristics, this is the time to re-compute the multipliers,
@@ -856,7 +841,7 @@ def ipoptopf(*args, **kw_args):
     if success and (nang > 0):
         tmp = arange(angbas, angend)
         ii = find(pimul[tmp] > 0)
-        branch[iang[ii], MU_ANGMIN] = pimul[tmp[ii]] * pi / 180
+        branch[iang[ii], MU_ANGMIN] =  pimul[tmp[ii]] * pi / 180
         ii = find(pimul[tmp] < 0)
         branch[iang[ii], MU_ANGMAX] = -pimul[tmp[ii]] * pi / 180
 
@@ -865,11 +850,10 @@ def ipoptopf(*args, **kw_args):
 
     # We are done with standard opf but we may need to provide the
     # constraints and their Jacobian also.
-    if False:
-        g = eval_g(x, user_data)
-        dg_row, dg_col = eval_jac_g(x, False, user_data)
-        dg_data = eval_jac_g(x, True, user_data)
-        jac = sparse((dg_data, (dg_row, dg_col)))
+    g = eval_g(x, user_data)
+    dg_row, dg_col = eval_jac_g(x, True, user_data)
+    dg_data = eval_jac_g(x, False, user_data)
+    jac = sparse((dg_data, (dg_row, dg_col)))
 
     # Go back to original data.
     # reorder generators

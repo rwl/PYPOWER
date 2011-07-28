@@ -21,7 +21,7 @@ from sys import stdout
 from numpy import arange, polyval, polyder, ones, zeros, dot, r_
 from numpy import flatnonzero as find
 
-from scipy.sparse import spdiags, eye, csc_matrix as sparse
+from scipy.sparse import issparse, spdiags, eye, csc_matrix as sparse
 
 from pypower.idx_gen import PG, QG
 from pypower.totcost import totcost
@@ -73,29 +73,9 @@ def eval_f(x, user_data=None):
         f = f + dot(ccost, x)
 
     ## generalized cost term
-    if len(N) > 0:
-        nw = N.shape[0]
-        r = N * x - fparm[:, 1]            ## Nx - rhat
-        h = fparm[:, 2]
-        iLT = find(r < -h)                 ## below dead zone
-        iEQ = find((r == 0) & (h == 0))    ## dead zone doesn't exist
-        iGT = find(r > h)                  ## above dead zone
-        iND = r_[iLT, iEQ, iGT]            ## rows that are Not in the Dead region
-        D = sparse(iND, iND, 1, nw, nw)
-        M = spdiags(fparm[:, 3], 0, nw, nw)
-        hh = sparse((r_[ ones(len(iLT)),
-                         zeros(len(iEQ))
-                        -ones(len(iGT)) ], (iND, iND)), (nw, nw)) * h
-        rr = r + hh
+    if N is not None and issparse(N):
+        w = _generalized_cost_terms(x, N, fparm)[0]
 
-        ## create diagonal matrix w/ rr on diagonal for quadratic rows (those that
-        ## need to be squared), 1 for linear rows
-        iL = find(fparm[:, 0] == 1)    ## rows using linear function
-        iQ = find(fparm[:, 0] == 2)    ## rows using quadratic function
-        iLQ = r_[iL, iQ]               ## linear rows first, then quadratic
-        SQR = sparse((r_[ones(len(iL)), rr(iQ)], (iLQ, iLQ)), (nw, nw))
-
-        w = M * D * SQR * rr
         f = f + dot(w * H, w) / 2 + dot(Cw, w)
 
     return f
@@ -111,6 +91,7 @@ def eval_grad_f(x, user_data=None):
     ccost = user_data['ccost']
     N = user_data['N']
     H = user_data['H']
+    fparm = user_data['fparm']
     Cw = user_data['Cw']
 
     ## unpack needed parameters
@@ -137,30 +118,32 @@ def eval_grad_f(x, user_data=None):
     df = df + ccost.T  # As in MINOS, the linear cost row is additive wrt any nonlinear cost.
 
     ## generalized cost term
-    if len(N) > 0:
-        raise NotImplementedError
-#        nw = N.shape[0]
-#        SQR2 = (eye(nw) + sparse(iQ, iQ, 1, nw, nw)) * SQR
-#        df = df + ((H * w + Cw).T * (M * D * SQR2 * N)).T
-#
-#        ## numerical check
-#        if 0:    ## 1 to check, 0 to skip check
-#            ddff = zeros(df.shape)
-#            step = 1e-7
-#            tol  = 1e-3
-#            for k in range(len(x)):
-#                xx = x.copy()
-#                xx[k] = xx[k] + step
-#                ddff[k] = (eval_f(xx, user_data) - f) / step
-#
-#            if max(abs(ddff - df)) > tol:
-#                idx = find(abs(ddff - df) == max(abs(ddff - df)))
-#                stdout.write('\nMismatch in gradient\n')
-#                stdout.write('idx             df(num)         df              diff\n')
-#                stdout.write('%4d%16g%16g%16g\n' % (arange(len(df)), ddff, df, abs(ddff - df)))
-#                stdout.write('MAX\n')
-#                stdout.write('%4d%16g%16g%16g\n' % (idx, ddff(idx), df[idx], abs(ddff[idx] - df[idx])))
-#                stdout.write('\n')
+    if N is not None and issparse(N):
+        f = eval_f(x, user_data)
+        w, M, D, SQR, nw, iQ = _generalized_cost_terms(x, N, fparm)
+
+        SQR2 = (eye(nw, nw) + sparse((ones(len(iQ)), (iQ, iQ)), (nw, nw))) * SQR
+
+        df = df + ((H * w + Cw).T * (M * D * SQR2 * N)).T
+
+        ## numerical check
+        if 0:    ## 1 to check, 0 to skip check
+            ddff = zeros(df.shape)
+            step = 1e-7
+            tol  = 1e-3
+            for k in range(len(x)):
+                xx = x.copy()
+                xx[k] = xx[k] + step
+                ddff[k] = (eval_f(xx, user_data) - f) / step
+
+            if max(abs(ddff - df)) > tol:
+                idx = find(abs(ddff - df) == max(abs(ddff - df)))
+                stdout.write('\nMismatch in gradient\n')
+                stdout.write('idx             df(num)         df              diff\n')
+                stdout.write('%4d%16g%16g%16g\n' % (arange(len(df)), ddff, df, abs(ddff - df)))
+                stdout.write('MAX\n')
+                stdout.write('%4d%16g%16g%16g\n' % (idx, ddff(idx), df[idx], abs(ddff[idx] - df[idx])))
+                stdout.write('\n')
 
     return df
 
@@ -203,3 +186,30 @@ def eval_h(x, lagrange, obj_factor, flag, user_data=None):
     d2f = sparse((r_[d2f_dPg2, d2f_dQg2], (i, i)))
 
     return d2f
+
+
+def _generalized_cost_terms(x, N, fparm):
+    nw = N.shape[0]
+    r = N * x - fparm[:, 1]            ## Nx - rhat
+    h = fparm[:, 2]
+    iLT = find(r < -h)                 ## below dead zone
+    iEQ = find((r == 0) & (h == 0))    ## dead zone doesn't exist
+    iGT = find(r > h)                  ## above dead zone
+    iND = r_[iLT, iEQ, iGT]            ## rows that are Not in the Dead region
+    D = sparse((ones(nw), (iND, iND)), (nw, nw))
+    M = spdiags(fparm[:, 3], 0, nw, nw)
+    hh = sparse((r_[ ones(len(iLT)),
+                     zeros(len(iEQ)),
+                    -ones(len(iGT)) ], (iND, iND)), (nw, nw)) * h
+    rr = r + hh
+
+    ## create diagonal matrix w/ rr on diagonal for quadratic rows (those that
+    ## need to be squared), 1 for linear rows
+    iL = find(fparm[:, 0] == 1)    ## rows using linear function
+    iQ = find(fparm[:, 0] == 2)    ## rows using quadratic function
+    iLQ = r_[iL, iQ]               ## linear rows first, then quadratic
+    SQR = sparse((r_[ones(len(iL)), rr[iQ]], (iLQ, iLQ)), (nw, nw))
+
+    w = M * D * SQR * rr
+
+    return w, M, D, SQR, nw, iQ
