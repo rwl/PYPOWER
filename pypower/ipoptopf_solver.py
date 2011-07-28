@@ -17,18 +17,11 @@
 """Solves AC optimal power flow using IPOPT.
 """
 
-from numpy import array, ones, zeros, shape, Inf, pi, exp, conj, r_, arange
+from numpy import ones, zeros, shape, Inf, pi, exp, conj, r_, arange
 from numpy import flatnonzero as find
-from numpy.random import rand
 
 from scipy.sparse import issparse, tril, vstack, hstack, csr_matrix as sparse
 from scipy.sparse import eye as speye
-
-try:
-    import pyipopt
-except:
-#    print "IPOPT not available"
-    pass
 
 from pypower.idx_bus import BUS_TYPE, REF, VM, VA, MU_VMAX, MU_VMIN, LAM_P, LAM_Q
 from pypower.idx_brch import F_BUS, T_BUS, RATE_A, PF, QF, PT, QT, MU_SF, MU_ST
@@ -77,6 +70,8 @@ def ipoptopf_solver(om, ppopt):
 
     @see: L{opf}, L{pips}
     """
+    import pyipopt
+
     ## options
     verbose = ppopt['VERBOSE']
     feastol = ppopt['PDIPM_FEASTOL']
@@ -115,7 +110,7 @@ def ipoptopf_solver(om, ppopt):
     A, l, u = om.linear_constraints()
 
     ## bounds on optimization vars
-    x0, xmin, xmax = om.getv()
+    _, xmin, xmax = om.getv()
 
     ## build admittance matrices
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
@@ -183,7 +178,7 @@ def ipoptopf_solver(om, ppopt):
     ]), format='coo')
 
     ## set options struct for IPOPT
-    options = {}
+#    options = {}
 #    options['ipopt'] = ipopt_options([], ppopt)
 
     ## extra data to pass to functions
@@ -203,27 +198,27 @@ def ipoptopf_solver(om, ppopt):
     }
 
     ## check Jacobian and Hessian structure
-#    xr                  = rand(x0.shape)
-#    lmbda               = rand( 2 * nb + 2 * nl2)
-#    Js1 = eval_jac_g(x, flag, userdata) #(xr, options.auxdata)
-#    Hs1  = eval_h(xr, 1, lmbda, userdata)
-#    i1, j1, s = find(Js)
-#    i2, j2, s = find(Js1)
-#    if (len(i1) != len(i2)) | (norm(i1 - i2) != 0) | (norm(j1 - j2) != 0):
-#        raise ValueError, 'something''s wrong with the Jacobian structure'
-#
-#    i1, j1, s = find(Hs)
-#    i2, j2, s = find(Hs1)
-#    if (len(i1) != len(i2)) | (norm(i1 - i2) != 0) | (norm(j1 - j2) != 0):
-#        raise ValueError, 'something''s wrong with the Hessian structure'
+    #xr                  = rand(x0.shape)
+    #lmbda               = rand( 2 * nb + 2 * nl2)
+    #Js1 = eval_jac_g(x, flag, userdata) #(xr, options.auxdata)
+    #Hs1  = eval_h(xr, 1, lmbda, userdata)
+    #i1, j1, s = find(Js)
+    #i2, j2, s = find(Js1)
+    #if (len(i1) != len(i2)) | (norm(i1 - i2) != 0) | (norm(j1 - j2) != 0):
+    #    raise ValueError, 'something''s wrong with the Jacobian structure'
+    #
+    #i1, j1, s = find(Hs)
+    #i2, j2, s = find(Hs1)
+    #if (len(i1) != len(i2)) | (norm(i1 - i2) != 0) | (norm(j1 - j2) != 0):
+    #    raise ValueError, 'something''s wrong with the Hessian structure'
 
     ## define variable and constraint bounds
     # n is the number of variables
     n = x0.shape[0]
     # xl is the lower bound of x as bounded constraints
-    xl = ll
+    xl = xmin
     # xu is the upper bound of x as bounded constraints
-    xu = uu
+    xu = xmax
 
     neqnln = 2 * nb
     niqnln = 2 * nl2
@@ -231,12 +226,6 @@ def ipoptopf_solver(om, ppopt):
     # number of constraints
     m = neqnln + niqnln + nA
     # lower bound of constraint
-
-    ## replace Inf with numerical proxies
-#    l[l == -Inf] = -2e19
-#    u[u ==  Inf] =  2e19
-#    gl = r_[zeros(neqnln), -2e19 * ones(niqnln), l]
-
     gl = r_[zeros(neqnln), -Inf * ones(niqnln), l]
     # upper bound of constraints
     gu = r_[zeros(neqnln),       zeros(niqnln), u]
@@ -258,11 +247,25 @@ def ipoptopf_solver(om, ppopt):
         nlp = pyipopt.create(n, xl, xu, m, gl, gu, nnzj, nnzh,
                              eval_f, eval_grad_f, eval_g, eval_jac_g)
 
-    nlp.int_option("max_iter", 100)
-#    nlp.num_option("tol", 1e-8)
-#    nlp.str_option("print_options_documentation", "yes")
+    nlp.int_option('print_level', 5)
+    nlp.num_option('tol', 1.0000e-12)
+    nlp.int_option('max_iter', 250)
+    nlp.num_option('dual_inf_tol', 0.10000)
+    nlp.num_option('constr_viol_tol', 1.0000e-06)
+    nlp.num_option('compl_inf_tol', 1.0000e-05)
+    nlp.num_option('acceptable_tol', 1.0000e-08)
+    nlp.num_option('acceptable_constr_viol_tol', 1.0000e-04)
+    nlp.num_option('acceptable_compl_inf_tol', 0.0010000)
+    nlp.str_option('mu_strategy', 'adaptive')
 
-    #import pdb; pdb.set_trace()
+    iter = 0
+    def intermediate_callback(algmod, iter_count, obj_value, inf_pr, inf_du,
+            mu, d_norm, regularization_size, alpha_du, alpha_pr, ls_trials,
+            user_data=None):
+        iter = iter_count
+        return True
+
+    nlp.set_intermediate_callback(intermediate_callback)
 
     ## run the optimization
     # returns final solution x, upper and lower bound for multiplier, final
@@ -273,19 +276,11 @@ def ipoptopf_solver(om, ppopt):
 
     nlp.close()
 
-    if status == 0 | status == 1:
-        success = 1
-    else:
-        success = 0
+    success = (status == 0) | (status == 1)
 
-    output = {}
-#    if 'iter' in info:
-#        output['iterations'] = info['iter']
-#    else:
-    output['iterations'] = array([])
+    output = {'iterations': iter}
 
-#    f, _ = opf_costfcn(x, om)
-    f = obj
+    f, _ = opf_costfcn(x, om)
 
     ## update solution data
     Va = x[vv['i1']['Va']:vv['iN']['Va']]
@@ -420,8 +415,8 @@ def eval_jac_g(x, flag, user_data=None):
     If the flag is false, returns the values of the Jacobi matrix
     with length nnzj.
     """
+    Js = user_data['Js']
     if flag:
-        Js = user_data['Js']
         return (Js.row, Js.col)
     else:
         om    = user_data['om']
@@ -439,7 +434,14 @@ def eval_jac_g(x, flag, user_data=None):
         else:
             J = vstack([dgn.T, dhn.T], 'coo')
 
-        return J.data
+        ## FIXME: Extend PyIPOPT to handle changes in sparsity structure
+        nnzj = Js.nnz
+        Jd = zeros(nnzj)
+        Jc = J.tocsc()
+        for i in xrange(nnzj):
+            Jd[i] = Jc[Js.row[i], Js.col[i]]
+
+        return Jd
 
 
 def eval_h(x, lagrange, obj_factor, flag, user_data=None):
@@ -448,8 +450,8 @@ def eval_h(x, lagrange, obj_factor, flag, user_data=None):
     If omitted, set nnzh to 0 and Ipopt will use approximated Hessian
     which will make the convergence slower.
     """
+    Hs = user_data['Hs']
     if flag:
-        Hs = user_data['Hs']
         return (Hs.row, Hs.col)
     else:
         neqnln = user_data['neqnln']
@@ -467,4 +469,12 @@ def eval_h(x, lagrange, obj_factor, flag, user_data=None):
 
         H = opf_hessfcn(x, lam, om, Ybus, Yf, Yt, ppopt, il, obj_factor)
 
-        return tril(H, format='coo').data
+        Hl = tril(H, format='csc')
+
+        ## FIXME: Extend PyIPOPT to handle changes in sparsity structure
+        nnzh = Hs.nnz
+        Hd = zeros(nnzh)
+        for i in xrange(nnzh):
+            Hd[i] = Hl[Hs.row[i], Hs.col[i]]
+
+        return Hd

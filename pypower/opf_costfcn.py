@@ -167,7 +167,7 @@ def opf_costfcn(x, om, return_hessian=False):
     d2f = sparse((r_[d2f_dPg2, d2f_dQg2], (i, i)), (nxyz, nxyz))
 
     ## generalized cost
-    if any(N):
+    if N is not None and issparse(N):
         d2f = d2f + AA * H * AA.T + 2 * N.T * M * QQ * \
                 sparse((HwC, (range(nw), range(nw))), (nw, nw)) * N
 
