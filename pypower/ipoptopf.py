@@ -536,40 +536,7 @@ def ipoptopf(*args, **kw_args):
     # Up to this point, the setup is MINOS-like.  We now adapt
     # things for pyipopt.
 
-#    # Form a vector with basic info to pass on as a parameter
-#    parms = array([
-#        nb,      # 1
-#        ng,      # 2
-#        nl,      # 3
-#        ny,      # 4
-#        nx,      # 5
-#        nvl,     # 6
-#        nz,      # 7
-#        nxyz,    # 8
-#        thbas,   # 9
-#        thend,   # 10
-#        vbas,    # 11
-#        vend,    # 12
-#        pgbas,   # 13
-#        pgend,   # 14
-#        qgbas,   # 15
-#        qgend,   # 16
-#        ybas,    # 17
-#        yend,    # 18
-#        zbas,    # 19
-#        zend,    # 20
-#        pmsmbas, # 21
-#        pmsmend, # 22
-#        qmsmbas, # 23
-#        qmsmend, # 24
-#        sfbas,   # 25
-#        sfend,   # 26
-#        stbas,   # 27
-#        stend    # 28
-#    ])
-
-
-    # Form a vector with basic info to pass on as a parameter
+    # Form a dict with basic info to pass on as a parameter
     parms = {
         'nb': nb,
         'ng': ng,
@@ -740,7 +707,7 @@ def ipoptopf(*args, **kw_args):
 #        nlp.int_option('print_level', ppopt['VERBOSE'])
 #    nlp.num_option('tol', ppopt['OPF_VIOLATION'])
 #    nlp.num_option('constr_viol_tol', ppopt['CONSTR_TOL_X'])
-    nlp.int_option('max_iter', 10)#ppopt['CONSTR_MAX_IT'])
+    nlp.int_option('max_iter', 100)#ppopt['CONSTR_MAX_IT'])
 
     for k, v in kw_args.iteritems():
         if isinstance(v, int):

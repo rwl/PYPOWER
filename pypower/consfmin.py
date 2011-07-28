@@ -16,7 +16,7 @@
 """Evaluates nonlinear constraints and their Jacobian for OPF.
 """
 
-from numpy import ones, conj, exp, r_, arange
+from numpy import ones, conj, exp, r_, arange, zeros
 
 from scipy.sparse import vstack, hstack, issparse, csr_matrix as sparse
 
@@ -110,9 +110,9 @@ def eval_jac_g(x, flag, user_data=None):
     If the flag is false, returns the values of the Jacobi matrix
     with length nnzj.
     """
+    Js = user_data['Js']
     if flag:
-        print 'J1', len(user_data['Js'].row)
-        return (user_data['Js'].row, user_data['Js'].col)
+        return (Js.row, Js.col)
     else:
         parms = user_data['parms']
         gen = user_data['gen']
@@ -197,8 +197,14 @@ def eval_jac_g(x, flag, user_data=None):
 
         ## true Jacobian organization
         if A is not None and issparse(A):
-            J = vstack([ dgeq, dg, A ], 'coo')
+            J = vstack([ dgeq, dg, A ], 'csc')
         else:
-            J = vstack([ dgeq, dg ], 'coo')
+            J = vstack([ dgeq, dg ], 'csc')
 
-        return J.data
+        ## FIXME: Extend PyIPOPT to handle changes in sparsity structure
+        nnzj = Js.nnz
+        Jd = zeros(nnzj)
+        for i in xrange(nnzj):
+            Jd[i] = J[Js.row[i], Js.col[i]]
+
+        return Jd
