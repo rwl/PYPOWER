@@ -18,7 +18,7 @@
 
 from numpy import ones, conj, exp, r_, arange
 
-from scipy.sparse import vstack, hstack, csr_matrix as sparse
+from scipy.sparse import vstack, hstack, issparse, csr_matrix as sparse
 
 from idx_gen import GEN_BUS, PG, QG
 from idx_brch import F_BUS, T_BUS, RATE_A
@@ -94,7 +94,7 @@ def eval_g(x, user_data=None):
             giq = r_[ abs(Sf) - branch[:, RATE_A] / baseMVA,   ## branch apparent power limits (from bus)
                       abs(St) - branch[:, RATE_A] / baseMVA ]  ## branch apparent power limits (to bus)
 
-    if len(A) > 0:
+    if A is not None and issparse(A):
         g = r_[geq, giq, A * x]
     else:
         g = r_[geq, giq]
@@ -196,7 +196,7 @@ def eval_jac_g(x, flag, user_data=None):
         ])
 
         ## true Jacobian organization
-        if len(A) > 0:
+        if A is not None and issparse(A):
             J = vstack([ dgeq, dg, A ], 'coo')
         else:
             J = vstack([ dgeq, dg ], 'coo')

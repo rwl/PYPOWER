@@ -74,17 +74,17 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     k = 0
     for i in iycost:
         ns = gencost[i, NCOST].astype(int)         ## # of cost points segments = ns-1
-        p = gencost[i, COST:COST + 2 * ns - 1:2] / baseMVA
-        c = gencost[i, COST + 1:COST + 2 * ns:2]
+        p = gencost[i, COST:COST + 2 * ns:2] / baseMVA
+        c = gencost[i, COST + 1:COST + 2 * ns + 1:2]
         m = diff(c) / diff(p)               ## slopes for Pg (or Qg)
         if any(diff(p) == 0):
             print 'makeAy: bad x axis data in row ##i of gencost matrix' % i
         b = m * p[:ns - 1] - c[:ns - 1]        ## and rhs
         by = r_[by,  b]
         if i > ng:
-            sidx = qgbas + (i - ng) - 1        ## this was for a q cost
+            sidx = qgbas + (i - ng)        ## this was for a q cost
         else:
-            sidx = pgbas + i - 1               ## this was for a p cost
+            sidx = pgbas + i               ## this was for a p cost
 
         ## FIXME: Bug in SciPy 0.7.2 prevents setting with a sequence
 #        Ay[k:k + ns - 1, sidx] = m
@@ -100,7 +100,8 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
         ## FIXME: Bug in SciPy 0.7.2 prevents setting with a sequence
 #        Ay[k:k + ns - 1, ybas + j - 1] = -ones(ns - 1)
         for kk in range(k, k + ns - 1):
-            Ay[kk, ybas + j - 1] = -1
+            Ay[kk, ybas + j] = -1
+
         k = k + ns - 1
         j = j + 1
 

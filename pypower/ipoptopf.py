@@ -22,7 +22,7 @@ from numpy import \
 from numpy import flatnonzero as find
 
 from scipy.sparse import vstack, hstack, csc_matrix as sparse
-from scipy.sparse import eye as speye
+from scipy.sparse import issparse, eye as speye
 
 from pypower.ppoption import ppoption
 from pypower.loadcase import loadcase
@@ -654,6 +654,8 @@ def ipoptopf(*args, **kw_args):
     if len(z0) > 0:
         x0[zbas:zend] = z0
 
+    print 'X0', A * x0
+
     # build admittance matrices
     Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
 
@@ -704,7 +706,7 @@ def ipoptopf(*args, **kw_args):
             hstack([Cl, Cl, sparse((nl, 2*ng)),   ]),
             hstack([Cl, Cl, sparse((nl, 2*ng)),   ])
         ], 'coo')
-    if A is not None and len(A) > 0:
+    if A is not None and issparse(A):
         Js = vstack([Js, A])
 
     ## number of equality constraints
@@ -738,7 +740,7 @@ def ipoptopf(*args, **kw_args):
 #        nlp.int_option('print_level', ppopt['VERBOSE'])
 #    nlp.num_option('tol', ppopt['OPF_VIOLATION'])
 #    nlp.num_option('constr_viol_tol', ppopt['CONSTR_TOL_X'])
-    nlp.int_option('max_iter', 100)#ppopt['CONSTR_MAX_IT'])
+    nlp.int_option('max_iter', 10)#ppopt['CONSTR_MAX_IT'])
 
     for k, v in kw_args.iteritems():
         if isinstance(v, int):
