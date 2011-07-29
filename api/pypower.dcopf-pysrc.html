@@ -61,8 +61,8 @@
 </table>
 <h1 class="epydoc">Source Code for <a href="pypower.dcopf-module.html">Module pypower.dcopf</a></h1>
 <pre class="py-src">
-<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center</tt> </tt>
-<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2010-2011 Richard Lincoln</tt> </tt>
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2011 Richard Lincoln</tt> </tt>
 <a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
 <a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
 <a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
@@ -100,15 +100,18 @@ pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-5', 'opf
 <a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-docstring">    See L{opf} for the details of input and output arguments.</tt> </tt>
 <a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
 <a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"><tt class="py-docstring">    @see: L{rundcopf}</tt> </tt>
-<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
-<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">    <tt class="py-name">ppc</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-6" class="py-name"><a title="pypower.opf_args.opf_args2" class="py-name" href="#" onclick="return doclink('link-6', 'opf_args2', 'link-1');">opf_args2</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">kw_args</tt><tt class="py-op">)</tt><tt class="py-op">;</tt> </tt>
-<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">    <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-7" class="py-name"><a title="pypower.ppoption
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-docstring">    @author: Ray Zimmerman (PSERC Cornell)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-docstring">    @author: Richard Lincoln</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">    <tt class="py-name">ppc</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-6" class="py-name"><a title="pypower.opf_args.opf_args2" class="py-name" href="#" onclick="return doclink('link-6', 'opf_args2', 'link-1');">opf_args2</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">kw_args</tt><tt class="py-op">)</tt><tt class="py-op">;</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">    <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-7" class="py-name"><a title="pypower.ppoption
 pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-7', 'ppoption', 'link-2');">ppoption</a></tt><tt class="py-op">(</tt><tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">PF_DC</tt><tt class="py-op">=</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
-<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
-<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-8" class="py-name"><a title="pypower.main.opf
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-8" class="py-name"><a title="pypower.main.opf
 pypower.opf
 pypower.opf.opf" class="py-name" href="#" onclick="return doclink('link-8', 'opf', 'link-4');">opf</a></tt><tt class="py-op">(</tt><tt class="py-name">ppc</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">)</tt> </tt>
-</div><a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+</div><a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -146,7 +149,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:55 2011
+    Generated by Epydoc 3.0.1 on Fri Jul 29 18:21:28 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

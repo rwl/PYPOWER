@@ -61,8 +61,8 @@
 </table>
 <h1 class="epydoc">Source Code for <a href="pypower.isload-module.html">Module pypower.isload</a></h1>
 <pre class="py-src">
-<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2005-2011 Power System Engineering Research Center</tt> </tt>
-<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2010-2011 Richard Lincoln</tt> </tt>
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2005-2011 Power System Engineering Research Center (PSERC)</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2011 Richard Lincoln</tt> </tt>
 <a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
 <a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
 <a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
@@ -80,9 +80,7 @@
 <a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-docstring">"""Checks for dispatchable loads.</tt> </tt>
 <a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
 <a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"> </tt>
-<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module pypower.idx_gen=pypower.idx_gen-module.html"><a title="pypower.idx_gen" class="py-name" href="#" onclick="return doclink('link-0', 'idx_gen', 'link-0');">idx_gen</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Variable pypower.idx_gen.PMAX=pypower.idx_gen-module.html#PMAX,Variable pypower.savecase.PMAX=pypower.savecase-module.html#PMAX"><a title="pypower.idx_gen.PMAX
-pypower.savecase.PMAX" class="py-name" href="#" onclick="return doclink('link-1', 'PMAX', 'link-1');">PMAX</a></tt><tt class="py-op">,</tt> <tt id="link-2" class="py-name" targets="Variable pypower.idx_gen.PMIN=pypower.idx_gen-module.html#PMIN,Variable pypower.savecase.PMIN=pypower.savecase-module.html#PMIN"><a title="pypower.idx_gen.PMIN
-pypower.savecase.PMIN" class="py-name" href="#" onclick="return doclink('link-2', 'PMIN', 'link-2');">PMIN</a></tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module pypower.idx_gen=pypower.idx_gen-module.html"><a title="pypower.idx_gen" class="py-name" href="#" onclick="return doclink('link-0', 'idx_gen', 'link-0');">idx_gen</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Variable pypower.idx_gen.PMAX=pypower.idx_gen-module.html#PMAX"><a title="pypower.idx_gen.PMAX" class="py-name" href="#" onclick="return doclink('link-1', 'PMAX', 'link-1');">PMAX</a></tt><tt class="py-op">,</tt> <tt id="link-2" class="py-name" targets="Variable pypower.idx_gen.PMIN=pypower.idx_gen-module.html#PMIN"><a title="pypower.idx_gen.PMIN" class="py-name" href="#" onclick="return doclink('link-2', 'PMIN', 'link-2');">PMIN</a></tt> </tt>
 <a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"> </tt>
 <a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
 <a name="isload"></a><div id="isload-def"><a name="L23"></a><tt class="py-lineno">23</tt> <a class="py-toggle" href="#" id="isload-toggle" onclick="return toggle('isload');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.isload-module.html#isload">isload</a><tt class="py-op">(</tt><tt class="py-param">gen</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
@@ -92,11 +90,12 @@ pypower.savecase.PMIN" class="py-name" href="#" onclick="return doclink('link-2'
 <a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-docstring">    C{gen} matrix which represent dispatchable loads. The current test is</tt> </tt>
 <a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-docstring">    C{Pmin &lt; 0 and Pmax == 0}. This may need to be revised to allow sensible</tt> </tt>
 <a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-docstring">    specification of both elastic demand and pumped storage units.</tt> </tt>
-<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
-<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name"><a title="pypower.idx_gen.PMIN
-pypower.savecase.PMIN" class="py-name" href="#" onclick="return doclink('link-3', 'PMIN', 'link-2');">PMIN</a></tt><tt class="py-op">]</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-op">(</tt><tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name"><a title="pypower.idx_gen.PMAX
-pypower.savecase.PMAX" class="py-name" href="#" onclick="return doclink('link-4', 'PMAX', 'link-1');">PMAX</a></tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> </tt>
-</div><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-docstring">    @author: Ray Zimmerman (PSERC Cornell)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"><tt class="py-docstring">    @author: Richard Lincoln</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name"><a title="pypower.idx_gen.PMIN" class="py-name" href="#" onclick="return doclink('link-3', 'PMIN', 'link-2');">PMIN</a></tt><tt class="py-op">]</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-op">(</tt><tt class="py-name">gen</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name"><a title="pypower.idx_gen.PMAX" class="py-name" href="#" onclick="return doclink('link-4', 'PMAX', 'link-1');">PMAX</a></tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -134,7 +133,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:55 2011
+    Generated by Epydoc 3.0.1 on Fri Jul 29 18:21:31 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -61,8 +61,8 @@
 </table>
 <h1 class="epydoc">Source Code for <a href="pypower.idx_cost-module.html">Module pypower.idx_cost</a></h1>
 <pre class="py-src">
-<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center</tt> </tt>
-<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2010-2011 Richard Lincoln</tt> </tt>
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2011 Richard Lincoln</tt> </tt>
 <a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
 <a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
 <a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published</tt> </tt>
@@ -108,25 +108,21 @@
 <a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring">additional constants, used to assign/compare values in the C{MODEL} column</tt> </tt>
 <a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"><tt class="py-docstring">    1.  C{PW_LINEAR}   piecewise linear generator cost model</tt> </tt>
 <a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"><tt class="py-docstring">    2.  C{POLYNOMIAL}  polynomial generator cost model</tt> </tt>
-<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
-<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"><tt class="py-comment"># define cost models</tt> </tt>
-<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable pypower.idx_cost.PW_LINEAR=pypower.idx_cost-module.html#PW_LINEAR,Variable pypower.savecase.PW_LINEAR=pypower.savecase-module.html#PW_LINEAR"><a title="pypower.idx_cost.PW_LINEAR
-pypower.savecase.PW_LINEAR" class="py-name" href="#" onclick="return doclink('link-0', 'PW_LINEAR', 'link-0');">PW_LINEAR</a></tt>   <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
-<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"><tt id="link-1" class="py-name" targets="Variable pypower.idx_cost.POLYNOMIAL=pypower.idx_cost-module.html#POLYNOMIAL,Variable pypower.savecase.POLYNOMIAL=pypower.savecase-module.html#POLYNOMIAL"><a title="pypower.idx_cost.POLYNOMIAL
-pypower.savecase.POLYNOMIAL" class="py-name" href="#" onclick="return doclink('link-1', 'POLYNOMIAL', 'link-1');">POLYNOMIAL</a></tt>  <tt class="py-op">=</tt> <tt class="py-number">2</tt> </tt>
-<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"> </tt>
-<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt class="py-comment"># define the indices</tt> </tt>
-<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable pypower.idx_cost.MODEL=pypower.idx_cost-module.html#MODEL,Variable pypower.savecase.MODEL=pypower.savecase-module.html#MODEL"><a title="pypower.idx_cost.MODEL
-pypower.savecase.MODEL" class="py-name" href="#" onclick="return doclink('link-2', 'MODEL', 'link-2');">MODEL</a></tt>       <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
-<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt id="link-3" class="py-name" targets="Variable pypower.idx_cost.STARTUP=pypower.idx_cost-module.html#STARTUP,Variable pypower.savecase.STARTUP=pypower.savecase-module.html#STARTUP"><a title="pypower.idx_cost.STARTUP
-pypower.savecase.STARTUP" class="py-name" href="#" onclick="return doclink('link-3', 'STARTUP', 'link-3');">STARTUP</a></tt>     <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
-<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable pypower.idx_cost.SHUTDOWN=pypower.idx_cost-module.html#SHUTDOWN,Variable pypower.savecase.SHUTDOWN=pypower.savecase-module.html#SHUTDOWN"><a title="pypower.idx_cost.SHUTDOWN
-pypower.savecase.SHUTDOWN" class="py-name" href="#" onclick="return doclink('link-4', 'SHUTDOWN', 'link-4');">SHUTDOWN</a></tt>    <tt class="py-op">=</tt> <tt class="py-number">2</tt> </tt>
-<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable pypower.idx_cost.NCOST=pypower.idx_cost-module.html#NCOST,Variable pypower.savecase.NCOST=pypower.savecase-module.html#NCOST"><a title="pypower.idx_cost.NCOST
-pypower.savecase.NCOST" class="py-name" href="#" onclick="return doclink('link-5', 'NCOST', 'link-5');">NCOST</a></tt>       <tt class="py-op">=</tt> <tt class="py-number">3</tt> </tt>
-<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"><tt id="link-6" class="py-name" targets="Variable pypower.idx_cost.COST=pypower.idx_cost-module.html#COST,Variable pypower.savecase.COST=pypower.savecase-module.html#COST"><a title="pypower.idx_cost.COST
-pypower.savecase.COST" class="py-name" href="#" onclick="return doclink('link-6', 'COST', 'link-6');">COST</a></tt>        <tt class="py-op">=</tt> <tt class="py-number">4</tt> </tt>
-<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"><tt class="py-docstring">@author: Ray Zimmerman (PSERC Cornell)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"><tt class="py-docstring">@author: Richard Lincoln</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"><tt class="py-comment"># define cost models</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable pypower.idx_cost.PW_LINEAR=pypower.idx_cost-module.html#PW_LINEAR"><a title="pypower.idx_cost.PW_LINEAR" class="py-name" href="#" onclick="return doclink('link-0', 'PW_LINEAR', 'link-0');">PW_LINEAR</a></tt>   <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"><tt id="link-1" class="py-name" targets="Variable pypower.idx_cost.POLYNOMIAL=pypower.idx_cost-module.html#POLYNOMIAL"><a title="pypower.idx_cost.POLYNOMIAL" class="py-name" href="#" onclick="return doclink('link-1', 'POLYNOMIAL', 'link-1');">POLYNOMIAL</a></tt>  <tt class="py-op">=</tt> <tt class="py-number">2</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt class="py-comment"># define the indices</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable pypower.idx_cost.MODEL=pypower.idx_cost-module.html#MODEL"><a title="pypower.idx_cost.MODEL" class="py-name" href="#" onclick="return doclink('link-2', 'MODEL', 'link-2');">MODEL</a></tt>       <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"><tt id="link-3" class="py-name" targets="Variable pypower.idx_cost.STARTUP=pypower.idx_cost-module.html#STARTUP"><a title="pypower.idx_cost.STARTUP" class="py-name" href="#" onclick="return doclink('link-3', 'STARTUP', 'link-3');">STARTUP</a></tt>     <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable pypower.idx_cost.SHUTDOWN=pypower.idx_cost-module.html#SHUTDOWN"><a title="pypower.idx_cost.SHUTDOWN" class="py-name" href="#" onclick="return doclink('link-4', 'SHUTDOWN', 'link-4');">SHUTDOWN</a></tt>    <tt class="py-op">=</tt> <tt class="py-number">2</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable pypower.idx_cost.NCOST=pypower.idx_cost-module.html#NCOST"><a title="pypower.idx_cost.NCOST" class="py-name" href="#" onclick="return doclink('link-5', 'NCOST', 'link-5');">NCOST</a></tt>       <tt class="py-op">=</tt> <tt class="py-number">3</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line"><tt id="link-6" class="py-name" targets="Variable pypower.idx_cost.COST=pypower.idx_cost-module.html#COST"><a title="pypower.idx_cost.COST" class="py-name" href="#" onclick="return doclink('link-6', 'COST', 'link-6');">COST</a></tt>        <tt class="py-op">=</tt> <tt class="py-number">4</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -164,7 +160,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:56 2011
+    Generated by Epydoc 3.0.1 on Fri Jul 29 18:21:29 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

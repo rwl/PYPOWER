@@ -61,7 +61,7 @@
 </table>
 <h1 class="epydoc">Source Code for <a href="pypower.rundcopf-module.html">Module pypower.rundcopf</a></h1>
 <pre class="py-src">
-<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center</tt> </tt>
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)</tt> </tt>
 <a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2009-2011 Richard Lincoln</tt> </tt>
 <a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
 <a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># PYPOWER is free software: you can redistribute it and/or modify</tt> </tt>
@@ -80,25 +80,33 @@
 <a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-docstring">"""Runs a DC optimal power flow.</tt> </tt>
 <a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
 <a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"> </tt>
-<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module pypower.ppoption=pypower.ppoption-module.html,Function pypower.ppoption.ppoption()=pypower.ppoption-module.html#ppoption"><a title="pypower.ppoption
-pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-0', 'ppoption', 'link-0');">ppoption</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="pypower.ppoption
-pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-1', 'ppoption', 'link-0');">ppoption</a></tt> </tt>
-<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Module pypower.runopf=pypower.runopf-module.html,Function pypower.runopf.runopf()=pypower.runopf-module.html#runopf"><a title="pypower.runopf
-pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-2', 'runopf', 'link-2');">runopf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="pypower.runopf
-pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-3', 'runopf', 'link-2');">runopf</a></tt> </tt>
-<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
-<a name="rundcopf"></a><div id="rundcopf-def"><a name="L23"></a><tt class="py-lineno">23</tt> <a class="py-toggle" href="#" id="rundcopf-toggle" onclick="return toggle('rundcopf');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.rundcopf-module.html#rundcopf">rundcopf</a><tt class="py-op">(</tt><tt class="py-param">casedata</tt><tt class="py-op">=</tt><tt class="py-string">'case9'</tt><tt class="py-op">,</tt> <tt class="py-param">ppopt</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">fname</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-param">solvedcase</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="rundcopf-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="rundcopf-expanded"><a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">    <tt class="py-docstring">"""Runs a DC optimal power flow.</tt> </tt>
-<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-docstring">    @see: L{runopf}, L{runduopf}</tt> </tt>
-<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
-<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">    <tt class="py-comment">## default arguments</tt> </tt>
-<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">    <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name"><a title="pypower.ppoption
-pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-4', 'ppoption', 'link-0');">ppoption</a></tt><tt class="py-op">(</tt><tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">PF_DC</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
-<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
-<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-5" class="py-name"><a title="pypower.runopf
-pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-5', 'runopf', 'link-2');">runopf</a></tt><tt class="py-op">(</tt><tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">solvedcase</tt><tt class="py-op">)</tt> </tt>
-</div><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt> <tt class="py-keyword">import</tt> <tt class="py-name">dirname</tt><tt class="py-op">,</tt> <tt class="py-name">join</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package pypower=pypower-module.html"><a title="pypower" class="py-name" href="#" onclick="return doclink('link-0', 'pypower', 'link-0');">pypower</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module pypower.ppoption=pypower.ppoption-module.html,Function pypower.ppoption.ppoption()=pypower.ppoption-module.html#ppoption"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-1', 'ppoption', 'link-1');">ppoption</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-2', 'ppoption', 'link-1');">ppoption</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="pypower" class="py-name" href="#" onclick="return doclink('link-3', 'pypower', 'link-0');">pypower</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module pypower.runopf=pypower.runopf-module.html,Function pypower.runopf.runopf()=pypower.runopf-module.html#runopf"><a title="pypower.runopf
+pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-4', 'runopf', 'link-4');">runopf</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name"><a title="pypower.runopf
+pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-5', 'runopf', 'link-4');">runopf</a></tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"> </tt>
+<a name="rundcopf"></a><div id="rundcopf-def"><a name="L26"></a><tt class="py-lineno">26</tt> <a class="py-toggle" href="#" id="rundcopf-toggle" onclick="return toggle('rundcopf');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pypower.rundcopf-module.html#rundcopf">rundcopf</a><tt class="py-op">(</tt><tt class="py-param">casedata</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">ppopt</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">fname</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-param">solvedcase</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="rundcopf-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="rundcopf-expanded"><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">    <tt class="py-docstring">"""Runs a DC optimal power flow.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-docstring">    @see: L{runopf}, L{runduopf}</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-docstring">    @author: Ray Zimmerman (PSERC Cornell)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"><tt class="py-docstring">    @author: Richard Lincoln</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">    <tt class="py-comment">## default arguments</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">casedata</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">casedata</tt> <tt class="py-op">=</tt> <tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">dirname</tt><tt class="py-op">(</tt><tt class="py-name">__file__</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">'case9'</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">    <tt class="py-name">ppopt</tt> <tt class="py-op">=</tt> <tt id="link-6" class="py-name"><a title="pypower.ppoption
+pypower.ppoption.ppoption" class="py-name" href="#" onclick="return doclink('link-6', 'ppoption', 'link-1');">ppoption</a></tt><tt class="py-op">(</tt><tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">PF_DC</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-7" class="py-name"><a title="pypower.runopf
+pypower.runopf.runopf" class="py-name" href="#" onclick="return doclink('link-7', 'runopf', 'link-4');">runopf</a></tt><tt class="py-op">(</tt><tt class="py-name">casedata</tt><tt class="py-op">,</tt> <tt class="py-name">ppopt</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">solvedcase</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -136,7 +144,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jul  7 20:24:57 2011
+    Generated by Epydoc 3.0.1 on Fri Jul 29 18:21:27 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
