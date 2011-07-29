@@ -1,5 +1,6 @@
 include LICENSE
 include README
+include NOTICE
 include pypower/t/soln9_dcopf.mat
 include pypower/t/soln9_dcpf.mat
 include pypower/t/soln9_opf_ang.mat
