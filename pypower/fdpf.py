@@ -108,8 +108,8 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
         normP = linalg.norm(P, Inf)
         normQ = linalg.norm(Q, Inf)
         if verbose > 1:
-            sys.stdout.write("\n  %s  %3d   %10.3e   %10.3e" %
-                             (type,i, normP, normQ))
+            sys.stdout.write("\n  P  %3d   %10.3e   %10.3e" %
+                             (i, normP, normQ))
         if normP < tol and normQ < tol:
             converged = 1
             if verbose:

@@ -18,14 +18,16 @@
 import sys
 from sys import stderr
 
+from os.path import dirname, join
+
 from optparse import OptionParser, OptionGroup, OptionValueError
 
 from pypower.api import \
-    ppver, ppoption, runpf, runopf, runuopf, runopf_w_res
+    ppver, ppoption, runpf, runopf, runuopf
 
-from pypower.api import \
-    case4gs, case6ww, case9, case9Q, case14, case30, \
-    case30Q, case30pwl, case39, case57, case118, case300
+#from pypower.api import \
+#    case4gs, case6ww, case9, case9Q, case14, case30, \
+#    case30Q, case30pwl, case39, case57, case118, case300
 
 from pypower.ppoption import \
     PF_OPTIONS, OPF_OPTIONS, OUTPUT_OPTIONS, PDIPM_OPTIONS
@@ -38,10 +40,13 @@ TYPE_MAP = {bool: 'choice', float: 'float', int: 'int'}
 AFFIRMATIVE = ('True', 'Yes', 'true', 'yes', '1', 'Y', 'y')
 NEGATIVE = ('False', 'No', 'false', 'no', '0', 'N', 'n')
 
-CASES = {'case4gs': case4gs, 'case6ww': case6ww, 'case9': case9,
-    'case9Q': case9Q, 'case14': case14,
-    'case30': case30, 'case30Q': case30Q, 'case30pwl': case30pwl,
-    'case39': case39, 'case57': case57, 'case118': case118, 'case300': case300}
+#CASES = {'case4gs': case4gs, 'case6ww': case6ww, 'case9': case9,
+#    'case9Q': case9Q, 'case14': case14,
+#    'case30': case30, 'case30Q': case30Q, 'case30pwl': case30pwl,
+#    'case39': case39, 'case57': case57, 'case118': case118, 'case300': case300}
+
+CASES = ['case4gs', 'case6ww', 'case9', 'case9Q', 'case14', 'case30',
+         'case30Q', 'case30pwl', 'case39', 'case57', 'case118', 'case300']
 
 
 def option_callback(option, opt, value, parser, *args, **kw_args):
@@ -99,10 +104,10 @@ containing the case data.""" % usage,
     )
 
     parser.add_option("-t", "--test", action="store_true", dest="test",
-        default=False, help="run tests")
+        default=False, help="run tests and exit")
 
-    parser.add_option("-c", "--testcase", default='case9', choices=CASES.keys(),
-        help="built-in test case (choose from: %s)" % str(CASES.keys())[1:-1])
+    parser.add_option("-c", "--testcase", default='case9', choices=CASES,
+        help="built-in test case, choose from: %s" % str(CASES[1:-1]))
 
     parser.add_option("-o", "--outfile", dest='fname', default='',
         type='string', help="""pretty printed output will be
@@ -123,9 +128,6 @@ file.""")
         opf_options.add_option("-u", "--uopf", action="store_true",
             help="""runs an optimal power flow with the unit-decommitment
 heuristic""")
-
-        opf_options.add_option("-r", "--w_res", action="store_true",
-            help="""runs an optimal power flow with fixed zonal reserves""")
 
         add_options(opf_options, OPF_OPTIONS, ppopt)
         add_options(pdipm_options, PDIPM_OPTIONS, ppopt)
@@ -158,12 +160,7 @@ heuristic""")
     elif nargs == 1:
         casedata = args[0]
     else:
-        try:
-            casedata = CASES[options.testcase]()
-        except KeyError:
-            stderr.write("Invalid case choice: %r (choose from %s)\n" % \
-                (options.testcase, CASES.keys()))
-            sys.exit(2)
+        casedata = join(dirname(__file__), options.testcase)
 
     return options, casedata, ppopt, options.fname, options.solvedcase
 
@@ -178,7 +175,7 @@ def pf(args=sys.argv[1:]):
             parse_options(args, usage)
     if options.test:
         sys.exit(test_pf())
-    _, success = runpf(casedata, ppopt, fname, solvedcase)
+    _, _, _, _, success, _ = runpf(casedata, ppopt, fname, solvedcase)
     exit(success)
 
 
@@ -191,11 +188,7 @@ def opf(args=sys.argv[1:]):
         sys.exit(test_opf())
 
     if options.uopf:
-        if options.w_res:
-            stderr.write('uopf and opf_w_res are mutex\n')
         r = runuopf(casedata, ppopt, fname, solvedcase)
-    elif options.w_res:
-        r = runopf_w_res(casedata, ppopt, fname, solvedcase)
     else:
         r = runopf(casedata, ppopt, fname, solvedcase)
     exit(r['success'])

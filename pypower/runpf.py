@@ -259,7 +259,7 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase='',
                 printpf(baseMVA, bus, gen, branch, None, success, et, 1, ppopt)
                 fd.close()
 
-    printpf(baseMVA, bus, gen, branch, None, success, et, 1, ppopt)
+    printpf(baseMVA, bus, gen, branch, None, success, et, None, ppopt)
 
     ## save solved case
     if solvedcase:
