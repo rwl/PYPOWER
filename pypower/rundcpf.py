@@ -23,6 +23,9 @@ from runpf import runpf
 def rundcpf(casedata='case9', ppopt=None, fname='', solvedcase='',
             expect_opf_data=True):
     """Runs a DC power flow.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     ppopt = ppoption(ppopt, PF_DC=True)

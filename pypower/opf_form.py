@@ -27,5 +27,8 @@ def opf_form(alg):
         1 - standard, polynomial costs handled in the objective function
         2 - CCV, piece-wise linear costs handled via constrainted cost vars
         5 - generalized, includes both of above and more
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     return fix(alg / 100)

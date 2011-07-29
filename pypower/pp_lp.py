@@ -29,6 +29,11 @@ from pypower.pp_qp import pp_qp
 def pp_lp(f, A, b, VLB, VUB, x0, N=0, skip_lpsolve=False,
           **kw_args):
     """Linear program solver.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     success = 0
 

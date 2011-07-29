@@ -31,6 +31,9 @@ def t_run_tests(test_names, verbose=False):
     Runs a set of tests whose names
     are given in the list C{test_names}. If the optional parameter
     C{verbose} is true, it prints the details of the individual tests.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## figure out padding for printing
     if not verbose:

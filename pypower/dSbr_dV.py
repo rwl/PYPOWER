@@ -62,6 +62,9 @@ def dSbr_dV(branch, Yf, Yt, V):
                         + conj(diag(If)) * sparse(range(nl), f, V(f)/abs(V(f)))
 
     Derivations for "to" bus are similar.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## define
     f = branch[:, F_BUS].astype(int)       ## list of "from" buses

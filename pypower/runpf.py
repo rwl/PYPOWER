@@ -75,6 +75,12 @@ def runpf(casedata='case9', ppopt=None, fname='', solvedcase='',
     remaining PV bus will be used as the slack bus for the next iteration.
     This may result in the real power output at this generator being
     slightly off from the specified values.
+
+    Enforcing of generator Q limits inspired by contributions from Mu Lin,
+    Lincoln University, New Zealand (1/14/05).
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     ppopt = ppoption(ppopt)

@@ -30,6 +30,11 @@ def dcpf(B, Pbus, Va0, ref, pv, pq):
     respectively. Returns a vector of bus voltage angles in radians.
 
     @see: L{rundcpf}, L{runpf}
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     pvpq = matrix(r_[pv, pq])
 

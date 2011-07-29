@@ -14,7 +14,7 @@
 # limitations under the License.
 
 """Help file describing the generalized OPF formulation used by
-the fmincopf and MINOPF solvers.
+the IPOPT solver.
 
 ==========
  CONTENTS
@@ -414,6 +414,8 @@ mA  |                                A                             |
     +--------------------------------------------------------------+
                          N = 2*nb + 2*ng + ny + nz
 
-@author: Carlos E. Murillo-Sanchez
-@author: Ray Zimmerman
+
+@author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+de Manizales)
+@author: Ray Zimmerman (PSERC Cornell)
 """

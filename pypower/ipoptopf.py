@@ -71,6 +71,10 @@ def ipoptopf(*args):
     bus, gen, branch, f, success = ipoptopf(baseMVA, bus, gen, branch,
                                    areas, gencost, A, l, u, ppopt,
                                    N, fparm, H, Cw, z0, zl, zu)
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Richard Lincoln
     """
     import pyipopt
 

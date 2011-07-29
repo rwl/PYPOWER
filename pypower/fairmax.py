@@ -28,6 +28,9 @@ def fairmax(x):
     where the maximum value occurs at more than one position in the
     vector, the index is chosen randomly from these positions as opposed
     to just choosing the first occurrence.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     val = max(x)                      ## find max value
     i   = find(x == val)              ## find all positions where this occurs

@@ -53,6 +53,10 @@ def LPconstr(FUN, x, idx_xi, ppopt, step0, VLB, VUB, GRADFUN, LPEQUSVR, *args):
     LAMBDA contains the Lagrange multipliers.
 
     to be worked out: write a generalizer equation solver
+
+    @author: Deqiang (David) Gan (PSERC Cornell & Zhejiang University)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
 
     # ------------------------------ setting up -------------------------------

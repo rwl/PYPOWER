@@ -29,6 +29,9 @@ from pypower.int2ext import int2ext
 
 def runuopf(casename='case9', ppopt=None, fname='', solvedcase=''):
     """Runs an optimal power flow with unit-decommitment heuristic.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     ppopt = ppoption(ppopt)

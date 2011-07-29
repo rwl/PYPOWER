@@ -59,7 +59,6 @@ from .newtonpf import newtonpf
 from .opf import opf
 from .pfsoln import pfsoln
 from .poly2pwl import poly2pwl
-from .polycost import polycost
 from .ppoption import ppoption
 from .ppver import ppver
 from .pqcost import pqcost

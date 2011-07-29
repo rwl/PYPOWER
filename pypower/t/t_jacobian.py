@@ -40,6 +40,9 @@ import pypower.api
 
 def t_jacobian(quiet=False):
     """Numerical tests of partial derivative code.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     t_begin(12, quiet)
 

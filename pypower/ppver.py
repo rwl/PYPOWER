@@ -18,6 +18,9 @@
 
 def ppver(*args):
     """ Returns PYPOWER version info for current installation.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
 
     ver = {'Name': 'PYTPOWER',

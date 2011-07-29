@@ -31,6 +31,9 @@ from pypower.t.t_end import t_end
 
 def t_opf_dc(quiet=False):
     """Tests for DC optimal power flow.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     num_tests = 5
 

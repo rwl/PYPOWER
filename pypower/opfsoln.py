@@ -30,6 +30,9 @@ from idx_brch import F_BUS, T_BUS, BR_STATUS, PF, PT, QF, QT, MU_SF, MU_ST
 def opfsoln(baseMVA, bus0, gen0, branch0,
             Ybus, Yf, Yt, V, Sg, lmbda, ref, pv, pq, mpopt):
     """Updates bus, gen, branch data structures to match opf soln.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## initialize return values
     bus     = bus0.copy()

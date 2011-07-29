@@ -30,6 +30,9 @@ from pypower.t.t_end import t_end
 
 def t_off2case(quiet=False):
     """Tests for code in C{off2case}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     n_tests = 35
 

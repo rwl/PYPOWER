@@ -30,6 +30,9 @@ def opf_slvr(alg):
         3 - 'LPconstr', sparse LP-based solver with full set of constraints
         4 - 'fmincon', from Optimization Toolbox 2.x and later
         5 - 'minopf', MINOS-based solver
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if alg < 500:
         code = remainder(alg, 100) / 20

@@ -30,7 +30,10 @@ from pypower.idx_gen import GEN_STATUS, PG, QG
 
 def LPeqslvr(x, baseMVA, bus, gen, gencost, branch, Ybus, Yf, Yt, V,
              ref, pv, pq, ppopt):
-
+    """
+    @author: Deqiang (David) Gan (PSERC Cornell & Zhejiang University)
+    @author: Richard Lincoln
+    """
     ## options
     alg     = ppopt['OPF_ALG_POLY']
     verbose = ppopt['VERBOSE']

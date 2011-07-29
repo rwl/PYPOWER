@@ -37,6 +37,9 @@ from pypower.t.t_end import t_end
 
 def t_makePTDF(quiet=False):
     """Tests for C{makePTDF}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ntests = 24
     t_begin(ntests, quiet)
@@ -47,7 +50,8 @@ def t_makePTDF(quiet=False):
 
     ## load case
     ppopt = ppoption(VERBOSE=verbose, OUT_ALL=0)
-    baseMVA, bus, gen, branch = rundcopf(casefile, ppopt)
+    r = rundcopf(casefile, ppopt)
+    baseMVA, bus, gen, _, branch, _, _, _ = r
     _, bus, gen, branch = ext2int(bus, gen, branch)
     nb  = bus.shape[0]
     nbr = branch.shape[0]
@@ -58,7 +62,7 @@ def t_makePTDF(quiet=False):
     Pg = Cg * gen[:, PG]
     Pd = bus[:, PD]
     P  = Pg - Pd
-    ig = find(P > 0)
+    ig = find(P >  0)
     il = find(P <= 0)
     F  = branch[:, PF]
 

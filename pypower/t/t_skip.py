@@ -26,6 +26,9 @@ def t_skip(cnt, msg=''):
     'skipped tests x..y : ' followed by the C{msg}, unless the
     global variable t_quiet is true. Intended to be called between calls to
     C{t_begin} and C{t_end}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     msg = ' : ' + msg
 

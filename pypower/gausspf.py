@@ -39,6 +39,10 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     if this parameter is not given. Returns the final complex voltages,
     a flag which indicates whether it converged or not, and the number
     of iterations performed.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Alberto Borghetti (University of Bologna, Italy)
+    @author: Richard Lincoln
     """
     ## default arguments
     if ppopt is None:

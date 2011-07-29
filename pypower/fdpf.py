@@ -40,6 +40,9 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     Uses default options if this parameter is not given. Returns the
     final complex voltages, a flag which indicates whether it converged
     or not, and the number of iterations performed.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if ppopt is None:
         ppopt = ppoption()

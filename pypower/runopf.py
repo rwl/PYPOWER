@@ -29,6 +29,9 @@ from pypower.savecase import savecase
 
 def runopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs an optimal power flow.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     if casedata is None:

@@ -52,6 +52,11 @@ def loadcase(casefile,
     If the input data is not a dict containing a 'version' key, it is
     assumed to be a PYPOWER case file in version 1 format, and will be
     converted to version 2 format.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if return_as_dict == True:
         expect_opf_data = False

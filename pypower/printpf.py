@@ -45,6 +45,9 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     PYPOWER options vector (see L{ppoption} for details). Uses default
     options if this parameter is not given. The objective function value
     is given in f and the elapsed time (seconds to compute opf) in et.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##----- initialization -----
     ## default arguments

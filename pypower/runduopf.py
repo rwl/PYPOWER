@@ -22,6 +22,9 @@ from runuopf import runuopf
 
 def runduopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     """Runs a DC optimal power flow with unit-decommitment heuristic.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     ppopt = ppoption(ppopt, PF_DC=True)

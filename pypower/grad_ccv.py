@@ -36,6 +36,9 @@ from idx_cost import NCOST, COST
 def grad_ccv(x, baseMVA, bus, gen, gencost, branch, Ybus, Yf, Yt, V,
              ref, pv, pq, ppopt):
     """Evaluates gradients of objective function & constraints for OPF.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## generator info
     on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?

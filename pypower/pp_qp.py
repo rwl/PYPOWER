@@ -89,6 +89,11 @@ def pp_qp(H, f, A, b, VLB, VUB, x0, N,
 
     @param x0: initial starting point
     @param N: the first N constraints defined by A and b are equality constr.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     success = 0
 

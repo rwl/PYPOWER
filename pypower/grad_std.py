@@ -39,6 +39,9 @@ def grad_std(x, baseMVA, bus, gen, gencost, branch, Ybus, Yf, Yt, V,
 
     Also, if a third output argument is specified, it will compute the 2nd
     derivative matrix for the objective function.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## generator info
     on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?

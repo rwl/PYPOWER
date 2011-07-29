@@ -31,6 +31,11 @@ from pypower.idx_cost import MODEL, POLYNOMIAL, PW_LINEAR, COST, NCOST
 
 def eval_f(x, user_data=None):
     """Calculates the objective value.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     parms = user_data['parms']
     baseMVA = user_data['baseMVA']
@@ -83,6 +88,11 @@ def eval_f(x, user_data=None):
 
 def eval_grad_f(x, user_data=None):
     """Calculates gradient for objective function.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     parms = user_data['parms']
     baseMVA = user_data['baseMVA']

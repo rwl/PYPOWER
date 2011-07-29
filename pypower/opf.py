@@ -104,6 +104,9 @@ def opf(*args):
     Rules for A matrix: If the user specifies an A matrix that has more columns
     than the number of "x" (OPF) variables, then there are extra linearly
     constrained "z" variables.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     nargin = len(args)
 

@@ -35,6 +35,9 @@ from pypower.t.t_end import t_end
 
 def t_runmarket(quiet=False):
     """Tests for code in C{runmkt}, C{smartmkt} and C{auction}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     n_tests = 20
 

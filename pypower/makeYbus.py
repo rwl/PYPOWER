@@ -33,6 +33,9 @@ def makeYbus(baseMVA, bus, branch):
     vector, yield the vector currents injected into each line from the
     "from" and "to" buses respectively of each line. Does appropriate
     conversions to p.u.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## constants
     nb = bus.shape[0]          ## number of buses

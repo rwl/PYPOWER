@@ -32,6 +32,9 @@ from pypower.t.t_end import t_end
 
 def t_auction_pips(quiet=False):
     """Tests for code in auction.py, using IPOPT solver.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     n_tests = 183
 

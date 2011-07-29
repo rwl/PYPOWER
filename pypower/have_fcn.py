@@ -20,6 +20,9 @@ def have_fcn(tag):
     """Test for optional functionality.
 
     Returns 1 if the optional functionality is available, 0 otherwise.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if tag.lower() in ['pyipopt', 'ipopt']:
         try:

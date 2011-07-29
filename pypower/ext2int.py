@@ -32,6 +32,9 @@ def ext2int(bus, gen, branch, areas=None):
     to BUS, GEN, BRANCH and optionally AREAS matrices, which are returned
     along with a vector of indices I2E that can be passed to INT2EXT to
     perform the reverse conversion.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     i2e = bus[:, BUS_I].astype(int)
     e2i = zeros(max(i2e) + 1)

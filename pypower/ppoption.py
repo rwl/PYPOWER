@@ -169,6 +169,9 @@ def ppoption(ppopt=None, **kw_args):
     Examples::
         opt = ppoption(PF_ALG=2, PF_TOL=1e-4);
         opt = ppoption(opt, OPF_ALG=565, VERBOSE=2)
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
 
     default_ppopt = {}

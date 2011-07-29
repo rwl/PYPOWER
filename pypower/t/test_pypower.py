@@ -23,6 +23,9 @@ def test_pypower(verbose=False):
     """Run all PYPOWER tests.
 
     Prints the details of the individual tests if verbose is true.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     tests = []
 
@@ -31,9 +34,9 @@ def test_pypower(verbose=False):
     tests.append('t_jacobian')
     tests.append('t_hasPQcap')
     tests.append('t_pf')
-#    tests.append('t_opf_pdipm')
     tests.append('t_opf_dc')
-#    tests.append('t_makePTDF')
+    tests.append('t_opf_ipopt')
+    tests.append('t_makePTDF')
 
 #    ## smartmarket tests
 #    tests.append('t_off2case')

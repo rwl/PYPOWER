@@ -26,6 +26,9 @@ def fg_names(alg):
     function and constraints for the opf algorithm specified by alg, the
     numerical ID of the opf algorithm. The second evaluates the gradient of the
     first.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if opf_form(alg) == 1:       ## standard
         fun     = 'fun_std'

@@ -45,6 +45,9 @@ def dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St):
         dAf/dVa = dAf/dPf * dPf/dVa + dAf/dQf * dQf/dVa
 
     Derivations for "to" bus are similar.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## dimensions
     nl = len(Sf)

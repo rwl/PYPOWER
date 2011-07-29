@@ -53,6 +53,9 @@ additional constants, used to assign/compare values in the C{BUS_TYPE} column
     2.  C{PV}    PV bus
     3.  C{REF}   reference bus
     4.  C{NONE}  isolated bus
+
+@author: Ray Zimmerman (PSERC Cornell)
+@author: Richard Lincoln
 """
 
 # define bus types

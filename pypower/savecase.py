@@ -40,6 +40,11 @@ def savecase(fname, *args):
     are inserted as comments. When using a PYPOWER case dict, if the
     optional C{version} argument is '1' it will modify the data matrices to
     version 1 format before saving.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     if isinstance(args[0], basestring):

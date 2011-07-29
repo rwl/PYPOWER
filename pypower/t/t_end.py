@@ -28,6 +28,9 @@ def t_end():
 
     Checks the global counters that were updated by calls to C{t_ok}
     and C{t_is} and prints out a summary of the test results.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     TestGlobals.t_counter -= 1
 

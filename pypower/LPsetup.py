@@ -40,6 +40,9 @@ def LPsetup(a, f, b, nequs, vlb, vub, idx_workc, ppopt):
     240  - solve LP using Iterative Constraint Search (ICS)
            (equality constraints are preserved, typically superior to 220 and 250)
     250  - solve LP with full set of constraints
+
+    @author: Deqiang (David) Gan, PSERC Cornell & Zhejiang University
+    @author: Richard Lincoln
     """
     ## options
     alg = ppopt['OPF_ALG_POLY']

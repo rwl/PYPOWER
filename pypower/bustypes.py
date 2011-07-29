@@ -19,8 +19,8 @@
 from numpy import ones, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
-from idx_bus import BUS_TYPE, REF, PV, PQ
-from idx_gen import GEN_BUS, GEN_STATUS
+from pypower.idx_bus import BUS_TYPE, REF, PV, PQ
+from pypower.idx_gen import GEN_BUS, GEN_STATUS
 
 
 def bustypes(bus, gen):
@@ -33,6 +33,9 @@ def bustypes(bus, gen):
     @param gen: generator data converted to use internal consecutive bus
     numbering
     @return: index lists of each bus type
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     # get generator status
     nb = bus.shape[0]

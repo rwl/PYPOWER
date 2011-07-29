@@ -28,6 +28,9 @@ def pqcost(gencost, ng, on=None):
     C{qcost} empty. Also does some error checking.
     If C{on} is specified (list of indices of generators which are on line)
     it only returns the rows corresponding to these generators.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if on is None:
         on = arange(ng)

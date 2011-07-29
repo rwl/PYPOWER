@@ -32,6 +32,11 @@ from dAbr_dV import dAbr_dV
 
 def eval_g(x, user_data=None):
     """Calculates the constraint values and returns an array.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     parms = user_data['parms']
     baseMVA = user_data['baseMVA']
@@ -109,6 +114,11 @@ def eval_jac_g(x, flag, user_data=None):
     sparse Jacobi matrix's structure.
     If the flag is false, returns the values of the Jacobi matrix
     with length nnzj.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     Js = user_data['Js']
     if flag:

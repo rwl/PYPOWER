@@ -31,6 +31,9 @@ def poly2pwl(polycost, Pmin, Pmax, npts):
     C{Pmin} and C{Pmax}. If C{Pmin <= 0} (such as for reactive power, where
     C{P} really means C{Q}) it just uses C{npts} evenly spaced points between
     C{Pmin} and C{Pmax}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     pwlcost = polycost
     ## size of piece being changed

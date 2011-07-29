@@ -26,5 +26,8 @@ def isload(gen):
     C{gen} matrix which represent dispatchable loads. The current test is
     C{Pmin < 0 and Pmax == 0}. This may need to be revised to allow sensible
     specification of both elastic demand and pumped storage units.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     return (gen[:, PMIN] < 0) & (gen[:, PMAX] == 0)

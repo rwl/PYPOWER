@@ -20,7 +20,9 @@ from pypower.pp_lp import pp_lp
 
 
 def LPrelax(a, f, b, nequs, vlb, vub, idx_workc, ppopt):
-    """@author: Deqiang (David) Gan, PSERC Cornell & Zhejiang University
+    """
+    @author: Deqiang (David) Gan, PSERC Cornell & Zhejiang University
+    @author: Richard Lincoln
     """
     ## options
     alg     = ppopt['OPF_ALG_POLY']

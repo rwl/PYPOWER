@@ -73,6 +73,11 @@ def lpopf(baseMVA, bus, gen, branch, areas, gencost, ppopt):
     true if the algorithm was successful in finding a solution (success).
     Additional optional return values are an algorithm specific return status
     (info), elapsed time in seconds (et).
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     # input arg sorting
     t1 = time()

@@ -22,6 +22,9 @@ from pypower.compare import compare
 
 def runcomp(casename, opt1, opt2):
     """Runs two OPFs and compares results.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     runopf(casename, opt1, solvedcase='soln1')
     runopf(casename, opt2, solvedcase='soln2')

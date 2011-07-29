@@ -26,6 +26,9 @@ from pypower.loadcase import loadcase
 def compare(case1, case2):
     """Compares two solved power flow (or optimal power flow) cases and prints
     a summary of the differences.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## set up index name matrices
     buscols = [ 'BUS_I',

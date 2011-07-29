@@ -138,4 +138,7 @@ power costs in the same format.
 
 @see: L{loadcase}, L{savecase}, L{idx_bus}, L{idx_brch}, L{idx_gen},
     L{idx_area} L{idx_cost}
+
+@author: Ray Zimmerman (PSERC Cornell)
+@author: Richard Lincoln
 """

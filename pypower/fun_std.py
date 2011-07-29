@@ -31,6 +31,9 @@ from pypower.idx_brch import BR_STATUS, RATE_A, F_BUS, T_BUS
 def fun_std(x, baseMVA, bus, gen, gencost, branch, Ybus, Yf, Yt, V,
             ref, pv, pq, ppopt):
     """Evaluates objective function & constraints for OPF.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## generator info
     on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?

@@ -30,6 +30,9 @@ def makeB(baseMVA, bus, branch, alg):
     Returns the two matrices B prime and B double prime used in the fast
     decoupled power flow. Does appropriate conversions to p.u. C{alg} is the
     value of the C{PF_ALG} option specifying the power flow algorithm.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## constants
     nb = bus.shape[0]          ## number of buses

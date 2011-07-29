@@ -71,6 +71,11 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     true if the algorithm was successful in finding a solution (success).
     Additional return values are an algorithm specific return status (info),
     elapsed time in seconds (et).
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##----- initialization -----
     ## Sort arguments

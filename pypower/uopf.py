@@ -45,6 +45,9 @@ def uopf(baseMVA, bus, gen, gencost, branch, areas, ppopt=None):
     info, if it is > 1 it prints the output of each individual opf.
 
     @see: L{opf}, L{runuopf}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     if ppopt is None:

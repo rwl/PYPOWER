@@ -39,6 +39,9 @@ def makePTDF(baseMVA, bus, branch, slack=None):
     For convenience, C{slack} can also be an C{nb x nb} matrix, where each
     column specifies how the slack should be handled for injections
     at that bus.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## use reference bus for slack by default
     if slack is None:

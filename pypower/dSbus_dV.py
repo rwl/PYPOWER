@@ -50,6 +50,9 @@ def dSbus_dV(Ybus, V):
                = -j * diag(V) * conj(Ybus * diag(V))
                                         + conj(diag(Ibus)) * j * diag(V)
                = j * diag(V) * conj(diag(Ibus) - Ybus * diag(V))
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if issparse(Ybus):
         ib = range(len(V))
