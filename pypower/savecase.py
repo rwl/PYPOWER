@@ -1,5 +1,5 @@
-# Copyright (C) 1996-2011 Power System Engineering Research Center
-# Copyright (C) 2010-2011 Richard Lincoln
+# Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -45,8 +45,8 @@ def savecase(fname, ppc, comment=None, version='2'):
     optional C{version} argument is '1' it will modify the data matrices to
     version 1 format before saving.
 
-    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
-    de Manizales)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Richard Lincoln
     """

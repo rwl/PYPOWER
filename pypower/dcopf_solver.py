@@ -1,5 +1,5 @@
-# Copyright (C) 2000-2011 Power System Engineering Research Center
-# Copyright (C) 2010-2011 Richard Lincoln
+# Copyright (C) 2000-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -78,8 +78,8 @@ def dcopf_solver(om, ppopt, out_opt=None):
     @see: L{opf}, L{qps_pypower}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
-    de Manizales)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
     @author: Richard Lincoln
     """
     if out_opt is None:

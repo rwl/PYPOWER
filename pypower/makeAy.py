@@ -1,5 +1,5 @@
-# Copyright (C) 1996-2011 Power System Engineering Research Center
-# Copyright (C) 2010-2011 Richard Lincoln
+# Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -43,8 +43,8 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     the C{y} variables must be the last variables within the vector C{x} for
     the dimensions of the resulting C{Ay} to be conformable with C{x}.
 
-    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
-    de Manizales)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
     @author: Richard Lincoln
     """
     ## find all pwl cost rows in gencost, either real or reactive

@@ -1,5 +1,5 @@
-# Copyright (C) 1996-2011 Power System Engineering Research Center
-# Copyright (C) 2010-2011 Richard Lincoln
+# Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -66,8 +66,8 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
     @see: L{opf_costfcn}, L{opf_consfcn}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
-    de Manizales)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
     @author: Richard Lincoln
     """
     ##----- initialize -----

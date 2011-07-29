@@ -1,5 +1,5 @@
-# Copyright (C) 1996-2011 Power System Engineering Research Center
-# Copyright (C) 2010-2011 Richard Lincoln
+# Copyright (C) 1996-2011 Power System Engineering Research Center (PSERC)
+# Copyright (C) 2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -47,8 +47,8 @@ def makeApq(baseMVA, gen):
         data['ipql']   indices of gens with general PQ cap curves (lower)
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
-    de Manizales)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
+    Autonoma de Manizales)
     @author: Richard Lincoln
     """
     data = {}
