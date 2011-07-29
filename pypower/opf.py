@@ -352,7 +352,7 @@ def opf(*args):
         ##-----  run opf  -----
         if formulation == 5:  # Generalized
             if alg == 500:       # MINOS
-                raise NotImplementedError
+                raise NotImplementedError, 'MINOS solver not available'
 #                if not have_fcn('minopf'):
 #                    raise ValueError, 'opf: OPF_ALG ' + str(alg) + ' requires MINOPF'
 #
@@ -409,9 +409,5 @@ def opf(*args):
 
     ## compute elapsed time
     et = time() - t1
-    if success:
-        printpf(baseMVA, bus, gen, branch, f, success, et, None, ppopt)
 
-    buso = bus.copy()
-
-    return buso, gen, branch, f, success, info, et, g, jac, xr, pimul
+    return bus.copy(), gen, branch, f, success, info, et, g, jac, xr, pimul

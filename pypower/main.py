@@ -25,12 +25,8 @@ from optparse import OptionParser, OptionGroup, OptionValueError
 from pypower.api import \
     ppver, ppoption, runpf, runopf, runuopf
 
-#from pypower.api import \
-#    case4gs, case6ww, case9, case9Q, case14, case30, \
-#    case30Q, case30pwl, case39, case57, case118, case300
-
 from pypower.ppoption import \
-    PF_OPTIONS, OPF_OPTIONS, OUTPUT_OPTIONS, PDIPM_OPTIONS
+    PF_OPTIONS, OPF_OPTIONS, OUTPUT_OPTIONS
 
 from pypower.t.test_pypower import test_pf, test_opf
 
@@ -39,11 +35,6 @@ TYPE_MAP = {bool: 'choice', float: 'float', int: 'int'}
 
 AFFIRMATIVE = ('True', 'Yes', 'true', 'yes', '1', 'Y', 'y')
 NEGATIVE = ('False', 'No', 'false', 'no', '0', 'N', 'n')
-
-#CASES = {'case4gs': case4gs, 'case6ww': case6ww, 'case9': case9,
-#    'case9Q': case9Q, 'case14': case14,
-#    'case30': case30, 'case30Q': case30Q, 'case30pwl': case30pwl,
-#    'case39': case39, 'case57': case57, 'case118': case118, 'case300': case300}
 
 CASES = ['case4gs', 'case6ww', 'case9', 'case9Q', 'case14', 'case30',
          'case30Q', 'case30pwl', 'case39', 'case57', 'case118', 'case300']
@@ -123,17 +114,14 @@ file.""")
 
     if opf:
         opf_options = OptionGroup(parser, 'OPF Options')
-        pdipm_options = OptionGroup(parser, 'PDIPM Options')
 
         opf_options.add_option("-u", "--uopf", action="store_true",
             help="""runs an optimal power flow with the unit-decommitment
 heuristic""")
 
         add_options(opf_options, OPF_OPTIONS, ppopt)
-        add_options(pdipm_options, PDIPM_OPTIONS, ppopt)
 
         parser.add_option_group(opf_options)
-        parser.add_option_group(pdipm_options)
     else:
         pf_options = OptionGroup(parser, 'Power Flow Options')
 
@@ -191,7 +179,7 @@ def opf(args=sys.argv[1:]):
         r = runuopf(casedata, ppopt, fname, solvedcase)
     else:
         r = runopf(casedata, ppopt, fname, solvedcase)
-    exit(r['success'])
+    exit(r[6])  ## success
 
 
 if __name__ == '__main__':

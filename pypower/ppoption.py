@@ -36,7 +36,7 @@ PF_OPTIONS = [
     ('enforce_q_lims', False, 'enforce gen reactive power limits, at '
      'expense of |V|'),
 
-    ('pf_dc', False, '''use DC power flow formulation, for power flow and OPF:
+    ('pf_dc', False, '''use DC power flow formulation, for power flow:
 False - use AC formulation & corresponding algorithm opts,
 True  - use DC formulation, ignore AC algorithm options''')
 ]
@@ -44,21 +44,23 @@ True  - use DC formulation, ignore AC algorithm options''')
 OPF_OPTIONS = [
     ('opf_alg', 0, '''algorithm to use for OPF:
 0 - choose best default solver available in the
-following order, 500, 540, 520 then 100/200
+following order: 520, 240, 140.
 Otherwise the first digit specifies the problem
 formulation and the second specifies the solver,
 as follows, (see the User's Manual for more details)
-500 - generalized formulation, MINOS,
-540 - generalized formulation, MIPS
-primal/dual interior point method,
-545 - generalized formulation (except CCV), SC-MIPS
-step-controlled primal/dual interior point method'''),
+120 - standard formulation (old), dense LP,
+140 - standard formulation (old), sparse LP (relaxed),
+160 - standard formulation (old), sparse LP (full),
+220 - CCV formulation (old), dense LP,
+240 - CCV formulation (old), sparse LP (relaxed),
+260 - CCV formulation (old), sparse LP (full),
+520 - generalized formulation, IPOPT'''),
 
     ('opf_alg_poly', 0, '''default OPF algorithm for use with
 polynomial cost functions (used only if no solver available
 for generalized formulation)'''),
 
-    ('opf_alg_pwl', 200, '''default OPF algorithm for use with
+    ('opf_alg_pwl', 0, '''default OPF algorithm for use with
 piece-wise linear cost functions (used only if no solver available
 for generalized formulation')'''),
 
@@ -67,9 +69,9 @@ for generalized formulation')'''),
 
     ('opf_violation', 5e-6, 'constraint violation tolerance'),
 
-    ('constr_tol_x', 1e-4, 'termination tol on x for copf & fmincopf'),
+    ('constr_tol_x', 1e-4, 'termination tol on x for ipoptopf'),
 
-    ('constr_max_it', 0, '''max number of iterations for copf & fmincopf
+    ('constr_max_it', 0, '''max number of iterations for ipoptopf
 [0 => 2*nb + 150]'''),
 
     ('opf_flow_lim', 0, '''qty to limit for branch flow constraints:
@@ -80,17 +82,9 @@ for generalized formulation')'''),
     ('opf_ignore_ang_lim', False, 'ignore angle difference limits for '
      'branches even if specified'),
 
-    ('opf_alg_dc', 0, '''solver to use for DC OPF:
-0 - choose default solver based on availability in the
-following order, 600, 500, 200.
-200 - PIPS, Python Interior Point Solver
-primal/dual interior point method,
-250 - PIPS-sc, step-controlled variant of PIPS
-400 - IPOPT, requires pyipopt interface to IPOPT solver
-available from: https://projects.coin-or.org/Ipopt/
-500 - CPLEX, requires Python interface to CPLEX solver
-600 - MOSEK, requires Python interface to MOSEK solver
-available from: http://www.mosek.com/''')
+    ('pf_dc', False, '''use DC power flow formulation, for OPF:
+False - use AC formulation & corresponding algorithm opts,
+True  - use DC formulation, ignore AC algorithm options''')
 ]
 
 OUTPUT_OPTIONS = [

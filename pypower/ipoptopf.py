@@ -707,6 +707,15 @@ def ipoptopf(*args):
     nlp.num_option('constr_viol_tol', ppopt['CONSTR_TOL_X'])
     nlp.int_option('max_iter', ppopt['CONSTR_MAX_IT'])
 
+    # Possible values:
+    #  - ma27                    [use the Harwell routine MA27]
+    #  - ma57                    [use the Harwell routine MA57]
+    #  - pardiso                 [use the Pardiso package]
+    #  - wsmp                    [use WSMP package]
+    #  - mumps                   [use MUMPS package]
+    #  - custom                  [use custom linear solver]
+    nlp.str_option('linear_solver', 'mumps')
+
 #    for k, v in kw_args.iteritems():
 #        if isinstance(v, int):
 #            nlp.int_option(k, v)
@@ -887,7 +896,5 @@ def ipoptopf(*args):
         branchout[offbranch, MU_ST] = tmp
 
     et = time() - t1
-    if success:
-        printpf(baseMVA, bus, genout, branchout, f, info, et, 1, ppopt)
 
     return busout, genout, branchout, f, success, info, et, g, jac, x, pimul

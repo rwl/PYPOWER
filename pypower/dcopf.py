@@ -364,7 +364,4 @@ def dcopf(baseMVA_or_casedata, bus_or_ppopt=None, gen=None, branch=None,
     ## compute elapsed time
     et = time() - t0
 
-    if info > 0:
-        printpf(baseMVA, bus, geno, brancho, f, success, et, None, ppopt)
-
     return buso, geno, brancho, f, success, info, et
