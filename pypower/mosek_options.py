@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
+"""Sets options for MOSEK.
+"""
+
 try:
     from pymosek import mosekopt
 except ImportError:
@@ -72,6 +75,9 @@ def mosek_options(overrides=None, ppopt=None):
     U{http://www.mosek.com/documentation/}
 
     @see: C{mosekopt}, L{ppoption}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##-----  initialization and arg handling  -----
     ## defaults

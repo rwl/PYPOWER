@@ -37,6 +37,9 @@ def polycost(gencost, Pg, der=0):
 
     C{gencost} must contain only polynomial costs
     C{Pg} is in MW, not p.u. (works for C{Qg} too)
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if any(gencost[:, MODEL] == PW_LINEAR):
         sys.stderr.write('polycost: all costs must be polynomial\n')

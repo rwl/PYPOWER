@@ -118,6 +118,9 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         True
         >>> solution["output"]["iterations"]
         10
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##----- input argument handling  -----
     ## gather inputs

@@ -32,6 +32,11 @@ def update_mupq(baseMVA, gen, mu_PQh, mu_PQl, data):
     @param data: "data" dict returned by L{makeApq}
 
     @see: C{makeApq}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     ipqh, ipql, Apqhdata, Apqldata = \
         data['ipqh'], data['ipql'], data['h'], data['l']

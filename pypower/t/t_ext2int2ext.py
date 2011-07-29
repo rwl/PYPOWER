@@ -33,6 +33,9 @@ from pypower.t.t_case_int import t_case_int
 
 def t_ext2int2ext(quiet=False):
     """Tests C{ext2int} and C{int2ext}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     t_begin(85, quiet)
 

@@ -27,6 +27,9 @@ def runduopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs a DC optimal power flow with unit-decommitment heuristic.
 
     @see: L{rundcopf}, L{runuopf}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     if casedata is None:

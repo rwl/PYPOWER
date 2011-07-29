@@ -43,6 +43,9 @@ def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):
     or not, and the number of iterations performed.
 
     @see: L{runpf}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if ppopt is None:
         ppopt = ppoption()

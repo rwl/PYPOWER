@@ -42,6 +42,9 @@ def makePTDF(baseMVA, bus, branch, slack=None):
     at that bus.
 
     @see: L{makeLODF}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## use reference bus for slack by default
     if slack is None:

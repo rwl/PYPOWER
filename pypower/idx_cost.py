@@ -45,6 +45,9 @@ columns 1-5
 additional constants, used to assign/compare values in the C{MODEL} column
     1.  C{PW_LINEAR}   piecewise linear generator cost model
     2.  C{POLYNOMIAL}  polynomial generator cost model
+
+@author: Ray Zimmerman (PSERC Cornell)
+@author: Richard Lincoln
 """
 # define cost models
 PW_LINEAR   = 1

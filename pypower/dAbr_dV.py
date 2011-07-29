@@ -64,6 +64,9 @@ def dAbr_dV(dSf_dVa, dSf_dVm, dSt_dVa, dSt_dVm, Sf, St):
              sensitivities. Flows could be complex current or complex or
              real power.
     @see: L{dIbr_dV}, L{dSbr_dV}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     il = range(len(Sf))
 

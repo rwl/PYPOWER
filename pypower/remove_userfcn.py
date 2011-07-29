@@ -27,6 +27,9 @@ def remove_userfcn(ppc, stage, fcn):
 
     @see: L{add_userfcn}, L{run_userfcn}, L{toggle_reserves},
           L{toggle_iflims}, L{runopf_w_res}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     n = len(ppc['userfcn'][stage])
 

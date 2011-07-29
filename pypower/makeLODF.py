@@ -34,6 +34,9 @@ def makeLODF(branch, PTDF):
         LODF = makeLODF(branch, H)
 
     @see: L{makePTDF}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     nl, nb = PTDF.shape
     f = branch[:, F_BUS]

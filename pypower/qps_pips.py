@@ -132,8 +132,10 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
                    - C{lower} - lower bound on optimization variables
                    - C{upper} - upper bound on optimization variables
 
-
     @see: L{pips}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if isinstance(H, dict):
         p = H

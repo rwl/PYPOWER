@@ -69,6 +69,11 @@ def ipoptopf_solver(om, ppopt):
         - C{output} solver specific output information
 
     @see: L{opf}, L{pips}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     import pyipopt
 

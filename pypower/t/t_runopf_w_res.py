@@ -34,6 +34,9 @@ from pypower.t.t_end import t_end
 
 def t_runopf_w_res(quiet=False):
     """Tests C{runopf_w_res} and the associated callbacks.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     t_begin(46, quiet)
 

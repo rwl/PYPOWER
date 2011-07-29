@@ -101,10 +101,10 @@ containing the case data.""" % usage,
     )
 
     parser.add_option("-t", "--test", action="store_true", dest="test",
-        default=False, help="run tests")
+        default=False, help="run tests and exit")
 
     parser.add_option("-c", "--testcase", default='case9', choices=CASES.keys(),
-        help="built-in test case (choose from: %s)" % str(CASES.keys())[1:-1])
+        help="built-in test case, choose from: %s" % str(CASES.keys())[1:-1])
 
     parser.add_option("-o", "--outfile", dest='fname', default='',
         type='string', help="""pretty printed output will be

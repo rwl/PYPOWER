@@ -1,5 +1,5 @@
 # Copyright (C) 2009-2011 Power System Engineering Research Center
-# Copyright (C) 2010-2011 Richard Lincoln
+# Copyright (C) 2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
@@ -96,6 +96,9 @@ def add_userfcn(ppc, stage, fcn, args=None, allow_multiple=False):
 
     @see: L{run_userfcn}, L{remove_userfcn}, L{toggle_reserves},
           L{toggle_iflims}, L{runopf_w_res}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if args is None:
         args = []

@@ -39,6 +39,11 @@ def makeBdc(baseMVA, bus, branch):
     Does appropriate conversions to p.u.
 
     @see: L{dcpf}
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## constants
     nb = bus.shape[0]          ## number of buses

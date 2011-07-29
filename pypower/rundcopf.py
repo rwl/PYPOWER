@@ -27,6 +27,9 @@ def rundcopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     """Runs a DC optimal power flow.
 
     @see: L{runopf}, L{runduopf}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## default arguments
     if casedata is None:

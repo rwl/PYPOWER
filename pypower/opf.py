@@ -150,6 +150,11 @@ def opf(*args):
         - C{cost}       user defined cost values, by named block
 
     @see: L{runopf}, L{dcopf}, L{uopf}, L{caseformat}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     ##----- initialization -----
     t0 = time()         ## start timer

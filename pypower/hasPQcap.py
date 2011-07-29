@@ -47,6 +47,9 @@ def hasPQcap(gen, hilo='B'):
 
     It is smart enough to return C{True} only if the corresponding linear
     constraint is not redundant w.r.t the box constraints.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## check for errors capability curve data
     if any( gen[:, PC1] > gen[:, PC2] ):

@@ -60,6 +60,9 @@ they are typically not present in the input matrix
 (assume OPF objective function has units, C{u})
     19. C{MU_ANGMIN}   Kuhn-Tucker multiplier lower angle difference limit
     20. C{MU_ANGMAX}   Kuhn-Tucker multiplier upper angle difference limit
+
+@author: Ray Zimmerman (PSERC Cornell)
+@author: Richard Lincoln
 """
 
 # define the indices

@@ -24,6 +24,9 @@ def test_pypower(verbose=False):
     """Run all PYPOWER tests.
 
     Prints the details of the individual tests if verbose is true.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     tests = []
 

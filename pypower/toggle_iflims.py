@@ -60,6 +60,9 @@ def toggle_iflims(ppc, on_off):
 
     @see: L{add_userfcn}, L{remove_userfcn}, L{run_userfcn},
         L{t.t_case30_userfcns}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if on_off == 'on':
         ## check for proper reserve inputs

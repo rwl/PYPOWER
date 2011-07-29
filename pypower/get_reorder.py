@@ -1,4 +1,4 @@
-# Copyright (C) 2009 Power System Engineering Research Center
+# Copyright (C) 2009-2011 Power System Engineering Research Center
 # Copyright (C) 2010-2011 Richard Lincoln
 #
 # PYPOWER is free software: you can redistribute it and/or modify
@@ -26,6 +26,9 @@ def get_reorder(A, idx, dim=0):
 
     Returns A[:, ..., :, idx, :, ..., :], where dim determines
     in which dimension to place the idx.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ndims = ndim(A)
     if ndims == 1:

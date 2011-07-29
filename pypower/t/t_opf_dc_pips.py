@@ -45,6 +45,9 @@ from pypower.t.t_end import t_end
 
 def t_opf_dc_pips(quiet=False):
     """Tests for DC optimal power flow using PIPS solver.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     num_tests = 23
 

@@ -76,6 +76,11 @@ def dcopf_solver(om, ppopt, out_opt=None):
         - C{output} solver specific output information
 
     @see: L{opf}, L{qps_pypower}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     if out_opt is None:
         out_opt = {}

@@ -21,7 +21,7 @@ from sys import stdout
 
 from numpy import \
     ones, zeros, r_, sort, exp, pi, diff, arange, min, \
-    argmin, argmax, logical_or, real, imag
+    argmin, argmax, logical_or, real, imag, any
 
 from numpy import flatnonzero as find
 
@@ -65,6 +65,9 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         printpf(baseMVA, bus, gen, branch, f, success, et, fd)
         printpf(baseMVA, bus, gen, branch, f, success, et, fd, ppopt)
         fd.close()
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##----- initialization -----
     ## default arguments
@@ -264,7 +267,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             ibrch = find((bus[e2i[branch[:, F_BUS].astype(int)], BUS_AREA] == a) & (bus[e2i[branch[:, T_BUS].astype(int)], BUS_AREA] == a))
             in_tie = find((bus[e2i[branch[:, F_BUS].astype(int)], BUS_AREA] == a) & (bus[e2i[branch[:, T_BUS].astype(int)], BUS_AREA] != a))
             out_tie = find((bus[e2i[branch[:, F_BUS].astype(int)], BUS_AREA] != a) & (bus[e2i[branch[:, T_BUS].astype(int)], BUS_AREA] == a))
-            if not any(xfmr):
+            if not any(xfmr + 1):
                 nxfmr = 0
             else:
                 nxfmr = len(find((bus[e2i[branch[xfmr, F_BUS].astype(int)], BUS_AREA] == a) & (bus[e2i[branch[xfmr, T_BUS].astype(int)], BUS_AREA] == a)))
@@ -373,7 +376,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         fd.write('\n                     --------  --------')
         fd.write('\n            Total: %9.2f%10.2f' % (sum(gen[ong, PG]), sum(gen[ong, QG])))
         fd.write('\n')
-        if any(onld):
+        if any(onld + 1):
             fd.write('\n================================================================================')
             fd.write('\n|     Dispatchable Load Data                                                   |')
             fd.write('\n================================================================================')
@@ -413,13 +416,13 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                         ~isload(gen))
             ld = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) &
                         isload(gen))
-            if any(g):
+            if any(g + 1):
                 fd.write('%10.2f%10.2f' % (sum(gen[g, PG]), sum(gen[g, QG])))
             else:
                 fd.write('       -         -  ')
 
-            if logical_or(bus[i, PD], bus[i, QD]) | any(ld):
-                if any(ld):
+            if logical_or(bus[i, PD], bus[i, QD]) | any(ld + 1):
+                if any(ld + 1):
                     fd.write('%10.2f*%9.2f*' % (bus[i, PD] - sum(gen[ld, PG]),
                                                 bus[i, QD] - sum(gen[ld, QG])))
                 else:

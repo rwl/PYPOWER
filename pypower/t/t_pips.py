@@ -189,6 +189,9 @@ def hess7(x, lam, sigma=1):
 
 def t_pips(quiet=False):
     """Tests of pips NLP solver.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     t_begin(60, quiet)
 

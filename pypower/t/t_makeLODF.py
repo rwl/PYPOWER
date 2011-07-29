@@ -38,6 +38,9 @@ from pypower.t.t_end import t_end
 
 def t_makeLODF(quiet=False):
     """Tests for C{makeLODF}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ntests = 31
     t_begin(ntests, quiet)

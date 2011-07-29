@@ -44,6 +44,9 @@ def dIbr_dV(branch, Yf, Yt, V):
         dIf/dVm = Yf * dV/dVm = Yf * diag(V / abs(V))
 
     Derivations for "to" bus are similar.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     i = range(len(V))
 

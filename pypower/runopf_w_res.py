@@ -70,6 +70,9 @@ def runopf_w_res(*args):
         results = runopf_w_res('t_case30_userfcns')
 
     @see: L{runopf}, L{toggle_reserves}, L{t.t_case30_userfcns}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ppc = loadcase(args[0])
     ppc = toggle_reserves(ppc, 'on')

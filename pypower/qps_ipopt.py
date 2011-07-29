@@ -32,6 +32,7 @@ except ImportError:
 
 from pypower.ipopt_options import ipopt_options
 
+
 def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
     """Quadratic Program Solver based on IPOPT.
 
@@ -123,6 +124,9 @@ def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
     Problem from U{http://www.jmu.edu/docs/sasdoc/sashtml/iml/chap8/sect12.htm}
 
     @see: C{pyipopt}, L{ipopt_options}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##----- input argument handling  -----
     ## gather inputs

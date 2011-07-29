@@ -27,6 +27,9 @@ def t_begin(num_of_tests, quiet=False):
     execute C{num_of_tests} tests using C{t_ok} and C{t_is}. If C{quiet}
     is true, it will not print anything for the individual tests, only a
     summary when C{t_end} is called.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
 
     TestGlobals.t_quiet = quiet

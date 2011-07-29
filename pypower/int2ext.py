@@ -90,6 +90,9 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
         in C{ordering}, are not disturbed.
 
     @see: L{ext2int}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ppc = deepcopy(ppc)
     if val_or_field is None: # nargin == 1

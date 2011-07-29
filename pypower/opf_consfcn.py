@@ -56,6 +56,11 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, ppopt, il=None, *args):
     j is gradient of h(j). C{dg} - (optional) equality constraint gradients.
 
     @see: L{opf_costfcn}, L{opf_hessfcn}
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##----- initialize -----
 

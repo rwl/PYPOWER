@@ -19,6 +19,9 @@
 
 def pipsver(*args):
     """ Returns PIPS version info for current installation.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ver = {'Name': 'PIPS',
            'Version': '1.0',

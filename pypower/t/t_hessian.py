@@ -45,6 +45,9 @@ from pypower.t.t_end import t_end
 
 def t_hessian(quiet=False):
     """Numerical tests of 2nd derivative code.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     t_begin(44, quiet)
 

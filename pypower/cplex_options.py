@@ -80,6 +80,9 @@ def cplex_options(overrides=None, ppopt=None):
             modified_opt = fname(default_opt, ppopt)
 
     @see: C{cplexlp}, C{cplexqp}, L{ppoption}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##-----  initialization and arg handling  -----
     ## defaults

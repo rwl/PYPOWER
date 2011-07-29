@@ -26,11 +26,12 @@ from scipy.io import savemat
 
 from run_userfcn import run_userfcn
 
-from idx_bus import MU_VMIN, VMIN
-from idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMIN, MU_QMAX, APF
-from idx_brch import MU_ST, MU_SF, BR_STATUS, PF, PT, QT, QF, ANGMAX, MU_ANGMAX
-from idx_area import PRICE_REF_BUS
-from idx_cost import MODEL, NCOST, PW_LINEAR, POLYNOMIAL
+from pypower.idx_bus import MU_VMIN, VMIN
+from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMIN, MU_QMAX, APF
+from pypower.idx_brch import \
+    MU_ST, MU_SF, BR_STATUS, PF, PT, QT, QF, ANGMAX, MU_ANGMAX
+from pypower.idx_area import PRICE_REF_BUS
+from pypower.idx_cost import MODEL, NCOST, PW_LINEAR, POLYNOMIAL
 
 
 def savecase(fname, ppc, comment=None, version='2'):
@@ -43,6 +44,11 @@ def savecase(fname, ppc, comment=None, version='2'):
     are inserted as comments. When using a PYPOWER case dict, if the
     optional C{version} argument is '1' it will modify the data matrices to
     version 1 format before saving.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ppc_ver = ppc["version"] = version
     baseMVA, bus, gen, branch = \

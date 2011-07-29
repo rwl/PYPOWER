@@ -48,6 +48,11 @@ def opf_setup(ppc, ppopt):
     all equipment in-service, etc.
 
     @see: L{opf}, L{ext2int}, L{opf_execute}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     ## options
     dc  = ppopt['PF_DC']        ## 1 = DC OPF, 0 = AC OPF

@@ -56,6 +56,9 @@ they are typically not present in the input matrix
     22. C{MU_PMIN}     Kuhn-Tucker multiplier on lower Pg limit (u/MW)
     23. C{MU_QMAX}     Kuhn-Tucker multiplier on upper Qg limit (u/MVAr)
     24. C{MU_QMIN}     Kuhn-Tucker multiplier on lower Qg limit (u/MVAr)
+
+@author: Ray Zimmerman (PSERC Cornell)
+@author: Richard Lincoln
 """
 
 # define the indices

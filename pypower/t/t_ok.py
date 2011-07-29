@@ -28,6 +28,9 @@ def t_ok(cond, msg=''):
     the failed tests count. Prints 'ok' or 'not ok' followed by the
     C{msg}, unless the global variable t_quiet is true. Intended to be
     called between calls to C{t_begin} and C{t_end}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if msg:
         if isinstance(msg, list):

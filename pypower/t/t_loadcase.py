@@ -46,7 +46,8 @@ from pypower.t.t_end import t_end
 def t_loadcase(quiet=False):
     """Test that C{loadcase} works with an object as well as case file.
 
-    @see: U{http://www.pserc.cornell.edu/matpower/}
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     t_begin(240, quiet)
 

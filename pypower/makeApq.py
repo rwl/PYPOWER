@@ -45,6 +45,11 @@ def makeApq(baseMVA, gen):
         data['l']      [Qc2min-Qc1min, Pc1-Pc2]
         data['ipqh']   indices of gens with general PQ cap curves (upper)
         data['ipql']   indices of gens with general PQ cap curves (lower)
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     data = {}
     ## data dimensions

@@ -31,6 +31,11 @@ def totcost(gencost, Pg):
     a column vector or matrix of generation levels. The return value has the
     same dimensions as PG. Each row of C{gencost} is used to evaluate the
     cost at the points specified in the corresponding row of C{Pg}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     ng, m = gencost.shape
     totalcost = zeros(ng)

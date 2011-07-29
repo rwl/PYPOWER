@@ -35,6 +35,9 @@ from pypower.t.t_skip import t_skip
 
 def t_qps_pypower(quiet=False):
     """Tests of C{qps_pypower} QP solvers.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     algs = [200, 250, 400, 500, 600]
     names = ['PIPS', 'sc-PIPS', 'IPOPT', 'CPLEX', 'MOSEK']

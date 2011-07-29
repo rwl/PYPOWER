@@ -27,7 +27,9 @@ from scipy.sparse.linalg import spsolve
 
 from pypower.pipsver import pipsver
 
+
 EPS = finfo(float).eps
+
 
 def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
          gh_fcn=None, hess_fcn=None, opt=None):
@@ -177,6 +179,9 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
 
     @see: U{http://www.pserc.cornell.edu/matpower/}
     @license: GNU GPL version 3
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     if isinstance(f_fcn, dict):  ## problem dict
         p = f_fcn

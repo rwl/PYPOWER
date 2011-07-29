@@ -49,6 +49,9 @@ from pypower.t.t_end import t_end
 
 def t_opf_ipopt(quiet=False):
     """Tests for IPOPT-based AC optimal power flow.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     num_tests = 101
 

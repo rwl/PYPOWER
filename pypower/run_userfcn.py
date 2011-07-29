@@ -33,6 +33,9 @@ def run_userfcn(userfcn, stage, *args):
 
     @see: L{add_userfcn}, L{remove_userfcn}, L{toggle_reserves},
           L{toggle_iflims}, L{runopf_w_res}.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     rv = args[0]
     if (len(userfcn) > 0) and (stage in userfcn):

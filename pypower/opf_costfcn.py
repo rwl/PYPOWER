@@ -41,6 +41,11 @@ def opf_costfcn(x, om, return_hessian=False):
     objective function (sparse matrix).
 
     @see: L{opf_consfcn}, L{opf_hessfcn}
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##----- initialize -----
     ## unpack data

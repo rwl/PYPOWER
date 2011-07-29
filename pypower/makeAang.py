@@ -34,6 +34,11 @@ def makeAang(baseMVA, branch, nb, ppopt):
         lang <= Aang * Va <= uang
 
     C{iang} is the vector of indices of branches with angle difference limits.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     ## options
     ignore_ang_lim = ppopt['OPF_IGNORE_ANG_LIM']

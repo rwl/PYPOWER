@@ -42,6 +42,10 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
     Efficiency depends on C{Qg} variables being after C{Pg} variables, and
     the C{y} variables must be the last variables within the vector C{x} for
     the dimensions of the resulting C{Ay} to be conformable with C{x}.
+
+    @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad Autonoma
+    de Manizales)
+    @author: Richard Lincoln
     """
     ## find all pwl cost rows in gencost, either real or reactive
     iycost = find(gencost[:, MODEL] == PW_LINEAR)

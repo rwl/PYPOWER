@@ -84,6 +84,9 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
             - mu_u - upper (right-hand) limit on linear constraints
             - lower - lower bound on optimization variables
             - upper - upper bound on optimization variables
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##----- input argument handling  -----
     ## gather inputs

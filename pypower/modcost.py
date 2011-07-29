@@ -39,6 +39,9 @@ def modcost(gencost, alpha, modtype='SCALE_F'):
         SCALE_X           : F_alpha(X * ALPHA) == F(X)
         SHIFT_F           : F_alpha(X)         == F(X) + ALPHA
         SHIFT_X           : F_alpha(X + ALPHA) == F(X)
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     gencost = gencost.copy()
 

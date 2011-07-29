@@ -36,6 +36,9 @@ def makeYbus(baseMVA, bus, branch):
     conversions to p.u.
 
     @see: L{makeSbus}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## constants
     nb = bus.shape[0]          ## number of buses

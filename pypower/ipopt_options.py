@@ -66,6 +66,9 @@ def ipopt_options(overrides=None, ppopt=None):
     U{http://www.coin-or.org/Ipopt/documentation/}
 
     @see: C{pyipopt}, L{ppoption}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ##-----  initialization and arg handling  -----
     ## defaults

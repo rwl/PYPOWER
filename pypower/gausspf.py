@@ -42,6 +42,10 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     of iterations performed.
 
     @see: L{runpf}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Alberto Borghetti (University of Bologna, Italy)
+    @author: Richard Lincoln
     """
     ## default arguments
     if ppopt is None:

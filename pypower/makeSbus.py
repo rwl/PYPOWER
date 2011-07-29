@@ -31,6 +31,9 @@ def makeSbus(baseMVA, bus, gen):
     minus load. Power is expressed in per unit.
 
     @see: L{makeYbus}
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ## generator info
     on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?

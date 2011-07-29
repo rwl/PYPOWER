@@ -31,6 +31,9 @@ class opf_model(object):
     variables, constraints and costs in named blocks, keeping track of the
     ordering and indexing of the blocks as variables, constraints and costs
     are added to the problem.
+
+    @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
 
     def __init__(self, ppc):
