@@ -602,7 +602,7 @@ class opf_model(object):
                 idx = arange(self.cost["idx"]["i1"][name], self.cost["idx"]["iN"][name])
                 cp["N"]  = cp["N"][idx, :]
                 cp["Cw"] = cp["Cw"][idx]
-                cp["H"]  = cp["H"][idx, :]
+                cp["H"]  = cp["H"][idx, idx]
                 cp["dd"] = cp["dd"][idx]
                 cp["rh"] = cp["rh"][idx]
                 cp["kk"] = cp["kk"][idx]
