@@ -33,10 +33,11 @@ from idx_gen import PG, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
 from idx_brch import PF, PT, QF, QT, RATE_A, MU_SF, MU_ST
 from idx_cost import MODEL, POLYNOMIAL, PW_LINEAR, NCOST, COST
 
-from pypower.util import sub2ind
+from pypower.util import sub2ind, have_fcn
 from pypower.ipopt_options import ipopt_options
 from pypower.cplex_options import cplex_options
 from pypower.mosek_options import mosek_options
+from pypower.gurobi_options import gurobi_options
 from pypower.qps_pypower import qps_pypower
 
 
@@ -90,7 +91,14 @@ def dcopf_solver(om, ppopt, out_opt=None):
     alg     = ppopt['OPF_ALG_DC']
 
     if alg == 0:
-        alg = 200  # Use PIPS
+        if have_fcn('cplex'):        ## use CPLEX by default, if available
+            alg = 500
+        elif have_fcn('mosek'):      ## if not, then MOSEK, if available
+            alg = 600
+        elif have_fcn('gurobi'):     ## if not, then Gurobi, if available
+            alg = 700
+        else:                        ## otherwise PIPS
+            alg = 200
 
     ## unpack data
     ppc = om.get_ppc()
@@ -226,6 +234,8 @@ def dcopf_solver(om, ppopt, out_opt=None):
         opt['cplex_opt'] = cplex_options([], ppopt)
     elif alg == 600:
         opt['mosek_opt'] = mosek_options([], ppopt)
+    elif alg == 700:
+        opt['grb_opt'] = gurobi_options([], ppopt)
     else:
         raise ValueError, "Unrecognised solver [%d]." % alg
 

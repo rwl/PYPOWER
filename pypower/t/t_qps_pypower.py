@@ -25,6 +25,7 @@ from pypower.ppoption import ppoption
 from pypower.cplex_options import cplex_options
 from pypower.mosek_options import mosek_options
 from pypower.qps_pypower import qps_pypower
+from pypower.util import have_fcn
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
@@ -166,14 +167,6 @@ def t_qps_pypower(quiet=False):
             t_ok(s <= 0, [t, 'no success'])
 
     t_end()
-
-
-def have_fcn(name):
-    try:
-        __import__(name)
-        return True
-    except ImportError:
-        return False
 
 
 if __name__ == '__main__':

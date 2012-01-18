@@ -19,6 +19,8 @@
 
 from pypower.t.t_run_tests import t_run_tests
 
+from pypower.util import have_fcn
+
 
 def test_pypower(verbose=False):
     """Run all PYPOWER tests.
@@ -50,21 +52,15 @@ def test_pypower(verbose=False):
     tests.append('t_opf_pips')
     tests.append('t_opf_pips_sc')
 
-#    try:
-#        import pyipopt  #@UnusedImport
-#        tests.append('t_opf_ipopt')
-#        tests.append('t_opf_dc_ipopt')
-#    except ImportError:
-#        pass
+    if have_fcn('pyipopt'):
+        tests.append('t_opf_ipopt')
+        tests.append('t_opf_dc_ipopt')
 
     tests.append('t_opf_dc_pips')
     tests.append('t_opf_dc_pips_sc')
 
-#    try:
-#        import mosek  #@UnusedImport
-#        tests.append('t_opf_dc_mosek')
-#    except ImportError:
-#        pass
+    if have_fcn('mosek'):
+        tests.append('t_opf_dc_mosek')
 
     tests.append('t_opf_userfcns')
     tests.append('t_runopf_w_res')
@@ -74,7 +70,7 @@ def test_pypower(verbose=False):
     tests.append('t_total_load')
     tests.append('t_scale_load')
 
-#    ## smartmarket tests
+    ## smartmarket tests
 #    tests.append('t_off2case')
 #    tests.append('t_auction_mips')
 #    tests.append('t_runmarket')
@@ -105,6 +101,9 @@ def test_opf(verbose=False, *others):
 
     tests.append('t_qps_pypower')
 
+    if have_fcn('gurobipy'):
+        tests.append('t_opf_dc_gurobi')
+
     tests.append('t_opf_dc_pips')
     tests.append('t_opf_dc_pips_sc')
 
@@ -112,6 +111,13 @@ def test_opf(verbose=False, *others):
 
     tests.append('t_opf_pips')
     tests.append('t_opf_pips_sc')
+
+    if have_fcn('pyipopt'):
+        tests.append('t_opf_ipopt')
+        tests.append('t_opf_dc_ipopt')
+
+    if have_fcn('mosek'):
+        tests.append('t_opf_dc_mosek')
 
     tests.append('t_runopf_w_res')
 

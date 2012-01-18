@@ -33,3 +33,11 @@ def feval(func, *args, **kw_args):
     and keyword arguments C{kw_args}.
     """
     return eval(func)(*args, **kw_args)
+
+
+def have_fcn(name):
+    try:
+        __import__(name)
+        return True
+    except ImportError:
+        return False

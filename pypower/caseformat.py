@@ -155,7 +155,7 @@ version 2 case files with OPF data).
   2.   C{price_ref_bus}, reference bus for that area
 
 @see: L{loadcase}, L{savecase}, L{idx_bus}, L{idx_brch}, L{idx_gen},
-    L{idx_area} L{idx_cost}
+    L{idx_cost}
 
 @author: Ray Zimmerman (PSERC Cornell)
 @author: Richard Lincoln

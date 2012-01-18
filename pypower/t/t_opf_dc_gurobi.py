@@ -27,6 +27,7 @@ from scipy.sparse import csr_matrix as sparse
 from pypower.ppoption import ppoption
 from pypower.rundcopf import rundcopf
 from pypower.loadcase import loadcase
+from pypower.util import have_fcn
 
 from pypower.idx_bus import \
     BUS_AREA, BASE_KV, VMIN, VM, VA, LAM_P, LAM_Q, MU_VMIN, MU_VMAX
@@ -36,8 +37,6 @@ from pypower.idx_gen import \
 
 from pypower.idx_brch import \
     ANGMAX, PF, QT, MU_SF, MU_ST
-
-from pypower.t.t_qps_pypower import have_fcn
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
