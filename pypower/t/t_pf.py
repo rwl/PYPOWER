@@ -28,7 +28,14 @@ from pypower.loadcase import loadcase
 from pypower.runpf import runpf
 from pypower.rundcpf import rundcpf
 
-from pypower.idx_gen import QG, QMIN, QMAX
+from pypower.idx_bus import \
+    BUS_I, VA
+
+from pypower.idx_gen import \
+    GEN_BUS, QMAX, QMIN, PG, QG, PMIN, PMAX
+
+from pypower.idx_brch import \
+    F_BUS, T_BUS
 
 from pypower.t.t_begin import t_begin
 from pypower.t.t_is import t_is
@@ -42,7 +49,7 @@ def t_pf(quiet=False):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Richard Lincoln
     """
-    t_begin(25, quiet)
+    t_begin(33, quiet)
 
     tdir = dirname(__file__)
     casefile = join(tdir, 't_case9_pf')
@@ -146,6 +153,45 @@ def t_pf(quiet=False):
     results, success = runpf(ppc, ppopt)
     bus, gen, branch = results['bus'], results['gen'], results['branch']
     t_is(gen[0:2, QG], [-50 + 8.02, 50 + 16.05], 2, [t, '2 gens, proportional'])
+
+    ## network with islands
+    t = 'network w/islands : DC PF : '
+    ppc0 = loadcase(casefile)
+    ppc0['gen'][0, PG] = 60
+    ppc0['gen'][0, [PMIN, PMAX, QMIN, QMAX, PG, QG]] = \
+            ppc0['gen'][0, [PMIN, PMAX, QMIN, QMAX, PG, QG]] / 2
+    ppc0['gen'] = r_[ppc0['gen'][0, :], ppc0.gen]
+    ppc1 = ppc0.copy()
+    ppc  = ppc0.copy()
+    nb = ppc['bus'].shape[0]
+    ppc1['bus'][:, BUS_I]       = ppc1['bus'][:, BUS_I] + nb
+    ppc1['branch'][:, F_BUS]    = ppc1['branch'][:, F_BUS] + nb
+    ppc1['branch'][:, T_BUS]    = ppc1['branch'][:, T_BUS] + nb
+    ppc1['gen'][:, GEN_BUS]     = ppc1['gen'][:, GEN_BUS] + nb
+    ppc['bus']           = r_[ppc['bus'], ppc1['bus']]
+    ppc['branch']        = r_[ppc['branch'], ppc1['branch']]
+    ppc['gen']           = r_[ppc['gen'], ppc1['gen']]
+    #ppopt = ppoption(ppopt, OUT_BUS=1, OUT_GEN=1, OUT_ALL=-1, VERBOSE=2)
+    ppopt = ppoption(ppopt, VERBOSE=verbose)
+    r = rundcpf(ppc, ppopt)
+    t_is(r['bus'][  :9,  VA], bus_soln[:, VA], 8, [t, 'voltage angles 1'])
+    t_is(r['bus'][10:18, VA], bus_soln[:, VA], 8, [t, 'voltage angles 2'])
+    Pg = r_[gen_soln[0, PG] - 30, 30, gen_soln[1:3, PG]]
+    t_is(r['gen'][ :4, PG], Pg, 8, [t, 'active power generation 1'])
+    t_is(r['gen'][4:8, PG], Pg, 8, [t, 'active power generation 1'])
+
+    t = 'network w/islands : AC PF : '
+    ## get solved AC power flow case from MAT-file
+    soln9_pf = loadmat(join(tdir, 'soln9_pf.mat'), struct_as_record=False)
+    bus_soln = soln9_pf['bus_soln']
+    gen_soln = soln9_pf['gen_soln']
+    branch_soln = soln9_pf['branch_soln']
+    r = runpf(ppc, ppopt)
+    t_is(r['bus'][ :9,  VA], bus_soln[:, VA], 8, [t, 'voltage angles 1'])
+    t_is(r['bus'][9:18, VA], bus_soln[:, VA], 8, [t, 'voltage angles 2'])
+    Pg = r_[gen_soln[0, PG] - 30, 30, gen_soln[1:3, PG]]
+    t_is(r['gen'][ :4, PG], Pg, 8, [t, 'active power generation 1'])
+    t_is(r['gen'][4:8, PG], Pg, 8, [t, 'active power generation 1'])
 
     t_end()
 

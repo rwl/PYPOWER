@@ -62,9 +62,9 @@ def t_dcline(quiet=False):
     tdir = dirname(__file__)
     casefile = join(tdir, 't_case9_dcline')
     if quiet:
-        verbose = 0
+        verbose = False
     else:
-        verbose = 0
+        verbose = False
 
     t0 = ''
     ppopt = ppoption(OPF_VIOLATION=1e-6, PDIPM_GRADTOL=1e-8,

@@ -39,9 +39,9 @@ def t_qps_pypower(quiet=False):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Richard Lincoln
     """
-    algs = [200, 250, 400, 500, 600]
-    names = ['PIPS', 'sc-PIPS', 'IPOPT', 'CPLEX', 'MOSEK']
-    check = [None, None, 'ipopt', 'cplex', 'mosek']
+    algs = [200, 250, 400, 500, 600, 700]
+    names = ['PIPS', 'sc-PIPS', 'IPOPT', 'CPLEX', 'MOSEK', 'Gurobi']
+    check = [None, None, 'ipopt', 'cplex', 'mosek', 'gurobipy']
 
     n = 36
     t_begin(n * len(algs), quiet)

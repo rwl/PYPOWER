@@ -58,7 +58,7 @@ def t_is(got, expected, prec=5, msg=''):
     if (not condition and not TestGlobals.t_quiet):
         s = ''
         if max_diff != 0:
-            idx = nonzero(abs(got_minus_expected) >= 10**(-prec))
+            idx = nonzero(not abs(got_minus_expected) < 10**(-prec))
             if len(idx) == 1:  # 1D array
                 idx = (idx[0], zeros( len(got_minus_expected) ))
             i, j = idx

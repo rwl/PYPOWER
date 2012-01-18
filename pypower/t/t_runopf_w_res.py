@@ -52,7 +52,7 @@ def t_runopf_w_res(quiet=False):
     t = 'runopf_w_res(''t_case30_userfcns'') : '
     r = runopf_w_res(casefile, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 19.3906, 0.6094], 4, [t, 'R'])
-    t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 6, [t, 'prc'])
+    t_is(r['reserves']['prc'], [2, 2, 2, 2, 5.5, 5.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 7, [t, 'mu.l'])
     t_is(r['reserves']['mu']['u'], [0.1, 0, 0, 0, 0, 0], 7, [t, 'mu.u'])
     t_is(r['reserves']['mu']['Pmax'], [0, 0, 0, 0, 0.5, 0], 7, [t, 'mu.Pmax'])
@@ -68,7 +68,7 @@ def t_runopf_w_res(quiet=False):
     ppc['reserves']['qty'] = delete(ppc['reserves']['qty'], 4)
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 20], 4, [t, 'R'])
-    t_is(r['reserves']['prc'], [2, 2, 2, 2, 0, 3.5], 6, [t, 'prc'])
+    t_is(r['reserves']['prc'], [2, 2, 2, 2, 0, 5.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 7, [t, 'mu.l'])
     t_is(r['reserves']['mu']['u'], [0.1, 0, 0, 0, 0, 0], 6, [t, 'mu.u'])
     t_is(r['reserves']['mu']['Pmax'], [0, 0, 0, 0, 0, 0], 7, [t, 'mu.Pmax'])
@@ -87,7 +87,7 @@ def t_runopf_w_res(quiet=False):
     ppc['gen'][3, GEN_STATUS] = 0
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 19.3906, 0.6094], 4, [t, 'R'])
-    t_is(r['reserves']['prc'], [2, 2, 2, 3.5, 2, 3.5, 3.5], 6, [t, 'prc'])
+    t_is(r['reserves']['prc'], [2, 2, 2, 5.5, 2, 5.5, 5.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 0, 2, 0, 0], 7, [t, 'mu.l'])
     t_is(r['reserves']['mu']['u'], [0.1, 0, 0, 0, 0, 0, 0], 7, [t, 'mu.u'])
     t_is(r['reserves']['mu']['Pmax'], [0, 0, 0, 0, 0, 0.5, 0], 7, [t, 'mu.Pmax'])
@@ -109,7 +109,7 @@ def t_runopf_w_res(quiet=False):
     ppc['reserves']['qty'] = delete(ppc['reserves']['qty'], 5)
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 0, 0, 20], 4, [t, 'R'])
-    t_is(r['reserves']['prc'], [2, 2, 2, 3.5, 2, 0, 3.5], 6, [t, 'prc'])
+    t_is(r['reserves']['prc'], [2, 2, 2, 5.5, 2, 0, 5.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 0, 2, 0, 0], 7, [t, 'mu.l'])
     t_is(r['reserves']['mu']['u'], [0.1, 0, 0, 0, 0, 0, 0], 6, [t, 'mu.u'])
     t_is(r['reserves']['mu']['Pmax'], [0, 0, 0, 0, 0, 0, 0], 7, [t, 'mu.Pmax'])
@@ -122,7 +122,7 @@ def t_runopf_w_res(quiet=False):
     del ppc['reserves']['qty']
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [39.3826, 0.6174, 0, 0, 19.3818, 0.6182], 4, [t, 'R'])
-    t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 5, [t, 'prc'])
+    t_is(r['reserves']['prc'], [2, 2, 2, 2, 5.5, 5.5], 5, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 5, [t, 'mu.l'])
     t_is(r['reserves']['mu']['u'], [0, 0, 0, 0, 0, 0], 7, [t, 'mu.u'])
     t_is(r['reserves']['mu']['Pmax'], [0.1, 0, 0, 0, 0.5, 0], 5, [t, 'mu.Pmax'])
@@ -135,7 +135,7 @@ def t_runopf_w_res(quiet=False):
     ppc['gen'][0, RAMP_10] = 25
     r = runopf_w_res(ppc, ppopt)
     t_is(r['reserves']['R'], [25, 15, 0, 0, 19.3906, 0.6094], 4, [t, 'R'])
-    t_is(r['reserves']['prc'], [2, 2, 2, 2, 3.5, 3.5], 6, [t, 'prc'])
+    t_is(r['reserves']['prc'], [2, 2, 2, 2, 5.5, 5.5], 6, [t, 'prc'])
     t_is(r['reserves']['mu']['l'], [0, 0, 1, 2, 0, 0], 7, [t, 'mu.l'])
     t_is(r['reserves']['mu']['u'], [0.1, 0, 0, 0, 0, 0], 7, [t, 'mu.u'])
     t_is(r['reserves']['mu']['Pmax'], [0, 0, 0, 0, 0.5, 0], 7, [t, 'mu.Pmax'])

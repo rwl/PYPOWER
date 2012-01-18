@@ -44,6 +44,9 @@ def test_pypower(verbose=False):
     tests.append('t_qps_pypower')
     tests.append('t_pf')
 
+    if have_fcn('gurobipy'):
+        tests.append('t_opf_dc_gurobi')
+
     tests.append('t_opf_pips')
     tests.append('t_opf_pips_sc')
 
@@ -65,6 +68,7 @@ def test_pypower(verbose=False):
 
     tests.append('t_opf_userfcns')
     tests.append('t_runopf_w_res')
+    tests.append('t_dcline')
     tests.append('t_makePTDF')
     tests.append('t_makeLODF')
     tests.append('t_total_load')
