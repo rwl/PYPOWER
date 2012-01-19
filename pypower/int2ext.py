@@ -19,77 +19,36 @@
 
 import sys
 
-from copy import deepcopy
+from warnings import warn
 
-from numpy import arange, concatenate
+from copy import deepcopy
 
 from idx_bus import BUS_I
 from idx_gen import GEN_BUS
 from idx_brch import F_BUS, T_BUS
 from idx_area import PRICE_REF_BUS
 
-from pypower.get_reorder import get_reorder
-from pypower.set_reorder import set_reorder
 from pypower.run_userfcn import run_userfcn
+
+from pypower.i2e_field import i2e_field
+from pypower.i2e_data import i2e_data
 
 
 def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
     """Converts internal to external bus numbering.
 
-    This function performs several different tasks, depending on the
-    arguments passed.
+    C{ppc = int2ext(ppc)}
 
-        1.  C{ppc = int2ext(ppc)}
+    If the input is a single PYPOWER case dict, then it restores all
+    buses, generators and branches that were removed because of being
+    isolated or off-line, and reverts to the original generator ordering
+    and original bus numbering. This requires that the 'order' key
+    created by L{ext2int} be in place.
 
-        If the input is a single PYPOWER case dict, then it restores all
-        buses, generators and branches that were removed because of being
-        isolated or off-line, and reverts to the original generator ordering
-        and original bus numbering. This requires that the 'order' key
-        created by L{ext2int} be in place.
+    Example::
+        ppc = int2ext(ppc)
 
-        Example::
-            ppc = int2ext(ppc)
-
-        2.  C{val = int2ext(ppc, val, oldval, ordering)}
-
-        C{val = int2ext(ppc, val, oldval, ordering, dim)}
-
-        C{ppc = int2ext(ppc, field, ordering)}
-
-        C{ppc = int2ext(ppc, field, ordering, dim)}
-
-        For a case dict using internal indexing, this function can be
-        used to convert other data structures as well by passing in 2 to 4
-        extra parameters in addition to the case dict. If the values passed
-        in the 2nd argument (C{val}) is a column vector, it will be converted
-        according to the ordering specified by the 4th argument (C{ordering},
-        described below). If C{val} is an n-dimensional matrix, then the
-        optional 5th argument (C{dim}, default = 0) can be used to specify
-        which dimension to reorder. The 3rd argument (C{oldval}) is used to
-        initialize the return value before converting C{val} to external
-        indexing. In particular, any data corresponding to off-line gens
-        or branches or isolated buses or any connected gens or branches
-        will be taken from C{oldval}, with C{val} supplying the rest of the
-        returned data.
-
-        If the 2nd argument is a string or list of strings, it
-        specifies a field in the case dict whose value should be
-        converted as described above. In this case, the corresponding
-        C{oldval} is taken from where it was stored by L{ext2int} in
-        ppc["order"]["ext"] and the updated case dict is returned.
-        If C{field} is a list of strings, they specify nested fields.
-
-        The C{ordering} argument is used to indicate whether the data
-        corresponds to bus-, gen- or branch-ordered data. It can be one
-        of the following three strings: 'bus', 'gen' or 'branch'. For
-        data structures with multiple blocks of data, ordered by bus,
-        gen or branch, they can be converted with a single call by
-        specifying C{ordering} as a list of strings.
-
-        Any extra elements, rows, columns, etc. beyond those indicated
-        in C{ordering}, are not disturbed.
-
-    @see: L{ext2int}
+    @see: L{ext2int}, L{i2e_field}, L{i2e_data}
 
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Richard Lincoln
@@ -98,7 +57,7 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
     if val_or_field is None: # nargin == 1
         if 'order' not in ppc:
             sys.stderr.write('int2ext: ppc does not have the "order" field '
-                'require for conversion back to external numbering.\n')
+                'required for conversion back to external numbering.\n')
         o = ppc["order"]
 
         if o["state"] == 'i':
@@ -165,52 +124,16 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
     else:                    ## convert extra data
         if isinstance(val_or_field, str) or isinstance(val_or_field, list):
             ## field (key)
-            field = val_or_field
-            if 'int' not in ppc['order']:
-                ppc['order']['int'] = {}
-
-            if isinstance(field, str):
-                key = '["%s"]' % field
-            else:  # nested dicts
-                key = '["%s"]' % '"]["'.join(field)
-
-                v_int = ppc["order"]["int"]
-                for fld in field:
-                    if fld not in v_int:
-                        v_int[fld] = {}
-                        v_int = v_int[fld]
-
-            exec 'ppc["order"]["int"]%s = ppc%s.copy()' % (key, key)
-            exec 'ppc%s = int2ext(ppc, ppc%s, ppc["order"]["ext"]%s, ordering, dim)' % (key, key, key)
-
+            warn('Calls of the form MPC = INT2EXT(MPC, ''FIELD_NAME'', ...) have been deprecated. Please replace INT2EXT with I2E_FIELD.')
+            bus, gen = val_or_field, oldval
+            if ordering is not None:
+                dim = ordering
+            ppc = i2e_field(ppc, bus, gen, dim)
         else:
             ## value
-            val = val_or_field.copy()
-            o = ppc["order"]
-            if isinstance(ordering, str):         ## single set
-                if ordering == 'gen':
-                    v = get_reorder(val, o[ordering]["i2e"], dim)
-                else:
-                    v = val
-                val = set_reorder(oldval, v, o[ordering]["status"]["on"], dim)
-            else:                            ## multiple sets
-                be = 0  ## base, external indexing
-                bi = 0  ## base, internal indexing
-                new_v = []
-                for ord in ordering:
-                    ne = o["ext"][ord].shape[0]
-                    ni = ppc[ord].shape[0]
-                    v = get_reorder(val, bi + arange(ni), dim)
-                    oldv = get_reorder(oldval, be + arange(ne), dim)
-                    new_v.append( int2ext(ppc, v, oldv, ord, dim) )
-                    be = be + ne
-                    bi = bi + ni
-                ni = val.shape[dim]
-                if ni > bi:              ## the rest
-                    v = get_reorder(val, arange(bi, ni), dim)
-                    new_v.append(v)
-                val = concatenate(new_v, dim)
-            return val
+            warn('Calls of the form VAL = INT2EXT(MPC, VAL, ...) have been deprecated. Please replace INT2EXT with I2E_DATA.')
+            bus, gen, branch = val_or_field, oldval, ordering
+            ppc = i2e_data(ppc, bus, gen, branch, dim)
 
     return ppc
 

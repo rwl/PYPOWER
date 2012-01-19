@@ -75,8 +75,6 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
 
     ## check tolerance
     normF = linalg.norm(F, Inf)
-    if verbose > 0:
-        sys.stdout.write('(Gauss-Seidel)\n')
     if verbose > 1:
         sys.stdout.write('\n it    max P & Q mismatch (p.u.)')
         sys.stdout.write('\n----  ---------------------------')

@@ -19,6 +19,8 @@
 
 import sys
 
+from warnings import warn
+
 from copy import deepcopy
 
 from numpy import array, zeros, argsort, arange, concatenate
@@ -31,68 +33,37 @@ from idx_gen import GEN_BUS, GEN_STATUS
 from idx_brch import F_BUS, T_BUS, BR_STATUS
 from idx_area import PRICE_REF_BUS
 
-from get_reorder import get_reorder
+from e2i_field import e2i_field
+from e2i_data import e2i_data
+
 from run_userfcn import run_userfcn
 
 
 def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
     """Converts external to internal indexing.
 
-    This function performs several different tasks, depending on the
-    arguments passed.
+    This function has two forms, the old form that operates on
+    and returns individual matrices and the new form that operates
+    on and returns an entire PYPOWER case dict.
 
-      1.  C{ppc = ext2int(ppc)}
+    1.  C{ppc = ext2int(ppc)}
 
-      If the input is a single PYPOWER case dict, then all isolated
-      buses, off-line generators and branches are removed along with any
-      generators, branches or areas connected to isolated buses. Then the
-      buses are renumbered consecutively, beginning at 0, and the
-      generators are sorted by increasing bus number. All of the related
-      indexing information and the original data matrices are stored under
-      the 'order' key of the dict to be used by C{int2ext} to perform
-      the reverse conversions. If the case is already using internal
-      numbering it is returned unchanged.
+    If the input is a single PYPOWER case dict, then all isolated
+    buses, off-line generators and branches are removed along with any
+    generators, branches or areas connected to isolated buses. Then the
+    buses are renumbered consecutively, beginning at 0, and the
+    generators are sorted by increasing bus number. Any 'ext2int'
+    callback routines registered in the case are also invoked
+    automatically. All of the related
+    indexing information and the original data matrices are stored under
+    the 'order' key of the dict to be used by C{int2ext} to perform
+    the reverse conversions. If the case is already using internal
+    numbering it is returned unchanged.
 
-      Example::
-          ppc = ext2int(ppc);
+    Example::
+        ppc = ext2int(ppc)
 
-      2.  C{val = ext2int(ppc, val, ordering)}
-
-      C{val = ext2int(ppc, val, ordering, dim)}
-
-      C{ppc = ext2int(ppc, field, ordering)}
-
-      C{ppc = ext2int(ppc, field, ordering, dim)}
-
-      When given a case dict that has already been converted to
-      internal indexing, this function can be used to convert other data
-      structures as well by passing in 2 or 3 extra parameters in
-      addition to the case dict. If the value passed in the 2nd
-      argument is a column vector, it will be converted according to the
-      C{ordering} specified by the 3rd argument (described below). If C{val}
-      is an n-dimensional matrix, then the optional 4th argument (C{dim},
-      default = 0) can be used to specify which dimension to reorder.
-      The return value in this case is the value passed in, converted
-      to internal indexing.
-
-      If the 2nd argument is a string or list of strings, it
-      specifies a field in the case dict whose value should be
-      converted as described above. In this case, the converted value
-      is stored back in the specified field, the original value is
-      saved for later use and the updated case dict is returned.
-      If C{field} is a list of strings, they specify nested fields.
-
-      The 3rd argument, C{ordering}, is used to indicate whether the data
-      corresponds to bus-, gen- or branch-ordered data. It can be one
-      of the following three strings: 'bus', 'gen' or 'branch'. For
-      data structures with multiple blocks of data, ordered by bus,
-      gen or branch, they can be converted with a single call by
-      specifying C{ordering} as a list of strings.
-
-      Any extra elements, rows, columns, etc. beyond those indicated
-      in C{ordering}, are not disturbed.
-
-    @see: L{int2ext}
+    @see: L{int2ext}, L{e2i_field}, L{e2i_data}
 
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Richard Lincoln
@@ -221,16 +192,16 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
                 ordering = ['gen']            ## Pg cost only
                 if ppc["gencost"].shape[0] == (2 * ng0):
                     ordering.append('gen')    ## include Qg cost
-                ppc = ext2int(ppc, 'gencost', ordering)
+                ppc = e2i_field(ppc, 'gencost', ordering)
             if 'A' in ppc or 'N' in ppc:
                 if dc:
                     ordering = ['bus', 'gen']
                 else:
                     ordering = ['bus', 'bus', 'gen', 'gen']
             if 'A' in ppc:
-                ppc = ext2int(ppc, 'A', ordering, 1)
+                ppc = e2i_field(ppc, 'A', ordering, 1)
             if 'N' in ppc:
-                ppc = ext2int(ppc, 'N', ordering, 1)
+                ppc = e2i_field(ppc, 'N', ordering, 1)
 
             ## execute userfcn callbacks for 'ext2int' stage
             if 'userfcn' in ppc:
@@ -238,56 +209,19 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
     else:                    ## convert extra data
         if isinstance(val_or_field, str) or isinstance(val_or_field, list):
             ## field
-            field = val_or_field                ## rename argument
-
-            if isinstance(field, str):
-                key = '["%s"]' % field
-            else:
-                key = '["%s"]' % '"]["'.join(field)
-
-                v_ext = ppc["order"]["ext"]
-                for fld in field:
-                    if fld not in v_ext:
-                        v_ext[fld] = {}
-                        v_ext = v_ext[fld]
-
-            exec 'ppc["order"]["ext"]%s = ppc%s.copy()' % (key, key)
-            exec 'ppc%s = ext2int(ppc, ppc%s, ordering, dim)' % (key, key)
+            warn('Calls of the form ppc = ext2int(ppc, '
+                '\'field_name\', ...) have been deprecated. Please '
+                'replace ext2int with e2i_field.', DeprecationWarning)
+            gen, branch = val_or_field, ordering
+            ppc = e2i_field(ppc, gen, branch, dim)
 
         else:
             ## value
-            val = val_or_field.copy()                   ## rename argument
-
-            o = ppc["order"]
-            if isinstance(ordering, str):        ## single set
-                if ordering == 'gen':
-                    idx = o[ordering]["status"]["on"][ o[ordering]["e2i"] ]
-                else:
-                    idx = o[ordering]["status"]["on"]
-                val = get_reorder(val, idx, dim)
-            else:                            ## multiple: sets
-                b = 0  ## base
-                new_v = []
-                for ord in ordering:
-                    n = o["ext"][ord].shape[0]
-                    v = get_reorder(val, b + arange(n), dim)
-                    new_v.append( ext2int(ppc, v, ord, dim) )
-                    b = b + n
-                n = val.shape[dim]
-                if n > b:                ## the rest
-                    v = get_reorder(val, arange(b, n), dim)
-                    new_v.append(v)
-
-                if issparse(new_v[0]):
-                    if dim == 0:
-                        vstack(new_v, 'csr')
-                    elif dim == 1:
-                        hstack(new_v, 'csr')
-                    else:
-                        raise ValueError, 'dim (%d) may be 0 or 1' % dim
-                else:
-                    val = concatenate(new_v, dim)
-            return val
+            warn('Calls of the form val = ext2int(ppc, val, ...) have been '
+                 'deprecated. Please replace ext2int with e2i_data.',
+                 DeprecationWarning)
+            gen, branch = val_or_field, ordering
+            ppc = e2i_data(ppc, gen, branch, dim)
 
     return ppc
 
