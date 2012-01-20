@@ -38,57 +38,26 @@ def update_mupq(baseMVA, gen, mu_PQh, mu_PQl, data):
     Autonoma de Manizales)
     @author: Richard Lincoln
     """
+    ## extract the constraint parameters
     ipqh, ipql, Apqhdata, Apqldata = \
         data['ipqh'], data['ipql'], data['h'], data['l']
 
-    # If we succeeded and there were generators with general PQ curve
-    # characteristics, this is the time to re-compute the multipliers,
-    # splitting any nonzero multiplier on one of the linear bounds among the
-    # Pmax, Pmin, Qmax or Qmin limits, producing one multiplier for a P limit and
-    # another for a Q limit. For upper Q limit, if we are neither at Pmin nor at
-    # Pmax, the limit is taken as Pmin if the Qmax line's normal has a negative P
-    # component, Pmax if it has a positive P component. Messy but there really
-    # are many cases.
-    muPmax = gen[:, MU_PMAX]
-    muPmin = gen[:, MU_PMIN]
-    if len(mu_PQh) > 0:
-        #gen[:, [MU_PMIN, MU_PMAX, MU_QMIN, MU_QMAX]]
-        k = 0
-        for i in ipqh:
-            if muPmax[i] > 0:
-                gen[i, MU_PMAX] = gen[i, MU_PMAX] - mu_PQh[k] * Apqhdata[k, 0] / baseMVA
-            elif muPmin[i] > 0:
-                gen[i, MU_PMIN] = gen[i, MU_PMIN] + mu_PQh[k] * Apqhdata[k, 0] / baseMVA
-            else:
-                if Apqhdata[k, 0] >= 0:
-                    gen[i, MU_PMAX] = gen[i, MU_PMAX] - mu_PQh[k] * Apqhdata[k, 0] / baseMVA
-                else:
-                    gen[i, MU_PMIN] = gen[i, MU_PMIN] + mu_PQh[k] * Apqhdata[k, 0] / baseMVA
+    ## combine original limit multipliers into single value
+    muP = gen[:, MU_PMAX] - gen[:, MU_PMIN]
+    muQ = gen[:, MU_QMAX] - gen[:, MU_QMIN]
 
-            gen[i, MU_QMAX] = gen[i, MU_QMAX] - mu_PQh[k] * Apqhdata[k, 1] / baseMVA
-            k = k + 1
+    ## add P and Q components of multipliers on upper sloped constraint
+    muP[ipqh] = muP[ipqh] - mu_PQh * Apqhdata[:, 0] / baseMVA
+    muQ[ipqh] = muQ[ipqh] - mu_PQh * Apqhdata[:, 1] / baseMVA
 
+    ## add P and Q components of multipliers on lower sloped constraint
+    muP[ipql] = muP[ipql] - mu_PQl * Apqldata[:, 0] / baseMVA
+    muQ[ipql] = muQ[ipql] - mu_PQl * Apqldata[:, 1] / baseMVA
 
-    if len(mu_PQl) > 0:
-        #gen[:, [MU_PMIN, MU_PMAX, MU_QMIN, MU_QMAX]]
-        k = 0
-        for i in ipql:
-            if muPmax[i] > 0:
-                gen[i, MU_PMAX] = gen[i, MU_PMAX] - mu_PQl[k] * Apqldata[k, 0] / baseMVA
-            elif muPmin[i] > 0:
-                gen[i, MU_PMIN] = gen[i, MU_PMIN] + mu_PQl[k] * Apqldata[k, 0] / baseMVA
-            else:
-                if Apqldata[k, 0] >= 0:
-                    gen[i, MU_PMAX] = gen[i, MU_PMAX] - mu_PQl[k] * Apqldata[k, 0] / baseMVA
-                else:
-                    gen[i, MU_PMIN] = gen[i, MU_PMIN] + mu_PQl[k] * Apqldata[k, 0] / baseMVA
-
-            gen[i, MU_QMIN] = gen[i, MU_QMIN] + mu_PQl[k] * Apqldata[k, 1] / baseMVA
-            k = k + 1
-
-    #gen[:, [MU_PMIN, MU_PMAX, MU_QMIN, MU_QMAX]]
-    #-[ mu_PQl[:2], mu_PQh[:2] ] / baseMVA
-    #-[ mu_PQl[:2] * Apqldata[:2, 0], mu_PQh[:2] * Apqhdata[:2, 0] ] / baseMVA
-    #-[ mu_PQl[:2] * Apqldata[:2, 1], mu_PQh[:2] * Apqhdata[:2, 1] ] / baseMVA
+    # split back into upper and lower multipliers based on sign
+    gen[:, MU_PMAX] = (muP > 0) *  muP
+    gen[:, MU_PMIN] = (muP < 0) * -muP
+    gen[:, MU_QMAX] = (muQ > 0) *  muQ
+    gen[:, MU_QMIN] = (muQ < 0) * -muQ
 
     return gen

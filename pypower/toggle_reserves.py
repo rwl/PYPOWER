@@ -13,6 +13,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
+from pypower.e2i_field import e2i_field
+from pypower.i2e_field import i2e_field
+from pypower.i2e_data import i2e_data
 
 """Enable or disable fixed reserve requirements.
 """
@@ -148,11 +151,11 @@ def userfcn_reserves_ext2int(ppc, *args):
     ##-----  convert stuff to internal indexing  -----
     ## convert all reserve parameters (zones, costs, qty, rgens)
     if 'qty' in r:
-        ppc = ext2int(ppc, ['reserves', 'qty'], 'gen')
+        ppc = e2i_field(ppc, ['reserves', 'qty'], 'gen')
 
-    ppc = ext2int(ppc, ['reserves', 'cost'], 'gen')
-    ppc = ext2int(ppc, ['reserves', 'zones'], 'gen', 1)
-    ppc = ext2int(ppc, ['reserves', 'rgens'], 'gen', 1)
+    ppc = e2i_field(ppc, ['reserves', 'cost'], 'gen')
+    ppc = e2i_field(ppc, ['reserves', 'zones'], 'gen', 1)
+    ppc = e2i_field(ppc, ['reserves', 'rgens'], 'gen', 1)
 
     ## save indices of gens available to provide reserves
     ppc['order']['ext']['reserves']['igr'] = igr               ## external indexing
@@ -228,11 +231,11 @@ def userfcn_reserves_int2ext(results, *args):
     ##-----  convert stuff back to external indexing  -----
     ## convert all reserve parameters (zones, costs, qty, rgens)
     if 'qty' in r:
-        results = int2ext(results, ['reserves', 'qty'], ordering='gen')
+        results = i2e_field(results, ['reserves', 'qty'], ordering='gen')
 
-    results = int2ext(results, ['reserves', 'cost'], ordering='gen')
-    results = int2ext(results, ['reserves', 'zones'], ordering='gen', dim=1)
-    results = int2ext(results, ['reserves', 'rgens'], ordering='gen', dim=1)
+    results = i2e_field(results, ['reserves', 'cost'], ordering='gen')
+    results = i2e_field(results, ['reserves', 'zones'], ordering='gen', dim=1)
+    results = i2e_field(results, ['reserves', 'rgens'], ordering='gen', dim=1)
     results['order']['int']['reserves']['igr'] = results['reserves']['igr']  ## save internal version
     results['reserves']['igr'] = results['order']['ext']['reserves']['igr']  ## use external version
     r = results['reserves']       ## update
@@ -261,18 +264,18 @@ def userfcn_reserves_int2ext(results, *args):
 
     ## store in results in results struct
     z = zeros(ng0)
-    results['reserves']['R']       = int2ext(results, R, z, 'gen')
-    results['reserves']['Rmin']    = int2ext(results, Rmin, z, 'gen')
-    results['reserves']['Rmax']    = int2ext(results, Rmax, z, 'gen')
+    results['reserves']['R']       = i2e_data(results, R, z, 'gen')
+    results['reserves']['Rmin']    = i2e_data(results, Rmin, z, 'gen')
+    results['reserves']['Rmax']    = i2e_data(results, Rmax, z, 'gen')
     if 'mu' not in results['reserves']:
         results['reserves']['mu'] = {}
-    results['reserves']['mu']['l']    = int2ext(results, mu_l, z, 'gen')
-    results['reserves']['mu']['u']    = int2ext(results, mu_u, z, 'gen')
-    results['reserves']['mu']['Pmax'] = int2ext(results, mu_Pmax, z, 'gen')
+    results['reserves']['mu']['l']    = i2e_data(results, mu_l, z, 'gen')
+    results['reserves']['mu']['u']    = i2e_data(results, mu_u, z, 'gen')
+    results['reserves']['mu']['Pmax'] = i2e_data(results, mu_Pmax, z, 'gen')
     results['reserves']['prc']        = z
     for k in igr0:
         iz = find(r['zones'][:, k])
-        results['reserves']['prc'][k] = max(results['lin']['mu']['l']['Rreq'][iz]) / results['baseMVA']
+        results['reserves']['prc'][k] = sum(results['lin']['mu']['l']['Rreq'][iz]) / results['baseMVA']
 
     results['reserves']['totalcost'] = results['cost']['Rcost']
 

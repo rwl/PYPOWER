@@ -44,7 +44,7 @@ from pypower.printpf import printpf
 from pypower.savecase import savecase
 from pypower.int2ext import int2ext
 
-from pypower.idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PQ
+from pypower.idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PQ, REF
 from pypower.idx_brch import PF, PT, QF, QT
 from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 
@@ -144,16 +144,31 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
         branch[:, PT] = -branch[:, PF]
         bus[:, VM] = ones(bus.shape[0])
         bus[:, VA] = Va * (180 / pi)
-        ## update Pg for swing generator [note: other gens at ref bus are accounted for in Pbus]
+        ## update Pg for slack generator (1st gen at ref bus)
+        ## (note: other gens at ref bus are accounted for in Pbus)
         ##      Pg = Pinj + Pload + Gs
         ##      newPg = oldPg + newPinj - oldPinj
-        refgen = find(gbus == ref)             ## which is[are] the reference gen[s]?
-        gen[on[refgen[0]], PG] = gen[on[refgen[0]], PG] + (B[ref, :] * Va - Pbus[ref]) * baseMVA
+        refgen = zeros(len(ref))
+        for k in range(len(ref)):
+            temp = find(gbus == ref[k])
+            refgen[k] = on[temp[0]]
+        gen[refgen, PG] = gen[refgen, PG] + (B[ref, :] * Va - Pbus[ref]) * baseMVA
 
         success = 1
     else:                                ## AC formulation
+        alg = ppopt['PF_ALG']
         if verbose > 0:
-            stdout.write(' -- AC Power Flow ')    ## solver name and \n added later
+            if alg == 1:
+                solver = 'Newton'
+            elif alg == 2:
+                solver = 'fast-decoupled, XB'
+            elif alg == 3:
+                solver = 'fast-decoupled, BX'
+            elif alg == 4:
+                solver = 'Gauss-Seidel'
+            else:
+                solver = 'unknown'
+            print ' -- AC Power Flow (%s)\n' % solver
 
         ## initial state
         # V0    = ones(bus.shape[0])            ## flat start
@@ -162,7 +177,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
 
         if qlim:
             ref0 = ref                         ## save index and angle of
-            Varef0 = bus[ref0, VA]             ##   original reference bus
+            Varef0 = bus[ref0, VA]             ##   original reference bus(es)
             limited = []                       ## list of indices of gens @ Q lims
             fixedQg = zeros(gen.shape[0])      ## Qg of gens at Q limits
 
@@ -235,6 +250,10 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
                     for i in range(mx):            ## [one at a time, since they may be at same bus]
                         bi = gen[mx[i], GEN_BUS]   ## adjust load accordingly,
                         bus[bi, [PD, QD]] = (bus[bi, [PD, QD]] - gen[mx[i], [PG, QG]])
+                    if len(ref) > 1 and any(bus[gen[mx, GEN_BUS], BUS_TYPE] == REF):
+                        raise ValueError, ('Sorry, PYPOWER cannot enforce Q '
+                                           'limits for slack buses in systems '
+                                           'with multiple slacks.')
 
                     bus[gen[mx, GEN_BUS], BUS_TYPE] = PQ   ## & set bus type to PQ
 

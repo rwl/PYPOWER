@@ -133,7 +133,7 @@ def savecase(fname, ppc, comment=None, version='2'):
             fd.write("%sppc = {'version': '%s'}\n" % (indent, ppc_ver))
         fd.write('\n%s##-----  Power Flow Data  -----##\n' % indent)
         fd.write('%s## system MVA base\n' % indent)
-        fd.write("%s%s['baseMVA'] = %g\n" % (indent, prefix, baseMVA))
+        fd.write("%s%s['baseMVA'] = %.9g\n" % (indent, prefix, baseMVA))
 
         ## bus data
         ncols = bus.shape[1]
@@ -144,10 +144,10 @@ def savecase(fname, ppc, comment=None, version='2'):
         fd.write("\n%s%s['bus'] = array([\n" % (indent, prefix))
         if ncols < MU_VMIN + 1:              ## opf NOT SOLVED, save without lambda's & mu's
             for i in range(bus.shape[0]):
-                fd.write('%s[%d, %d, %g, %g, %g, %g, %d, %.8g, %.8g, %g, %d, %g, %g],\n' % ((indent2,) + tuple(bus[i, :VMIN + 1])))
+                fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.9g, %d, %.9g, %.9g],\n' % ((indent2,) + tuple(bus[i, :VMIN + 1])))
         else:                            ## opf SOLVED, save with lambda's & mu's
             for i in range(bus.shape[0]):
-                fd.write('%s[%d, %d, %g, %g, %g, %g, %d, %.8g, %.8g, %g, %d, %g, %g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(bus[:, :MU_VMIN + 1])))
+                fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(bus[:, :MU_VMIN + 1])))
         fd.write('%s])\n' % indent)
 
         ## generator data
@@ -162,17 +162,17 @@ def savecase(fname, ppc, comment=None, version='2'):
         if ncols < MU_QMIN + 1:              ## opf NOT SOLVED, save without mu's
             if ppc_ver == "1":
                 for i in range(gen.shape[0]):
-                    fd.write('%s[%d, %g, %g, %g, %g, %.8g, %g, %d, %g, %g],\n' % ((indent2,) + tuple(gen[i, :PMIN + 1])))
+                    fd.write('%s[%d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g],\n' % ((indent2,) + tuple(gen[i, :PMIN + 1])))
             else:
                 for i in range(gen.shape[0]):
-                    fd.write('%s[%d, %g, %g, %g, %g, %.8g, %g, %d, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g],\n' % ((indent2,) + tuple(gen[i, :APF + 1])))
+                    fd.write('%s[%d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g],\n' % ((indent2,) + tuple(gen[i, :APF + 1])))
         else:
             if ppc_ver == "1":
                 for i in range(gen.shape[0]):
-                    fd.write('%s[%d, %g, %g, %g, %g, %.8g, %g, %d, %g, %g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(gen[i, :MU_QMIN + 1])))
+                    fd.write('%s[%d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(gen[i, :MU_QMIN + 1])))
             else:
                 for i in range(gen.shape[0]):
-                    fd.write('%s[%d, %g, %g, %g, %g, %.8g, %g, %d, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(gen[i, :MU_QMIN + 1])))
+                    fd.write('%s[%d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(gen[i, :MU_QMIN + 1])))
         fd.write('%s])\n' % indent)
 
         ## branch data
@@ -191,24 +191,24 @@ def savecase(fname, ppc, comment=None, version='2'):
         if ncols < QT + 1:                   ## power flow NOT SOLVED, save without line flows or mu's
             if ppc_ver == "1":
                 for i in range(branch.shape[0]):
-                    fd.write('%s[%d, %d, %g, %g, %g, %g, %g, %g, %g, %g, %d],\n' % ((indent2,) + tuple(branch[i, :BR_STATUS + 1])))
+                    fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d],\n' % ((indent2,) + tuple(branch[i, :BR_STATUS + 1])))
             else:
                 for i in range(branch.shape[0]):
-                    fd.write('%s[%d, %d, %g, %g, %g, %g, %g, %g, %g, %g, %d, %g, %g],\n' % ((indent2,) + tuple(branch[i, :ANGMAX + 1])))
+                    fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g],\n' % ((indent2,) + tuple(branch[i, :ANGMAX + 1])))
         elif ncols < MU_ST + 1:            ## power flow SOLVED, save with line flows but without mu's
             if ppc_ver == "1":
                 for i in range(branch.shape[0]):
-                    fd.write('%s[%d, %d, %g, %g, %g, %g, %g, %g, %g, %g, %d, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(branch[i, :QT + 1])))
+                    fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(branch[i, :QT + 1])))
             else:
                 for i in range(branch.shape[0]):
-                    fd.write('%s[%d, %d, %g, %g, %g, %g, %g, %g, %g, %g, %d, %g, %g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(branch[i, :QT + 1])))
+                    fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(branch[i, :QT + 1])))
         else:                            ## opf SOLVED, save with lineflows & mu's
             if ppc_ver == "1":
                 for i in range(branch.shape[0]):
-                    fd.write('%s[%d, %d, %g, %g, %g, %g, %g, %g, %g, %g, %d, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(branch[i, :MU_ST + 1])))
+                    fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(branch[i, :MU_ST + 1])))
             else:
                 for i in range(branch.shape[0]):
-                    fd.write('%s[%d, %d, %g, %g, %g, %g, %g, %g, %g, %g, %d, %g, %g, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(branch[i, :MU_ANGMAX + 1])))
+                    fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(branch[i, :MU_ANGMAX + 1])))
         fd.write('%s])\n' % indent)
 
         ## OPF data
@@ -241,9 +241,9 @@ def savecase(fname, ppc, comment=None, version='2'):
                 n = int( max([n1, n2]) )
                 if gencost.shape[1] < n + 4:
                     stderr.write('savecase: gencost data claims it has more columns than it does\n')
-                template = '%s[%d, %g, %g, %d'
+                template = '%s[%d, %.9g, %.9g, %d'
                 for i in range(n):
-                    template = template + ', %g'
+                    template = template + ', %.9g'
                 template = template + '],\n'
                 for i in range(gencost.shape[0]):
                     fd.write(template % ((indent2,) + tuple(gencost[i])))
@@ -261,19 +261,19 @@ def savecase(fname, ppc, comment=None, version='2'):
             if ("l" in ppc) and (len(ppc["l"]) > 0) and ("u" in ppc) and (len(ppc["u"]) > 0):
                 fd.write('%slu = array([\n' % indent)
                 for i in range(len(l)):
-                    fd.write('%s[%g, %g],\n' % (indent2, ppc["l"][i], ppc["u"][i]))
+                    fd.write('%s[%.9g, %.9g],\n' % (indent2, ppc["l"][i], ppc["u"][i]))
                 fd.write('%s])\n' % indent)
                 fd.write("%s%s['l'] = lu[:, 0]\n" % (indent, prefix))
                 fd.write("%s%s['u'] = lu[:, 1]\n\n" % (indent, prefix))
             elif ("l" in ppc) and (len(ppc["l"]) > 0):
                 fd.write("%s%s['l'] = array([\n" % (indent, prefix))
                 for i in range(len(l)):
-                    fd.write('%s[%g],\n' % (indent2, ppc["l"][i]))
+                    fd.write('%s[%.9g],\n' % (indent2, ppc["l"][i]))
                 fd.write('%s])\n\n' % indent)
             elif ("u" in ppc) and (len(ppc["u"]) > 0):
                 fd.write("%s%s['u'] = array([\n" % (indent, prefix))
                 for i in range(len(l)):
-                    fd.write('%s[%g],\n' % (indent2, ppc["u"][i]))
+                    fd.write('%s[%.9g],\n' % (indent2, ppc["u"][i]))
                 fd.write('%s])\n\n' % indent)
 
         ## user costs
@@ -285,14 +285,14 @@ def savecase(fname, ppc, comment=None, version='2'):
             if ("fparm" in ppc) and (len(ppc["fparm"]) > 0):
                 fd.write("%sCw_fparm = array([\n" % indent)
                 for i in range(ppc["Cw"]):
-                    fd.write('%s[%g, %d, %g, %g, %g],\n' % ((indent2,) + tuple(ppc["Cw"][i]) + tuple(ppc["fparm"][i, :])))
+                    fd.write('%s[%.9g, %d, %.9g, %.9g, %.9g],\n' % ((indent2,) + tuple(ppc["Cw"][i]) + tuple(ppc["fparm"][i, :])))
                 fd.write('%s])\n' % indent)
                 fd.write('%s%s[\'Cw\']    = Cw_fparm[:, 0]\n' % (indent, prefix))
                 fd.write("%s%s['fparm'] = Cw_fparm[:, 1:5]\n" % (indent, prefix))
             else:
                 fd.write("%s%s['Cw'] = array([\n" % (indent, prefix))
                 for i in range(len(ppc["Cw"])):
-                    fd.write('%s[%g],\n' % (indent2, ppc["Cw"][i]))
+                    fd.write('%s[%.9g],\n' % (indent2, ppc["Cw"][i]))
                 fd.write('%s])\n' % indent)
 
         ## user vars
@@ -301,17 +301,17 @@ def savecase(fname, ppc, comment=None, version='2'):
             if ('z0' in ppc) and (len(ppc['z0']) > 0):
                 fd.write('%s%s["z0"] = array([\n' % (indent, prefix))
                 for i in range(len(ppc['z0'])):
-                    fd.write('%s[%g],\n' % (indent2, ppc["z0"]))
+                    fd.write('%s[%.9g],\n' % (indent2, ppc["z0"]))
                 fd.write('%s])\n' % indent)
             if ('zl' in ppc) and (len(ppc['zl']) > 0):
                 fd.write('%s%s["zl"] = array([\n' % (indent2, prefix))
                 for i in range(len(ppc['zl'])):
-                    fd.write('%s[%g],\n' % (indent2, ppc["zl"]))
+                    fd.write('%s[%.9g],\n' % (indent2, ppc["zl"]))
                 fd.write('%s])\n' % indent)
             if ('zu' in ppc) and (len(ppc['zu']) > 0):
                 fd.write('%s%s["zu"] = array([\n' % (indent, prefix))
                 for i in range(len(ppc['zu'])):
-                    fd.write('%s[%g],\n' % (indent2, ppc["zu"]))
+                    fd.write('%s[%.9g],\n' % (indent2, ppc["zu"]))
                 fd.write('%s])\n' % indent)
 
         ## execute userfcn callbacks for 'savecase' stage
@@ -336,7 +336,7 @@ def print_sparse(fd, varname, A):
     else:
         fd.write('ijs = array([\n')
     for k in range(len(i)):
-        fd.write('[%d, %d, %g],\n' % (i[k], j[k], s[k]))
+        fd.write('[%d, %d, %.9g],\n' % (i[k], j[k], s[k]))
 
     fd.write('])\n')
     fd.write('%s = sparse(ijs[:, 0], ijs[:, 1], ijs[:, 2], %d, %d)\n' % (varname, m, n))

@@ -131,7 +131,7 @@ def scale_load(load, bus, gen=None, load_zone=None, opt=None):
     if len(load_zone) == 0:
         if len(load) == 1:        ## make a single zone of all load buses
             load_zone = zeros(nb, int)             ## initialize
-            load_zone[bus[:, PD] != 0] = 1         ## FIXED loads
+            load_zone[bus[:, PD] != 0 or bus[:, QD] != 0] = 1  ## FIXED loads
             if len(gen) > 0:
                 gbus = gen[ld, GEN_BUS].astype(int)
                 load_zone[e2i[gbus]] = 1    ## DISPATCHABLE loads

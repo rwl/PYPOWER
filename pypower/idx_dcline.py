@@ -59,27 +59,27 @@ they are typically not present in the input matrix
 
 ## define the indices
 c = {
-    'F_BUS':     1,     ## f, "from" bus number
-    'T_BUS':     2,     ## t,  "to"  bus number
-    'BR_STATUS': 3,     ## initial branch status, 1 - in service, 0 - out of service
-    'PF':        4,     ## MW flow at "from" bus ("from" -> "to")
-    'PT':        5,     ## MW flow at  "to"  bus ("from" -> "to")
-    'QF':        6,     ## MVAr injection at "from" bus ("from" -> "to")
-    'QT':        7,     ## MVAr injection at  "to"  bus ("from" -> "to")
-    'VF':        8,     ## voltage setpoint at "from" bus (p.u.)
-    'VT':        9,     ## voltage setpoint at  "to"  bus (p.u.)
-    'PMIN':     10,     ## lower limit on PF (MW flow at "from" end)
-    'PMAX':     11,     ## upper limit on PF (MW flow at "from" end)
-    'QMINF':    12,     ## lower limit on MVAr injection at "from" bus
-    'QMAXF':    13,     ## upper limit on MVAr injection at "from" bus
-    'QMINT':    14,     ## lower limit on MVAr injection at  "to"  bus
-    'QMAXT':    15,     ## upper limit on MVAr injection at  "to"  bus
-    'LOSS0':    16,     ## constant term of linear loss function (MW)
-    'LOSS1':    17,     ## linear term of linear loss function (MW)
-    'MU_PMIN':  18,     ## Kuhn-Tucker multiplier on lower flow lim at "from" bus (u/MW)
-    'MU_PMAX':  19,     ## Kuhn-Tucker multiplier on upper flow lim at "from" bus (u/MW)
-    'MU_QMINF': 20,     ## Kuhn-Tucker multiplier on lower VAr lim at "from" bus (u/MVAr)
-    'MU_QMAXF': 21,     ## Kuhn-Tucker multiplier on upper VAr lim at "from" bus (u/MVAr)
-    'MU_QMINT': 22,     ## Kuhn-Tucker multiplier on lower VAr lim at  "to"  bus (u/MVAr)
-    'MU_QMAXT': 23      ## Kuhn-Tucker multiplier on upper VAr lim at  "to"  bus (u/MVAr)
+    'F_BUS':     0,     ## f, "from" bus number
+    'T_BUS':     1,     ## t,  "to"  bus number
+    'BR_STATUS': 2,     ## initial branch status, 1 - in service, 0 - out of service
+    'PF':        3,     ## MW flow at "from" bus ("from" -> "to")
+    'PT':        4,     ## MW flow at  "to"  bus ("from" -> "to")
+    'QF':        5,     ## MVAr injection at "from" bus ("from" -> "to")
+    'QT':        6,     ## MVAr injection at  "to"  bus ("from" -> "to")
+    'VF':        7,     ## voltage setpoint at "from" bus (p.u.)
+    'VT':        8,     ## voltage setpoint at  "to"  bus (p.u.)
+    'PMIN':      9,     ## lower limit on PF (MW flow at "from" end)
+    'PMAX':     10,     ## upper limit on PF (MW flow at "from" end)
+    'QMINF':    11,     ## lower limit on MVAr injection at "from" bus
+    'QMAXF':    12,     ## upper limit on MVAr injection at "from" bus
+    'QMINT':    13,     ## lower limit on MVAr injection at  "to"  bus
+    'QMAXT':    14,     ## upper limit on MVAr injection at  "to"  bus
+    'LOSS0':    15,     ## constant term of linear loss function (MW)
+    'LOSS1':    16,     ## linear term of linear loss function (MW)
+    'MU_PMIN':  17,     ## Kuhn-Tucker multiplier on lower flow lim at "from" bus (u/MW)
+    'MU_PMAX':  18,     ## Kuhn-Tucker multiplier on upper flow lim at "from" bus (u/MW)
+    'MU_QMINF': 19,     ## Kuhn-Tucker multiplier on lower VAr lim at "from" bus (u/MVAr)
+    'MU_QMAXF': 20,     ## Kuhn-Tucker multiplier on upper VAr lim at "from" bus (u/MVAr)
+    'MU_QMINT': 21,     ## Kuhn-Tucker multiplier on lower VAr lim at  "to"  bus (u/MVAr)
+    'MU_QMAXT': 22      ## Kuhn-Tucker multiplier on upper VAr lim at  "to"  bus (u/MVAr)
 }
