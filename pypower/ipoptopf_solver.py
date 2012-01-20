@@ -77,28 +77,6 @@ def ipoptopf_solver(om, ppopt):
     """
     import pyipopt
 
-    ## options
-    verbose = ppopt['VERBOSE']
-    feastol = ppopt['PDIPM_FEASTOL']
-    gradtol = ppopt['PDIPM_GRADTOL']
-    comptol = ppopt['PDIPM_COMPTOL']
-    costtol = ppopt['PDIPM_COSTTOL']
-    max_it  = ppopt['PDIPM_MAX_IT']
-    max_red = ppopt['SCPDIPM_RED_IT']
-    step_control = ppopt['OPF_ALG'] == 565  # PIPS-sc
-    if feastol == 0:
-        feastol = ppopt['OPF_VIOLATION']  ## = OPF_VIOLATION by default
-
-    opt = {  'feastol': feastol, \
-             'gradtol': gradtol, \
-             'comptol': comptol, \
-             'costtol': costtol, \
-             'max_it': max_it, \
-             'max_red': max_red, \
-             'step_control': step_control, \
-             'cost_mult': 1e-4, \
-             'verbose': verbose  }
-
     ## unpack data
     ppc = om.get_ppc()
     baseMVA, bus, gen, branch, gencost = \
@@ -107,7 +85,7 @@ def ipoptopf_solver(om, ppopt):
 
     ## problem dimensions
     nb = shape(bus)[0]          ## number of buses
-    ng = shape(gen)[0]          ## number of buses
+    ng = shape(gen)[0]          ## number of gens
     nl = shape(branch)[0]       ## number of branches
     ny = om.getN('var', 'y')    ## number of piece-wise linear costs
 

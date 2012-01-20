@@ -23,6 +23,9 @@ from pypower.qps_pips import qps_pips
 from pypower.qps_ipopt import qps_ipopt
 from pypower.qps_cplex import qps_cplex
 from pypower.qps_mosek import qps_mosek
+from pypower.qps_gurobi import qps_gurobi
+
+from pypower.util import have_fcn
 
 
 def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
@@ -52,16 +55,18 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         - C{opt} : optional options structure with the following fields,
         all of which are also optional (default values shown in parentheses)
             - C{alg} (0) - determines which solver to use
-                -   0 = automatic, first available of BPMPD_MEX, CPLEX, MIPS
+                -   0 = automatic, first available of BPMPD_MEX, CPLEX,
+                        Gurobi, PIPS
                 - 100 = BPMPD_MEX
-                - 200 = MIPS, MATLAB Interior Point Solver
-                pure MATLAB implementation of a primal-dual
+                - 200 = PIPS, Python Interior Point Solver
+                pure Python implementation of a primal-dual
                 interior point method
-                - 250 = MIPS-sc, a step controlled variant of MIPS
+                - 250 = PIPS-sc, a step controlled variant of PIPS
                 - 300 = Optimization Toolbox, QUADPROG or LINPROG
                 - 400 = IPOPT
                 - 500 = CPLEX
                 - 600 = MOSEK
+                - 700 = Gurobi
             - C{verbose} (0) - controls level of progress output displayed
                 - 0 = no progress output
                 - 1 = some progress output
@@ -70,10 +75,11 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
                 - 0 = use algorithm default
             - C{bp_opt} - options vector for BP
             - C{cplex_opt} - options dict for CPLEX
+            - C{grb_opt}   - options dict for gurobipy
             - C{ipopt_opt} - options dict for IPOPT
-            - C{pips_opt} - options dict for L{qps_pips}
+            - C{pips_opt}  - options dict for L{qps_pips}
             - C{mosek_opt} - options dict for MOSEK
-            - C{ot_opt} - options dict for QUADPROG/LINPROG
+            - C{ot_opt}    - options dict for QUADPROG/LINPROG
         - C{problem} : The inputs can alternatively be supplied in a single
         C{problem} dict with fields corresponding to the input arguments
         described above: C{H, c, A, l, u, xmin, xmax, x0, opt}
@@ -162,16 +168,14 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         verbose = 0
 
     if alg == 0:
-        try:
-            import pymosek          #@UnusedImport
-            alg = 600               ## use MOSEK by default if available
-        except ImportError:
-            try:
-                import cplex        #@UnusedImport
-                alg = 500           ## if not, then CPLEX if available
-            except ImportError:
-                alg = 200           ## otherwise PIPS
-
+        if have_fcn('cplex'):        ## use CPLEX by default, if available
+            alg = 500
+        elif have_fcn('mosek'):      ## if not, then MOSEK, if available
+            alg = 600
+        elif have_fcn('gurobipy'):   ## if not, then Gurobi, if available
+            alg = 700
+        else:                        ## otherwise PIPS
+            alg = 200
 
     ##----- call the appropriate solver  -----
     if alg == 200 or alg == 250:    ## use MIPS or sc-MIPS
@@ -203,6 +207,9 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
     elif alg == 600:                    ## use MOSEK
         x, f, eflag, output, lmbda = \
             qps_mosek(H, c, A, l, u, xmin, xmax, x0, opt)
+    elif 700:                           ## use Gurobi
+        x, f, eflag, output, lmbda = \
+            qps_gurobi(H, c, A, l, u, xmin, xmax, x0, opt)
     else:
         sys.stderr.write('qps_pypower: %d is not a valid algorithm code\n', alg)
 

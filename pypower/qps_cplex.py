@@ -17,6 +17,8 @@
 """Quadratic Program Solver based on CPLEX.
 """
 
+import re
+
 from sys import stdout, stderr
 
 from numpy import array, NaN, Inf, ones, zeros, shape, finfo, arange, r_
@@ -186,6 +188,10 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
         cplex_opt = cplex_options
 
 
+    cplex = Cplex('null')
+    vstr = cplex.getVersion
+    s, e, tE, m, t = re.compile(vstr, '(\d+\.\d+)\.')
+    vnum = int(t[0][0])
     vrb = max([0, verbose - 1])
     cplex_opt['barrier']['display']   = vrb
     cplex_opt['conflict']['display']  = vrb
@@ -193,6 +199,8 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
     cplex_opt['sifting']['display']   = vrb
     cplex_opt['simplex']['display']   = vrb
     cplex_opt['tune']['display']      = vrb
+    if vrb and (vnum > 12.2):
+        cplex_opt['diagnostics']   = 'on'
     #if max_it:
     #    cplex_opt.    ## not sure what to set here
 
@@ -205,7 +213,6 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
 
     ## call the solver
     if verbose:
-        cplex = Cplex('null')
         methods = [
             'default',
             'primal simplex',
@@ -219,14 +226,17 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
     if len(H) == 0 or not any(any(H)):
         if verbose:
             stdout.write('CPLEX Version %s -- %s LP solver\n' %
-                (cplex.getVersion(), methods[cplex_opt['lpmethod'] + 1]))
+                (vstr, methods[cplex_opt['lpmethod'] + 1]))
 
         x, f, eflag, output, lam = \
             cplexlp(c, Ai, bi, Ae, be, xmin, xmax, x0, cplex_opt)
     else:
         if verbose:
             stdout.write('CPLEX Version %s --  %s QP solver\n' %
-                (cplex.getVersion(), methods[cplex_opt['qpmethod'] + 1]))
+                (vstr, methods[cplex_opt['qpmethod'] + 1]))
+        ## ensure H is numerically symmetric
+        if H != H.T:
+            H = (H + H.T) / 2
 
         x, f, eflag, output, lam = \
             cplexqp(H, c, Ai, bi, Ae, be, xmin, xmax, x0, cplex_opt)
@@ -253,17 +263,22 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
     if unconstrained:
         lam['eqlin'] = array([])
 
+    ## negate prices depending on version
+    if vnum < 12.3:
+        lam['eqlin']   = -lam['eqlin']
+        lam['ineqlin'] = -lam['ineqlin']
+
     ## repackage lambdas
-    kl = find(lam.eqlin > 0)   ## lower bound binding
-    ku = find(lam.eqlin < 0)   ## upper bound binding
+    kl = find(lam.eqlin < 0)   ## lower bound binding
+    ku = find(lam.eqlin > 0)   ## upper bound binding
 
-    mu_l[ieq[kl]] = lam['eqlin'][kl]
-    mu_l[igt] = -lam['ineqlin'][nlt + arange(ngt)]
-    mu_l[ibx] = -lam['ineqlin'][nlt + ngt + nbx + arange(nbx)]
+    mu_l[ieq[kl]] = -lam['eqlin'][kl]
+    mu_l[igt] = lam['ineqlin'][nlt + arange(ngt)]
+    mu_l[ibx] = lam['ineqlin'][nlt + ngt + nbx + arange(nbx)]
 
-    mu_u[ieq[ku]] = -lam['eqlin'][ku]
-    mu_u[ilt] = -lam['ineqlin'][:nlt]
-    mu_u[ibx] = -lam['ineqlin'][nlt + ngt + arange(nbx)]
+    mu_u[ieq[ku]] = lam['eqlin'][ku]
+    mu_u[ilt] = lam['ineqlin'][:nlt]
+    mu_u[ibx] = lam['ineqlin'][nlt + ngt + arange(nbx)]
 
     lmbda = {
         'mu_l': mu_l,

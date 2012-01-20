@@ -119,7 +119,7 @@ def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
         xmin = zeros((4, 1))
         x0 = [1, 0, 0, 1]
         opt = {'verbose': 2)
-        x, f, s, out, lam = qps_ipopt(H, c, A, l, u, xmin, [], x0, opt)
+        x, f, s, out, lambda = qps_ipopt(H, c, A, l, u, xmin, [], x0, opt)
 
     Problem from U{http://www.jmu.edu/docs/sasdoc/sashtml/iml/chap8/sect12.htm}
 

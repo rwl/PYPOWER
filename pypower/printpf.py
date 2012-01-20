@@ -26,8 +26,8 @@ from numpy import \
 from numpy import flatnonzero as find
 
 from idx_bus import BUS_I, BUS_TYPE, PD, QD, GS, BS, BUS_AREA, VM, VA, \
-    VMAX, VMIN, LAM_P, LAM_Q, MU_VMAX, MU_VMIN
-from idx_gen import GEN_BUS, PG, QG, QMAX, QMIN, VG, GEN_STATUS, \
+    VMAX, VMIN, LAM_P, LAM_Q, MU_VMAX, MU_VMIN, REF
+from idx_gen import GEN_BUS, PG, QG, QMAX, QMIN, GEN_STATUS, \
     PMAX, PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
 from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, RATE_A, \
     TAP, SHIFT, BR_STATUS, PF, QF, PT, QT, MU_SF, MU_ST
@@ -78,7 +78,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             ppopt = ppoption()   ## use default options
         else:
             ppopt = gen
-        if (ppopt['OUT_ALL'] == 0) and (ppopt['OUT_RAW'] == 0):
+        if (ppopt['OUT_ALL'] == 0):
             return     ## nothin' to see here, bail out now
         if bus is None:
             fd = stdout         ## print to stdout by default
@@ -97,7 +97,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             ppopt = ppoption()   ## use default options
             if fd is None:
                 fd = stdout         ## print to stdout by default
-        if ppopt['OUT_ALL'] == 0 and ppopt['OUT_RAW'] == 0:
+        if ppopt['OUT_ALL'] == 0:
             return     ## nothin' to see here, bail out now
 
     isOPF = f is not None    ## FALSE -> only simple PF data, TRUE -> OPF data
@@ -135,8 +135,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         OUT_QG_LIM      = OUT_ALL_LIM
 
     OUT_ANY         = OUT_ANY or ((OUT_ALL_LIM == -1) and (OUT_V_LIM or OUT_LINE_LIM or OUT_PG_LIM or OUT_QG_LIM))
-    OUT_RAW         = ppopt['OUT_RAW']
-    ptol = 1e-6        ## tolerance for displaying shadow prices
+    ptol = 1e-4        ## tolerance for displaying shadow prices
 
     ## create map of external bus numbers to bus indices
     i2e = bus[:, BUS_I].astype(int)
@@ -412,14 +411,18 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         if isOPF: fd.write('  -------  -------')
         for i in range(nb):
             fd.write('\n%5d%7.3f%9.3f' % tuple(bus[i, [BUS_I, VM, VA]]))
+            if bus[i, BUS_TYPE] == REF:
+                fd.write(fd, '*')
+            else:
+                fd.write(fd, ' ')
             g  = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) &
                         ~isload(gen))
             ld = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) &
                         isload(gen))
             if any(g + 1):
-                fd.write('%10.2f%10.2f' % (sum(gen[g, PG]), sum(gen[g, QG])))
+                fd.write('%9.2f%10.2f' % (sum(gen[g, PG]), sum(gen[g, QG])))
             else:
-                fd.write('       -         -  ')
+                fd.write('      -         -  ')
 
             if logical_or(bus[i, PD], bus[i, QD]) | any(ld + 1):
                 if any(ld + 1):
@@ -651,15 +654,15 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         if (ppopt['OPF_FLOW_LIM'] == 1) | isDC:  ## P limit
             Ff = branch[:, PF]
             Ft = branch[:, PT]
-            str = '\n  #     Bus    Pf  mu     Pf      |Pmax|      Pt      Pt  mu   Bus'
+            strg = '\n  #     Bus    Pf  mu     Pf      |Pmax|      Pt      Pt  mu   Bus'
         elif ppopt['OPF_FLOW_LIM'] == 2:   ## |I| limit
             Ff = abs( (branch[:, PF] + 1j * branch[:, QF]) / V[e2i[branch[:, F_BUS].astype(int)]] )
             Ft = abs( (branch[:, PT] + 1j * branch[:, QT]) / V[e2i[branch[:, T_BUS].astype(int)]] )
-            str = '\n  #     Bus   |If| mu    |If|     |Imax|     |It|    |It| mu   Bus'
+            strg = '\n  #     Bus   |If| mu    |If|     |Imax|     |It|    |It| mu   Bus'
         else:                ## |S| limit
             Ff = abs(branch[:, PF] + 1j * branch[:, QF])
             Ft = abs(branch[:, PT] + 1j * branch[:, QT])
-            str = '\n  #     Bus   |Sf| mu    |Sf|     |Smax|     |St|    |St| mu   Bus'
+            strg = '\n  #     Bus   |Sf| mu    |Sf|     |Smax|     |St|    |St| mu   Bus'
 
         if (OUT_LINE_LIM == 2) | ((OUT_LINE_LIM == 1) &
                             (any((branch[:, RATE_A] != 0) & (abs(Ff) > branch[:, RATE_A] - ctol)) |
@@ -670,7 +673,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n|     Branch Flow Constraints                                                  |')
             fd.write('\n================================================================================')
             fd.write('\nBrnch   From     "From" End        Limit       "To" End        To')
-            fd.write(str)
+            fd.write(strg)
             fd.write('\n-----  -----  -------  --------  --------  --------  -------  -----')
             for i in range(nl):
                 if (OUT_LINE_LIM == 2) | ((OUT_LINE_LIM == 1) &
@@ -694,33 +697,6 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
 
     ## execute userfcn callbacks for 'printpf' stage
     if have_results_struct & results.has_key('userfcn'):
+        if not isOPF:  ## turn off option for all constraints if it isn't an OPF
+            ppopt = ppoption(ppopt, 'OUT_ALL_LIM', 0)
         run_userfcn(results["userfcn"], 'printpf', results, fd, ppopt)
-
-    ## print raw data for Perl database interface
-    if OUT_RAW:
-        fd.write('----------  raw PB::Soln data below  ----------\n')
-        fd.write('bus\n')
-        if isOPF:
-            fd.write('%d\t%d\t%g\t%g\t%g\t%g\t%g\t%g\n' %
-                        bus[:, [BUS_I, BUS_TYPE, VM, VA, LAM_P, LAM_Q, MU_VMAX, MU_VMIN]].T)
-
-            fd.write('branch\n')
-            fd.write('%d\t%g\t%g\t%g\t%g\t%g\t%g\n' %
-                        r_[range(nl), branch[:, [PF, QF, PT, QT, MU_SF, MU_ST]]].T)
-
-            fd.write('gen\n')
-            fd.write('%d\t%g\t%g\t%g\t%d\t%g\t%g\t%g\t%g\n' %
-                        r_[range(ng), gen[:, [PG, QG, VG, GEN_STATUS, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN]]])
-        else:
-            fd.write('%d\t%d\t%f\t%f\t%d\t%d\t%d\t%d\n' %
-                        r_[bus[:, [BUS_I, BUS_TYPE, VM, VA]], zeros((nb, 4))])
-
-            fd.write('branch\n')
-            fd.write('%d\t%f\t%f\t%f\t%f\t%d\t%d\n' %
-                        r_[range(nl), branch[:, [PF, QF, PT, QT]], zeros((nl, 2))])
-
-            fd.write('gen\n')
-            fd.write('%d\t%f\t%f\t%f\t%d\t%d\t%d\t%d\t%d\n' %
-                        r_[range(ng), gen[:, [PG, QG, VG, GEN_STATUS]], zeros((ng, 4))])
-        fd.write('end\n')
-        fd.write('----------  raw PB::Soln data above  ----------\n')

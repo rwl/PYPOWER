@@ -17,9 +17,11 @@
 """Quadratic Program Solver based on MOSEK.
 """
 
+import re
+
 from sys import stdout, stderr
 
-from numpy import array, Inf, zeros, shape, tril
+from numpy import array, Inf, zeros, shape, tril, any
 from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
@@ -187,6 +189,39 @@ def qps_mosek(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         unconstrained = False
 
     ##-----  run optimization  -----
+    if verbose:
+        methods = [
+            'default',
+            'interior point',
+            '<default>',
+            '<default>',
+            'primal simplex',
+            'dual simplex',
+            'primal dual simplex',
+            'automatic simplex',
+            '<default>',
+            '<default>',
+            'concurrent'
+        ]
+        if len(H) == 0 or not any(any(H)):
+            lpqp = 'LP'
+        else:
+            lpqp = 'QP'
+
+        # (this code is also in mpver.m)
+        # MOSEK Version 6.0.0.93 (Build date: 2010-10-26 13:03:27)
+        # MOSEK Version 6.0.0.106 (Build date: 2011-3-17 10:46:54)
+#        pat = 'Version (\.*\d)+.*Build date: (\d\d\d\d-\d\d-\d\d)';
+        pat = 'Version (\.*\d)+.*Build date: (\d+-\d+-\d+)'
+        s, e, tE, m, t = re.compile(eval('mosekopt'), pat)
+        if len(t) == 0:
+            vn = '<unknown>'
+        else:
+            vn = t[0][0]
+
+        print ('MOSEK Version %s -- %s %s solver\n' %
+                (vn, methods[mosek_opt['MSK_IPAR_OPTIMIZER'] + 1], lpqp))
+
     cmd = 'minimize echo(%d)' % verbose
     r, res = mosekopt(cmd, prob, mosek_opt)
 
@@ -236,7 +271,8 @@ def qps_mosek(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         else:
             msg = 'MOSEK return code = %d' % r
 
-    if verbose and len(msg) > 0:
+    ## always alert user if license is expired
+    if (verbose or r == 1001) and len(msg) < 0:
         stdout.write('%s\n' % msg)
 
     ##-----  repackage results  -----

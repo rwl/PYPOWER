@@ -40,12 +40,13 @@ def mosek_options(overrides=None, ppopt=None):
         - C{ppopt} PYPOWER options vector, uses the following entries:
             - C{OPF_VIOLATION} used to set opt.MSK_DPAR_INTPNT_TOL_PFEAS
             - C{VERBOSE} not currently used here
+            - C{MOSEK_LP_ALG} - used to set opt.MSK_IPAR_OPTIMIZER
             - C{MOSEK_MAX_IT} used to set opt.MSK_IPAR_INTPNT_MAX_ITERATIONS
             - C{MOSEK_GAP_TOL} used to set opt.MSK_DPAR_INTPNT_TOL_REL_GAP
             - C{MOSEK_MAX_TIME} used to set opt.MSK_DPAR_OPTIMIZER_MAX_TIME
             - C{MOSEK_NUM_THREADS} used to set opt.MSK_IPAR_INTPNT_NUM_THREADS
             - C{MOSEK_OPT} user option file, if ppopt['MOSEK_OPT'] is non-zero
-            non-zero it is apped to 'mosek_user_options_' to form
+            it is appended to 'mosek_user_options_' to form
             the name of a user-supplied function used as C{fname}
             described above, except with calling syntax::
                 modified_opt = fname(default_opt, ppopt)
@@ -96,7 +97,6 @@ def mosek_options(overrides=None, ppopt=None):
             have_ppopt = False
         else:                    ## 2nd arg is ppopt (MATPOWER options vector)
             have_ppopt = True
-            ## (make default OPF_VIOLATION correspond to default MOSEK intpnt_tol_pfeas)
             verbose = ppopt['VERBOSE']
             if ppopt['MOSEK_OPT']:
                 fname = 'mosek_user_options_#d' # ppopt['MOSEK_OPT']

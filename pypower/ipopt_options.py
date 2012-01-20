@@ -97,16 +97,16 @@ def ipopt_options(overrides=None, ppopt=None):
         opt['print_level'] = 0
 
     ## convergence
-    opt['tol']             = 1e-12                ## default 1e-8
+    opt['tol']             = 1e-8                 ## default 1e-8
     opt['max_iter']        = 250                  ## default 3000
     opt['dual_inf_tol']    = 0.1                  ## default 1
     if have_ppopt:
         opt['constr_viol_tol'] = ppopt[16]        ## default 1e-4
+        opt['acceptable_constr_viol_tol'] = ppopt[16] * 100   ## default 1e-2
     opt['compl_inf_tol']   = 1e-5                 ## default 1e-4
     opt['acceptable_tol']  = 1e-8                 ## default 1e-6
     # opt['acceptable_iter'] = 15                   ## default 15
     # opt['acceptable_dual_inf_tol']     = 1e+10    ## default 1e+10
-    opt['acceptable_constr_viol_tol']  = 1e-4     ## default 1e-2
     opt['acceptable_compl_inf_tol']    = 1e-3     ## default 1e-2
     # opt['acceptable_obj_change_tol']   = 1e+20    ## default 1e+20
     # opt['diverging_iterates_tol']      = 1e+20    ## default 1e+20
@@ -148,6 +148,9 @@ def ipopt_options(overrides=None, ppopt=None):
     ## hessian approximation
     # opt['hessian_approximation']   = 'limited-memory' ## default 'exact'
 
+    ## ma57 options
+    #opt['ma57_pre_alloc'] = 3
+    #opt['ma57_pivot_order'] = 4
 
     ##-----  call user function to modify defaults  -----
     if len(fname) > 0:

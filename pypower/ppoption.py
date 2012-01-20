@@ -17,6 +17,9 @@
 """Used to set and retrieve a PYPOWER options vector.
 """
 
+from numpy import Inf
+
+
 PF_OPTIONS = [
     ('pf_alg', 1, '''power flow algorithm:
 1 - Newton's method,
@@ -55,8 +58,8 @@ primal/dual interior point method,
 545 - generalized formulation (except CCV), SC-MIPS
 step-controlled primal/dual interior point method'''),
 
-    ('opf_poly2pwl_pts', 10, 'number of evaluation points to use when '
-     'converting from polynomial to piece-wise linear costs)'),
+#    ('opf_poly2pwl_pts', 10, 'number of evaluation points to use when '
+#     'converting from polynomial to piece-wise linear costs)'),
 
     ('opf_violation', 5e-6, 'constraint violation tolerance'),
 
@@ -78,7 +81,9 @@ primal/dual interior point method,
 available from: https://projects.coin-or.org/Ipopt/
 500 - CPLEX, requires Python interface to CPLEX solver
 600 - MOSEK, requires Python interface to MOSEK solver
-available from: http://www.mosek.com/''')
+available from: http://www.mosek.com/
+700 - GUROBI, requires Python interface to Gurobi optimizer
+available from: http://www.gurobi.com/''')
 ]
 
 OUTPUT_OPTIONS = [
@@ -91,9 +96,9 @@ OUTPUT_OPTIONS = [
     ('out_all', -1, '''controls printing of results:
 -1 - individual flags control what prints,
 0 - don't print anything
-    (overrides individual flags, except OUT_RAW),
+    (overrides individual flags),
 1 - print everything
-    (overrides individual flags, except OUT_RAW)'''),
+    (overrides individual flags)'''),
 
     ('out_sys_sum', True, 'print system summary'),
 
@@ -124,7 +129,7 @@ OUTPUT_OPTIONS = [
 
     ('out_qg_lim', 1, 'control output of gen Q limit info'),
 
-    ('out_raw', False, 'print raw data'),
+#    ('out_raw', False, 'print raw data'),
 
     ('return_raw_der', 0, '''return constraint and derivative info
 in results['raw'] (in keys g, dg, df, d2f))''')
@@ -144,6 +149,19 @@ Primal-Dual Interior Points Methods'''),
 Primal-Dual Interior Points Methods'''),
     ('scpdipm_red_it', 20, '''maximum number of reductions per iteration
 for Step-Control Primal-Dual Interior Points Methods''')
+]
+
+GUROBI_OPTIONS = [
+    ('grb_method', 1, '''solution algorithm (Method)
+0 - primal simplex
+1 - dual simplex
+2 - barrier
+3 - concurrent (LP only)
+4 - deterministic concurrent (LP only)
+'''),
+    ('grb_timelimit', Inf, 'maximum time allowed for solver (TimeLimit)'),
+('grb_threads', 0, '(auto) maximum number of threads to use (Threads)'),
+('grb_opt', 0, 'See gurobi_options() for details')
 ]
 
 
