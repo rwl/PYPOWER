@@ -412,9 +412,9 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         for i in range(nb):
             fd.write('\n%5d%7.3f%9.3f' % tuple(bus[i, [BUS_I, VM, VA]]))
             if bus[i, BUS_TYPE] == REF:
-                fd.write(fd, '*')
+                fd.write('*')
             else:
-                fd.write(fd, ' ')
+                fd.write(' ')
             g  = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) &
                         ~isload(gen))
             ld = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) &
