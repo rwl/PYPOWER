@@ -160,7 +160,7 @@ def t_pf(quiet=False):
     ppc0['gen'][0, PG] = 60
     ppc0['gen'][0, [PMIN, PMAX, QMIN, QMAX, PG, QG]] = \
             ppc0['gen'][0, [PMIN, PMAX, QMIN, QMAX, PG, QG]] / 2
-    ppc0['gen'] = r_[ppc0['gen'][0, :], ppc0.gen]
+    ppc0['gen'] = r_[array([ ppc0['gen'][0, :] ]), ppc0['gen']]
     ppc1 = ppc0.copy()
     ppc  = ppc0.copy()
     nb = ppc['bus'].shape[0]

@@ -35,7 +35,7 @@ from pypower.t.t_case_ext import t_case_ext
 from pypower.t.t_case_int import t_case_int
 
 
-def t_e2i_data2ext(quiet=False):
+def t_ext2int2ext(quiet=False):
     """Tests C{ext2int} and C{int2ext}.
 
     @author: Ray Zimmerman (PSERC Cornell)
