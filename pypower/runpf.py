@@ -148,7 +148,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
         ## (note: other gens at ref bus are accounted for in Pbus)
         ##      Pg = Pinj + Pload + Gs
         ##      newPg = oldPg + newPinj - oldPinj
-        refgen = zeros(len(ref))
+        refgen = zeros(len(ref), dtype=int)
         for k in range(len(ref)):
             temp = find(gbus == ref[k])
             refgen[k] = on[temp[0]]
