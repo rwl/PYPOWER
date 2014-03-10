@@ -110,7 +110,7 @@ def add_userfcn(ppc, stage, fcn, args=None, allow_multiple=False):
             if not allow_multiple:
                 for k in range(n):
                     if ppc['userfcn'][stage][k]['fcn'] == fcn:
-                        stderr.write('add_userfcn: the function \'%s\' has already been added\n' % fcn.func_name)
+                        stderr.write('add_userfcn: the function \'%s\' has already been added\n' % fcn.__name__)
         else:
             ppc['userfcn'][stage] = []
     else:

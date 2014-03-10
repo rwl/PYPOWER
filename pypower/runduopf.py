@@ -17,8 +17,8 @@
 """Runs a DC optimal power flow with unit-decommitment heuristic.
 """
 
-from ppoption import ppoption
-from runuopf import runuopf
+from pypower.ppoption import ppoption
+from pypower.runuopf import runuopf
 
 
 def runduopf(casedata='case9', ppopt=None, fname='', solvedcase=''):

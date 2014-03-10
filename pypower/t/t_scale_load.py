@@ -340,7 +340,7 @@ def t_scale_load(quiet=False):
     err = 0
     try:
         bus, gen = scale_load(load, ppc['bus'], ppc['gen'], None, opt)
-    except ScalingError, e:
+    except ScalingError as e:
         expected = 'scale_load: impossible to make zone 2 load equal 80 by scaling non-existent dispatchable load'
         err = expected not in str(e)
     t_ok(err, t)

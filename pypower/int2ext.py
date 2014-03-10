@@ -23,10 +23,10 @@ from copy import deepcopy
 
 from numpy import arange, concatenate
 
-from idx_bus import BUS_I
-from idx_gen import GEN_BUS
-from idx_brch import F_BUS, T_BUS
-from idx_area import PRICE_REF_BUS
+from pypower.idx_bus import BUS_I
+from pypower.idx_gen import GEN_BUS
+from pypower.idx_brch import F_BUS, T_BUS
+from pypower.idx_area import PRICE_REF_BUS
 
 from pypower.get_reorder import get_reorder
 from pypower.set_reorder import set_reorder
@@ -177,8 +177,8 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
                         v_int[fld] = {}
                         v_int = v_int[fld]
 
-            exec 'ppc["order"]["int"]%s = ppc%s.copy()' % (key, key)
-            exec 'ppc%s = int2ext(ppc, ppc%s, ppc["order"]["ext"]%s, ordering, dim)' % (key, key, key)
+            exec('ppc["order"]["int"]%s = ppc%s.copy()' % (key, key))
+            exec('ppc%s = int2ext(ppc, ppc%s, ppc["order"]["ext"]%s, ordering, dim)' % (key, key, key))
 
         else:
             ## value

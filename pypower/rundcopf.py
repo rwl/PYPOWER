@@ -17,8 +17,8 @@
 """Runs a DC optimal power flow.
 """
 
-from ppoption import ppoption
-from runopf import runopf
+from pypower.ppoption import ppoption
+from pypower.runopf import runopf
 
 def rundcopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
     """Runs a DC optimal power flow.

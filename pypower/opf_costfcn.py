@@ -20,10 +20,10 @@
 from numpy import array, ones, zeros, arange, r_, dot, flatnonzero as find
 from scipy.sparse import issparse, csr_matrix as sparse
 
-from idx_cost import MODEL, POLYNOMIAL
+from pypower.idx_cost import MODEL, POLYNOMIAL
 
-from totcost import totcost
-from polycost import polycost
+from pypower.totcost import totcost
+from pypower.polycost import polycost
 
 
 def opf_costfcn(x, om, return_hessian=False):
@@ -135,13 +135,14 @@ def opf_costfcn(x, om, return_hessian=False):
                 ddff[k] = (opf_costfcn(xx, om) - f) / step
             if max(abs(ddff - df)) > tol:
                 idx = find(abs(ddff - df) == max(abs(ddff - df)))
-                print 'Mismatch in gradient'
-                print 'idx             df(num)         df              diff'
-                print '%4d%16g%16g%16g' % \
-                    (range(len(df)), ddff.T, df.T, abs(ddff - df).T)
-                print 'MAX'
-                print '%4d%16g%16g%16g' % \
-                    (idx.T, ddff[idx].T, df[idx].T, abs(ddff[idx] - df[idx]).T)
+                print('Mismatch in gradient')
+                print('idx             df(num)         df              diff')
+                print('%4d%16g%16g%16g' %
+                      (range(len(df)), ddff.T, df.T, abs(ddff - df).T))
+                print('MAX')
+                print('%4d%16g%16g%16g' %
+                      (idx.T, ddff[idx].T, df[idx].T,
+                       abs(ddff[idx] - df[idx]).T))
 
     if not return_hessian:
         return f, df

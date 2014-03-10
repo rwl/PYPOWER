@@ -103,8 +103,9 @@ containing the case data.""" % usage,
     parser.add_option("-t", "--test", action="store_true", dest="test",
         default=False, help="run tests")
 
-    parser.add_option("-c", "--testcase", default='case9', choices=CASES.keys(),
-        help="built-in test case (choose from: %s)" % str(CASES.keys())[1:-1])
+    parser.add_option("-c", "--testcase", default='case9',
+        choices=list(CASES.keys()),
+        help="built-in test case (choose from: %s)" % str(list(CASES.keys()))[1:-1])
 
     parser.add_option("-o", "--outfile", dest='fname', default='',
         type='string', help="""pretty printed output will be
@@ -164,7 +165,7 @@ heuristic""")
             casedata = CASES[options.testcase]()
         except KeyError:
             stderr.write("Invalid case choice: %r (choose from %s)\n" % \
-                (options.testcase, CASES.keys()))
+                (options.testcase, list(CASES.keys())))
             sys.exit(2)
 
     return options, casedata, ppopt, options.fname, options.solvedcase

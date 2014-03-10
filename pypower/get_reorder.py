@@ -36,8 +36,8 @@ def get_reorder(A, idx, dim=0):
         elif dim == 1:
             B = A[:, idx].copy()
         else:
-            raise ValueError, 'dim (%d) may be 0 or 1' % dim
+            raise ValueError('dim (%d) may be 0 or 1' % dim)
     else:
-        raise ValueError, 'number of dimensions (%d) may be 1 or 2' % dim
+        raise ValueError('number of dimensions (%d) may be 1 or 2' % dim)
 
     return B

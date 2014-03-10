@@ -26,13 +26,13 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import issparse, vstack, hstack, csr_matrix as sparse
 
-from idx_bus import PQ, PV, REF, NONE, BUS_I, BUS_TYPE
-from idx_gen import GEN_BUS, GEN_STATUS
-from idx_brch import F_BUS, T_BUS, BR_STATUS
-from idx_area import PRICE_REF_BUS
+from pypower.idx_bus import PQ, PV, REF, NONE, BUS_I, BUS_TYPE
+from pypower.idx_gen import GEN_BUS, GEN_STATUS
+from pypower.idx_brch import F_BUS, T_BUS, BR_STATUS
+from pypower.idx_area import PRICE_REF_BUS
 
-from get_reorder import get_reorder
-from run_userfcn import run_userfcn
+from pypower.get_reorder import get_reorder
+from pypower.run_userfcn import run_userfcn
 
 
 def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
@@ -248,8 +248,8 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
                         v_ext[fld] = {}
                         v_ext = v_ext[fld]
 
-            exec 'ppc["order"]["ext"]%s = ppc%s.copy()' % (key, key)
-            exec 'ppc%s = ext2int(ppc, ppc%s, ordering, dim)' % (key, key)
+            exec('ppc["order"]["ext"]%s = ppc%s.copy()' % (key, key))
+            exec('ppc%s = ext2int(ppc, ppc%s, ordering, dim)' % (key, key))
 
         else:
             ## value
@@ -281,7 +281,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
                     elif dim == 1:
                         hstack(new_v, 'csr')
                     else:
-                        raise ValueError, 'dim (%d) may be 0 or 1' % dim
+                        raise ValueError('dim (%d) may be 0 or 1' % dim)
                 else:
                     val = concatenate(new_v, dim)
             return val

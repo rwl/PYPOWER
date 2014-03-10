@@ -19,10 +19,10 @@
 
 from sys import stderr
 
-from ppoption import ppoption
-from uopf import uopf
-from printpf import printpf
-from savecase import savecase
+from pypower.ppoption import ppoption
+from pypower.uopf import uopf
+from pypower.printpf import printpf
+from pypower.savecase import savecase
 
 
 def runuopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
@@ -41,7 +41,7 @@ def runuopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         fd = None
         try:
             fd = open(fname, "wb")
-        except Exception, detail:
+        except Exception as detail:
             stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
             if fd is not None:

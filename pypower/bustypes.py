@@ -20,8 +20,8 @@
 from numpy import ones, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
-from idx_bus import BUS_TYPE, REF, PV, PQ
-from idx_gen import GEN_BUS, GEN_STATUS
+from pypower.idx_bus import BUS_TYPE, REF, PV, PQ
+from pypower.idx_gen import GEN_BUS, GEN_STATUS
 
 def bustypes(bus, gen):
     """Builds index lists of each type of bus (C{REF}, C{PV}, C{PQ}).

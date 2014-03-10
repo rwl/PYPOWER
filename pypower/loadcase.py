@@ -27,8 +27,13 @@ from numpy import array, zeros, ones, c_
 
 from scipy.io import loadmat
 
+from pypower._compat import PY2
 from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, APF
 from pypower.idx_brch import PF, QF, PT, QT, MU_SF, MU_ST, BR_STATUS
+
+
+if not PY2:
+    basestring = str
 
 
 def loadcase(casefile,
@@ -100,21 +105,25 @@ def loadcase(casefile,
                         d['version'] = '1'
 
                         s = {}
-                        for k, v in d.iteritems():
+                        for k, v in d.items():
                             s[k] = v
 
                     s['baseMVA'] = s['baseMVA'][0]  # convert array to float
 
-                except IOError, e:
+                except IOError as e:
                     info = 3
                     lasterr = str(e)
             elif extension == '.py':      ## from Python file
                 try:
-                    execfile(rootname + extension)
+                    if PY2:
+                        execfile(rootname + extension)
+                    else:
+                        exec(compile(open(rootname + extension).read(),
+                                     rootname + extension, 'exec'))
 
                     try:                      ## assume it returns an object
                         s = eval(fname)()
-                    except ValueError, e:
+                    except ValueError as e:
                         info = 4
                         lasterr = str(e)
                     ## if not try individual data matrices
@@ -125,7 +134,7 @@ def loadcase(casefile,
                             try:
                                 s['baseMVA'], s['bus'], s['gen'], s['branch'], \
                                 s['areas'], s['gencost'] = eval(fname)()
-                            except IOError, e:
+                            except IOError as e:
                                 info = 4
                                 lasterr = str(e)
                         else:
@@ -134,22 +143,22 @@ def loadcase(casefile,
                                     s['baseMVA'], s['bus'], s['gen'], \
                                         s['branch'], s['areas'], \
                                         s['gencost'] = eval(fname)()
-                                except ValueError, e:
+                                except ValueError as e:
                                     try:
                                         s['baseMVA'], s['bus'], s['gen'], \
                                             s['branch'] = eval(fname)()
-                                    except ValueError, e:
+                                    except ValueError as e:
                                         info = 4
                                         lasterr = str(e)
                             else:
                                 try:
                                     s['baseMVA'], s['bus'], s['gen'], \
                                         s['branch'] = eval(fname)()
-                                except ValueError, e:
+                                except ValueError as e:
                                     info = 4
                                     lasterr = str(e)
 
-                except IOError, e:
+                except IOError as e:
                     info = 4
                     lasterr = str(e)
 

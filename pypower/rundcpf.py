@@ -17,8 +17,8 @@
 """Runs a DC power flow.
 """
 
-from ppoption import ppoption
-from runpf import runpf
+from pypower.ppoption import ppoption
+from pypower.runpf import runpf
 
 
 def rundcpf(casedata='case9', ppopt=None, fname='', solvedcase=''):

@@ -23,8 +23,8 @@ from numpy import zeros, arange, isscalar, dot, ix_, flatnonzero as find
 
 from numpy.linalg import solve
 
-from idx_bus import BUS_TYPE, REF, BUS_I
-from makeBdc import makeBdc
+from pypower.idx_bus import BUS_TYPE, REF, BUS_I
+from pypower.makeBdc import makeBdc
 
 
 def makePTDF(baseMVA, bus, branch, slack=None):

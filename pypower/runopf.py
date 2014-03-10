@@ -19,10 +19,10 @@
 
 from sys import stdout, stderr
 
-from ppoption import ppoption
-from opf import opf
-from printpf import printpf
-from savecase import savecase
+from pypower.ppoption import ppoption
+from pypower.opf import opf
+from pypower.printpf import printpf
+from pypower.savecase import savecase
 
 
 def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
@@ -41,7 +41,7 @@ def runopf(casedata='case9', ppopt=None, fname='', solvedcase=''):
         fd = None
         try:
             fd = open(fname, "wb")
-        except IOError, detail:
+        except IOError as detail:
             stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
             if fd is not None:

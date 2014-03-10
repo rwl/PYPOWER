@@ -19,7 +19,7 @@
 
 from scipy.sparse import csr_matrix
 
-from d2Sbr_dV2 import d2Sbr_dV2
+from pypower.d2Sbr_dV2 import d2Sbr_dV2
 
 
 def d2ASbr_dV2(dSbr_dVa, dSbr_dVm, Sbr, Cbr, Ybr, V, lam):

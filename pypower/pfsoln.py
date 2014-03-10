@@ -22,9 +22,9 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix
 
-from idx_bus import VM, VA, PD, QD
-from idx_gen import GEN_BUS, GEN_STATUS, PG, QG, QMIN, QMAX
-from idx_brch import F_BUS, T_BUS, BR_STATUS, PF, PT, QF, QT
+from pypower.idx_bus import VM, VA, PD, QD
+from pypower.idx_gen import GEN_BUS, GEN_STATUS, PG, QG, QMIN, QMAX
+from pypower.idx_brch import F_BUS, T_BUS, BR_STATUS, PF, PT, QF, QT
 
 EPS = finfo(float).eps
 

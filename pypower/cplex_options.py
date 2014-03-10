@@ -16,14 +16,18 @@
 
 """Sets options for CPLEX.
 """
-
 try:
     from cplex import cplexoptimset
 except ImportError:
 #    print "CPLEX not available"
     pass
 
+from pypower._compat import PY2
 from pypower.util import feval
+
+
+if not PY2:
+    basestring = str
 
 
 def cplex_options(overrides=None, ppopt=None):

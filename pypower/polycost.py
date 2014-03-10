@@ -21,7 +21,7 @@ import sys
 
 from numpy import zeros, arange, flatnonzero as find
 
-from idx_cost import MODEL, NCOST, PW_LINEAR, COST
+from pypower.idx_cost import MODEL, NCOST, PW_LINEAR, COST
 
 
 def polycost(gencost, Pg, der=0):

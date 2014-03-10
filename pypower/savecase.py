@@ -24,13 +24,18 @@ from os.path import basename
 from numpy import array, c_, r_, any
 from scipy.io import savemat
 
-from run_userfcn import run_userfcn
+from pypower._compat import PY2
+from pypower.run_userfcn import run_userfcn
 
-from idx_bus import MU_VMIN, VMIN
-from idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMIN, MU_QMAX, APF
-from idx_brch import MU_ST, MU_SF, BR_STATUS, PF, PT, QT, QF, ANGMAX, MU_ANGMAX
-from idx_area import PRICE_REF_BUS
-from idx_cost import MODEL, NCOST, PW_LINEAR, POLYNOMIAL
+from pypower.idx_bus import MU_VMIN, VMIN
+from pypower.idx_gen import PMIN, MU_PMAX, MU_PMIN, MU_QMIN, MU_QMAX, APF
+from pypower.idx_brch import MU_ST, MU_SF, BR_STATUS, PF, PT, QT, QF, ANGMAX, MU_ANGMAX
+from pypower.idx_area import PRICE_REF_BUS
+from pypower.idx_cost import MODEL, NCOST, PW_LINEAR, POLYNOMIAL
+
+
+if not PY2:
+    basestring = str
 
 
 def savecase(fname, ppc, comment=None, version='2'):
@@ -101,7 +106,7 @@ def savecase(fname, ppc, comment=None, version='2'):
     else:                       ## Python file
         try:
             fd = open(fname, "wb")
-        except Exception, detail:
+        except Exception as detail:
             stderr.write("savecase: %s.\n" % detail)
             return fname
 

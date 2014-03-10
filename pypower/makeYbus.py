@@ -22,8 +22,8 @@ from sys import stderr
 from numpy import ones, conj, nonzero, any, exp, pi, r_
 from scipy.sparse import csr_matrix
 
-from idx_bus import BUS_I, GS, BS
-from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, BR_STATUS, SHIFT, TAP
+from pypower.idx_bus import BUS_I, GS, BS
+from pypower.idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, BR_STATUS, SHIFT, TAP
 
 
 def makeYbus(baseMVA, bus, branch):
@@ -42,7 +42,7 @@ def makeYbus(baseMVA, bus, branch):
     nl = branch.shape[0]       ## number of lines
 
     ## check that bus numbers are equal to indices to bus (one set of bus nums)
-    if any(bus[:, BUS_I] != range(nb)):
+    if any(bus[:, BUS_I] != list(range(nb))):
         stderr.write('buses must appear in order by bus number\n')
 
     ## for each branch, compute the elements of the branch admittance matrix where

@@ -24,10 +24,10 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
 
-from isload import isload
+from pypower.isload import isload
 
-from idx_bus import PD, QD, BUS_AREA, BUS_I
-from idx_gen import PG, QG, QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
+from pypower.idx_bus import PD, QD, BUS_AREA, BUS_I
+from pypower.idx_gen import PG, QG, QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
 
 
 def scale_load(load, bus, gen=None, load_zone=None, opt=None):

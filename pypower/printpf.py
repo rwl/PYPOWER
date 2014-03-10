@@ -25,16 +25,16 @@ from numpy import \
 
 from numpy import flatnonzero as find
 
-from idx_bus import BUS_I, BUS_TYPE, PD, QD, GS, BS, BUS_AREA, VM, VA, \
+from pypower.idx_bus import BUS_I, BUS_TYPE, PD, QD, GS, BS, BUS_AREA, VM, VA, \
     VMAX, VMIN, LAM_P, LAM_Q, MU_VMAX, MU_VMIN
-from idx_gen import GEN_BUS, PG, QG, QMAX, QMIN, VG, GEN_STATUS, \
+from pypower.idx_gen import GEN_BUS, PG, QG, QMAX, QMIN, VG, GEN_STATUS, \
     PMAX, PMIN, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
-from idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, RATE_A, \
+from pypower.idx_brch import F_BUS, T_BUS, BR_R, BR_X, BR_B, RATE_A, \
     TAP, SHIFT, BR_STATUS, PF, QF, PT, QT, MU_SF, MU_ST
 
-from isload import isload
-from run_userfcn import run_userfcn
-from ppoption import ppoption
+from pypower.isload import isload
+from pypower.run_userfcn import run_userfcn
+from pypower.ppoption import ppoption
 
 
 def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
@@ -690,7 +690,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             fd.write('\n')
 
     ## execute userfcn callbacks for 'printpf' stage
-    if have_results_struct & results.has_key('userfcn'):
+    if have_results_struct and ('userfcn' in results):
         run_userfcn(results["userfcn"], 'printpf', results, fd, ppopt)
 
     ## print raw data for Perl database interface

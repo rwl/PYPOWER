@@ -24,10 +24,15 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
 
-from isload import isload
+from pypower._compat import PY2
+from pypower.isload import isload
 
-from idx_bus import PD, QD, BUS_AREA, BUS_I
-from idx_gen import QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
+from pypower.idx_bus import PD, QD, BUS_AREA, BUS_I
+from pypower.idx_gen import QMAX, QMIN, GEN_BUS, GEN_STATUS, PMIN
+
+
+if not PY2:
+    basestring = str
 
 
 def total_load(bus, gen=None, load_zone=None, which_type=None):
@@ -80,7 +85,7 @@ def total_load(bus, gen=None, load_zone=None, which_type=None):
     want_disp   = (which_type[0] == 'B') | (which_type[0] == 'D')
 
     ## initialize load_zone
-    if isinstance(load_zone, basestring) & (load_zone == 'all'):
+    if isinstance(load_zone, basestring) and (load_zone == 'all'):
         load_zone = ones(nb, int)                  ## make a single zone of all buses
     elif len(load_zone) == 0:
         load_zone = bus[:, BUS_AREA].astype(int)   ## use areas defined in bus data as zones
@@ -100,7 +105,7 @@ def total_load(bus, gen=None, load_zone=None, which_type=None):
     ## dispatchable load at each bus
     if want_disp:            ## need dispatchable
         ng = gen.shape[0]
-        is_ld = isload(gen) & (gen[:, GEN_STATUS] > 0)
+        is_ld = isload(gen) and (gen[:, GEN_STATUS] > 0)
         ld = find(is_ld)
 
         ## create map of external bus numbers to bus indices

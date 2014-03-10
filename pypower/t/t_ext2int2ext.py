@@ -135,9 +135,9 @@ def t_ext2int2ext(quiet=False):
 
     t = 'val = ext2int(ppc, val, {\'branch\', \'gen\', \'bus\'})'
     got = ext2int(ppc, ppce['xrows'], ['branch', 'gen', 'bus'])
-    ex = r_[ppce['xbranch'][range(6) + range(7, 10), :4],
+    ex = r_[ppce['xbranch'][list(range(6)) + list(range(7, 10)), :4],
             ppce['xgen'][[3, 1, 0], :],
-            ppce['xbus'][range(5) + range(6, 10), :4],
+            ppce['xbus'][list(range(5)) + list(range(6, 10)), :4],
             -1 * ones((2, 4))]
     t_is(got, ex, 12, t)
     t = 'val = int2ext(ppc, val, oldval, {\'branch\', \'gen\', \'bus\'})'
@@ -153,9 +153,9 @@ def t_ext2int2ext(quiet=False):
 
     t = 'val = ext2int(ppc, val, {\'branch\', \'gen\', \'bus\'}, 1)'
     got = ext2int(ppc, ppce['xcols'], ['branch', 'gen', 'bus'], 1)
-    ex = r_[ppce['xbranch'][range(6) + range(7, 10), :4],
+    ex = r_[ppce['xbranch'][list(range(6)) + list(range(7, 10)), :4],
             ppce['xgen'][[3, 1, 0], :],
-            ppce['xbus'][range(5) + range(6, 10), :4],
+            ppce['xbus'][list(range(5)) + list(range(6, 10)), :4],
             -1 * ones((2, 4))].T
     t_is(got, ex, 12, t)
     t = 'val = int2ext(ppc, val, oldval, {\'branch\', \'gen\', \'bus\'}, 1)'
@@ -224,9 +224,9 @@ def t_ext2int2ext(quiet=False):
     t_is(got['xbranch'], ppce['xbranch'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, {\'branch\', \'gen\', \'bus\'})'
-    ex = r_[ppce['xbranch'][range(6) + range(7, 10), :4],
+    ex = r_[ppce['xbranch'][list(range(6)) + list(range(7, 10)), :4],
             ppce['xgen'][[3, 1, 0], :],
-            ppce['xbus'][range(5) + range(6, 10), :4],
+            ppce['xbus'][list(range(5)) + list(range(6, 10)), :4],
             -1 * ones((2, 4))]
     got = ext2int(ppc, 'xrows', ['branch', 'gen', 'bus'])
     t_is(got['xrows'], ex, 12, t)
@@ -235,9 +235,9 @@ def t_ext2int2ext(quiet=False):
     t_is(got['xrows'], ppce['xrows'], 12, t)
 
     t = 'ppc = ext2int(ppc, field, {\'branch\', \'gen\', \'bus\'}, 1)'
-    ex = r_[ppce['xbranch'][range(6) + range(7, 10), :4],
+    ex = r_[ppce['xbranch'][list(range(6)) + list(range(7, 10)), :4],
             ppce['xgen'][[3, 1, 0], :],
-            ppce['xbus'][range(5) + range(6, 10), :4],
+            ppce['xbus'][list(range(5)) + list(range(6, 10)), :4],
             -1 * ones((2, 4))].T
     got = ext2int(ppc, 'xcols', ['branch', 'gen', 'bus'], 1)
     t_is(got['xcols'], ex, 12, t)
@@ -310,8 +310,8 @@ def t_ext2int2ext(quiet=False):
     t = 'ppc = ext2int(ppc) - A, N are DC sized : '
     ppce = loadcase(t_case_ext())
     ppci = loadcase(t_case_int())
-    eVmQgcols = range(10, 20) + range(24, 28)
-    iVmQgcols = range(9, 18) + range(21, 24)
+    eVmQgcols = list(range(10, 20)) + list(range(24, 28))
+    iVmQgcols = list(range(9, 18)) + list(range(21, 24))
     ppce['A'] = delete(ppce['A'], eVmQgcols, 1)
     ppce['N'] = delete(ppce['N'], eVmQgcols, 1)
     ppci['A'] = delete(ppci['A'], iVmQgcols, 1)

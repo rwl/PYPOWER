@@ -22,8 +22,13 @@ from sys import stderr
 from numpy import array
 from scipy.sparse import issparse
 
-from ppoption import ppoption
-from loadcase import loadcase
+from pypower._compat import PY2
+from pypower.ppoption import ppoption
+from pypower.loadcase import loadcase
+
+
+if not PY2:
+    basestring = str
 
 
 def opf_args(*args):

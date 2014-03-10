@@ -22,7 +22,7 @@ from numpy import Inf, ones, zeros, dot
 
 from scipy.sparse import csr_matrix as sparse
 
-from pips import pips
+from pypower.pips import pips
 
 
 def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
@@ -150,7 +150,7 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
            'xmax' not in p:
 #           'xmin' not in p or len(p['xmin']) == 0 and \
 #           'xmax' not in p or len(p['xmax']) == 0:
-            print 'qps_pips: LP problem must include constraints or variable bounds'
+            print('qps_pips: LP problem must include constraints or variable bounds')
             return
         else:
             if p['A'] is not None and p['A'].nnz >= 0:

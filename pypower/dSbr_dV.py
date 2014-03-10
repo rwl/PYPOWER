@@ -20,7 +20,7 @@
 from numpy import conj, arange, diag, zeros, asmatrix, asarray, asscalar
 from scipy.sparse import issparse, csr_matrix as sparse
 
-from idx_brch import F_BUS, T_BUS
+from pypower.idx_brch import F_BUS, T_BUS
 
 def dSbr_dV(branch, Yf, Yt, V):
     """Computes partial derivatives of power flows w.r.t. voltage.
