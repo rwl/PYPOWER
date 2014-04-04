@@ -17,7 +17,12 @@
 """Sets options for IPOPT.
 """
 
+from pypower._compat import PY2
 from pypower.util import feval
+
+
+if not PY2:
+    basestring = str
 
 
 def ipopt_options(overrides=None, ppopt=None):

@@ -21,7 +21,7 @@ import sys
 
 from numpy import linalg, conj, r_, Inf, asscalar
 
-from ppoption import ppoption
+from pypower.ppoption import ppoption
 
 
 def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):

@@ -20,18 +20,18 @@
 from numpy import array, zeros, ones, exp, arange, r_, flatnonzero as find
 from scipy.sparse import vstack, hstack, issparse, csr_matrix as sparse
 
-from idx_gen import PG, QG
-from idx_brch import F_BUS, T_BUS
-from idx_cost import MODEL, POLYNOMIAL
+from pypower.idx_gen import PG, QG
+from pypower.idx_brch import F_BUS, T_BUS
+from pypower.idx_cost import MODEL, POLYNOMIAL
 
-from polycost import polycost
-from d2Sbus_dV2 import d2Sbus_dV2
-from dSbr_dV import dSbr_dV
-from dIbr_dV import dIbr_dV
-from d2AIbr_dV2 import d2AIbr_dV2
-from d2ASbr_dV2 import d2ASbr_dV2
-from opf_costfcn import opf_costfcn
-from opf_consfcn import opf_consfcn
+from pypower.polycost import polycost
+from pypower.d2Sbus_dV2 import d2Sbus_dV2
+from pypower.dSbr_dV import dSbr_dV
+from pypower.dIbr_dV import dIbr_dV
+from pypower.d2AIbr_dV2 import d2AIbr_dV2
+from pypower.d2ASbr_dV2 import d2ASbr_dV2
+from pypower.opf_costfcn import opf_costfcn
+from pypower.opf_consfcn import opf_consfcn
 
 
 def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
@@ -240,10 +240,10 @@ def opf_hessfcn(x, lmbda, om, Ybus, Yf, Yt, ppopt, il=None, cost_mult=1.0):
         d2G_err = max(max(abs(d2G - num_d2G)))
         d2H_err = max(max(abs(d2H - num_d2H)))
         if d2f_err > 1e-6:
-            print 'Max difference in d2f: %g' % d2f_err
+            print('Max difference in d2f: %g' % d2f_err)
         if d2G_err > 1e-5:
-            print 'Max difference in d2G: %g' % d2G_err
+            print('Max difference in d2G: %g' % d2G_err)
         if d2H_err > 1e-6:
-            print 'Max difference in d2H: %g' % d2H_err
+            print('Max difference in d2H: %g' % d2H_err)
 
     return d2f + d2G + d2H

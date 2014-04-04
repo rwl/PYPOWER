@@ -22,7 +22,7 @@ import sys
 from numpy import array, angle, exp, linalg, conj, r_, Inf
 from scipy.sparse.linalg import splu
 
-from ppoption import ppoption
+from pypower.ppoption import ppoption
 
 
 def fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt=None):

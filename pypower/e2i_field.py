@@ -16,8 +16,12 @@
 
 """Converts fields of ppc from external to internal indexing.
 """
-
+from pypower._compat import PY2
 from pypower.e2i_data import e2i_data  #@UnusedImport
+
+
+if not PY2:
+    basestring = str
 
 
 def e2i_field(ppc, field, ordering, dim=0):
@@ -65,7 +69,7 @@ def e2i_field(ppc, field, ordering, dim=0):
                 v_ext[fld] = {}
                 v_ext = v_ext[fld]
 
-    exec 'ppc["order"]["ext"]%s = ppc%s.copy()' % (key, key)
-    exec 'ppc%s = e2i_data(ppc, ppc%s, ordering, dim)' % (key, key)
+    exec('ppc["order"]["ext"]%s = ppc%s.copy()' % (key, key))
+    exec('ppc%s = e2i_data(ppc, ppc%s, ordering, dim)' % (key, key))
 
     return ppc

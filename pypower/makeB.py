@@ -19,10 +19,10 @@
 
 from numpy import ones, zeros, copy
 
-from idx_bus import BS
-from idx_brch import BR_B, BR_R, TAP, SHIFT
+from pypower.idx_bus import BS
+from pypower.idx_brch import BR_B, BR_R, TAP, SHIFT
 
-from makeYbus import makeYbus
+from pypower.makeYbus import makeYbus
 
 
 def makeB(baseMVA, bus, branch, alg):

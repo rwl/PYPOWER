@@ -19,9 +19,9 @@
 
 from numpy import ones, zeros, r_
 
-from idx_cost import MODEL, COST, NCOST, PW_LINEAR
+from pypower.idx_cost import MODEL, COST, NCOST, PW_LINEAR
 
-from totcost import totcost
+from pypower.totcost import totcost
 
 
 def poly2pwl(polycost, Pmin, Pmax, npts):

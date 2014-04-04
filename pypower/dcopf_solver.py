@@ -28,10 +28,10 @@ from numpy import flatnonzero as find
 
 from scipy.sparse import vstack, hstack, csr_matrix as sparse
 
-from idx_bus import BUS_TYPE, REF, VA, LAM_P, LAM_Q, MU_VMAX, MU_VMIN
-from idx_gen import PG, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
-from idx_brch import PF, PT, QF, QT, RATE_A, MU_SF, MU_ST
-from idx_cost import MODEL, POLYNOMIAL, PW_LINEAR, NCOST, COST
+from pypower.idx_bus import BUS_TYPE, REF, VA, LAM_P, LAM_Q, MU_VMAX, MU_VMIN
+from pypower.idx_gen import PG, MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN
+from pypower.idx_brch import PF, PT, QF, QT, RATE_A, MU_SF, MU_ST
+from pypower.idx_cost import MODEL, POLYNOMIAL, PW_LINEAR, NCOST, COST
 
 from pypower.util import sub2ind, have_fcn
 from pypower.ipopt_options import ipopt_options
@@ -237,7 +237,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
     elif alg == 700:
         opt['grb_opt'] = gurobi_options([], ppopt)
     else:
-        raise ValueError, "Unrecognised solver [%d]." % alg
+        raise ValueError("Unrecognised solver [%d]." % alg)
 
     ##-----  run opf  -----
     x, f, info, output, lmbda = \

@@ -353,22 +353,22 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     if opt["verbose"]:
         s = '-sc' if opt["step_control"] else ''
         v = pipsver('all')
-        print 'Python Interior Point Solver - PIPS%s, Version %s, %s' % \
-                    (s, v['Version'], v['Date'])
+        print('Python Interior Point Solver - PIPS%s, Version %s, %s' %
+                    (s, v['Version'], v['Date']))
         if opt['verbose'] > 1:
-            print " it    objective   step size   feascond     gradcond     " \
-                  "compcond     costcond  "
-            print "----  ------------ --------- ------------ ------------ " \
-                  "------------ ------------"
-            print "%3d  %12.8g %10s %12g %12g %12g %12g" % \
+            print(" it    objective   step size   feascond     gradcond     "
+                  "compcond     costcond  ")
+            print("----  ------------ --------- ------------ ------------ "
+                  "------------ ------------")
+            print("%3d  %12.8g %10s %12g %12g %12g %12g" %
                 (i, (f / opt["cost_mult"]), "",
-                 feascond, gradcond, compcond, costcond)
+                 feascond, gradcond, compcond, costcond))
 
     if feascond < opt["feastol"] and gradcond < opt["gradtol"] and \
         compcond < opt["comptol"] and costcond < opt["costtol"]:
         converged = True
         if opt["verbose"]:
-            print "Converged!"
+            print("Converged!")
 
     # do Newton iterations
     while (not converged) and (i < opt["max_it"]):
@@ -380,9 +380,9 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
                  "ineqnonlin": mu[range(niqnln)]}
         if nonlinear:
             if hess_fcn is None:
-                print "pips: Hessian evaluation via finite differences " \
-                      "not yet implemented.\nPlease provide " \
-                      "your own hessian evaluation function."
+                print("pips: Hessian evaluation via finite differences "
+                      "not yet implemented.\nPlease provide "
+                      "your own hessian evaluation function.")
             Lxx = hess_fcn(x, lmbda, opt["cost_mult"])
         else:
             _, _, d2f = f_fcn(x, True)      # cost
@@ -405,7 +405,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
 
         if any(isnan(dxdlam)):
             if opt["verbose"]:
-                print '\nNumerically Failed\n'
+                print('\nNumerically Failed\n')
             eflag = -1
             break
 
@@ -491,7 +491,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
                 L1 = f1 + dot(lam, g1) + dot(mu, h1 + z) - gamma * sum(log(z))
 
                 if opt["verbose"] > 2:
-                    print "   %3d            %10.5f" % (-j, norm(dx1))
+                    print("   %3d            %10.5f" % (-j, norm(dx1)))
 
                 rho = (L1 - L) / (dot(Lx, dx1) + 0.5 * dot(dx1, Lxx * dx1))
 
@@ -575,20 +575,20 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
             'alphap': alphap, 'alphad': alphad})
 
         if opt["verbose"] > 1:
-            print "%3d  %12.8g %10.5g %12g %12g %12g %12g" % \
+            print("%3d  %12.8g %10.5g %12g %12g %12g %12g" %
                 (i, (f / opt["cost_mult"]), norm(dx), feascond, gradcond,
-                 compcond, costcond)
+                 compcond, costcond))
 
         if feascond < opt["feastol"] and gradcond < opt["gradtol"] and \
             compcond < opt["comptol"] and costcond < opt["costtol"]:
             converged = True
             if opt["verbose"]:
-                print "Converged!"
+                print("Converged!")
         else:
             if any(isnan(x)) or (alphap < alpha_min) or \
                 (alphad < alpha_min) or (gamma < EPS) or (gamma > 1.0 / EPS):
                 if opt["verbose"]:
-                    print "Numerically failed."
+                    print("Numerically failed.")
                 eflag = -1
                 break
             f0 = f
@@ -598,7 +598,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
 
     if opt["verbose"]:
         if not converged:
-            print "Did not converge in %d iterations." % i
+            print("Did not converge in %d iterations." % i)
 
     # package results
     if eflag != -1:

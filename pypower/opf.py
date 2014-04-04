@@ -29,7 +29,7 @@ from pypower.ext2int import ext2int
 from pypower.opf_args import opf_args2
 from pypower.opf_setup import opf_setup
 from pypower.opf_execute import opf_execute
-from int2ext import int2ext
+from pypower.int2ext import int2ext
 
 
 def opf(*args):

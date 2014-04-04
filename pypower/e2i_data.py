@@ -23,7 +23,7 @@ from numpy import arange, concatenate
 
 from scipy.sparse import issparse, vstack, hstack
 
-from get_reorder import get_reorder
+from pypower.get_reorder import get_reorder
 
 
 def e2i_data(ppc, val, ordering, dim=0):
@@ -100,7 +100,7 @@ def e2i_data(ppc, val, ordering, dim=0):
             elif dim == 1:
                 hstack(new_v, 'csr')
             else:
-                raise ValueError, 'dim (%d) may be 0 or 1' % dim
+                raise ValueError('dim (%d) may be 0 or 1' % dim)
         else:
             val = concatenate(new_v, dim)
     return val

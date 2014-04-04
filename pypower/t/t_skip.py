@@ -35,8 +35,8 @@ def t_skip(cnt, msg=''):
 
     TestGlobals.t_skip_cnt = TestGlobals.t_skip_cnt + cnt
     if not TestGlobals.t_quiet:
-        print 'skipped tests %d..%d%s' % (TestGlobals.t_counter,
+        print('skipped tests %d..%d%s' % (TestGlobals.t_counter,
                                             TestGlobals.t_counter + cnt - 1,
-                                            msg)
+                                            msg))
 
     TestGlobals.t_counter = TestGlobals.t_counter + cnt

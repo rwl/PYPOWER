@@ -21,7 +21,7 @@ from numpy import array, ones, zeros, r_, Inf, pi, arange
 from numpy import flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
-from idx_brch import F_BUS, T_BUS, ANGMIN, ANGMAX
+from pypower.idx_brch import F_BUS, T_BUS, ANGMIN, ANGMAX
 
 
 def makeAang(baseMVA, branch, nb, ppopt):

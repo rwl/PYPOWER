@@ -61,8 +61,8 @@ def i2e_field(ppc, field, ordering, dim=0):
                 v_int[fld] = {}
                 v_int = v_int[fld]
 
-    exec 'ppc["order"]["int"]%s = ppc%s.copy()' % (key, key)
-    exec ('ppc%s = i2e_data(ppc, ppc%s, ppc["order"]["ext"]%s, ordering, dim)' %
-            (key, key, key))
+    exec('ppc["order"]["int"]%s = ppc%s.copy()' % (key, key))
+    exec('ppc%s = i2e_data(ppc, ppc%s, ppc["order"]["ext"]%s, ordering, dim)' %
+         (key, key, key))
 
     return ppc

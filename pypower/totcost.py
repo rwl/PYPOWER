@@ -20,8 +20,8 @@
 from numpy import zeros, arange
 from numpy import flatnonzero as find
 
-from polycost import polycost
-from idx_cost import PW_LINEAR, POLYNOMIAL, COST, NCOST, MODEL
+from pypower.polycost import polycost
+from pypower.idx_cost import PW_LINEAR, POLYNOMIAL, COST, NCOST, MODEL
 
 
 def totcost(gencost, Pg):

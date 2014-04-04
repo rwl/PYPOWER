@@ -47,6 +47,6 @@ def t_ok(cond, msg=''):
 
     if not TestGlobals.t_quiet:
         s += 'ok %3d%s' % (TestGlobals.t_counter, msg)
-        print s
+        print(s)
 
     TestGlobals.t_counter += 1

@@ -421,7 +421,7 @@ def eval_jac_g(x, flag, user_data=None):
         nnzj = Js.nnz
         Jd = zeros(nnzj)
         Jc = J.tocsc()
-        for i in xrange(nnzj):
+        for i in range(nnzj):
             Jd[i] = Jc[Js.row[i], Js.col[i]]
 
         return Jd
@@ -457,7 +457,7 @@ def eval_h(x, lagrange, obj_factor, flag, user_data=None):
         ## FIXME: Extend PyIPOPT to handle changes in sparsity structure
         nnzh = Hs.nnz
         Hd = zeros(nnzh)
-        for i in xrange(nnzh):
+        for i in range(nnzh):
             Hd[i] = Hl[Hs.row[i], Hs.col[i]]
 
         return Hd

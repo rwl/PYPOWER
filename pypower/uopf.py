@@ -23,15 +23,15 @@ from copy import deepcopy
 
 from numpy import flatnonzero as find
 
-from opf_args import opf_args2
-from ppoption import ppoption
-from isload import isload
-from totcost import totcost
-from fairmax import fairmax
-from opf import opf
+from pypower.opf_args import opf_args2
+from pypower.ppoption import ppoption
+from pypower.isload import isload
+from pypower.totcost import totcost
+from pypower.fairmax import fairmax
+from pypower.opf import opf
 
-from idx_bus import PD
-from idx_gen import GEN_STATUS, PG, QG, PMIN, MU_PMIN
+from pypower.idx_bus import PD
+from pypower.idx_gen import GEN_STATUS, PG, QG, PMIN, MU_PMIN
 
 
 def uopf(*args):
@@ -78,7 +78,7 @@ def uopf(*args):
         i = on[i]                     ## convert to generator index
 
         if verbose:
-            print 'Shutting down generator %d so all Pmin limits can be satisfied.\n' % i
+            print('Shutting down generator %d so all Pmin limits can be satisfied.\n' % i)
 
         ## set generation to zero
         ppc["gen"][i, [PG, QG, GEN_STATUS]] = 0
@@ -129,7 +129,7 @@ def uopf(*args):
         else:
             ## shutting something else down helps, so let's keep going
             if verbose:
-                print 'Shutting down generator %d.\n' % k1
+                print('Shutting down generator %d.\n' % k1)
 
             results0 = deepcopy(results1)
             ppc["bus"] = results0["bus"].copy()     ## use these V as starting point for OPF
