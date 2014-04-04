@@ -23,10 +23,10 @@ from warnings import warn
 
 from copy import deepcopy
 
-from idx_bus import BUS_I
-from idx_gen import GEN_BUS
-from idx_brch import F_BUS, T_BUS
-from idx_area import PRICE_REF_BUS
+from pypower.idx_bus import BUS_I
+from pypower.idx_gen import GEN_BUS
+from pypower.idx_brch import F_BUS, T_BUS
+from pypower.idx_area import PRICE_REF_BUS
 
 from pypower.run_userfcn import run_userfcn
 

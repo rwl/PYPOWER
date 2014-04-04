@@ -23,7 +23,12 @@ except ImportError:
 #    print "MOSEK not available"
     pass
 
+from pypower._compat import PY2
 from pypower.util import feval
+
+
+if not PY2:
+    basestring = str
 
 
 def mosek_options(overrides=None, ppopt=None):

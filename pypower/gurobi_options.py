@@ -15,7 +15,12 @@
 # along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
 
 from numpy import Inf
+from pypower._compat import PY2
 from pypower.util import feval
+
+
+if not PY2:
+    basestring = str
 
 
 def gurobi_options(overrides=None, ppopt=None):

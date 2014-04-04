@@ -48,7 +48,7 @@ def runuopf(casedata=None, ppopt=None, fname='', solvedcase=''):
         fd = None
         try:
             fd = open(fname, "wb")
-        except Exception, detail:
+        except Exception as detail:
             stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
             if fd is not None:

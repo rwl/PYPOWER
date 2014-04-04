@@ -168,7 +168,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
                 solver = 'Gauss-Seidel'
             else:
                 solver = 'unknown'
-            print ' -- AC Power Flow (%s)\n' % solver
+            print(' -- AC Power Flow (%s)\n' % solver)
 
         ## initial state
         # V0    = ones(bus.shape[0])            ## flat start
@@ -215,9 +215,9 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
                     if len(pv):
                         if verbose:
                             if len(mx) > 0:
-                                print 'Gen %d [only one left] exceeds upper Q limit : INFEASIBLE PROBLEM\n' % mx
+                                print('Gen %d [only one left] exceeds upper Q limit : INFEASIBLE PROBLEM\n' % mx)
                             else:
-                                print 'Gen %d [only one left] exceeds lower Q limit : INFEASIBLE PROBLEM\n' % mn
+                                print('Gen %d [only one left] exceeds lower Q limit : INFEASIBLE PROBLEM\n' % mn)
 
                         success = 0
                         break
@@ -234,10 +234,10 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
                             mn = []
 
                     if verbose and len(mx) > 0:
-                        print 'Gen %d at upper Q limit, converting to PQ bus\n' % mx
+                        print('Gen %d at upper Q limit, converting to PQ bus\n' % mx)
 
                     if verbose and len(mn) > 0:
-                        print 'Gen %d at lower Q limit, converting to PQ bus\n' % mn
+                        print('Gen %d at lower Q limit, converting to PQ bus\n' % mn)
 
                     ## save corresponding limit values
                     fixedQg[mx] = gen[mx, QMAX]
@@ -251,9 +251,9 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
                         bi = gen[mx[i], GEN_BUS]   ## adjust load accordingly,
                         bus[bi, [PD, QD]] = (bus[bi, [PD, QD]] - gen[mx[i], [PG, QG]])
                     if len(ref) > 1 and any(bus[gen[mx, GEN_BUS], BUS_TYPE] == REF):
-                        raise ValueError, ('Sorry, PYPOWER cannot enforce Q '
-                                           'limits for slack buses in systems '
-                                           'with multiple slacks.')
+                        raise ValueError('Sorry, PYPOWER cannot enforce Q '
+                                         'limits for slack buses in systems '
+                                         'with multiple slacks.')
 
                     bus[gen[mx, GEN_BUS], BUS_TYPE] = PQ   ## & set bus type to PQ
 
@@ -261,7 +261,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
                     ref_temp = ref
                     ref, pv, pq = bustypes(bus, gen)
                     if verbose and ref != ref_temp:
-                        print 'Bus %d is new slack bus\n' % ref
+                        print('Bus %d is new slack bus\n' % ref)
 
                     limited = r_[limited, mx]
                 else:
@@ -300,7 +300,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
         fd = None
         try:
             fd = open(fname, "wb")
-        except Exception, detail:
+        except Exception as detail:
             stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
             if fd is not None:

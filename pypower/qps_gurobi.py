@@ -241,8 +241,8 @@ def qps_gurobi(H, c, A, l, u, xmin, xmax, x0, opt):
             'concurrent',
             'deterministic concurrent'
         ]
-        print ('Gurobi Version %s -- %s %s solver\n'
-            '<unknown>' % (methods[g_opt['Method'] + 1], lpqp))
+        print('Gurobi Version %s -- %s %s solver\n'
+              '<unknown>' % (methods[g_opt['Method'] + 1], lpqp))
 
     x, f, eflag, output, lmbda = \
         gurobipy(c.T, 1, AA, bb, contypes, xmin, xmax, 'C', g_opt)

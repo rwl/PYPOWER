@@ -21,9 +21,9 @@ from numpy import array, linalg, zeros, arange, r_, c_
 from numpy import flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
-from idx_gen import PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX
+from pypower.idx_gen import PC1, PC2, QC1MIN, QC1MAX, QC2MIN, QC2MAX
 
-from hasPQcap import hasPQcap
+from pypower.hasPQcap import hasPQcap
 
 
 def makeApq(baseMVA, gen):

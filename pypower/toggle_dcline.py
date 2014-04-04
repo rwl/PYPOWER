@@ -67,11 +67,11 @@ def toggle_dcline(ppc, on_off):
 
         ## check for proper input data
         if 'dcline' not in ppc or ppc['dcline'].shape[1] < c.LOSS1 + 1:
-            raise ValueError, ('toggle_dcline: case must contain a '
+            raise ValueError('toggle_dcline: case must contain a '
                     '\'dcline\' field, an ndc x %d matrix.', c.LOSS1)
 
         if 'dclinecost' in ppc and ppc['dcline'].shape[0] != ppc['dclinecost'].shape[0]:
-            raise ValueError, ('toggle_dcline: number of rows in \'dcline\''
+            raise ValueError('toggle_dcline: number of rows in \'dcline\''
                     ' field (%d) and \'dclinecost\' field (%d) do not match.' %
                 (ppc['dcline'].shape[0], ppc['dclinecost'].shape[0]))
 
@@ -96,7 +96,7 @@ def toggle_dcline(ppc, on_off):
         ppc = remove_userfcn(ppc, 'formulation', userfcn_dcline_formulation)
         ppc = remove_userfcn(ppc, 'ext2int', userfcn_dcline_ext2int)
     else:
-        raise ValueError, ('toggle_dcline: 2nd argument must be either '
+        raise ValueError('toggle_dcline: 2nd argument must be either '
                 '\'on\' or \'off\'')
 
     return ppc

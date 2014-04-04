@@ -21,7 +21,7 @@ import sys
 
 from numpy import zeros, ones, arange, dot, cumsum, flatnonzero as find
 
-from idx_cost import MODEL, NCOST, PW_LINEAR, POLYNOMIAL, COST
+from pypower.idx_cost import MODEL, NCOST, PW_LINEAR, POLYNOMIAL, COST
 
 
 def modcost(gencost, alpha, modtype='SCALE_F'):

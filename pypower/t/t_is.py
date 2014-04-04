@@ -93,7 +93,7 @@ def t_is(got, expected, prec=5, msg=''):
             else:
                 s += '        expected: %d x %d\n' % expected.shape
 
-        print s
+        print(s)
 
 if __name__ == '__main__':
     a = array([[1,2,3], [4,5,6]])

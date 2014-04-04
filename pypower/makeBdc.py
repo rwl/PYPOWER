@@ -22,8 +22,8 @@ from sys import stderr
 from numpy import ones, r_, pi, flatnonzero as find
 from scipy.sparse import csr_matrix as sparse
 
-from idx_bus import BUS_I
-from idx_brch import F_BUS, T_BUS, BR_X, TAP, SHIFT, BR_STATUS
+from pypower.idx_bus import BUS_I
+from pypower.idx_brch import F_BUS, T_BUS, BR_X, TAP, SHIFT, BR_STATUS
 
 
 def makeBdc(baseMVA, bus, branch):
@@ -50,7 +50,7 @@ def makeBdc(baseMVA, bus, branch):
     nl = branch.shape[0]       ## number of lines
 
     ## check that bus numbers are equal to indices to bus (one set of bus nums)
-    if any(bus[:, BUS_I] != range(nb)):
+    if any(bus[:, BUS_I] != list(range(nb))):
         stderr.write('makeBdc: buses must be numbered consecutively in '
                      'bus matrix\n')
 

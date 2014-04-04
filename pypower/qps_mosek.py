@@ -219,8 +219,8 @@ def qps_mosek(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         else:
             vn = t[0][0]
 
-        print ('MOSEK Version %s -- %s %s solver\n' %
-                (vn, methods[mosek_opt['MSK_IPAR_OPTIMIZER'] + 1], lpqp))
+        print('MOSEK Version %s -- %s %s solver\n' %
+              (vn, methods[mosek_opt['MSK_IPAR_OPTIMIZER'] + 1], lpqp))
 
     cmd = 'minimize echo(%d)' % verbose
     r, res = mosekopt(cmd, prob, mosek_opt)

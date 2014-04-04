@@ -78,7 +78,7 @@ def t_runopf_w_res(quiet=False):
 
     t = 'extra offline gen : ';
     ppc = loadcase(casefile)
-    idx = range(3) +[4]+ range(3, 6)
+    idx = list(range(3)) + [4] + list(range(3, 6))
     ppc['gen'] = ppc['gen'][idx, :]
     ppc['gencost'] = ppc['gencost'][idx, :]
     ppc['reserves']['zones'] = ppc['reserves']['zones'][:, idx]
@@ -97,7 +97,7 @@ def t_runopf_w_res(quiet=False):
 
     t = 'both extra & gen 6 no res : ';
     ppc = loadcase(casefile)
-    idx = range(3) +[4]+ range(3, 6)
+    idx = list(range(3)) + [4] + list(range(3, 6))
     ppc['gen'] = ppc['gen'][idx, :]
     ppc['gencost'] = ppc['gencost'][idx, :]
     ppc['reserves']['zones'] = ppc['reserves']['zones'][:, idx]
