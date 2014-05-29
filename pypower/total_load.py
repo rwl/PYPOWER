@@ -108,7 +108,7 @@ def total_load(bus, gen=None, load_zone=None, which_type=None):
     ## dispatchable load at each bus
     if want_disp:            ## need dispatchable
         ng = gen.shape[0]
-        is_ld = isload(gen) and (gen[:, GEN_STATUS] > 0)
+        is_ld = isload(gen) & (gen[:, GEN_STATUS] > 0)
         ld = find(is_ld)
 
         ## create map of external bus numbers to bus indices

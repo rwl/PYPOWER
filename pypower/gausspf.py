@@ -91,13 +91,13 @@ def gausspf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
 
         ## update voltage
         ## at PQ buses
-        for k in pq[range(npq)]:
+        for k in pq[list(range(npq))]:
             tmp = (conj(Sbus[k] / V[k]) - Ybus[k, :] * V) / Ybus[k, k]
             V[k] = V[k] + asscalar(tmp)
 
         ## at PV buses
         if npv:
-            for k in pv[range(npv)]:
+            for k in pv[list(range(npv))]:
                 tmp = (V[k] * conj(Ybus[k,:] * V)).imag
                 Sbus[k] = Sbus[k].real + 1j * asscalar(tmp)
                 tmp = (conj(Sbus[k] / V[k]) - Ybus[k, :] * V) / Ybus[k, k]
