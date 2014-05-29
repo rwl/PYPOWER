@@ -1,9 +1,0 @@
-Changelog
----------
-
-2011-07-14  Richard Lincoln  <r.w.lincoln@gmail.com>
-
-    * printpf.py: changed boolean operators from bitwise to logical to fix
-    the output options
-
-    * savecase.py: adding indentation to produce valid Python modules

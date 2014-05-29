@@ -13,32 +13,48 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from os.path import abspath, dirname, join
 from setuptools import setup, find_packages
 
-cwd = abspath(dirname(__file__))
-f = open(join(cwd, "README"))
-kwds = {"long_description": f.read()}
-f.close()
 
-entry_points = [
-    'pf = pypower.main:pf',
-    'opf = pypower.main:opf'
-]
-
-setup(name="PYPOWER",
-      version="4.0.1",
-      description="Solves power flow and optimal power flow problems",
-      author="Richard Lincoln",
-      author_email="r.w.lincoln@gmail.com",
-      url="http://www.pypower.org/",
-#      install_requires=["numpy", "scipy"],
-      entry_points={"console_scripts": entry_points},
-      license="GPLv3",
-      include_package_data=True,
-      packages=find_packages(),
-      test_suite="pypower.t.test_pypower.test_pypower",
-      zip_safe=True,
-      **kwds)
-
-# python setup.py sdist bdist_egg bdist_wininst bdist_msi upload
+setup(
+    name='PYPOWER',
+    version='4.1.0',
+    author='Richard Lincoln',
+    author_email='r.w.lincoln@gmail.com',
+    description='Solves power flow and optimal power flow problems',
+    long_description='\n\n'.join(
+        open(f, 'rb').read().decode('utf-8')
+        for f in ['README.rst', 'CHANGES.rst']),
+    url='https://github.com/rwl/PYPOWER',
+    license='GPLv3',
+    install_requires=[
+        # Deactivated to avoid problems with system packages.
+        # Manual installation of NumPy and SciPy required.
+        # 'numpy>=1.6',
+        # 'scipy>=0.9',
+    ],
+    entry_points={'console_scripts': [
+        'pf = pypower.main:pf',
+        'opf = pypower.main:opf'
+    ]},
+    packages=find_packages(),
+    include_package_data=True,
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Education',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Topic :: Scientific/Engineering',
+    ],
+)

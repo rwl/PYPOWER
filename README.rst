@@ -14,18 +14,19 @@ Installation
 
 PYPOWER depends upon:
 
-* Python_ 2.5 or later and
-* SciPy_ 0.7 or later.
+* Python_ 2.6 or later and
+* SciPy_ 0.9 or later.
 
-It can be installed using setuptools_::
+It can be installed using pip_::
 
-  $ easy_install PYPOWER
+  $ pip install PYPOWER
 
 Alternatively, `download <http://pypi.python.org/pypi/PYPOWER#downloads>`_ and
 unpack the tarball and install::
 
-  $ tar zxf PYPOWER-4.0.X.tar.gz
+  $ tar zxf PYPOWER-4.x.y.tar.gz
   $ python setup.py install
+
 
 Using PYPOWER
 -------------
@@ -83,7 +84,7 @@ Links
 * PyCIM_
 
 .. _Python: http://www.python.org
-.. _setuptools: http://peak.telecommunity.com/DevCenter/setuptools
+.. _pip: https://pip.pypa.io
 .. _SciPy: http://www.scipy.org
 .. _MATPOWER: http://www.pserc.cornell.edu/matpower/
 .. _Git: http://git-scm.com/
