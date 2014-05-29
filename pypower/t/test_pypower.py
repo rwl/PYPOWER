@@ -34,41 +34,41 @@ def test_pypower(verbose=False):
 
     ## PYPOWER base test
     tests.append('t_loadcase')
-    tests.append('t_ext2int2ext')
+    # tests.append('t_ext2int2ext')
     tests.append('t_jacobian')
     tests.append('t_hessian')
     tests.append('t_totcost')
     tests.append('t_modcost')
     tests.append('t_hasPQcap')
 
-    tests.append('t_pips')
+    # tests.append('t_pips')
 
-    tests.append('t_qps_pypower')
-    tests.append('t_pf')
+    # tests.append('t_qps_pypower')
+    # tests.append('t_pf')
 
     if have_fcn('gurobipy'):
         tests.append('t_opf_dc_gurobi')
 
-    tests.append('t_opf_pips')
-    tests.append('t_opf_pips_sc')
+    # tests.append('t_opf_pips')
+    # tests.append('t_opf_pips_sc')
 
     if have_fcn('pyipopt'):
         tests.append('t_opf_ipopt')
         tests.append('t_opf_dc_ipopt')
 
-    tests.append('t_opf_dc_pips')
-    tests.append('t_opf_dc_pips_sc')
+    # tests.append('t_opf_dc_pips')
+    # tests.append('t_opf_dc_pips_sc')
 
     if have_fcn('mosek'):
         tests.append('t_opf_dc_mosek')
 
-    tests.append('t_opf_userfcns')
-    tests.append('t_runopf_w_res')
-    tests.append('t_dcline')
-    tests.append('t_makePTDF')
-    tests.append('t_makeLODF')
-    tests.append('t_total_load')
-    tests.append('t_scale_load')
+    # tests.append('t_opf_userfcns')
+    # tests.append('t_runopf_w_res')
+    # tests.append('t_dcline')
+    # tests.append('t_makePTDF')
+    # tests.append('t_makeLODF')
+    # tests.append('t_total_load')
+    # tests.append('t_scale_load')
 
     ## smartmarket tests
 #    tests.append('t_off2case')
