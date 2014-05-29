@@ -2,6 +2,7 @@
 .project
 .pydevproject
 .ropeproject/
+.tox/
 *~
 build/
 dist/
