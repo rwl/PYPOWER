@@ -9,8 +9,9 @@ features include:
 * DC and AC (Newton's method & Fast Decoupled) power flow and
 * DC and AC optimal power flow (OPF)
 
+
 Installation
-------------
+============
 
 PYPOWER depends upon:
 
@@ -29,7 +30,7 @@ unpack the tarball and install::
 
 
 Using PYPOWER
--------------
+=============
 
 Installing PYPOWER creates ``pf`` and ``opf`` commands. To list the command
 options::
@@ -53,16 +54,18 @@ for the IEEE Reliability Test System and write the solved case to file::
 For further information please refer to http://www.pypower.org/ and the
 `API documentation`_.
 
+
 Support
--------
+=======
 
 Questions and comments regarding PYPOWER should be directed to the `mailing
 list <http://groups.google.com/group/pypower>`_:
 
     pypower@googlegroups.com
 
+
 License & Copyright
--------------------
+===================
 
 Copyright (C) 1996-2011 Power System Engineering Research Center
 
@@ -73,8 +76,9 @@ it under the terms of the `GNU General Public License`_ as published
 by the Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
+
 Links
------
+=====
 
 * MATPOWER_ from PSERC (Cornell)
 * MatDyn_ by Stijn Cole

@@ -1,10 +1,6 @@
+include *.cfg
+include *.ini
+include *.rst
 include LICENSE
-include README
-include pypower/t/soln9_dcopf.mat
-include pypower/t/soln9_dcpf.mat
-include pypower/t/soln9_opf_ang.mat
-include pypower/t/soln9_opf_extras1.mat
-include pypower/t/soln9_opf_Plim.mat
-include pypower/t/soln9_PQcap.mat
-include pypower/t/soln9_opf.mat
-include pypower/t/soln9_pf.mat
+include pypower/t/*.mat
+recursive-include doc *

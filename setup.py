@@ -24,7 +24,7 @@ setup(
     description='Solves power flow and optimal power flow problems',
     long_description='\n\n'.join(
         open(f, 'rb').read().decode('utf-8')
-        for f in ['README.rst', 'CHANGES.rst']),
+        for f in ['README.rst', 'CHANGELOG.rst']),
     url='https://github.com/rwl/PYPOWER',
     license='GPLv3',
     install_requires=[
