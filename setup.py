@@ -18,7 +18,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='PYPOWER',
-    version='4.1.0',
+    version='4.1.1',
     author='Richard Lincoln',
     author_email='r.w.lincoln@gmail.com',
     description='Solves power flow and optimal power flow problems',

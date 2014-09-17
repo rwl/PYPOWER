@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 4.1.1 (2014-09-17)
+--------------------------
+
+- [FIX] loadcase.py: Fixed NumPy 1.9 warning about "== None" comparisions.
+
+
 Version 4.1.0 (2014-05-29)
 --------------------------
 
