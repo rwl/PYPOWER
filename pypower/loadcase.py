@@ -180,10 +180,10 @@ def loadcase(casefile,
     # check contents of dict
     if info == 0:
         # check for required keys
-        if (s['baseMVA'] == None or s['bus'] == None \
-            or s['gen'] == None or s['branch'] == None) or \
-            (expect_gencost and s['gencost'] == None) or \
-            (expect_areas and s['areas'] == None):
+        if (s['baseMVA'] is None or s['bus'] is None \
+            or s['gen'] is None or s['branch'] is None) or \
+            (expect_gencost and s['gencost'] is None) or \
+            (expect_areas and s['areas'] is None):
             info = 5  ## missing some expected fields
             err5 = 'missing data'
         else:
