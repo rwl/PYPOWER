@@ -267,7 +267,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
         Ai = vstack([sig * AA[idx, :] for sig, idx in idxs if len(idx)], 'csr')
     else:
         Ai = None
-    be = uu[ieq, :]
+    be = uu[ieq]
     bi = r_[uu[ilt], -ll[igt], uu[ibx], -ll[ibx]]
 
     # evaluate cost f(x0) and constraints g(x0), h(x0)
