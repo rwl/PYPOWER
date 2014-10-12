@@ -64,7 +64,7 @@ Graphical User Interface
 PYPOWER includes a basic GUI that can be used to edit, load and save PYPOWER networks. 
 The GUI is located in the pypower/gui directory and can be launched by running gui.py. 
 
-![Screenshot of GUI](/doc/gui_screenshot.png?raw=true)
+.. image:: /doc/gui_screenshot.png
 
 Support
 =======
