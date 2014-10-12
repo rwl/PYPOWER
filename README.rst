@@ -17,6 +17,7 @@ PYPOWER depends upon:
 
 * Python_ 2.6 or later and
 * SciPy_ 0.9 or later.
+* PyQT4 (for the GUI)
 
 It can be installed using pip_::
 
@@ -31,6 +32,9 @@ unpack the tarball and install::
 
 Using PYPOWER
 =============
+
+Command Line Interface
+----------------------
 
 Installing PYPOWER creates ``pf`` and ``opf`` commands. To list the command
 options::
@@ -54,6 +58,13 @@ for the IEEE Reliability Test System and write the solved case to file::
 For further information please refer to http://www.pypower.org/ and the
 `API documentation`_.
 
+Graphical User Interface
+------------------------
+
+PYPOWER includes a basic GUI that can be used to edit, load and save PYPOWER networks. 
+The GUI is located in the pypower/gui directory and can be launched by running gui.py. 
+
+.. image:: /doc/gui_screenshot.png
 
 Support
 =======
