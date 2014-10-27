@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Version 4.1.2 (2014-10-27)
+--------------------------
+
+- [FIX] Fixed error in runopf() (`issue #11`_).
+- [FIX] Fixed runpf.py with ENFORCE_Q_LIMS option (`pull request #13`_).
+
+.. _`issue #11`: https://github.com/rwl/PYPOWER/issues/11
+.. _`pull request #13`: https://github.com/rwl/PYPOWER/pull/13/
+
+
 Version 4.1.1 (2014-09-17)
 --------------------------
 
