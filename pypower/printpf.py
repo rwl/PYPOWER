@@ -189,72 +189,72 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     if OUT_ANY:
         ## convergence & elapsed time
         if success:
-            fd.write('\nConverged in %.2f seconds' % et)
+            fd.write(('\nConverged in %.2f seconds' % et).encode())
         else:
-            fd.write('\nDid not converge (%.2f seconds)\n' % et)
+            fd.write(('\nDid not converge (%.2f seconds)\n' % et).encode())
 
         ## objective function value
         if isOPF:
-            fd.write('\nObjective Function Value = %.2f $/hr' % f)
+            fd.write(('\nObjective Function Value = %.2f $/hr' % f).encode())
 
     if OUT_SYS_SUM:
-        fd.write('\n================================================================================')
-        fd.write('\n|     System Summary                                                           |')
-        fd.write('\n================================================================================')
-        fd.write('\n\nHow many?                How much?              P (MW)            Q (MVAr)')
-        fd.write('\n---------------------    -------------------  -------------  -----------------')
-        fd.write('\nBuses         %6d     Total Gen Capacity   %7.1f       %7.1f to %.1f' % (nb, sum(gen[allg, PMAX]), sum(gen[allg, QMIN]), sum(gen[allg, QMAX])))
-        fd.write('\nGenerators     %5d     On-line Capacity     %7.1f       %7.1f to %.1f' % (len(allg), sum(gen[ong, PMAX]), sum(gen[ong, QMIN]), sum(gen[ong, QMAX])))
-        fd.write('\nCommitted Gens %5d     Generation (actual)  %7.1f           %7.1f' % (len(ong), sum(gen[ong, PG]), sum(gen[ong, QG])))
-        fd.write('\nLoads          %5d     Load                 %7.1f           %7.1f' % (len(nzld)+len(onld), sum(bus[nzld, PD])-sum(gen[onld, PG]), sum(bus[nzld, QD])-sum(gen[onld, QG])))
-        fd.write('\n  Fixed        %5d       Fixed              %7.1f           %7.1f' % (len(nzld), sum(bus[nzld, PD]), sum(bus[nzld, QD])))
-        fd.write('\n  Dispatchable %5d       Dispatchable       %7.1f of %-7.1f%7.1f' % (len(onld), -sum(gen[onld, PG]), -sum(gen[onld, PMIN]), -sum(gen[onld, QG])))
-        fd.write('\nShunts         %5d     Shunt (inj)          %7.1f           %7.1f' % (len(nzsh),
-            -sum(bus[nzsh, VM]**2 * bus[nzsh, GS]), sum(bus[nzsh, VM]**2 * bus[nzsh, BS]) ))
-        fd.write('\nBranches       %5d     Losses (I^2 * Z)     %8.2f          %8.2f' % (nl, sum(loss.real), sum(loss.imag) ))
-        fd.write('\nTransformers   %5d     Branch Charging (inj)     -            %7.1f' % (len(xfmr), sum(fchg) + sum(tchg) ))
-        fd.write('\nInter-ties     %5d     Total Inter-tie Flow %7.1f           %7.1f' % (len(ties), sum(abs(branch[ties, PF]-branch[ties, PT])) / 2, sum(abs(branch[ties, QF]-branch[ties, QT])) / 2))
-        fd.write('\nAreas          %5d' % len(s_areas))
-        fd.write('\n')
-        fd.write('\n                          Minimum                      Maximum')
-        fd.write('\n                 -------------------------  --------------------------------')
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\n|     System Summary                                                           |').encode())
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\n\nHow many?                How much?              P (MW)            Q (MVAr)').encode())
+        fd.write(('\n---------------------    -------------------  -------------  -----------------').encode())
+        fd.write(('\nBuses         %6d     Total Gen Capacity   %7.1f       %7.1f to %.1f' % (nb, sum(gen[allg, PMAX]), sum(gen[allg, QMIN]), sum(gen[allg, QMAX]))).encode())
+        fd.write(('\nGenerators     %5d     On-line Capacity     %7.1f       %7.1f to %.1f' % (len(allg), sum(gen[ong, PMAX]), sum(gen[ong, QMIN]), sum(gen[ong, QMAX]))).encode())
+        fd.write(('\nCommitted Gens %5d     Generation (actual)  %7.1f           %7.1f' % (len(ong), sum(gen[ong, PG]), sum(gen[ong, QG]))).encode())
+        fd.write(('\nLoads          %5d     Load                 %7.1f           %7.1f' % (len(nzld)+len(onld), sum(bus[nzld, PD])-sum(gen[onld, PG]), sum(bus[nzld, QD])-sum(gen[onld, QG]))).encode())
+        fd.write(('\n  Fixed        %5d       Fixed              %7.1f           %7.1f' % (len(nzld), sum(bus[nzld, PD]), sum(bus[nzld, QD]))).encode())
+        fd.write(('\n  Dispatchable %5d       Dispatchable       %7.1f of %-7.1f%7.1f' % (len(onld), -sum(gen[onld, PG]), -sum(gen[onld, PMIN]), -sum(gen[onld, QG]))).encode())
+        fd.write(('\nShunts         %5d     Shunt (inj)          %7.1f           %7.1f' % (len(nzsh),
+            -sum(bus[nzsh, VM]**2 * bus[nzsh, GS]), sum(bus[nzsh, VM]**2 * bus[nzsh, BS]) )).encode())
+        fd.write(('\nBranches       %5d     Losses (I^2 * Z)     %8.2f          %8.2f' % (nl, sum(loss.real), sum(loss.imag) )).encode())
+        fd.write(('\nTransformers   %5d     Branch Charging (inj)     -            %7.1f' % (len(xfmr), sum(fchg) + sum(tchg) )).encode())
+        fd.write(('\nInter-ties     %5d     Total Inter-tie Flow %7.1f           %7.1f' % (len(ties), sum(abs(branch[ties, PF]-branch[ties, PT])) / 2, sum(abs(branch[ties, QF]-branch[ties, QT])) / 2)).encode())
+        fd.write(('\nAreas          %5d' % len(s_areas)).encode())
+        fd.write(('\n').encode())
+        fd.write(('\n                          Minimum                      Maximum').encode())
+        fd.write(('\n                 -------------------------  --------------------------------').encode())
         minv = min(bus[:, VM])
         mini = argmin(bus[:, VM])
         maxv = max(bus[:, VM])
         maxi = argmax(bus[:, VM])
-        fd.write('\nVoltage Magnitude %7.3f p.u. @ bus %-4d     %7.3f p.u. @ bus %-4d' % (minv, bus[mini, BUS_I], maxv, bus[maxi, BUS_I]))
+        fd.write(('\nVoltage Magnitude %7.3f p.u. @ bus %-4d     %7.3f p.u. @ bus %-4d' % (minv, bus[mini, BUS_I], maxv, bus[maxi, BUS_I])).encode())
         minv = min(bus[:, VA])
         mini = argmin(bus[:, VA])
         maxv = max(bus[:, VA])
         maxi = argmax(bus[:, VA])
-        fd.write('\nVoltage Angle   %8.2f deg   @ bus %-4d   %8.2f deg   @ bus %-4d' % (minv, bus[mini, BUS_I], maxv, bus[maxi, BUS_I]))
+        fd.write(('\nVoltage Angle   %8.2f deg   @ bus %-4d   %8.2f deg   @ bus %-4d' % (minv, bus[mini, BUS_I], maxv, bus[maxi, BUS_I])).encode())
         if not isDC:
             maxv = max(loss.real)
             maxi = argmax(loss.real)
-            fd.write('\nP Losses (I^2*R)             -              %8.2f MW    @ line %d-%d' % (maxv, branch[maxi, F_BUS], branch[maxi, T_BUS]))
+            fd.write(('\nP Losses (I^2*R)             -              %8.2f MW    @ line %d-%d' % (maxv, branch[maxi, F_BUS], branch[maxi, T_BUS])).encode())
             maxv = max(loss.imag)
             maxi = argmax(loss.imag)
-            fd.write('\nQ Losses (I^2*X)             -              %8.2f MVAr  @ line %d-%d' % (maxv, branch[maxi, F_BUS], branch[maxi, T_BUS]))
+            fd.write(('\nQ Losses (I^2*X)             -              %8.2f MVAr  @ line %d-%d' % (maxv, branch[maxi, F_BUS], branch[maxi, T_BUS])).encode())
         if isOPF:
             minv = min(bus[:, LAM_P])
             mini = argmin(bus[:, LAM_P])
             maxv = max(bus[:, LAM_P])
             maxi = argmax(bus[:, LAM_P])
-            fd.write('\nLambda P        %8.2f $/MWh @ bus %-4d   %8.2f $/MWh @ bus %-4d' % (minv, bus[mini, BUS_I], maxv, bus[maxi, BUS_I]))
+            fd.write(('\nLambda P        %8.2f $/MWh @ bus %-4d   %8.2f $/MWh @ bus %-4d' % (minv, bus[mini, BUS_I], maxv, bus[maxi, BUS_I])).encode())
             minv = min(bus[:, LAM_Q])
             mini = argmin(bus[:, LAM_Q])
             maxv = max(bus[:, LAM_Q])
             maxi = argmax(bus[:, LAM_Q])
-            fd.write('\nLambda Q        %8.2f $/MWh @ bus %-4d   %8.2f $/MWh @ bus %-4d' % (minv, bus[mini, BUS_I], maxv, bus[maxi, BUS_I]))
-        fd.write('\n')
+            fd.write(('\nLambda Q        %8.2f $/MWh @ bus %-4d   %8.2f $/MWh @ bus %-4d' % (minv, bus[mini, BUS_I], maxv, bus[maxi, BUS_I])).encode())
+        fd.write(('\n').encode())
 
     if OUT_AREA_SUM:
-        fd.write('\n================================================================================')
-        fd.write('\n|     Area Summary                                                             |')
-        fd.write('\n================================================================================')
-        fd.write('\nArea  # of      # of Gens        # of Loads         # of    # of   # of   # of')
-        fd.write('\n Num  Buses   Total  Online   Total  Fixed  Disp    Shunt   Brchs  Xfmrs   Ties')
-        fd.write('\n----  -----   -----  ------   -----  -----  -----   -----   -----  -----  -----')
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\n|     Area Summary                                                             |').encode())
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\nArea  # of      # of Gens        # of Loads         # of    # of   # of   # of').encode())
+        fd.write(('\n Num  Buses   Total  Online   Total  Fixed  Disp    Shunt   Brchs  Xfmrs   Ties').encode())
+        fd.write(('\n----  -----   -----  ------   -----  -----  -----   -----   -----  -----  -----').encode())
         for i in range(len(s_areas)):
             a = s_areas[i]
             ib = find(bus[:, BUS_AREA] == a)
@@ -270,83 +270,83 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                 nxfmr = 0
             else:
                 nxfmr = len(find((bus[e2i[branch[xfmr, F_BUS].astype(int)], BUS_AREA] == a) & (bus[e2i[branch[xfmr, T_BUS].astype(int)], BUS_AREA] == a)))
-            fd.write('\n%3d  %6d   %5d  %5d   %5d  %5d  %5d   %5d   %5d  %5d  %5d' %
+            fd.write(('\n%3d  %6d   %5d  %5d   %5d  %5d  %5d   %5d   %5d  %5d  %5d' %
                 (a, len(ib), len(ig), len(igon), \
                 len(inzld)+len(ildon), len(inzld), len(ildon), \
-                len(inzsh), len(ibrch), nxfmr, len(in_tie)+len(out_tie)))
+                len(inzsh), len(ibrch), nxfmr, len(in_tie)+len(out_tie))).encode())
 
-        fd.write('\n----  -----   -----  ------   -----  -----  -----   -----   -----  -----  -----')
-        fd.write('\nTot: %6d   %5d  %5d   %5d  %5d  %5d   %5d   %5d  %5d  %5d' %
+        fd.write(('\n----  -----   -----  ------   -----  -----  -----   -----   -----  -----  -----').encode())
+        fd.write(('\nTot: %6d   %5d  %5d   %5d  %5d  %5d   %5d   %5d  %5d  %5d' %
             (nb, len(allg), len(ong), len(nzld)+len(onld),
-            len(nzld), len(onld), len(nzsh), nl, len(xfmr), len(ties)))
-        fd.write('\n')
-        fd.write('\nArea      Total Gen Capacity           On-line Gen Capacity         Generation')
-        fd.write('\n Num     MW           MVAr            MW           MVAr             MW    MVAr')
-        fd.write('\n----   ------  ------------------   ------  ------------------    ------  ------')
+            len(nzld), len(onld), len(nzsh), nl, len(xfmr), len(ties))).encode())
+        fd.write(('\n').encode())
+        fd.write(('\nArea      Total Gen Capacity           On-line Gen Capacity         Generation').encode())
+        fd.write(('\n Num     MW           MVAr            MW           MVAr             MW    MVAr').encode())
+        fd.write(('\n----   ------  ------------------   ------  ------------------    ------  ------').encode())
         for i in range(len(s_areas)):
             a = s_areas[i]
             ig = find((bus[e2i[gen[:, GEN_BUS].astype(int)], BUS_AREA] == a) & ~isload(gen))
             igon = find((bus[e2i[gen[:, GEN_BUS].astype(int)], BUS_AREA] == a) & (gen[:, GEN_STATUS] > 0) & ~isload(gen))
-            fd.write('\n%3d   %7.1f  %7.1f to %-7.1f  %7.1f  %7.1f to %-7.1f   %7.1f %7.1f' %
+            fd.write(('\n%3d   %7.1f  %7.1f to %-7.1f  %7.1f  %7.1f to %-7.1f   %7.1f %7.1f' %
                 (a, sum(gen[ig, PMAX]), sum(gen[ig, QMIN]), sum(gen[ig, QMAX]),
                 sum(gen[igon, PMAX]), sum(gen[igon, QMIN]), sum(gen[igon, QMAX]),
-                sum(gen[igon, PG]), sum(gen[igon, QG]) ))
+                sum(gen[igon, PG]), sum(gen[igon, QG]) )).encode())
 
-        fd.write('\n----   ------  ------------------   ------  ------------------    ------  ------')
-        fd.write('\nTot:  %7.1f  %7.1f to %-7.1f  %7.1f  %7.1f to %-7.1f   %7.1f %7.1f' %
+        fd.write(('\n----   ------  ------------------   ------  ------------------    ------  ------').encode())
+        fd.write(('\nTot:  %7.1f  %7.1f to %-7.1f  %7.1f  %7.1f to %-7.1f   %7.1f %7.1f' %
                 (sum(gen[allg, PMAX]), sum(gen[allg, QMIN]), sum(gen[allg, QMAX]),
                 sum(gen[ong, PMAX]), sum(gen[ong, QMIN]), sum(gen[ong, QMAX]),
-                sum(gen[ong, PG]), sum(gen[ong, QG]) ))
-        fd.write('\n')
-        fd.write('\nArea    Disp Load Cap       Disp Load         Fixed Load        Total Load')
-        fd.write('\n Num      MW     MVAr       MW     MVAr       MW     MVAr       MW     MVAr')
-        fd.write('\n----    ------  ------    ------  ------    ------  ------    ------  ------')
+                sum(gen[ong, PG]), sum(gen[ong, QG]) )).encode())
+        fd.write(('\n').encode())
+        fd.write(('\nArea    Disp Load Cap       Disp Load         Fixed Load        Total Load').encode())
+        fd.write(('\n Num      MW     MVAr       MW     MVAr       MW     MVAr       MW     MVAr').encode())
+        fd.write(('\n----    ------  ------    ------  ------    ------  ------    ------  ------').encode())
         Qlim = (gen[:, QMIN] == 0) * gen[:, QMAX] + (gen[:, QMAX] == 0) * gen[:, QMIN]
         for i in range(len(s_areas)):
             a = s_areas[i]
             ildon = find((bus[e2i[gen[:, GEN_BUS].astype(int)], BUS_AREA] == a) & (gen[:, GEN_STATUS] > 0) & isload(gen))
             inzld = find((bus[:, BUS_AREA] == a) & logical_or(bus[:, PD], bus[:, QD]))
-            fd.write('\n%3d    %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f' %
+            fd.write(('\n%3d    %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f' %
                 (a, -sum(gen[ildon, PMIN]),
                 -sum(Qlim[ildon]),
                 -sum(gen[ildon, PG]), -sum(gen[ildon, QG]),
                 sum(bus[inzld, PD]), sum(bus[inzld, QD]),
                 -sum(gen[ildon, PG]) + sum(bus[inzld, PD]),
-                -sum(gen[ildon, QG]) + sum(bus[inzld, QD]) ))
+                -sum(gen[ildon, QG]) + sum(bus[inzld, QD]) )).encode())
 
-        fd.write('\n----    ------  ------    ------  ------    ------  ------    ------  ------')
-        fd.write('\nTot:   %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f' %
+        fd.write(('\n----    ------  ------    ------  ------    ------  ------    ------  ------').encode())
+        fd.write(('\nTot:   %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f   %7.1f %7.1f' %
                 (-sum(gen[onld, PMIN]),
                 -sum(Qlim[onld]),
                 -sum(gen[onld, PG]), -sum(gen[onld, QG]),
                 sum(bus[nzld, PD]), sum(bus[nzld, QD]),
                 -sum(gen[onld, PG]) + sum(bus[nzld, PD]),
-                -sum(gen[onld, QG]) + sum(bus[nzld, QD])) )
-        fd.write('\n')
-        fd.write('\nArea      Shunt Inj        Branch      Series Losses      Net Export')
-        fd.write('\n Num      MW     MVAr     Charging      MW     MVAr       MW     MVAr')
-        fd.write('\n----    ------  ------    --------    ------  ------    ------  ------')
+                -sum(gen[onld, QG]) + sum(bus[nzld, QD])) ).encode())
+        fd.write(('\n').encode())
+        fd.write(('\nArea      Shunt Inj        Branch      Series Losses      Net Export').encode())
+        fd.write(('\n Num      MW     MVAr     Charging      MW     MVAr       MW     MVAr').encode())
+        fd.write(('\n----    ------  ------    --------    ------  ------    ------  ------').encode())
         for i in range(len(s_areas)):
             a = s_areas[i]
             inzsh   = find((bus[:, BUS_AREA] == a) & logical_or(bus[:, GS], bus[:, BS]))
             ibrch   = find((bus[e2i[branch[:, F_BUS].astype(int)], BUS_AREA] == a) & (bus[e2i[branch[:, T_BUS].astype(int)], BUS_AREA] == a) & branch[:, BR_STATUS].astype(bool))
             in_tie  = find((bus[e2i[branch[:, F_BUS].astype(int)], BUS_AREA] != a) & (bus[e2i[branch[:, T_BUS].astype(int)], BUS_AREA] == a) & branch[:, BR_STATUS].astype(bool))
             out_tie = find((bus[e2i[branch[:, F_BUS].astype(int)], BUS_AREA] == a) & (bus[e2i[branch[:, T_BUS].astype(int)], BUS_AREA] != a) & branch[:, BR_STATUS].astype(bool))
-            fd.write('\n%3d    %7.1f %7.1f    %7.1f    %7.2f %7.2f   %7.1f %7.1f' %
+            fd.write(('\n%3d    %7.1f %7.1f    %7.1f    %7.2f %7.2f   %7.1f %7.1f' %
                 (a, -sum(bus[inzsh, VM]**2 * bus[inzsh, GS]),
                  sum(bus[inzsh, VM]**2 * bus[inzsh, BS]),
                  sum(fchg[ibrch]) + sum(tchg[ibrch]) + sum(fchg[out_tie]) + sum(tchg[in_tie]),
                  sum(real(loss[ibrch])) + sum(real(loss[r_[in_tie, out_tie]])) / 2,
                  sum(imag(loss[ibrch])) + sum(imag(loss[r_[in_tie, out_tie]])) / 2,
                  sum(branch[in_tie, PT])+sum(branch[out_tie, PF]) - sum(real(loss[r_[in_tie, out_tie]])) / 2,
-                 sum(branch[in_tie, QT])+sum(branch[out_tie, QF]) - sum(imag(loss[r_[in_tie, out_tie]])) / 2  ))
+                 sum(branch[in_tie, QT])+sum(branch[out_tie, QF]) - sum(imag(loss[r_[in_tie, out_tie]])) / 2  )).encode())
 
-        fd.write('\n----    ------  ------    --------    ------  ------    ------  ------')
-        fd.write('\nTot:   %7.1f %7.1f    %7.1f    %7.2f %7.2f       -       -' %
+        fd.write(('\n----    ------  ------    --------    ------  ------    ------  ------').encode())
+        fd.write(('\nTot:   %7.1f %7.1f    %7.1f    %7.2f %7.2f       -       -' %
             (-sum(bus[nzsh, VM]**2 * bus[nzsh, GS]),
              sum(bus[nzsh, VM]**2 * bus[nzsh, BS]),
-             sum(fchg) + sum(tchg), sum(real(loss)), sum(imag(loss)) ))
-        fd.write('\n')
+             sum(fchg) + sum(tchg), sum(real(loss)), sum(imag(loss)) )).encode())
+        fd.write(('\n').encode())
 
     ## generator data
     if OUT_GEN:
@@ -354,114 +354,114 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
             genlamP = bus[e2i[gen[:, GEN_BUS].astype(int)], LAM_P]
             genlamQ = bus[e2i[gen[:, GEN_BUS].astype(int)], LAM_Q]
 
-        fd.write('\n================================================================================')
-        fd.write('\n|     Generator Data                                                           |')
-        fd.write('\n================================================================================')
-        fd.write('\n Gen   Bus   Status     Pg        Qg   ')
-        if isOPF: fd.write('   Lambda ($/MVA-hr)')
-        fd.write('\n  #     #              (MW)     (MVAr) ')
-        if isOPF: fd.write('     P         Q    ')
-        fd.write('\n----  -----  ------  --------  --------')
-        if isOPF: fd.write('  --------  --------')
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\n|     Generator Data                                                           |').encode())
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\n Gen   Bus   Status     Pg        Qg   ').encode())
+        if isOPF: fd.write(('   Lambda ($/MVA-hr)').encode())
+        fd.write(('\n  #     #              (MW)     (MVAr) ').encode())
+        if isOPF: fd.write(('     P         Q    ').encode())
+        fd.write(('\n----  -----  ------  --------  --------').encode())
+        if isOPF: fd.write(('  --------  --------').encode())
         for k in range(len(ong)):
             i = ong[k]
-            fd.write('\n%3d %6d     %2d ' % (i, gen[i, GEN_BUS], gen[i, GEN_STATUS]))
+            fd.write(('\n%3d %6d     %2d ' % (i, gen[i, GEN_BUS], gen[i, GEN_STATUS])).encode())
             if (gen[i, GEN_STATUS] > 0) & logical_or(gen[i, PG], gen[i, QG]):
-                fd.write('%10.2f%10.2f' % (gen[i, PG], gen[i, QG]))
+                fd.write(('%10.2f%10.2f' % (gen[i, PG], gen[i, QG])).encode())
             else:
-                fd.write('       -         -  ')
-            if isOPF: fd.write('%10.2f%10.2f' % (genlamP[i], genlamQ[i]))
+                fd.write(('       -         -  ').encode())
+            if isOPF: fd.write(('%10.2f%10.2f' % (genlamP[i], genlamQ[i])).encode())
 
-        fd.write('\n                     --------  --------')
-        fd.write('\n            Total: %9.2f%10.2f' % (sum(gen[ong, PG]), sum(gen[ong, QG])))
-        fd.write('\n')
+        fd.write(('\n                     --------  --------').encode())
+        fd.write(('\n            Total: %9.2f%10.2f' % (sum(gen[ong, PG]), sum(gen[ong, QG]))).encode())
+        fd.write(('\n').encode())
         if any(onld + 1):
-            fd.write('\n================================================================================')
-            fd.write('\n|     Dispatchable Load Data                                                   |')
-            fd.write('\n================================================================================')
-            fd.write('\n Gen   Bus   Status     Pd        Qd   ')
-            if isOPF: fd.write('   Lambda ($/MVA-hr)')
-            fd.write('\n  #     #              (MW)     (MVAr) ')
-            if isOPF: fd.write('     P         Q    ')
-            fd.write('\n----  -----  ------  --------  --------')
-            if isOPF: fd.write('  --------  --------')
+            fd.write(('\n================================================================================').encode())
+            fd.write(('\n|     Dispatchable Load Data                                                   |').encode())
+            fd.write(('\n================================================================================').encode())
+            fd.write(('\n Gen   Bus   Status     Pd        Qd   ').encode())
+            if isOPF: fd.write(('   Lambda ($/MVA-hr)').encode())
+            fd.write(('\n  #     #              (MW)     (MVAr) ').encode())
+            if isOPF: fd.write(('     P         Q    ').encode())
+            fd.write(('\n----  -----  ------  --------  --------').encode())
+            if isOPF: fd.write(('  --------  --------').encode())
             for k in range(len(onld)):
                 i = onld[k]
-                fd.write('\n%3d %6d     %2d ' % (i, gen[i, GEN_BUS], gen[i, GEN_STATUS]))
+                fd.write(('\n%3d %6d     %2d ' % (i, gen[i, GEN_BUS], gen[i, GEN_STATUS])).encode())
                 if (gen[i, GEN_STATUS] > 0) & logical_or(gen[i, PG], gen[i, QG]):
-                    fd.write('%10.2f%10.2f' % (-gen[i, PG], -gen[i, QG]))
+                    fd.write(('%10.2f%10.2f' % (-gen[i, PG], -gen[i, QG])).encode())
                 else:
-                    fd.write('       -         -  ')
+                    fd.write(('       -         -  ').encode())
 
-                if isOPF: fd.write('%10.2f%10.2f' % (genlamP[i], genlamQ[i]))
-            fd.write('\n                     --------  --------')
-            fd.write('\n            Total: %9.2f%10.2f' % (-sum(gen[onld, PG]), -sum(gen[onld, QG])))
-            fd.write('\n')
+                if isOPF: fd.write(('%10.2f%10.2f' % (genlamP[i], genlamQ[i])).encode())
+            fd.write(('\n                     --------  --------').encode())
+            fd.write(('\n            Total: %9.2f%10.2f' % (-sum(gen[onld, PG]), -sum(gen[onld, QG]))).encode())
+            fd.write(('\n').encode())
 
     ## bus data
     if OUT_BUS:
-        fd.write('\n================================================================================')
-        fd.write('\n|     Bus Data                                                                 |')
-        fd.write('\n================================================================================')
-        fd.write('\n Bus      Voltage          Generation             Load        ')
-        if isOPF: fd.write('  Lambda($/MVA-hr)')
-        fd.write('\n  #   Mag(pu) Ang(deg)   P (MW)   Q (MVAr)   P (MW)   Q (MVAr)')
-        if isOPF: fd.write('     P        Q   ')
-        fd.write('\n----- ------- --------  --------  --------  --------  --------')
-        if isOPF: fd.write('  -------  -------')
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\n|     Bus Data                                                                 |').encode())
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\n Bus      Voltage          Generation             Load        ').encode())
+        if isOPF: fd.write(('  Lambda($/MVA-hr)').encode())
+        fd.write(('\n  #   Mag(pu) Ang(deg)   P (MW)   Q (MVAr)   P (MW)   Q (MVAr)').encode())
+        if isOPF: fd.write(('     P        Q   ').encode())
+        fd.write(('\n----- ------- --------  --------  --------  --------  --------').encode())
+        if isOPF: fd.write(('  -------  -------').encode())
         for i in range(nb):
-            fd.write('\n%5d%7.3f%9.3f' % tuple(bus[i, [BUS_I, VM, VA]]))
+            fd.write(('\n%5d%7.3f%9.3f' % tuple(bus[i, [BUS_I, VM, VA]])).encode())
             if bus[i, BUS_TYPE] == REF:
-                fd.write('*')
+                fd.write(('*').encode())
             else:
-                fd.write(' ')
+                fd.write((' ').encode())
             g  = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) &
                         ~isload(gen))
             ld = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) &
                         isload(gen))
             if any(g + 1):
-                fd.write('%9.2f%10.2f' % (sum(gen[g, PG]), sum(gen[g, QG])))
+                fd.write(('%9.2f%10.2f' % (sum(gen[g, PG]), sum(gen[g, QG]))).encode())
             else:
-                fd.write('      -         -  ')
+                fd.write(('      -         -  ').encode())
 
             if logical_or(bus[i, PD], bus[i, QD]) | any(ld + 1):
                 if any(ld + 1):
-                    fd.write('%10.2f*%9.2f*' % (bus[i, PD] - sum(gen[ld, PG]),
-                                                bus[i, QD] - sum(gen[ld, QG])))
+                    fd.write(('%10.2f*%9.2f*' % (bus[i, PD] - sum(gen[ld, PG]),
+                                                bus[i, QD] - sum(gen[ld, QG]))).encode())
                 else:
-                    fd.write('%10.2f%10.2f ' % tuple(bus[i, [PD, QD]]))
+                    fd.write(('%10.2f%10.2f ' % tuple(bus[i, [PD, QD]])).encode())
             else:
-                fd.write('       -         -   ')
+                fd.write(('       -         -   ').encode())
             if isOPF:
-                fd.write('%9.3f' % bus[i, LAM_P])
+                fd.write(('%9.3f' % bus[i, LAM_P]).encode())
                 if abs(bus[i, LAM_Q]) > ptol:
-                    fd.write('%8.3f' % bus[i, LAM_Q])
+                    fd.write(('%8.3f' % bus[i, LAM_Q]).encode())
                 else:
-                    fd.write('     -')
-        fd.write('\n                        --------  --------  --------  --------')
-        fd.write('\n               Total: %9.2f %9.2f %9.2f %9.2f' %
+                    fd.write(('     -').encode())
+        fd.write(('\n                        --------  --------  --------  --------').encode())
+        fd.write(('\n               Total: %9.2f %9.2f %9.2f %9.2f' %
             (sum(gen[ong, PG]), sum(gen[ong, QG]),
              sum(bus[nzld, PD]) - sum(gen[onld, PG]),
-             sum(bus[nzld, QD]) - sum(gen[onld, QG])))
-        fd.write('\n')
+             sum(bus[nzld, QD]) - sum(gen[onld, QG]))).encode())
+        fd.write(('\n').encode())
 
     ## branch data
     if OUT_BRANCH:
-        fd.write('\n================================================================================')
-        fd.write('\n|     Branch Data                                                              |')
-        fd.write('\n================================================================================')
-        fd.write('\nBrnch   From   To    From Bus Injection   To Bus Injection     Loss (I^2 * Z)  ')
-        fd.write('\n  #     Bus    Bus    P (MW)   Q (MVAr)   P (MW)   Q (MVAr)   P (MW)   Q (MVAr)')
-        fd.write('\n-----  -----  -----  --------  --------  --------  --------  --------  --------')
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\n|     Branch Data                                                              |').encode())
+        fd.write(('\n================================================================================').encode())
+        fd.write(('\nBrnch   From   To    From Bus Injection   To Bus Injection     Loss (I^2 * Z)  ').encode())
+        fd.write(('\n  #     Bus    Bus    P (MW)   Q (MVAr)   P (MW)   Q (MVAr)   P (MW)   Q (MVAr)').encode())
+        fd.write(('\n-----  -----  -----  --------  --------  --------  --------  --------  --------').encode())
         for i in range(nl):
-            fd.write('\n%4d%7d%7d%10.2f%10.2f%10.2f%10.2f%10.3f%10.2f' %
+            fd.write(('\n%4d%7d%7d%10.2f%10.2f%10.2f%10.2f%10.3f%10.2f' %
                 (i, branch[i, F_BUS], branch[i, T_BUS],
                      branch[i, PF], branch[i, QF], branch[i, PT], branch[i, QT],
-                     loss[i].real, loss[i].imag))
-        fd.write('\n                                                             --------  --------')
-        fd.write('\n                                                    Total:%10.3f%10.2f' %
-                (sum(real(loss)), sum(imag(loss))))
-        fd.write('\n')
+                     loss[i].real, loss[i].imag)).encode())
+        fd.write(('\n                                                             --------  --------').encode())
+        fd.write(('\n                                                    Total:%10.3f%10.2f' %
+                (sum(real(loss)), sum(imag(loss)))).encode())
+        fd.write(('\n').encode())
 
     ##-----  constraint data  -----
     if isOPF:
@@ -472,30 +472,30 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                               any(bus[:, VM] > bus[:, VMAX] - ctol) |
                               any(bus[:, MU_VMIN] > ptol) |
                               any(bus[:, MU_VMAX] > ptol)))):
-            fd.write('\n================================================================================')
-            fd.write('\n|     Voltage Constraints                                                      |')
-            fd.write('\n================================================================================')
-            fd.write('\nBus #  Vmin mu    Vmin    |V|   Vmax    Vmax mu')
-            fd.write('\n-----  --------   -----  -----  -----   --------')
+            fd.write(('\n================================================================================').encode())
+            fd.write(('\n|     Voltage Constraints                                                      |').encode())
+            fd.write(('\n================================================================================').encode())
+            fd.write(('\nBus #  Vmin mu    Vmin    |V|   Vmax    Vmax mu').encode())
+            fd.write(('\n-----  --------   -----  -----  -----   --------').encode())
             for i in range(nb):
                 if (OUT_V_LIM == 2) | (OUT_V_LIM == 1 &
                              ((bus[i, VM] < bus[i, VMIN] + ctol) |
                               (bus[i, VM] > bus[i, VMAX] - ctol) |
                               (bus[i, MU_VMIN] > ptol) |
                               (bus[i, MU_VMAX] > ptol))):
-                    fd.write('\n%5d' % bus[i, BUS_I])
+                    fd.write(('\n%5d' % bus[i, BUS_I]).encode())
                     if ((bus[i, VM] < bus[i, VMIN] + ctol) |
                             (bus[i, MU_VMIN] > ptol)):
-                        fd.write('%10.3f' % bus[i, MU_VMIN])
+                        fd.write(('%10.3f' % bus[i, MU_VMIN]).encode())
                     else:
-                        fd.write('      -   ')
+                        fd.write(('      -   ').encode())
 
-                    fd.write('%8.3f%7.3f%7.3f' % tuple(bus[i, [VMIN, VM, VMAX]]))
+                    fd.write(('%8.3f%7.3f%7.3f' % tuple(bus[i, [VMIN, VM, VMAX]])).encode())
                     if (bus[i, VM] > bus[i, VMAX] - ctol) | (bus[i, MU_VMAX] > ptol):
-                        fd.write('%10.3f' % bus[i, MU_VMAX])
+                        fd.write(('%10.3f' % bus[i, MU_VMAX]).encode())
                     else:
-                        fd.write('      -    ')
-            fd.write('\n')
+                        fd.write(('      -    ').encode())
+            fd.write(('\n').encode())
 
         ## generator P constraints
         if (OUT_PG_LIM == 2) | \
@@ -508,38 +508,38 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                                       any(gen[ong, QG] > gen[ong, QMAX] - ctol) |
                                       any(gen[ong, MU_QMIN] > ptol) |
                                       any(gen[ong, MU_QMAX] > ptol))))):
-            fd.write('\n================================================================================')
-            fd.write('\n|     Generation Constraints                                                   |')
-            fd.write('\n================================================================================')
+            fd.write(('\n================================================================================').encode())
+            fd.write(('\n|     Generation Constraints                                                   |').encode())
+            fd.write(('\n================================================================================').encode())
 
         if (OUT_PG_LIM == 2) | ((OUT_PG_LIM == 1) &
                                  (any(gen[ong, PG] < gen[ong, PMIN] + ctol) |
                                   any(gen[ong, PG] > gen[ong, PMAX] - ctol) |
                                   any(gen[ong, MU_PMIN] > ptol) |
                                   any(gen[ong, MU_PMAX] > ptol))):
-            fd.write('\n Gen   Bus                Active Power Limits')
-            fd.write('\n  #     #    Pmin mu    Pmin       Pg       Pmax    Pmax mu')
-            fd.write('\n----  -----  -------  --------  --------  --------  -------')
+            fd.write(('\n Gen   Bus                Active Power Limits').encode())
+            fd.write(('\n  #     #    Pmin mu    Pmin       Pg       Pmax    Pmax mu').encode())
+            fd.write(('\n----  -----  -------  --------  --------  --------  -------').encode())
             for k in range(len(ong)):
                 i = ong[k]
                 if (OUT_PG_LIM == 2) | ((OUT_PG_LIM == 1) &
                             ((gen[i, PG] < gen[i, PMIN] + ctol) |
                              (gen[i, PG] > gen[i, PMAX] - ctol) |
                              (gen[i, MU_PMIN] > ptol) | (gen[i, MU_PMAX] > ptol))):
-                    fd.write('\n%4d%6d ' % (i, gen[i, GEN_BUS]))
+                    fd.write(('\n%4d%6d ' % (i, gen[i, GEN_BUS])).encode())
                     if (gen[i, PG] < gen[i, PMIN] + ctol) | (gen[i, MU_PMIN] > ptol):
-                        fd.write('%8.3f' % gen[i, MU_PMIN])
+                        fd.write(('%8.3f' % gen[i, MU_PMIN]).encode())
                     else:
-                        fd.write('     -  ')
+                        fd.write(('     -  ').encode())
                     if gen[i, PG]:
-                        fd.write('%10.2f%10.2f%10.2f' % tuple(gen[i, [PMIN, PG, PMAX]]))
+                        fd.write(('%10.2f%10.2f%10.2f' % tuple(gen[i, [PMIN, PG, PMAX]])).encode())
                     else:
-                        fd.write('%10.2f       -  %10.2f' % tuple(gen[i, [PMIN, PMAX]]))
+                        fd.write(('%10.2f       -  %10.2f' % tuple(gen[i, [PMIN, PMAX]])).encode())
                     if (gen[i, PG] > gen[i, PMAX] - ctol) | (gen[i, MU_PMAX] > ptol):
-                        fd.write('%9.3f' % gen[i, MU_PMAX])
+                        fd.write(('%9.3f' % gen[i, MU_PMAX]).encode())
                     else:
-                        fd.write('      -  ')
-            fd.write('\n')
+                        fd.write(('      -  ').encode())
+            fd.write(('\n').encode())
 
         ## generator Q constraints
         if (not isDC) & ((OUT_QG_LIM == 2) | ((OUT_QG_LIM == 1) &
@@ -547,9 +547,9 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                                   any(gen[ong, QG] > gen[ong, QMAX] - ctol) |
                                   any(gen[ong, MU_QMIN] > ptol) |
                                   any(gen[ong, MU_QMAX] > ptol)))):
-            fd.write('\nGen  Bus              Reactive Power Limits')
-            fd.write('\n #    #   Qmin mu    Qmin       Qg       Qmax    Qmax mu')
-            fd.write('\n---  ---  -------  --------  --------  --------  -------')
+            fd.write(('\nGen  Bus              Reactive Power Limits').encode())
+            fd.write(('\n #    #   Qmin mu    Qmin       Qg       Qmax    Qmax mu').encode())
+            fd.write(('\n---  ---  -------  --------  --------  --------  -------').encode())
             for k in range(len(ong)):
                 i = ong[k]
                 if (OUT_QG_LIM == 2) | ((OUT_QG_LIM == 1) &
@@ -557,21 +557,21 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                              (gen[i, QG] > gen[i, QMAX] - ctol) |
                              (gen[i, MU_QMIN] > ptol) |
                              (gen[i, MU_QMAX] > ptol))):
-                    fd.write('\n%3d%5d' % (i, gen[i, GEN_BUS]))
+                    fd.write(('\n%3d%5d' % (i, gen[i, GEN_BUS])).encode())
                     if (gen[i, QG] < gen[i, QMIN] + ctol) | (gen[i, MU_QMIN] > ptol):
-                        fd.write('%8.3f' % gen[i, MU_QMIN])
+                        fd.write(('%8.3f' % gen[i, MU_QMIN]).encode())
                     else:
-                        fd.write('     -  ')
+                        fd.write(('     -  ').encode())
                     if gen[i, QG]:
-                        fd.write('%10.2f%10.2f%10.2f' % tuple(gen[i, [QMIN, QG, QMAX]]))
+                        fd.write(('%10.2f%10.2f%10.2f' % tuple(gen[i, [QMIN, QG, QMAX]])).encode())
                     else:
-                        fd.write('%10.2f       -  %10.2f' % tuple(gen[i, [QMIN, QMAX]]))
+                        fd.write(('%10.2f       -  %10.2f' % tuple(gen[i, [QMIN, QMAX]])).encode())
 
                     if (gen[i, QG] > gen[i, QMAX] - ctol) | (gen[i, MU_QMAX] > ptol):
-                        fd.write('%9.3f' % gen[i, MU_QMAX])
+                        fd.write(('%9.3f' % gen[i, MU_QMAX]).encode())
                     else:
-                        fd.write('      -  ')
-            fd.write('\n')
+                        fd.write(('      -  ').encode())
+            fd.write(('\n').encode())
 
         ## dispatchable load P constraints
         if (OUT_PG_LIM == 2) | (OUT_QG_LIM == 2) | \
@@ -583,17 +583,17 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                                       any(gen[onld, QG] > gen[onld, QMAX] - ctol) |
                                       any(gen[onld, MU_QMIN] > ptol) |
                                       any(gen[onld, MU_QMAX] > ptol))):
-            fd.write('\n================================================================================')
-            fd.write('\n|     Dispatchable Load Constraints                                            |')
-            fd.write('\n================================================================================')
+            fd.write(('\n================================================================================').encode())
+            fd.write(('\n|     Dispatchable Load Constraints                                            |').encode())
+            fd.write(('\n================================================================================').encode())
         if (OUT_PG_LIM == 2) | ((OUT_PG_LIM == 1) &
                                  (any(gen[onld, PG] < gen[onld, PMIN] + ctol) |
                                   any(gen[onld, PG] > gen[onld, PMAX] - ctol) |
                                   any(gen[onld, MU_PMIN] > ptol) |
                                   any(gen[onld, MU_PMAX] > ptol))):
-            fd.write('\nGen  Bus               Active Power Limits')
-            fd.write('\n #    #   Pmin mu    Pmin       Pg       Pmax    Pmax mu')
-            fd.write('\n---  ---  -------  --------  --------  --------  -------')
+            fd.write(('\nGen  Bus               Active Power Limits').encode())
+            fd.write(('\n #    #   Pmin mu    Pmin       Pg       Pmax    Pmax mu').encode())
+            fd.write(('\n---  ---  -------  --------  --------  --------  -------').encode())
             for k in range(len(onld)):
                 i = onld[k]
                 if (OUT_PG_LIM == 2) | ((OUT_PG_LIM == 1) &
@@ -601,21 +601,21 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                              (gen[i, PG] > gen[i, PMAX] - ctol) |
                              (gen[i, MU_PMIN] > ptol) |
                              (gen[i, MU_PMAX] > ptol))):
-                    fd.write('\n%3d%5d' % (i, gen[i, GEN_BUS]))
+                    fd.write(('\n%3d%5d' % (i, gen[i, GEN_BUS])).encode())
                     if (gen[i, PG] < gen[i, PMIN] + ctol) | (gen[i, MU_PMIN] > ptol):
-                        fd.write('%8.3f' % gen[i, MU_PMIN])
+                        fd.write(('%8.3f' % gen[i, MU_PMIN]).encode())
                     else:
-                        fd.write('     -  ')
+                        fd.write(('     -  ').encode())
                     if gen[i, PG]:
-                        fd.write('%10.2f%10.2f%10.2f' % gen[i, [PMIN, PG, PMAX]])
+                        fd.write(('%10.2f%10.2f%10.2f' % gen[i, [PMIN, PG, PMAX]]).encode())
                     else:
-                        fd.write('%10.2f       -  %10.2f' % gen[i, [PMIN, PMAX]])
+                        fd.write(('%10.2f       -  %10.2f' % gen[i, [PMIN, PMAX]]).encode())
 
                     if (gen[i, PG] > gen[i, PMAX] - ctol) | (gen[i, MU_PMAX] > ptol):
-                        fd.write('%9.3f' % gen[i, MU_PMAX])
+                        fd.write(('%9.3f' % gen[i, MU_PMAX]).encode())
                     else:
-                        fd.write('      -  ')
-            fd.write('\n')
+                        fd.write(('      -  ').encode())
+            fd.write(('\n').encode())
 
         ## dispatchable load Q constraints
         if (not isDC) & ((OUT_QG_LIM == 2) | ((OUT_QG_LIM == 1) &
@@ -623,9 +623,9 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                                   any(gen[onld, QG] > gen[onld, QMAX] - ctol) |
                                   any(gen[onld, MU_QMIN] > ptol) |
                                   any(gen[onld, MU_QMAX] > ptol)))):
-            fd.write('\nGen  Bus              Reactive Power Limits')
-            fd.write('\n #    #   Qmin mu    Qmin       Qg       Qmax    Qmax mu')
-            fd.write('\n---  ---  -------  --------  --------  --------  -------')
+            fd.write(('\nGen  Bus              Reactive Power Limits').encode())
+            fd.write(('\n #    #   Qmin mu    Qmin       Qg       Qmax    Qmax mu').encode())
+            fd.write(('\n---  ---  -------  --------  --------  --------  -------').encode())
             for k in range(len(onld)):
                 i = onld[k]
                 if (OUT_QG_LIM == 2) | ((OUT_QG_LIM == 1) &
@@ -633,22 +633,22 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                              (gen[i, QG] > gen[i, QMAX] - ctol) |
                              (gen[i, MU_QMIN] > ptol) |
                              (gen[i, MU_QMAX] > ptol))):
-                    fd.write('\n%3d%5d' % (i, gen(i, GEN_BUS)))
+                    fd.write(('\n%3d%5d' % (i, gen(i, GEN_BUS))).encode())
                     if (gen[i, QG] < gen[i, QMIN] + ctol) | (gen[i, MU_QMIN] > ptol):
-                        fd.write('%8.3f' % gen[i, MU_QMIN])
+                        fd.write(('%8.3f' % gen[i, MU_QMIN]).encode())
                     else:
-                        fd.write('     -  ')
+                        fd.write(('     -  ').encode())
 
                     if gen[i, QG]:
-                        fd.write('%10.2f%10.2f%10.2f' % gen[i, [QMIN, QG, QMAX]])
+                        fd.write(('%10.2f%10.2f%10.2f' % gen[i, [QMIN, QG, QMAX]]).encode())
                     else:
-                        fd.write('%10.2f       -  %10.2f' % gen[i, [QMIN, QMAX]])
+                        fd.write(('%10.2f       -  %10.2f' % gen[i, [QMIN, QMAX]]).encode())
 
                     if (gen[i, QG] > gen[i, QMAX] - ctol) | (gen[i, MU_QMAX] > ptol):
-                        fd.write('%9.3f' % gen[i, MU_QMAX])
+                        fd.write(('%9.3f' % gen[i, MU_QMAX]).encode())
                     else:
-                        fd.write('      -  ')
-            fd.write('\n')
+                        fd.write(('      -  ').encode())
+            fd.write(('\n').encode())
 
         ## line flow constraints
         if (ppopt['OPF_FLOW_LIM'] == 1) | isDC:  ## P limit
@@ -669,31 +669,31 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
                              any((branch[:, RATE_A] != 0) & (abs(Ft) > branch[:, RATE_A] - ctol)) |
                              any(branch[:, MU_SF] > ptol) |
                              any(branch[:, MU_ST] > ptol))):
-            fd.write('\n================================================================================')
-            fd.write('\n|     Branch Flow Constraints                                                  |')
-            fd.write('\n================================================================================')
-            fd.write('\nBrnch   From     "From" End        Limit       "To" End        To')
-            fd.write(strg)
-            fd.write('\n-----  -----  -------  --------  --------  --------  -------  -----')
+            fd.write(('\n================================================================================').encode())
+            fd.write(('\n|     Branch Flow Constraints                                                  |').encode())
+            fd.write(('\n================================================================================').encode())
+            fd.write(('\nBrnch   From     "From" End        Limit       "To" End        To').encode())
+            fd.write((strg).encode())
+            fd.write(('\n-----  -----  -------  --------  --------  --------  -------  -----').encode())
             for i in range(nl):
                 if (OUT_LINE_LIM == 2) | ((OUT_LINE_LIM == 1) &
                        (((branch[i, RATE_A] != 0) & (abs(Ff[i]) > branch[i, RATE_A] - ctol)) |
                         ((branch[i, RATE_A] != 0) & (abs(Ft[i]) > branch[i, RATE_A] - ctol)) |
                         (branch[i, MU_SF] > ptol) | (branch[i, MU_ST] > ptol))):
-                    fd.write('\n%4d%7d' % (i, branch[i, F_BUS]))
+                    fd.write(('\n%4d%7d' % (i, branch[i, F_BUS])).encode())
                     if (Ff[i] > branch[i, RATE_A] - ctol) | (branch[i, MU_SF] > ptol):
-                        fd.write('%10.3f' % branch[i, MU_SF])
+                        fd.write(('%10.3f' % branch[i, MU_SF]).encode())
                     else:
-                        fd.write('      -   ')
+                        fd.write(('      -   ').encode())
 
-                    fd.write('%9.2f%10.2f%10.2f' %
-                        (Ff[i], branch[i, RATE_A], Ft[i]))
+                    fd.write(('%9.2f%10.2f%10.2f' %
+                        (Ff[i], branch[i, RATE_A], Ft[i])).encode())
                     if (Ft[i] > branch[i, RATE_A] - ctol) | (branch[i, MU_ST] > ptol):
-                        fd.write('%10.3f' % branch[i, MU_ST])
+                        fd.write(('%10.3f' % branch[i, MU_ST]).encode())
                     else:
-                        fd.write('      -   ')
-                    fd.write('%6d' % branch[i, T_BUS])
-            fd.write('\n')
+                        fd.write(('      -   ').encode())
+                    fd.write(('%6d' % branch[i, T_BUS]).encode())
+            fd.write(('\n').encode())
 
     ## execute userfcn callbacks for 'printpf' stage
     if have_results_struct and 'userfcn' in results:
