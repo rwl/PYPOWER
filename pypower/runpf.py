@@ -307,7 +307,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
     if fname:
         fd = None
         try:
-            fd = open(fname, "wb")
+            fd = open(fname, "ab")
         except Exception as detail:
             stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
