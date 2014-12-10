@@ -47,7 +47,7 @@ def runopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     if fname:
         fd = None
         try:
-            fd = open(fname, "wb")
+            fd = open(fname, "a")
         except IOError as detail:
             stderr.write("Error opening %s: %s.\n" % (fname, detail))
         finally:
@@ -55,7 +55,8 @@ def runopf(casedata=None, ppopt=None, fname='', solvedcase=''):
                 printpf(r, fd, ppopt)
                 fd.close()
 
-    printpf(r, stdout, ppopt)
+    else:
+        printpf(r, stdout, ppopt)
 
     ## save solved case
     if solvedcase:
