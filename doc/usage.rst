@@ -107,20 +107,20 @@ All available options will be printed::
 
 
 PYPOWER includes a selection of test cases. For example, to run a power flow on
-the `IEEE 14 bus <http://pypower.org/api/pypower.case14-module.html>`_ test
+the `IEEE 14 bus <https://rwl.github.io/PYPOWER/api/pypower.case14-module.html>`_ test
 case::
 
   $ pf -c case14
 
 Alternatively, the path to a `PYPOWER case data
-<http://pypower.org/api/pypower.caseformat-module.html>`_ file can be
+<https://rwl.github.io/PYPOWER/api/pypower.caseformat-module.html>`_ file can be
 specified::
 
   $ pf /path/to/case14.py
 
 The ``opf`` command has the same calling syntax. For example, to solve an OPF
 for the `IEEE Reliability Test System
-<http://pypower.org/api/pypower.case24_ieee_rts-module.html>`_ and write the
+<https://rwl.github.io/PYPOWER/api/pypower.case24_ieee_rts-module.html>`_ and write the
 solved case to file::
 
   $ opf -c case24_ieee_rts --solvedcase=rtsout.py

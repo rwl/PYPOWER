@@ -1,19 +1,21 @@
 License and Copyright
 ---------------------
 
-Copyright (C) 2009-2011 Power System Engineering Research Center
+Copyright (c) 1996-2015, Power System Engineering Research Center (PSERC)
+  
+Copyright (c) 2010-2015 Richard Lincoln  
 
-Copyright (C) 2010-2011 Richard Lincoln
+The code in PYPOWER is distributed under the 3-clause BSD license
+below. The PYPOWER case files distributed with PYPOWER are not covered
+by the BSD license. In most cases, the data has either been included
+with permission or has been converted from data available from a
+public source.
 
-PYPOWER is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published
-by the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+While not required by the terms of the license, we do request that
+publications derived from the use of MATPOWER explicitly acknowledge
+that fact by citing:
 
-PYPOWER is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with PYPOWER. If not, see <http://www.gnu.org/licenses/>.
+    R. D. Zimmerman, C. E. Murillo-Sanchez, and R. J. Thomas, "MATPOWER:
+    Steady-State Operations, Planning and Analysis Tools for Power Systems
+    Research and Education," Power Systems, IEEE Transactions on, vol. 26,
+    no. 1, pp. 12–19, Feb. 2011.

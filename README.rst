@@ -51,7 +51,7 @@ for the IEEE Reliability Test System and write the solved case to file::
 
   $ opf -c case24_ieee_rts --solvedcase=rtsout.py
 
-For further information please refer to http://www.pypower.org/ and the
+For further information please refer to https://rwl.github.io/PYPOWER/ and the
 `API documentation`_.
 
 
@@ -67,15 +67,23 @@ list <http://groups.google.com/group/pypower>`_:
 License & Copyright
 ===================
 
-Copyright (C) 1996-2011 Power System Engineering Research Center
+Copyright (c) 1996-2015, Power System Engineering Research Center (PSERC)  
+Copyright (c) 2010-2015 Richard Lincoln  
 
-Copyright (C) 2010-2011 Richard Lincoln
+The code in PYPOWER is distributed under the 3-clause BSD license
+below. The PYPOWER case files distributed with PYPOWER are not covered
+by the BSD license. In most cases, the data has either been included
+with permission or has been converted from data available from a
+public source.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the `GNU General Public License`_ as published
-by the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+While not required by the terms of the license, we do request that
+publications derived from the use of MATPOWER explicitly acknowledge
+that fact by citing:
 
+    R. D. Zimmerman, C. E. Murillo-Sanchez, and R. J. Thomas, "MATPOWER:
+    Steady-State Operations, Planning and Analysis Tools for Power Systems
+    Research and Education," Power Systems, IEEE Transactions on, vol. 26,
+    no. 1, pp. 12–19, Feb. 2011.
 
 Links
 =====
@@ -93,8 +101,7 @@ Links
 .. _MATPOWER: http://www.pserc.cornell.edu/matpower/
 .. _Git: http://git-scm.com/
 .. _GitHub: http://github.com/rwl/PYPOWER
-.. _`GNU General Public License`: http://www.gnu.org/licenses/
-.. _`API documentation`: http://www.pypower.org/api
+.. _`API documentation`: https://rwl.github.io/PYPOWER/api
 .. _PyCIM: http://www.pycim.org
 .. _MatDyn: http://www.esat.kuleuven.be/electa/teaching/matdyn/
 .. _PSAT: http://www.uclm.es/area/gsee/web/Federico/psat.htm

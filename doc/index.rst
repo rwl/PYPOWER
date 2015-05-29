@@ -3,7 +3,7 @@ PYPOWER documentation
 
 .. only:: html
 
-  Download `PDF <http://www.pypower.org/PYPOWER.pdf>`_
+  Download `PDF <rwl.github.io/PYPOWER/PYPOWER.pdf>`_
 
   Contents:
 
@@ -19,7 +19,7 @@ PYPOWER documentation
 
 .. only:: html
 
-  `API documentation <http://www.pypower.org/api>`_
+  `API documentation <https://rwl.github.io/PYPOWER/api>`_
 
 Indices and tables
 ==================

@@ -1,24 +1,13 @@
-# Copyright (C) 2010-2011 Richard Lincoln
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published
-# by the Free Software Foundation, either version 3 of the License,
-# or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2010-2015 Richard Lincoln. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
 
 from setuptools import setup, find_packages
 
 
 setup(
     name='PYPOWER',
-    version='4.1.2',
+    version='5.0.1',
     author='Richard Lincoln',
     author_email='r.w.lincoln@gmail.com',
     description='Solves power flow and optimal power flow problems',
@@ -26,7 +15,7 @@ setup(
         open(f, 'rb').read().decode('utf-8')
         for f in ['README.rst', 'CHANGELOG.rst']),
     url='https://github.com/rwl/PYPOWER',
-    license='GPLv3',
+    license='BSD',
     install_requires=[
         # Deactivated to avoid problems with system packages.
         # Manual installation of NumPy and SciPy required.
@@ -45,7 +34,7 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',

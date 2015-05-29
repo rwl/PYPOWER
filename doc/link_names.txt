@@ -6,8 +6,7 @@
 .. _MATPOWER: http://www.pserc.cornell.edu/matpower/
 .. _Git: http://git-scm.com/
 .. _GitHub: http://github.com/rwl/PYPOWER
-.. _`GNU General Public License`: http://www.gnu.org/licenses/
-.. _`API documentation`: http://www.pypower.org/api
+.. _`API documentation`: https://rwl.github.io/PYPOWER/api
 .. _PyIPOPT: http://code.google.com/p/pyipopt/
 .. _IPOPT: https://projects.coin-or.org/Ipopt
 .. _MUMPS: http://graal.ens-lyon.fr/MUMPS/
