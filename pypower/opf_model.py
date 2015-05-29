@@ -21,7 +21,6 @@ class opf_model(object):
     are added to the problem.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
 
     def __init__(self, ppc):

@@ -33,7 +33,6 @@ def opf_costfcn(x, om, return_hessian=False):
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##----- initialize -----
     ## unpack data

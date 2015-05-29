@@ -23,7 +23,6 @@ def dcpf(B, Pbus, Va0, ref, pv, pq):
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     pvpq = matrix(r_[pv, pq])
 

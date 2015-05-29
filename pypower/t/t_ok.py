@@ -18,7 +18,6 @@ def t_ok(cond, msg=''):
     called between calls to C{t_begin} and C{t_end}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     if msg:
         if isinstance(msg, list):

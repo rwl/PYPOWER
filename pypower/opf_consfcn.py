@@ -48,7 +48,6 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, ppopt, il=None, *args):
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##----- initialize -----
 

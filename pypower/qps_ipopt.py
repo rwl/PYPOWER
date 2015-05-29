@@ -114,7 +114,6 @@ def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
     @see: C{pyipopt}, L{ipopt_options}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##----- input argument handling  -----
     ## gather inputs

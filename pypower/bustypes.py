@@ -24,7 +24,6 @@ def bustypes(bus, gen):
     @return: index lists of each bus type
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     # get generator status
     nb = bus.shape[0]

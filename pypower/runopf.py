@@ -21,7 +21,6 @@ def runopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     @see: L{rundcopf}, L{runuopf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## default arguments
     if casedata is None:

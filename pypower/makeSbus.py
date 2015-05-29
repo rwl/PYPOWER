@@ -21,7 +21,6 @@ def makeSbus(baseMVA, bus, gen):
     @see: L{makeYbus}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## generator info
     on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?

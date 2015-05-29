@@ -17,7 +17,6 @@ def rundcopf(casedata=None, ppopt=None, fname='', solvedcase=''):
     @see: L{runopf}, L{runduopf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## default arguments
     if casedata is None:

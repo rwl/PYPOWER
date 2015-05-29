@@ -39,7 +39,6 @@ def int2ext(ppc, val_or_field=None, oldval=None, ordering=None, dim=0):
     @see: L{ext2int}, L{i2e_field}, L{i2e_data}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ppc = deepcopy(ppc)
     if val_or_field is None: # nargin == 1

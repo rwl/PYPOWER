@@ -26,7 +26,6 @@ def makeAang(baseMVA, branch, nb, ppopt):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     ## options
     ignore_ang_lim = ppopt['OPF_IGNORE_ANG_LIM']

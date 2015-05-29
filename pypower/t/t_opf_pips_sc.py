@@ -39,7 +39,6 @@ def t_opf_pips_sc(quiet=False):
     """Tests for step-controlled PIPS-based AC optimal power flow.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     num_tests = 101
 

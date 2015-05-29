@@ -123,7 +123,6 @@ def qps_pips(H, c, A, l, u, xmin=None, xmax=None, x0=None, opt=None):
     @see: L{pips}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     if isinstance(H, dict):
         p = H

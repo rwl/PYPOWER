@@ -41,7 +41,6 @@ def savecase(fname, ppc, comment=None, version='2'):
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ppc_ver = ppc["version"] = version
     baseMVA, bus, gen, branch = \

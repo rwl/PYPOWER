@@ -62,7 +62,6 @@ def toggle_reserves(ppc, on_off):
         L{t.t_case30_userfcns}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     if on_off == 'on':
         ## check for proper reserve inputs

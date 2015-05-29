@@ -34,7 +34,6 @@ def dIbr_dV(branch, Yf, Yt, V):
     Derivations for "to" bus are similar.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     i = range(len(V))
 

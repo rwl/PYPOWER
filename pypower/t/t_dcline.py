@@ -41,7 +41,6 @@ def t_dcline(quiet=False):
     """Tests for DC line extension in L{{toggle_dcline}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     num_tests = 50
 

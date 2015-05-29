@@ -31,7 +31,6 @@ def d2AIbr_dV2(dIbr_dVa, dIbr_dVm, Ibr, Ybr, V, lam):
     @see: L{dIbr_dV}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     # define
     il = range(len(lam))

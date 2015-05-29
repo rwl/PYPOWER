@@ -33,7 +33,6 @@ def makeAy(baseMVA, ng, gencost, pgbas, qgbas, ybas):
 
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     ## find all pwl cost rows in gencost, either real or reactive
     iycost = find(gencost[:, MODEL] == PW_LINEAR)

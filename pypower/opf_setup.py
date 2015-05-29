@@ -40,7 +40,6 @@ def opf_setup(ppc, ppopt):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     ## options
     dc  = ppopt['PF_DC']        ## 1 = DC OPF, 0 = AC OPF

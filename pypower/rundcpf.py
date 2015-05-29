@@ -17,7 +17,6 @@ def rundcpf(casedata=None, ppopt=None, fname='', solvedcase=''):
     @see: L{runpf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## default arguments
     if casedata is None:

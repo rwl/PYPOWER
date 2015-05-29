@@ -27,7 +27,6 @@ def d2Sbr_dV2(Cbr, Ybr, V, lam):
     U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     nb = len(V)
     nl = len(lam)

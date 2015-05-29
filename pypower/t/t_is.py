@@ -22,7 +22,6 @@ def t_is(got, expected, prec=5, msg=''):
     Intended to be called between calls to C{t_begin} and C{t_end}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     if isinstance(got, int) or isinstance(got, float):
         got = array([got], float)

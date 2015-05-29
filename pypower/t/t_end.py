@@ -19,7 +19,6 @@ def t_end():
     and C{t_is} and prints out a summary of the test results.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     TestGlobals.t_counter -= 1
 

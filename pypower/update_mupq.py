@@ -24,7 +24,6 @@ def update_mupq(baseMVA, gen, mu_PQh, mu_PQl, data):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     ## extract the constraint parameters
     ipqh, ipql, Apqhdata, Apqldata = \

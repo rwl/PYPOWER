@@ -21,7 +21,6 @@ def fairmax(x):
     @see: C{max}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     val = max(x)                      ## find max value
     i   = nonzero(x == val)           ## find all positions where this occurs

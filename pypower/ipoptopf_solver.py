@@ -61,7 +61,6 @@ def ipoptopf_solver(om, ppopt):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     import pyipopt
 

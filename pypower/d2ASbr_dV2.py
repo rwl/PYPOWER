@@ -32,7 +32,6 @@ def d2ASbr_dV2(dSbr_dVa, dSbr_dVm, Sbr, Cbr, Ybr, V, lam):
     @see: L{dSbr_dV}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     il = range(len(lam))
 

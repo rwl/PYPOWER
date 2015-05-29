@@ -49,7 +49,6 @@ def dSbus_dV(Ybus, V):
     U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ib = range(len(V))
 

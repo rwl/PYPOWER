@@ -70,7 +70,6 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
     Lincoln University, New Zealand (1/14/05).
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## default arguments
     if casedata is None:

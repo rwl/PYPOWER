@@ -142,7 +142,6 @@ def opf(*args):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     ##----- initialization -----
     t0 = time()         ## start timer

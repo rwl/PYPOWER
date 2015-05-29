@@ -76,7 +76,6 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
             - upper - upper bound on optimization variables
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##----- input argument handling  -----
     ## gather inputs

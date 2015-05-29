@@ -54,7 +54,6 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
     @see: L{int2ext}, L{e2i_field}, L{e2i_data}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ppc = deepcopy(ppc)
     if val_or_field is None:  # nargin == 1

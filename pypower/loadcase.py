@@ -52,7 +52,6 @@ def loadcase(casefile,
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     if return_as_obj == True:
         expect_gencost = False

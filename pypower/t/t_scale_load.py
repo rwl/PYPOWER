@@ -26,7 +26,6 @@ def t_scale_load(quiet=False):
     """Tests for code in C{scale_load}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     n_tests = 275
 

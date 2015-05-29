@@ -28,7 +28,6 @@ def t_opf_userfcns(quiet=False):
     Includes high-level tests of reserves and iflims implementations.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     t_begin(38, quiet)
 

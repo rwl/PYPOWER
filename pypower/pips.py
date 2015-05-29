@@ -168,7 +168,6 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     @see: U{http://www.pserc.cornell.edu/matpower/}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     if isinstance(f_fcn, dict):  ## problem dict
         p = f_fcn

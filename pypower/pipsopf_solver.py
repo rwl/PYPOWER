@@ -59,7 +59,6 @@ def pipsopf_solver(om, ppopt, out_opt=None):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     ##----- initialization -----
     ## optional output

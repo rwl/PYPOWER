@@ -66,7 +66,6 @@ def scale_load(load, bus, gen=None, load_zone=None, opt=None):
     @see: L{total_load}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     nb = bus.shape[0]   ## number of buses
 

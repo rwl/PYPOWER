@@ -16,7 +16,6 @@ def get_reorder(A, idx, dim=0):
     in which dimension to place the idx.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ndims = ndim(A)
     if ndims == 1:

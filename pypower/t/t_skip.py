@@ -17,7 +17,6 @@ def t_skip(cnt, msg=''):
     C{t_begin} and C{t_end}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     msg = ' : ' + msg
 

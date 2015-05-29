@@ -17,6 +17,5 @@ def isload(gen):
     specification of both elastic demand and pumped storage units.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     return (gen[:, PMIN] < 0) & (gen[:, PMAX] == 0)

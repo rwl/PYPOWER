@@ -28,7 +28,6 @@ def t_makePTDF(quiet=False):
     """Tests for C{makePTDF}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ntests = 24
     t_begin(ntests, quiet)

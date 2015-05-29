@@ -79,7 +79,6 @@ def qps_mosek(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
             - C{upper} - upper bound on optimization variables
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##----- input argument handling  -----
     ## gather inputs

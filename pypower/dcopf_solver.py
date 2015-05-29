@@ -69,7 +69,6 @@ def dcopf_solver(om, ppopt, out_opt=None):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     if out_opt is None:
         out_opt = {}

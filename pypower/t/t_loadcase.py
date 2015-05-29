@@ -35,7 +35,6 @@ def t_loadcase(quiet=False):
     """Test that C{loadcase} works with an object as well as case file.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     t_begin(240, quiet)
 

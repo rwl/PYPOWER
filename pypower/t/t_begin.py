@@ -17,7 +17,6 @@ def t_begin(num_of_tests, quiet=False):
     summary when C{t_end} is called.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
 
     TestGlobals.t_quiet = quiet

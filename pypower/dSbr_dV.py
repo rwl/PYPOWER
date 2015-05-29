@@ -60,7 +60,6 @@ def dSbr_dV(branch, Yf, Yt, V):
     U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## define
     f = branch[:, F_BUS].astype(int)       ## list of "from" buses

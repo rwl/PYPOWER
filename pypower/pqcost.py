@@ -21,7 +21,6 @@ def pqcost(gencost, ng, on=None):
     it only returns the rows corresponding to these generators.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     if on is None:
         on = arange(ng)

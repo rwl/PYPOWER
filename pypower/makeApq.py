@@ -37,7 +37,6 @@ def makeApq(baseMVA, gen):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     data = {}
     ## data dimensions

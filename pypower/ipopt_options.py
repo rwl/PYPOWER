@@ -61,7 +61,6 @@ def ipopt_options(overrides=None, ppopt=None):
     @see: C{pyipopt}, L{ppoption}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##-----  initialization and arg handling  -----
     ## defaults

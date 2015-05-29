@@ -18,7 +18,6 @@ def t_auction_pips(quiet=False):
     """Tests for code in auction.py, using PIPS solver.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     n_tests = 183
 

@@ -22,7 +22,6 @@ def t_run_tests(test_names, verbose=False):
     C{verbose} is true, it prints the details of the individual tests.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## figure out padding for printing
     if not verbose:

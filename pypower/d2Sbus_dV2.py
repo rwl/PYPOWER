@@ -27,7 +27,6 @@ def d2Sbus_dV2(Ybus, V, lam):
     U{http://www.pserc.cornell.edu/matpower/TN2-OPF-Derivatives.pdf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     nb = len(V)
     ib = arange(nb)

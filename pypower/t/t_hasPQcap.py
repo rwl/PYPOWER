@@ -18,7 +18,6 @@ def t_hasPQcap(quiet=False):
     """Tests for C{hasPQcap}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     t_begin(4, quiet)
 

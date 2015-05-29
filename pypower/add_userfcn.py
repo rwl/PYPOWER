@@ -86,7 +86,6 @@ def add_userfcn(ppc, stage, fcn, args=None, allow_multiple=False):
           L{toggle_iflims}, L{runopf_w_res}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     if args is None:
         args = []

@@ -23,7 +23,6 @@ def makeB(baseMVA, bus, branch, alg):
     @see: L{fdpf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## constants
     nb = bus.shape[0]          ## number of buses

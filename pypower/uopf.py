@@ -39,7 +39,6 @@ def uopf(*args):
     @see: L{opf}, L{runuopf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##----- initialization -----
     t0 = time()                                 ## start timer

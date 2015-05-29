@@ -17,7 +17,6 @@ def set_reorder(A, B, idx, dim=0):
     @see: L{get_reorder}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     A = A.copy()
     ndims = ndim(A)

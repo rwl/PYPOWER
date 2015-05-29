@@ -20,7 +20,6 @@ def dcopf(*args, **kw_args):
     @see: L{rundcopf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ppc, ppopt = opf_args2(*args, **kw_args);
     ppopt = ppoption(ppopt, PF_DC=1)

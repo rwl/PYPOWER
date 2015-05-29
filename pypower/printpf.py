@@ -55,7 +55,6 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
         fd.close()
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##----- initialization -----
     ## default arguments

@@ -37,7 +37,6 @@ def hasPQcap(gen, hilo='B'):
     constraint is not redundant w.r.t the box constraints.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## check for errors capability curve data
     if any( gen[:, PC1] > gen[:, PC2] ):

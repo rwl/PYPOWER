@@ -35,7 +35,6 @@ def t_pf(quiet=False):
     """Tests for power flow solvers.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     t_begin(33, quiet)
 

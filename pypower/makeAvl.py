@@ -29,7 +29,6 @@ def makeAvl(baseMVA, gen):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     ## data dimensions
     ng = gen.shape[0]      ## number of dispatchable injections

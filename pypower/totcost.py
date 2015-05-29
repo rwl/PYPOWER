@@ -23,7 +23,6 @@ def totcost(gencost, Pg):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
     ng, m = gencost.shape
     totalcost = zeros(ng)

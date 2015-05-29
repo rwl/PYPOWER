@@ -32,7 +32,6 @@ def opf_execute(om, ppopt):
     @see: L{opf}, L{opf_setup}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ##-----  setup  -----
     ## options

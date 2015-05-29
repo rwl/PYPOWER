@@ -81,7 +81,6 @@ def opf_args(*args):
     @author: Ray Zimmerman (PSERC Cornell)
     @author: Carlos E. Murillo-Sanchez (PSERC Cornell & Universidad
     Autonoma de Manizales)
-    @author: Richard Lincoln
     """
 #    nargin = len([arg for arg in [baseMVA, bus, gen, branch, areas, gencost,
 #                                  Au, lbu, ubu, ppopt, N, fparm, H, Cw,

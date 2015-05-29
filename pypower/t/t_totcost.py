@@ -18,7 +18,6 @@ def t_totcost(quiet=False):
     """Tests for code in C{totcost}.
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     n_tests = 22
 

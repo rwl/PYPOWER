@@ -36,7 +36,6 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     @see: L{runpf}
 
     @author: Ray Zimmerman (PSERC Cornell)
-    @author: Richard Lincoln
     """
     ## default arguments
     if ppopt is None:
