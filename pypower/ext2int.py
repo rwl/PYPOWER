@@ -1,4 +1,4 @@
-# Copyright (c) 1996-2015 PSERC. All rights reserved.
+# Copyright 1996-2015 PSERC. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -54,6 +54,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
     @see: L{int2ext}, L{e2i_field}, L{e2i_data}
 
     @author: Ray Zimmerman (PSERC Cornell)
+    @author: Richard Lincoln
     """
     ppc = deepcopy(ppc)
     if val_or_field is None:  # nargin == 1
@@ -150,8 +151,11 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
             o["bus"]["i2e"] = ppc["bus"][:, BUS_I].copy()
             o["bus"]["e2i"] = zeros(max(o["bus"]["i2e"]) + 1)
             o["bus"]["e2i"][o["bus"]["i2e"].astype(int)] = arange(nb)
+
             ppc["bus"][:, BUS_I] = \
                 o["bus"]["e2i"][ ppc["bus"][:, BUS_I].astype(int) ].copy()
+
+
             ppc["gen"][:, GEN_BUS] = \
                 o["bus"]["e2i"][ ppc["gen"][:, GEN_BUS].astype(int) ].copy()
             ppc["branch"][:, F_BUS] = \
