@@ -190,7 +190,6 @@ def userfcn_dcline_ext2int(ppc, args):
     ## gencost
     if 'gencost' in ppc and len(ppc['gencost']) > 0:
         ngcr, ngcc = ppc['gencost'].shape   ## dimensions of gencost
-
         if havecost:         ## user has provided costs
             ndccc = dcc.shape[1]           ## number of dclinecost columns
             ccc = max(r_[ngcc, ndccc])     ## number of columns in new gencost
@@ -229,7 +228,6 @@ def userfcn_dcline_ext2int(ppc, args):
         else:
             ## use zero cost as default
             dcgc = ones((2 * ndc, 1)) * concatenate([array([2, 0, 0, 2]), zeros(ngcc-4)])
-            #ppc.gencost = r_[ppc['gencost'], dcgc]
             ppc['gencost'] = r_[ppc['gencost'], dcgc]
 
     return ppc
@@ -268,17 +266,12 @@ def userfcn_dcline_formulation(om, args):
     ng  = ppc['gen'].shape[0] - 2 * ndc  ## number of original gens/disp loads
 
     ## constraints
-    #nL0 = -dc[:, c['LOSS0']] / ppc.baseMVA
     nL0 = -dc[:, c['LOSS0']] / ppc['baseMVA']
     L1  =  dc[:, c['LOSS1']]
-
-
     Adc = hstack([sparse((ndc, ng)), spdiags(1-L1, 0, ndc, ndc), speye(ndc, ndc)], format="csr")
-    #Adc = c_[zeros(ndc, ng), spdiags(1-L1, 0, ndc, ndc), speye(ndc, ndc)]
 
     ## add them to the model
     om = om.add_constraints('dcline', Adc, nL0, nL0, ['Pg'])
-
 
     return om
 
@@ -334,7 +327,6 @@ def userfcn_dcline_int2ext(results, args):
     results['order']['int']['dcline'] = results['dcline']  ## save internal version
     ## copy results to external version
     o['ext']['dcline'][k, c['PF']:c['VT'] + 1] = results['dcline'][:, c['PF']:c['VT'] + 1]
-
     if results['dcline'].shape[1] == c['MU_QMAXT'] + 1:
         o['ext']['dcline'] = c_[o['ext']['dcline'], zeros((ndc, 6))]
         o['ext']['dcline'][k, c['MU_PMIN']:c['MU_QMAXT'] + 1] = \
@@ -383,18 +375,11 @@ def userfcn_dcline_printpf(results, fd, ppopt, args):
         fd.write('\n Line    From     To        Power Flow           Loss     Reactive Inj (MVAr)')
         fd.write('\n   #      Bus     Bus   From (MW)   To (MW)      (MW)       From        To   ')
         fd.write('\n------  ------  ------  ---------  ---------  ---------  ---------  ---------')
-        loss = 0;
-
+        loss = 0
         for k in range(ndc):
             if dc[k, c['BR_STATUS']]:   ## status on
-
                 fd.write('\n{0:5.0f}{1:8.0f}{2:8.0f}{3:11.2f}{4:11.2f}{5:11.2f}{6:11.2f}{7:11.2f}'.format(*r_[k, dc[k, c['F_BUS']:c['T_BUS'] + 1], dc[k, c['PF']:c['PT'] + 1],dc[k, c['PF']] - dc[k, c['PT']], dc[k, c['QF']:c['QT'] + 1]]))
 
-                #fd.write('\n{0:5d}{0:8d}{0:8d}{0:11.2f}{0:11.2f}{0:11.2f}{0:11.2f}{0:11.2f}'.format(k, dc[k, c['F_BUS']:c['T_BUS'] + 1].tolist(), dc[k, c['PF']:c['PT'] + 1],dc[k, c['PF']] - dc[k, c['PT']], dc[k, c['QF']:c['QT'] + 1]))
-
-                #fd.write('\n%5d%8d%8d%11.2f%11.2f%11.2f%11.2f%11.2f' %
-                            #(k, dc[k, c['F_BUS']:c['T_BUS'] + 1], dc[k, c['PF']:c['PT'] + 1],
-                            #dc[k, c['PF']] - dc[k, c['PT']], dc[k, c['QF']:c['QT'] + 1]))
                 loss = loss + dc[k, c['PF']] - dc[k, c['PT']]
             else:
                 fd.write('\n%5d%8d%8d%11s%11s%11s%11s%11s' %
