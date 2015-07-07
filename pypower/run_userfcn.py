@@ -8,7 +8,7 @@
 from pypower.util import feval
 
 
-def run_userfcn(userfcn, stage, *args):
+def run_userfcn(userfcn, stage, *args2):
     """Runs the userfcn callbacks for a given stage.
 
     Example::
@@ -24,7 +24,7 @@ def run_userfcn(userfcn, stage, *args):
 
     @author: Ray Zimmerman (PSERC Cornell)
     """
-    rv = args[0]
+    rv = args2[0]
     if (len(userfcn) > 0) and (stage in userfcn):
         for k in range(len(userfcn[stage])):
             if 'args' in userfcn[stage][k]:
@@ -40,6 +40,8 @@ def run_userfcn(userfcn, stage, *args):
             elif stage in ['printpf', 'savecase']:
                 # results = userfcn_*_printpf(results, fd, ppopt, args)
                 # ppc     = userfcn_*_savecase(mpc, fd, prefix, args)
-                rv = feval(userfcn[stage][k]['fcn'], rv, args[1], args[2], args)
+                fdprint = args2[1]
+                ppoptprint = args2[2]
+                rv = userfcn[stage][k]['fcn'](rv, fdprint, ppoptprint, args)
 
     return rv
