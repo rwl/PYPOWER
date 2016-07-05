@@ -130,7 +130,7 @@ def verify_saved_case(loaded_case, ppc):
                 else:
                     ncols = value.shape[1]
                     # With some types of results, fields saved to py files
-                    # are saved with with less precision than in raw results.
+                    # are saved with less precision than in raw results.
                     # This is consistent with MATPOWER savecase.
                     if ((k == 'bus' and ncols == 17) or
                             (k == 'gen' and (ncols == 14 or ncols == 25)) or
