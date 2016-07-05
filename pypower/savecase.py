@@ -25,6 +25,9 @@ from pypower.idx_cost import MODEL, NCOST, PW_LINEAR, POLYNOMIAL
 
 if not PY2:
     basestring = str
+    writemode = "w"
+else:
+    writemode = "wb"
 
 
 def savecase(fname, ppc, comment=None, version='2'):
@@ -95,10 +98,52 @@ def savecase(fname, ppc, comment=None, version='2'):
 
     ## open and write the file
     if extension == ".mat":     ## MAT-file
-        savemat(fname, ppc)
+        ppc_mat = {}
+        ppc_mat['version'] = ppc_ver
+        ppc_mat['baseMVA'] = baseMVA
+        ppc_keys = ['bus', 'gen', 'branch']
+        # Assign non-scalar values as NumPy arrays
+        for key in ppc_keys:
+            ppc_mat[key] = array(ppc[key])
+        if 'areas' in ppc:
+            ppc_mat['areas'] = array(ppc['areas'])
+        if 'gencost' in ppc:
+            ppc_mat['gencost'] = array(ppc['gencost'])
+        if "A" in ppc and len(ppc["A"]) > 0:
+            ppc_mat["A"] = array(ppc["A"])
+            if "l" in ppc and len(ppc["l"]) > 0:
+                ppc_mat["l"] = array(ppc["l"])
+            if "u" in ppc and len(ppc["u"]) > 0:
+                ppc_mat["u"] = array(ppc["u"])
+        if "N" in ppc and len(ppc["N"]) > 0:
+            ppc_mat["N"] = array(ppc["N"])
+            if "H" in ppc and len(ppc["H"]) > 0:
+                ppc_mat["H"] = array(ppc["H"])
+            if "fparm" in ppc and len(ppc["fparm"]) > 0:
+                ppc_mat["fparm"] = array(ppc["fparm"])
+            ppc_mat["Cw"] = array(ppc["Cw"])
+        if 'z0' in ppc or 'zl' in ppc or 'zu' in ppc:
+            if 'z0' in ppc and len(ppc['z0']) > 0:
+                ppc_mat['z0'] = array(ppc['z0'])
+            if 'zl' in ppc and len(ppc['zl']) > 0:
+                ppc_mat['zl'] = array(ppc['zl'])
+            if 'zu' in ppc and len(ppc['zu']) > 0:
+                ppc_mat['zu'] = array(ppc['zu'])
+        if 'userfcn' in ppc and len(ppc['userfcn']) > 0:
+            ppc_mat['userfcn'] = array(ppc['userfcn'])
+        elif 'userfcn' in ppc:
+            ppc_mat['userfcn'] = ppc['userfcn']
+        for key in ['x', 'f']:
+            if key in ppc:
+                ppc_mat[key] = ppc[key]
+        for key in ['lin', 'order', 'nln', 'var', 'raw', 'mu']:
+            if key in ppc:
+                ppc_mat[key] = array(ppc[key])
+
+        savemat(fname, ppc_mat)
     else:                       ## Python file
         try:
-            fd = open(fname, "wb")
+            fd = open(fname, writemode)
         except Exception as detail:
             stderr.write("savecase: %s.\n" % detail)
             return fname
@@ -139,7 +184,7 @@ def savecase(fname, ppc, comment=None, version='2'):
                 fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.9g, %d, %.9g, %.9g],\n' % ((indent2,) + tuple(bus[i, :VMIN + 1])))
         else:                            ## opf SOLVED, save with lambda's & mu's
             for i in range(bus.shape[0]):
-                fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(bus[:, :MU_VMIN + 1])))
+                fd.write('%s[%d, %d, %.9g, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.9g, %d, %.9g, %.9g, %.4f, %.4f, %.4f, %.4f],\n' % ((indent2,) + tuple(bus[i, :MU_VMIN + 1])))
         fd.write('%s])\n' % indent)
 
         ## generator data
@@ -204,9 +249,9 @@ def savecase(fname, ppc, comment=None, version='2'):
         fd.write('%s])\n' % indent)
 
         ## OPF data
-        if (areas != None) and (len(areas) > 0) or (gencost != None) and (len(gencost) > 0):
+        if (areas is not None) and (len(areas) > 0) or (gencost is not None) and (len(gencost) > 0):
             fd.write('\n%s##-----  OPF Data  -----##' % indent)
-        if (areas != None) and (len(areas) > 0):
+        if (areas is not None) and (len(areas) > 0):
             ## area data
             fd.write('\n%s## area data\n' % indent)
             fd.write('%s# area refbus\n' % indent)
@@ -215,7 +260,7 @@ def savecase(fname, ppc, comment=None, version='2'):
                 for i in range(areas.shape[0]):
                     fd.write('%s[%d, %d],\n' % ((indent2,) + tuple(areas[i, :PRICE_REF_BUS + 1])))
             fd.write('%s])\n' % indent)
-        if gencost != None and len(gencost) > 0:
+        if gencost is not None and len(gencost) > 0:
             ## generator cost data
             fd.write('\n%s## generator cost data\n' % indent)
             fd.write('%s# 1 startup shutdown n x1 y1 ... xn yn\n' % indent)
@@ -252,7 +297,7 @@ def savecase(fname, ppc, comment=None, version='2'):
             print_sparse(fd, prefix + "['A']", ppc["A"])
             if ("l" in ppc) and (len(ppc["l"]) > 0) and ("u" in ppc) and (len(ppc["u"]) > 0):
                 fd.write('%slu = array([\n' % indent)
-                for i in range(len(l)):
+                for i in range(len(ppc["l"])):
                     fd.write('%s[%.9g, %.9g],\n' % (indent2, ppc["l"][i], ppc["u"][i]))
                 fd.write('%s])\n' % indent)
                 fd.write("%s%s['l'] = lu[:, 0]\n" % (indent, prefix))
