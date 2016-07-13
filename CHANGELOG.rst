@@ -1,10 +1,22 @@
 Changelog
 =========
 
+Version 5.0.1 (2016-07-04)
+--------------------------
+
+- [FIX] Fixed errors (`issue #21`_, `issue #25`_) in savecase().
+- [CHANGE] Based on 'recursion limit' issues affecting savemat() in savecase(), converted non-scalars to arrays.
+- [NEW] Created t_savecase.py and added t_savecase() to test_pypower.py.
+
+.. _`issue #21`: https://github.com/rwl/PYPOWER/issues/21
+.. _`issue #25`: https://github.com/rwl/PYPOWER/issues/25
+
+
 Version 5.0.0 (2015-05-29)
 --------------------------
 
 - [CHANGE] 3-clause BSD License
+
 
 Version 4.1.2 (2014-10-27)
 --------------------------
