@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='PYPOWER',
-    version='5.0.1',
+    version='5.0.2',
     author='Richard Lincoln',
     author_email='r.w.lincoln@gmail.com',
     description='Solves power flow and optimal power flow problems',
@@ -44,6 +44,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Scientific/Engineering',
     ],
 )
