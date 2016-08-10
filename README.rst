@@ -15,7 +15,7 @@ Installation
 
 PYPOWER depends upon:
 
-* Python_ 2.6 or later and
+* Python_ 2.6-3.5 and
 * SciPy_ 0.9 or later.
 
 It can be installed using pip_::
