@@ -42,7 +42,7 @@ def bustypes(bus, gen):
     # pick a new reference bus if for some reason there is none (may have been
     # shut down)
     if len(ref) == 0:
-		ref = zeros(1, dtype=int)
+        ref = zeros(1, dtype=int)
         ref = pv[0]      # use the first PV bus
         pv = pv[1:]      # take it off PV list
 
