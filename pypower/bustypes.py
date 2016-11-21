@@ -6,6 +6,7 @@
 """
 
 from numpy import ones, flatnonzero as find
+from numpy import zeros
 from scipy.sparse import csr_matrix as sparse
 
 from pypower.idx_bus import BUS_TYPE, REF, PV, PQ
