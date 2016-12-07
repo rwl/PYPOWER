@@ -6,6 +6,7 @@
 """
 
 from numpy import ones, flatnonzero as find
+from numpy import zeros
 from scipy.sparse import csr_matrix as sparse
 
 from pypower.idx_bus import BUS_TYPE, REF, PV, PQ
@@ -42,6 +43,7 @@ def bustypes(bus, gen):
     # pick a new reference bus if for some reason there is none (may have been
     # shut down)
     if len(ref) == 0:
+        ref = zeros(1, dtype=int)
         ref = pv[0]      # use the first PV bus
         pv = pv[1:]      # take it off PV list
 
