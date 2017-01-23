@@ -148,7 +148,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
 
             ## apply consecutive bus numbering
             o["bus"]["i2e"] = ppc["bus"][:, BUS_I].copy()
-            o["bus"]["e2i"] = zeros(max(o["bus"]["i2e"]) + 1)
+            o["bus"]["e2i"] = zeros(max(o["bus"]["i2e"]).astype(int) + 1)
             o["bus"]["e2i"][o["bus"]["i2e"].astype(int)] = arange(nb)
             ppc["bus"][:, BUS_I] = \
                 o["bus"]["e2i"][ ppc["bus"][:, BUS_I].astype(int) ].copy()
