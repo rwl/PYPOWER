@@ -44,7 +44,7 @@ def bustypes(bus, gen):
     # shut down)
     if len(ref) == 0:
         ref = zeros(1, dtype=int)
-        ref = pv[0]      # use the first PV bus
+        ref[0] = pv[0]      # use the first PV bus
         pv = pv[1:]      # take it off PV list
 
     return ref, pv, pq
