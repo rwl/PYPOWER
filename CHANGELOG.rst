@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 5.1.2 (2017-06-09)
+--------------------------
+
+- [NEW] Configured continuous integration using Travis.
+
 Version 5.1.0 (2017-06-09)
 --------------------------
 
