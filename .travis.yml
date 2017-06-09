@@ -11,7 +11,7 @@ deploy:
   provider: pypi
   user: rwl
   password:
-    secure: BerBPFRiZeDcW/tev26p4L4tl54ufR59OLvC6mpsPNNL+V1UaJANX/TYZa5C/SfnoN+oEX9aA1lyrdvIa8dmNYczGwdi8ETv2wHw3m/2nXyxjO/hL1zBZuOH8fIh64ToJUsvBBkc8/ebegjMb3wnFVIEYmErGXCEUMfhr3UfMus=
+    secure: MIOPCmmh3W+ZfFo7WZyT1S9PmvUa7MQnx/LNGsjHgVqIBfArnJKStPViKhONXOAIhR2fTyNtz7BUfCvuwFgniqhxK/MpQ+flutNaxPLdIn60xSzzTmOlra/1bSoSpQGAvYEA1Wdof8iV+ILqvCY9fR8JXFmPGr/oyjd+PKFgEc8=
   on:
     tags: true
     repo: rwl/PYPOWER
