@@ -3,6 +3,7 @@ python:
 - '2.7'
 - '3.5'
 install:
+- pip install numpy scipy
 - python setup.py install
 script:
 - python pypower/t/test_pypower.py
@@ -10,8 +11,7 @@ deploy:
   provider: pypi
   user: rwl
   password:
-    secure: FbT9dTKbWz+AelpZy6Lg/ODkHmFZ1rlZMLnzigLPqBbH+gG7gcLJJno1/qzsLjWlhQVPlSkMSAhfMfTL8Z9j3TtCo8+mSxbUc6ZmmViLU4YNj52uXyq/AlhnR6ALDdkobHEwN0WX2DWcPPx86Vl9+t2EaT9JqbMY7vYrWGtGeYY=
-  distributions: sdist
+    secure: BerBPFRiZeDcW/tev26p4L4tl54ufR59OLvC6mpsPNNL+V1UaJANX/TYZa5C/SfnoN+oEX9aA1lyrdvIa8dmNYczGwdi8ETv2wHw3m/2nXyxjO/hL1zBZuOH8fIh64ToJUsvBBkc8/ebegjMb3wnFVIEYmErGXCEUMfhr3UfMus=
   on:
     tags: true
     repo: rwl/PYPOWER
