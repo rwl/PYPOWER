@@ -1,22 +1,19 @@
 language: python
 python:
-    - "2.7"
-    - "3.5"
+- '2.7'
+- '3.5'
 install:
-    - "pip install -e .[dev,build]"
-    - pip install codecov pytest-cov
+- python setup.py install
 script:
-    - pytest --cov=PYPOWER
-after_success:
-    - codecov
+- python pypower/t/test_pypower.py
 deploy:
   provider: pypi
   user: rwl
   password:
-    secure:
-  distributions: "sdist"
+    secure: FbT9dTKbWz+AelpZy6Lg/ODkHmFZ1rlZMLnzigLPqBbH+gG7gcLJJno1/qzsLjWlhQVPlSkMSAhfMfTL8Z9j3TtCo8+mSxbUc6ZmmViLU4YNj52uXyq/AlhnR6ALDdkobHEwN0WX2DWcPPx86Vl9+t2EaT9JqbMY7vYrWGtGeYY=
+  distributions: sdist
   on:
     tags: true
     repo: rwl/PYPOWER
     branch: master
-    python: "2.7"
+    python: '2.7'
