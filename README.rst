@@ -1,4 +1,10 @@
-============
+**Development Status**
+
+PYPOWER is no longer actively maintained. However, should improvements
+to PYPOWER be required then the `original author <https://github.com/rwl>`_
+may be available on contract. Please do not hesitate to get in
+`contact <mailto:r.w.lincoln@gmail.com>`_ directly.
+
 Introduction
 ============
 
