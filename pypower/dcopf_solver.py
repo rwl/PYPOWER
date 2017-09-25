@@ -267,7 +267,7 @@ def dcopf_solver(om, ppopt, out_opt=None):
 
     pimul = r_[
       mu_l - mu_u,
-     -ones((ny > 0)), ## dummy entry corresponding to linear cost row in A
+     -ones(int(ny > 0)), ## dummy entry corresponding to linear cost row in A
       muLB - muUB
     ]
 
