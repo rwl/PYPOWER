@@ -95,6 +95,8 @@ Links
 =====
 
 * MATPOWER_ from PSERC (Cornell)
+* pandapower_ from Fraunhofer IWES and University of Kassel
+* TESP_ from PNNL
 * MatDyn_ by Stijn Cole
 * PSAT_ by Federico Milano
 * OpenDSS_ from EPRI
@@ -113,3 +115,5 @@ Links
 .. _PSAT: http://www.uclm.es/area/gsee/web/Federico/psat.htm
 .. _OpenDSS: http://sourceforge.net/projects/electricdss/
 .. _GridLAB-D: http://sourceforge.net/projects/gridlab-d/
+.. _pandapower: http://www.uni-kassel.de/go/pandapower
+.. _TESP: https://tesp.readthedocs.io
