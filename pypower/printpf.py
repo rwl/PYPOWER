@@ -147,7 +147,7 @@ def printpf(baseMVA, bus=None, gen=None, branch=None, f=None, success=None,
     tap = ones(nl)                           ## default tap ratio = 1 for lines
     xfmr = find(branch[:, TAP])           ## indices of transformers
     tap[xfmr] = branch[xfmr, TAP]            ## include transformer tap ratios
-    tap = tap * exp(1j * pi / 180 * branch[:, SHIFT]) ## add phase shifters
+    tap = tap * exp(-1j * pi / 180 * branch[:, SHIFT]) ## add phase shifters
     nzld = find((bus[:, PD] != 0.0) | (bus[:, QD] != 0.0))
     sorted_areas = sort(bus[:, BUS_AREA])
     ## area numbers
