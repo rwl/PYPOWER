@@ -91,9 +91,9 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
 
             ## save data matrices with external ordering
             if 'ext' not in o: o['ext'] = {}
-            o["ext"]["bus"]    = ppc["bus"].copy()
-            o["ext"]["branch"] = ppc["branch"].copy()
-            o["ext"]["gen"]    = ppc["gen"].copy()
+            o["ext"]["bus"]    = ppc["bus"].copy().astype(int)
+            o["ext"]["branch"] = ppc["branch"].copy().astype(int)
+            o["ext"]["gen"]    = ppc["gen"].copy().astype(int)
             if 'areas' in ppc:
                 if len(ppc["areas"]) == 0: ## if areas field is empty
                     del ppc['areas']       ## delete it (so it's ignored)
