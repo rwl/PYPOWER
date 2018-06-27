@@ -91,9 +91,11 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
 
             ## save data matrices with external ordering
             if 'ext' not in o: o['ext'] = {}
-            o["ext"]["bus"]    = ppc["bus"].copy().astype(int)
-            o["ext"]["branch"] = ppc["branch"].copy().astype(int)
-            o["ext"]["gen"]    = ppc["gen"].copy().astype(int)
+            ## Note: these dictionaries contain mixed float/int data, 
+            ## so don't cast them all astype(int) for numpy/scipy indexing
+            o["ext"]["bus"]    = ppc["bus"].copy()
+            o["ext"]["branch"] = ppc["branch"].copy()
+            o["ext"]["gen"]    = ppc["gen"].copy()
             if 'areas' in ppc:
                 if len(ppc["areas"]) == 0: ## if areas field is empty
                     del ppc['areas']       ## delete it (so it's ignored)
@@ -109,7 +111,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
             ## determine which buses, branches, gens are connected and
             ## in-service
             n2i = sparse((range(nb), (ppc["bus"][:, BUS_I], zeros(nb))),
-                         shape=(max(ppc["bus"][:, BUS_I]) + 1, 1))
+                         shape=(max(ppc["bus"][:, BUS_I].astype(int)) + 1, 1))
             n2i = array( n2i.todense().flatten() )[0, :] # as 1D array
             bs = (bt != NONE)                               ## bus status
             o["bus"]["status"]["on"]  = find(  bs )         ## connected

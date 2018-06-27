@@ -12,8 +12,8 @@ def ppver(*args):
     """
 
     ver = {'Name': 'PYTPOWER',
-           'Version': '5.0.0',
+           'Version': '5.1.4',
            'Release':  '',
-           'Date': '29-May-2015'}
+           'Date': '27-June-2018'}
 
     return ver
