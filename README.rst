@@ -21,7 +21,7 @@ Installation
 
 PYPOWER depends upon:
 
-* Python_ 2.6-3.5 and
+* Python_ 2.6-3.6 and
 * SciPy_ 0.9 or later.
 
 It can be installed using pip_::
@@ -74,7 +74,7 @@ License & Copyright
 ===================
 
 Copyright (c) 1996-2015, Power System Engineering Research Center (PSERC)  
-Copyright (c) 2010-2015 Richard Lincoln  
+Copyright (c) 2010-2018 Richard Lincoln  
 
 The code in PYPOWER is distributed under the 3-clause BSD license
 below. The PYPOWER case files distributed with PYPOWER are not covered

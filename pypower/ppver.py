@@ -11,9 +11,9 @@ def ppver(*args):
     @author: Ray Zimmerman (PSERC Cornell)
     """
 
-    ver = {'Name': 'PYTPOWER',
-           'Version': '5.0.0',
+    ver = {'Name': 'PYPOWER',
+           'Version': '5.1.4',
            'Release':  '',
-           'Date': '29-May-2015'}
+           'Date': '27-June-2018'}
 
     return ver
