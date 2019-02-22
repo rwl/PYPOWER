@@ -95,6 +95,7 @@ Links
 =====
 
 * MATPOWER_ from PSERC (Cornell)
+* Oct2PYPOWER_ Python bridge to MATPOWER using Oct2Py
 * pandapower_ from Fraunhofer IWES and University of Kassel
 * TESP_ from PNNL
 * MatDyn_ by Stijn Cole
@@ -117,3 +118,4 @@ Links
 .. _GridLAB-D: http://sourceforge.net/projects/gridlab-d/
 .. _pandapower: http://www.uni-kassel.de/go/pandapower
 .. _TESP: https://tesp.readthedocs.io
+.. _Oct2PYPOWER: https://github.com/rwl/oct2pypower
