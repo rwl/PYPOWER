@@ -95,6 +95,7 @@ Links
 =====
 
 * MATPOWER_ from PSERC (Cornell)
+* matpower.app_ MATPOWER web application based on GNU Octave in WebAssembly
 * Oct2PYPOWER_ Python bridge to MATPOWER using Oct2Py
 * pandapower_ from Fraunhofer IWES and University of Kassel
 * TESP_ from PNNL
@@ -119,3 +120,4 @@ Links
 .. _pandapower: http://www.uni-kassel.de/go/pandapower
 .. _TESP: https://tesp.readthedocs.io
 .. _Oct2PYPOWER: https://github.com/rwl/oct2pypower
+.. _matpower.app: https://matpower.app
