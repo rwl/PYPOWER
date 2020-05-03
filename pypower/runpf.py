@@ -242,7 +242,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
                     gen[mx, QG] = fixedQg[mx]      ## set Qg to binding 
                     for i in range(len(mx)):            ## [one at a time, since they may be at same bus]
                         gen[mx[i], GEN_STATUS] = 0        ## temporarily turn off gen,
-                        bi = gen[mx[i], GEN_BUS]   ## adjust load accordingly,
+                        bi = gen[mx[i], GEN_BUS].astype(int)   ## adjust load accordingly,
                         bus[bi, [PD, QD]] = (bus[bi, [PD, QD]] - gen[mx[i], [PG, QG]])
                     
                     if len(ref) > 1 and any(bus[gen[mx, GEN_BUS], BUS_TYPE] == REF):
