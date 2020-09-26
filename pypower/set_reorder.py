@@ -20,6 +20,7 @@ def set_reorder(A, B, idx, dim=0):
     """
     A = A.copy()
     ndims = ndim(A)
+    A = A.astype(B.dtype)
     if ndims ==  1:
         A[idx] = B
     elif ndims == 2:

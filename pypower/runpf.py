@@ -11,7 +11,7 @@ from os.path import dirname, join
 
 from time import time
 
-from numpy import r_, c_, ix_, zeros, pi, ones, exp, argmax
+from numpy import r_, c_, ix_, zeros, pi, ones, exp, argmax, union1d
 from numpy import flatnonzero as find
 
 from pypower.bustypes import bustypes
@@ -32,7 +32,7 @@ from pypower.printpf import printpf
 from pypower.savecase import savecase
 from pypower.int2ext import int2ext
 
-from pypower.idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PQ, REF
+from pypower.idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PV, PQ, REF
 from pypower.idx_brch import PF, PT, QF, QT
 from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 
@@ -160,7 +160,10 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
         ## initial state
         # V0    = ones(bus.shape[0])            ## flat start
         V0  = bus[:, VM] * exp(1j * pi/180 * bus[:, VA])
-        V0[gbus] = gen[on, VG] / abs(V0[gbus]) * V0[gbus]
+        vcb = ones(V0.shape)    # create mask of voltage-controlled buses
+        vcb[pq] = 0     # exclude PQ buses
+        k = find(vcb[gbus])     # in-service gens at v-c buses
+        V0[gbus[k]] = gen[on[k], VG] / abs(V0[gbus[k]]) * V0[gbus[k]]
 
         if qlim:
             ref0 = ref                         ## save index and angle of
@@ -168,11 +171,11 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
             limited = []                       ## list of indices of gens @ Q lims
             fixedQg = zeros(gen.shape[0])      ## Qg of gens at Q limits
 
+        ## build admittance matrices
+        Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
+
         repeat = True
         while repeat:
-            ## build admittance matrices
-            Ybus, Yf, Yt = makeYbus(baseMVA, bus, branch)
-
             ## compute complex bus power injections [generation - load]
             Sbus = makeSbus(baseMVA, bus, gen)
 
@@ -196,21 +199,22 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
             if qlim:             ## enforce generator Q limits
                 ## find gens with violated Q constraints
                 gen_status = gen[:, GEN_STATUS] > 0
-                qg_max_lim = gen[:, QG] > gen[:, QMAX]
-                qg_min_lim = gen[:, QG] < gen[:, QMIN]
+                qg_max_lim = gen[:, QG] > gen[:, QMAX] + ppopt["OPF_VIOLATION"]
+                qg_min_lim = gen[:, QG] < gen[:, QMIN] - ppopt["OPF_VIOLATION"]
                 
                 mx = find( gen_status & qg_max_lim )
                 mn = find( gen_status & qg_min_lim )
                 
                 if len(mx) > 0 or len(mn) > 0:  ## we have some Q limit violations
-                    # No PV generators
-                    if len(pv) == 0:
+                    # first check for INFEASIBILITY (all remaining gens violating)
+                    infeas = union1d(mx, mn)
+                    remaining = find( gen_status & 
+                                     (bus[gen[:, GEN_BUS], BUS_TYPE] == PV | 
+                                      bus[gen[:, GEN_BUS], BUS_TYPE] == REF))
+                    if len(infeas) == len(remaining) or all(infeas == remaining):
                         if verbose:
-                            if len(mx) > 0:
-                                print('Gen %d [only one left] exceeds upper Q limit : INFEASIBLE PROBLEM\n' % mx + 1)
-                            else:
-                                print('Gen %d [only one left] exceeds lower Q limit : INFEASIBLE PROBLEM\n' % mn + 1)
-
+                            print('All %d remaining gens exceed to their Q limits: INFEASIBLE PROBLEM\n' % len(infeas))
+                        
                         success = 0
                         break
 
@@ -255,8 +259,15 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
                     ## update bus index lists of each type of bus
                     ref_temp = ref
                     ref, pv, pq = bustypes(bus, gen)
-                    if verbose and ref != ref_temp:
-                        print('Bus %d is new slack bus\n' % ref)
+
+                    # previous line can modify lists to select new REF bus
+                    # if there was none, so we should update bus with these
+                    # just to keep them consistent
+                    if ref != ref_temp:
+                        bus[ref, BUS_TYPE] = REF
+                        bus[pv, BUS_TYPE] = pv
+                        if verbose:
+                            print('Bus %d is new slack bus\n' % ref)
 
                     limited = r_[limited, mx].astype(int)
                 else:
