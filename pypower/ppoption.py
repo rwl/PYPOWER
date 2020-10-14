@@ -33,6 +33,43 @@ False - use AC formulation & corresponding algorithm opts,
 True  - use DC formulation, ignore AC algorithm options''')
 ]
 
+CPF_OPTIONS = [
+    ('cpf_parameterization', 3, '''choice of parameterization:
+1 - natural,
+2 - arc length,
+3 - pseudo arc length'''),
+
+    ('cpf_stop_at', 'NOSE', '''determins stopping criterion:
+'NOSE' - stop when nose point is reached,
+'FULL' - trace full nose curve,
+<lam_stop> - stop upon reaching specified target lambda value'''),
+
+    ('cpf_step', 0.05, 'continuation power flow step size'),
+
+    ('cpf_adapt_step', False, '''toggle adaptive step size feature:
+False - adaptive step size disabled,
+True - adaptive step size enabled'''),
+
+    ('cpf_error_tol', 1e-3, 'tolerance for adaptive step control'),
+
+    ('cpf_step_min', 1e-4, 'minimum allowed step size'),
+
+    ('cpf_step_max', 0.2, 'maximum allowed step size'),
+
+    ('cpf_plot_level', 0, '''control plotting of noze curve:
+0 - do not plot nose curve,
+1 - plot when completed,
+2 - plot incrementally at each iteration,
+3 - same as 2, with 'pause' at each iteration'''),
+
+    ('cpf_plot_bus', '', 'index of bus whose voltage is to be plotted'),
+
+    ('cpf_user_callback', '', """string or cell array of strings
+with names of user callback functions see 'help cpf_default_callback'"""),
+
+    ('cpf_user_callback_args', '', 'struct passed to user-defined callback functions')
+]
+
 OPF_OPTIONS = [
     ('opf_alg', 0, '''algorithm to use for OPF:
 0 - choose best default solver available in the
@@ -175,7 +212,7 @@ def ppoption(ppopt=None, **kw_args):
 
     default_ppopt = {}
 
-    options = PF_OPTIONS + OPF_OPTIONS + OUTPUT_OPTIONS + PDIPM_OPTIONS
+    options = PF_OPTIONS + CPF_OPTIONS + OPF_OPTIONS + OUTPUT_OPTIONS + PDIPM_OPTIONS
 
     for name, default, _ in options:
         default_ppopt[name.upper()] = default

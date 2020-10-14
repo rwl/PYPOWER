@@ -27,7 +27,12 @@ from .case57 import case57
 from .case6ww import case6ww
 from .case9 import case9
 from .case9Q import case9Q
+from .case9target import case9target
 from .cplex_options import cplex_options
+from .cpf_p_jac import cpf_p_jac
+from .cpf_predictor import cpf_predictor
+from .cpf_corrector import cpf_corrector
+from .cpf_p import cpf_p
 from .d2AIbr_dV2 import d2AIbr_dV2
 from .d2ASbr_dV2 import d2ASbr_dV2
 from .d2Ibr_dV2 import d2Ibr_dV2
@@ -88,6 +93,7 @@ from .qps_mosek import qps_mosek
 from .qps_pips import qps_pips
 from .qps_pypower import qps_pypower
 from .remove_userfcn import remove_userfcn
+from .runcpf import runcpf
 from .rundcopf import rundcopf
 from .rundcpf import rundcpf
 from .runduopf import runduopf
