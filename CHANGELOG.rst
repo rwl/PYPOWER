@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Version 5.1.3 (2020-10-21)
+Version 5.1.5 (2020-10-21)
 --------------------------
 
 - [NEW] Added new function: AC continuation power flow
