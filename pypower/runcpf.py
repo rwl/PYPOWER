@@ -101,7 +101,7 @@ def runcpf(basecasedata=None, targetcasedata=None, ppopt=None, fname='', solvedc
 
     # generator info
     ont = find(gent[:, GEN_STATUS] > 0)  # which generators are on?
-    gbust = gent[ont, GEN_BUS].astype(int)  # what buses are they at?
+    # gbust = gent[ont, GEN_BUS].astype(int)  # what buses are they at?
 
     # -----  run the power flow  -----
     t0 = time()
@@ -140,7 +140,7 @@ def runcpf(basecasedata=None, targetcasedata=None, ppopt=None, fname='', solvedc
     if verbose > 2:
         print('step %3d : lambda = %6.3f\n' % (0, 0))
     elif verbose > 1:
-        print('step %3d : lambda = %6.3f, %2d Newton steps\n', (0, 0, iterations))
+        print('step %3d : lambda = %6.3f, %2d Newton steps\n' % (0, 0, iterations))
 
     lamprv = lam    # lam at previous step
     Vprv = V    # V at previous step
@@ -335,5 +335,5 @@ def runcpf(basecasedata=None, targetcasedata=None, ppopt=None, fname='', solvedc
     return results, success
 
 
-if __name__ == '__name__':
+if __name__ == '__main__':
     runcpf()
