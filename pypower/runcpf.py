@@ -269,6 +269,7 @@ def runcpf(basecasedata=None, targetcasedata=None, ppopt=None, fname='', solvedc
             cb_state, cpf_results = callbacks[k](cont_steps, V, lam, V0, lam0,
                                                  cb_data, cb_state, cb_args, results=cpf_results, is_final=True)
     else:
+        cpf_results = {}
         cpf_results["iterations"] = i
 
     # update bus and gen matrices to reflect the loading and generation
@@ -321,6 +322,15 @@ def runcpf(basecasedata=None, targetcasedata=None, ppopt=None, fname='', solvedc
     # save solved case
     if solvedcase:
         savecase(solvedcase, results)
+
+    if ppopt["CPF_PLOT_LEVEL"]:
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            stderr.write(
+                "Error: Please install \"Matpotlib\" package for plotting function!\n")
+        
+        plt.show()
 
     return results, success
 
