@@ -20,4 +20,4 @@ deploy:
     tags: true
     repo: rwl/PYPOWER
     branch: master
-    python: '3.5'
+    python: '3.6'
