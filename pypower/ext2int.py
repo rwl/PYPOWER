@@ -112,7 +112,7 @@ def ext2int(ppc, val_or_field=None, ordering=None, dim=0):
             ## in-service
             n2i = sparse((range(nb), (ppc["bus"][:, BUS_I], zeros(nb))),
                          shape=(max(ppc["bus"][:, BUS_I].astype(int)) + 1, 1))
-            n2i = array( n2i.todense().flatten() )[0, :] # as 1D array
+            n2i = (array( n2i.todense().flatten() )[0, :]).astype(int) # as 1D array
             bs = (bt != NONE)                               ## bus status
             o["bus"]["status"]["on"]  = find(  bs )         ## connected
             o["bus"]["status"]["off"] = find( ~bs )         ## isolated
