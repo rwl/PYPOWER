@@ -14,7 +14,7 @@ script:
 deploy:
   provider: pypi
   user: "__token__"
-  password: $PYPI_TOKEN
+  password: "$PYPI_TOKEN"
   on:
     tags: true
     repo: rwl/PYPOWER
