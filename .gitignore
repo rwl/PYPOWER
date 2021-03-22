@@ -9,3 +9,4 @@ dist/
 PYPOWER.egg-info/
 doc/api/
 doc/.build/*
+/venv/
