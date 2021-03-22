@@ -39,15 +39,18 @@ to PYPOWER be required then the `original author <https://github.com/rwl>`_
 may be available on contract. Please do not hesitate to get in
 `contact <mailto:r.w.lincoln@gmail.com>`_ directly.
 
+Prerequisites
+=============
+
+PYPOWER depends upon these prerequisites on the level of the operating system:
+
+* Python_ 2.7 - 3.9 and
+* SciPy_ 0.9 or later.
+
 Installation
 ============
 
-PYPOWER depends upon:
-
-* Python_ 2.6-3.6 and
-* SciPy_ 0.9 or later.
-
-It can be installed using pip_::
+The recommended way of installing PYPOWER is using pip_::
 
   $ pip install PYPOWER
 
@@ -56,7 +59,6 @@ unpack the tarball and install::
 
   $ tar zxf PYPOWER-4.x.y.tar.gz
   $ python setup.py install
-
 
 Using PYPOWER
 =============
@@ -83,7 +85,6 @@ for the IEEE Reliability Test System and write the solved case to file::
 For further information please refer to https://rwl.github.io/PYPOWER/ and the
 `API documentation`_.
 
-
 Support
 =======
 
@@ -91,7 +92,6 @@ Questions and comments regarding PYPOWER should be directed to the `mailing
 list <http://groups.google.com/group/pypower>`_:
 
     pypower@googlegroups.com
-
 
 License & Copyright
 ===================
