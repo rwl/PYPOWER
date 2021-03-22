@@ -13,8 +13,9 @@ script:
 - python pypower/t/test_pypower.py
 deploy:
   provider: pypi
-  user: "__token__"
-  password: "$PYPI_TOKEN"
+  user: rwl
+  password:
+    secure: "YZjUo3RHhyq9rsg+8NGP2Bn1+J5kQxXfuO7G2ACwvAeabdHqhzTE0eDOObaeS+vnoUHxrRuJWFB1HvDH7BlegBuTS0l+s8lssfFNrasnMlZ3xpiGNGbcgrftxYnaPE9BSN8Ge7w8oa1QnkfqcPuYN2BoSYXv1LitCNi/bqf0JcA="
   on:
     tags: true
     repo: rwl/PYPOWER
