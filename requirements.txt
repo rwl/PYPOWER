@@ -8,7 +8,7 @@ pluggy==0.13.1
 py==1.10.0
 pyparsing==2.4.7
 PYPOWER==5.1.13
-scipy==1.5.4
+scipy==1.4.1
 setuptools==44.0.0
 six==1.15.0
 toml==0.10.2
