@@ -21,5 +21,3 @@ deploy:
     repo: rwl/PYPOWER
     branch: master
     python: '3.6'
-  with:
-    verbose: true
