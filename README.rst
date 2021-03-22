@@ -73,7 +73,7 @@ unpack the tarball and install::
 Testing
 =======
 
-::
+PYPOWER can be tested locally using the same tooling as on Travis CI::
 
   $ venv/bin/python -m pip install tox
   $ venv/bin/python -m tox -e py27,py38  # Or any supported Python version
@@ -85,6 +85,10 @@ Installing PYPOWER creates ``pf`` and ``opf`` commands. To list the command
 options::
 
   $ venv/bin/pf -h
+
+or::
+
+  $ venv/bin/opf -h
 
 PYPOWER includes a selection of test cases. For example, to run a power flow
 on the IEEE 14 bus test case::
