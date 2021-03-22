@@ -70,6 +70,14 @@ unpack the tarball and install::
   $ tar zxf PYPOWER-5.x.y.tar.gz
   $ venv/bin/python setup.py install
 
+Testing
+=======
+
+::
+
+  $ venv/bin/python -m pip install tox
+  $ venv/bin/python -m tox -e py27,py38  # Or any supported Python version
+
 Using PYPOWER
 =============
 
