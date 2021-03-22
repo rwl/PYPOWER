@@ -12,5 +12,5 @@ scipy==1.2.3
 setuptools==43.0.0
 six==1.15.0
 toml==0.10.2
-tox==3.23.0
+tox==3.14.0
 virtualenv==20.4.3
