@@ -29,7 +29,7 @@ Status
 .. _downloads: https://pypistats.org/packages/pypower
 
 .. |travis| image:: https://img.shields.io/travis/rwl/pypower/master?label=Travis%20CI
-.. _travis: https://travis-ci.org/rwl/pypower
+.. _travis: https://travis-ci.org/rwl/PYPOWER
 
 .. |pypi_version| image:: https://badge.fury.io/py/PYPOWER.svg
 .. _pypi_version: https://badge.fury.io/py/PYPOWER
