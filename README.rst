@@ -55,7 +55,7 @@ Dependencies
 
 PYPOWER depends upon SciPy, which can be installed as follows::
 
-  $ venv/bin/python -m pip install SciPy>0.9
+  $ venv/bin/python -m pip install -r requirements.txt
 
 Installation
 ============
@@ -75,7 +75,6 @@ Testing
 
 PYPOWER can be tested locally using the same tooling as on Travis CI::
 
-  $ venv/bin/python -m pip install tox
   $ venv/bin/python -m tox -e py27,py38  # Or any supported Python version
 
 Using PYPOWER
