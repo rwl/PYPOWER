@@ -53,7 +53,7 @@ PYPOWER is recommended to be installed into a virtual environment::
 Dependencies
 ============
 
-::
+PYPOWER depends upon SciPy, which can be installed as follows::
 
   $ venv/bin/python -m pip install SciPy>0.9
 
