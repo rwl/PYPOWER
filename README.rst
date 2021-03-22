@@ -26,7 +26,7 @@ Status
 .. _license: https://github.com/rwl/PYPOWER/blob/master/LICENSE
 
 .. |downloads| image:: https://img.shields.io/pypi/dm/PYPOWER.svg
-.. _downloads: https://pypistats.org/packages/PYPOWER
+.. _downloads: https://pypistats.org/packages/pypower
 
 .. |travis| image:: https://img.shields.io/travis/rwl/pypower/master?label=Travis%20CI
 .. _travis: https://travis-ci.org/rwl/pypower
