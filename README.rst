@@ -1,6 +1,3 @@
-Introduction
-============
-
 PYPOWER is a power flow and Optimal Power Flow (OPF) solver. It is a port of
 MATPOWER_ to the Python_ programming language. Current
 features include:
