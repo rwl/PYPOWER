@@ -46,12 +46,14 @@ PYPOWER depends upon these prerequisites on the level of the operating system:
 Virtual Environment
 ===================
 
-PYPOWER is recommended to be installed into a virtual environment.
+PYPOWER is recommended to be installed into a virtual environment::
 
   $ python3.8 -m venv venv  # Or any supported Python version
 
 Dependencies
 ============
+
+::
 
   $ venv/bin/python -m pip install SciPy>0.9
 
