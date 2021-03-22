@@ -1,7 +1,7 @@
 appdirs==1.4.4
 distlib==0.3.1
 filelock==3.0.12
-numpy==1.20.1
+numpy==1.16.6
 packaging==20.9
 pip==21.0.1
 pkg-resources==0.0.0
