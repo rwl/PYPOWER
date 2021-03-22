@@ -41,21 +41,32 @@ Prerequisites
 
 PYPOWER depends upon these prerequisites on the level of the operating system:
 
-* Python_ 2.7 - 3.9 and
-* SciPy_ 0.9 or later.
+* Python_ 2.7 - 3.9
+
+Virtual Environment
+===================
+
+PYPOWER is recommended to be installed into a virtual environment.
+
+  $ python3.8 -m venv venv  # Or any supported Python version
+
+Dependencies
+============
+
+  $ venv/bin/python -m pip install SciPy>0.9
 
 Installation
 ============
 
 The recommended way of installing PYPOWER is using pip_::
 
-  $ pip install PYPOWER
+  $ venv/bin/python -m pip install PYPOWER
 
 Alternatively, `download <http://pypi.python.org/pypi/PYPOWER#downloads>`_ and
 unpack the tarball and install::
 
-  $ tar zxf PYPOWER-4.x.y.tar.gz
-  $ python setup.py install
+  $ tar zxf PYPOWER-5.x.y.tar.gz
+  $ venv/bin/python setup.py install
 
 Using PYPOWER
 =============
@@ -63,21 +74,21 @@ Using PYPOWER
 Installing PYPOWER creates ``pf`` and ``opf`` commands. To list the command
 options::
 
-  $ pf -h
+  $ venv/bin/pf -h
 
 PYPOWER includes a selection of test cases. For example, to run a power flow
 on the IEEE 14 bus test case::
 
-  $ pf -c case14
+  $ venv/bin/pf -c case14
 
 Alternatively, the path to a PYPOWER case data file can be specified::
 
-  $ pf /path/to/case14.py
+  $ venv/bin/pf /path/to/case14.py
 
 The ``opf`` command has the same calling syntax. For example, to solve an OPF
 for the IEEE Reliability Test System and write the solved case to file::
 
-  $ opf -c case24_ieee_rts --solvedcase=rtsout.py
+  $ venv/bin/opf -c case24_ieee_rts --solvedcase=rtsout.py
 
 For further information please refer to https://rwl.github.io/PYPOWER/ and the
 `API documentation`_.
@@ -94,7 +105,7 @@ License & Copyright
 ===================
 
 Copyright (c) 1996-2015, Power System Engineering Research Center (PSERC)  
-Copyright (c) 2010-2018 Richard Lincoln  
+Copyright (c) 2010-2021 Richard Lincoln  
 
 The code in PYPOWER is distributed under the 3-clause BSD license
 below. The PYPOWER case files distributed with PYPOWER are not covered
