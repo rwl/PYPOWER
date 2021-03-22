@@ -1,10 +1,3 @@
-**Development Status**
-
-PYPOWER is no longer actively maintained. However, should improvements
-to PYPOWER be required then the `original author <https://github.com/rwl>`_
-may be available on contract. Please do not hesitate to get in
-`contact <mailto:r.w.lincoln@gmail.com>`_ directly.
-
 Introduction
 ============
 
@@ -15,6 +8,36 @@ features include:
 * DC and AC (Newton's method & Fast Decoupled) power flow and
 * DC and AC optimal power flow (OPF)
 
+Status
+======
+
+.. |nbsp| unicode:: 0xa0
+   :trim:
+
+|libraries|_ |nbsp| |pyversions|_ |nbsp| |license|_ |nbsp| |downloads|_ |nbsp| |travis|_ |nbsp| |pypi_version|_
+
+.. |libraries| image:: https://img.shields.io/librariesio/release/pypi/PYPOWER
+.. _libraries: https://libraries.io/pypi/PYPOWER
+
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/PYPOWER
+.. _pyversions: https://img.shields.io/librariesio/release/pypi/PYPOWER
+
+.. |license| image:: https://img.shields.io/pypi/l/PYPOWER
+.. _license: https://github.com/rwl/PYPOWER/blob/master/LICENSE
+
+.. |downloads| image:: https://img.shields.io/pypi/dm/PYPOWER.svg
+.. _downloads: https://pypistats.org/packages/PYPOWER
+
+.. |travis| image:: https://img.shields.io/travis/rwl/pypower/master?label=Travis%20CI
+.. _travis: https://travis-ci.org/rwl/pypower
+
+.. |pypi_version| image:: https://badge.fury.io/py/PYPOWER.svg
+.. _pypi_version: https://badge.fury.io/py/PYPOWER
+
+PYPOWER is no longer actively maintained. However, should improvements
+to PYPOWER be required then the `original author <https://github.com/rwl>`_
+may be available on contract. Please do not hesitate to get in
+`contact <mailto:r.w.lincoln@gmail.com>`_ directly.
 
 Installation
 ============
