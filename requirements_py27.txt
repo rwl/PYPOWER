@@ -1,0 +1,16 @@
+appdirs==1.4.4
+distlib==0.3.1
+filelock==3.0.12
+numpy==1.16.6
+packaging==20.9
+pip==19.1.1
+pluggy==0.13.1
+py==1.10.0
+pyparsing==2.4.7
+PYPOWER==5.1.13
+scipy==1.2.3
+setuptools==44.0.0
+six==1.15.0
+toml==0.10.2
+tox==3.23.0
+virtualenv==20.4.3
