@@ -9,7 +9,7 @@ py==1.10.0
 pyparsing==2.4.7
 PYPOWER==5.1.13
 scipy==1.2.3
-setuptools==44.0.0
+setuptools==65.5.1
 six==1.15.0
 toml==0.10.2
 tox==3.23.0
