@@ -7,7 +7,7 @@
 
 from math import sqrt
 
-from numpy import zeros, ones, array, eye, prod, dot, asscalar, Inf
+from numpy import zeros, ones, array, eye, prod, dot, ndarray, Inf
 
 from scipy.sparse import csr_matrix as sparse
 from scipy.sparse import eye as speye
@@ -161,8 +161,8 @@ def gh7(x):
     return h, g, dh, dg
 
 def hess7(x, lam, sigma=1):
-    lmbda = asscalar( lam['eqnonlin'] )
-    mu    = asscalar( lam['ineqnonlin'] )
+    lmbda = ndarray.item( lam['eqnonlin'] )
+    mu    = ndarray.item( lam['ineqnonlin'] )
     _, _, d2f = f7(x, True)
 
     Lxx = sigma * d2f + lmbda * 2 * speye(4, 4) - \
