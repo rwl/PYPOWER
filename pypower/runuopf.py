@@ -5,7 +5,7 @@
 """Runs an optimal power flow with unit-decommitment heuristic.
 """
 
-from sys import stderr
+from sys import stderr, stdout
 
 from os.path import dirname, join
 

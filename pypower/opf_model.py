@@ -117,7 +117,7 @@ class opf_model(object):
             s += '%15s%31s\n' % (('var[\'NS\'] = %d' % self.var['NS']), ('var[\'N\'] = %d' % self.var['N']))
             s += '\n'
         else:
-            s += '%s  :  <none>\n', 'VARIABLES'
+            s += '%s  :  <none>\n' % ('VARIABLES',)
 
         if self.nln['NS']:
             s += '\n%-22s %5s %8s %8s %8s\n' % ('NON-LINEAR CONSTRAINTS', 'name', 'i1', 'iN', 'N')
@@ -130,7 +130,8 @@ class opf_model(object):
             s += '%15s%31s\n' % (('nln.NS = %d' % self.nln['NS']), ('nln.N = %d' % self.nln['N']))
             s += '\n'
         else:
-            s += '%s  :  <none>\n', 'NON-LINEAR CONSTRAINTS'
+            s += '%s  :  <none>\n' % ('NON-LINEAR CONSTRAINTS',)
+
 
         if self.lin['NS']:
             s += '\n%-22s %5s %8s %8s %8s\n' % ('LINEAR CONSTRAINTS', 'name', 'i1', 'iN', 'N')
@@ -143,7 +144,7 @@ class opf_model(object):
             s += '%15s%31s\n' % (('lin.NS = %d' % self.lin['NS']), ('lin.N = %d' % self.lin['N']))
             s += '\n'
         else:
-            s += '%s  :  <none>\n', 'LINEAR CONSTRAINTS'
+            s += '%s  :  <none>\n' % ('LINEAR CONSTRAINTS',)
 
         if self.cost['NS']:
             s += '\n%-22s %5s %8s %8s %8s\n' % ('COSTS', 'name', 'i1', 'iN', 'N')
@@ -156,7 +157,7 @@ class opf_model(object):
             s += '%15s%31s\n' % (('cost.NS = %d' % self.cost['NS']), ('cost.N = %d' % self.cost['N']))
             s += '\n'
         else:
-            s += '%s  :  <none>\n' % 'COSTS'
+            s += '%s  :  <none>\n' % ('COSTS',)
 
         #s += '  ppc = '
         #if len(self.ppc):

@@ -5,7 +5,7 @@
 """Computes partial derivatives of power flows w.r.t. voltage.
 """
 
-from numpy import conj, arange, diag, zeros, asmatrix, asarray, asscalar
+from numpy import conj, arange, diag, zeros, asmatrix, asarray, ndarray
 from scipy.sparse import issparse, csr_matrix as sparse
 
 from pypower.idx_brch import F_BUS, T_BUS
@@ -114,10 +114,10 @@ def dSbr_dV(branch, Yf, Yt, V):
         temp4       = asmatrix( zeros((nl, nb), complex) )
         for i in range(nl):
             fi, ti = f[i], t[i]
-            temp1[i, fi] = asscalar(V[fi])
-            temp2[i, fi] = asscalar(Vnorm[fi])
-            temp3[i, ti] = asscalar(V[ti])
-            temp4[i, ti] = asscalar(Vnorm[ti])
+            temp1[i, fi] = ndarray.item(V[fi])
+            temp2[i, fi] = ndarray.item(Vnorm[fi])
+            temp3[i, ti] = ndarray.item(V[ti])
+            temp4[i, ti] = ndarray.item(Vnorm[ti])
 
         dSf_dVa = 1j * (conj(diagIf) * temp1 - diagVf * conj(Yf * diagV))
         dSf_dVm = diagVf * conj(Yf * diagVnorm) + conj(diagIf) * temp2
