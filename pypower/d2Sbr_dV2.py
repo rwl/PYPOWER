@@ -36,7 +36,7 @@ def d2Sbr_dV2(Cbr, Ybr, V, lam):
     diaglam = csr_matrix((lam, (il, il)))
     diagV = csr_matrix((V, (ib, ib)))
 
-    A = Ybr.H * diaglam * Cbr
+    A = Ybr.getH() * diaglam * Cbr
     B = conj(diagV) * A * diagV
     D = csr_matrix( ((A * V) * conj(V), (ib, ib)) )
     E = csr_matrix( ((A.T * conj(V) * V), (ib, ib)) )

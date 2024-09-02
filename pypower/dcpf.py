@@ -6,7 +6,8 @@
 """
 
 from numpy import copy, r_, matrix, transpose
-from scipy.sparse.linalg import spsolve
+
+from pypower.pplinsolve import pplinsolve
 
 
 def dcpf(B, Pbus, Va0, ref, pv, pq):
@@ -30,6 +31,6 @@ def dcpf(B, Pbus, Va0, ref, pv, pq):
     Va = copy(Va0)
 
     ## update angles for non-reference buses
-    Va[pvpq] = spsolve(B[pvpq.T, pvpq], transpose(Pbus[pvpq] - B[pvpq.T, ref] * Va0[ref]))
+    Va[pvpq] = pplinsolve(B[pvpq.T, pvpq], transpose(Pbus[pvpq] - B[pvpq.T, ref] * Va0[ref]))
 
     return Va

@@ -10,10 +10,10 @@ import sys
 from numpy import array, angle, exp, linalg, conj, r_, Inf
 
 from scipy.sparse import hstack, vstack
-from scipy.sparse.linalg import spsolve
 
 from pypower.dSbus_dV import dSbus_dV
 from pypower.ppoption import ppoption
+from pypower.pplinsolve import pplinsolve
 
 
 def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
@@ -97,7 +97,7 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
             ], format="csr")
 
         ## compute update step
-        dx = -1 * spsolve(J, F)
+        dx = -1 * pplinsolve(J, F)
 
         ## update voltage
         if npv:

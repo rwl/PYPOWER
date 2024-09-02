@@ -11,9 +11,9 @@ from numpy import array, Inf, any, isnan, ones, r_, finfo, \
 from numpy.linalg import norm
 
 from scipy.sparse import vstack, hstack, eye, csr_matrix as sparse
-from scipy.sparse.linalg import spsolve
 
 from pypower.pipsver import pipsver
+from pypower.pplinsolve import pplinsolve
 
 
 EPS = finfo(float).eps
@@ -387,7 +387,7 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
         ])
         bb = r_[-N, -g]
 
-        dxdlam = spsolve(Ab.tocsr(), bb)
+        dxdlam = pplinsolve(Ab.tocsr(), bb)
 
         if any(isnan(dxdlam)):
             if opt["verbose"]:

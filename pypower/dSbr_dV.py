@@ -114,10 +114,10 @@ def dSbr_dV(branch, Yf, Yt, V):
         temp4       = asmatrix( zeros((nl, nb), complex) )
         for i in range(nl):
             fi, ti = f[i], t[i]
-            temp1[i, fi] = ndarray.item(V[fi])
-            temp2[i, fi] = ndarray.item(Vnorm[fi])
-            temp3[i, ti] = ndarray.item(V[ti])
-            temp4[i, ti] = ndarray.item(Vnorm[ti])
+            temp1[i, fi] = V[fi]
+            temp2[i, fi] = Vnorm[fi]
+            temp3[i, ti] = V[ti]
+            temp4[i, ti] = Vnorm[ti]
 
         dSf_dVa = 1j * (conj(diagIf) * temp1 - diagVf * conj(Yf * diagV))
         dSf_dVm = diagVf * conj(Yf * diagVnorm) + conj(diagIf) * temp2

@@ -4,6 +4,9 @@ python:
 - '3.7'
 - '3.8'
 - '3.9'
+- '3.10'
+- '3.11'
+- '3.12'
 install:
 - pip install tox-travis
 - python setup.py install
@@ -17,4 +20,4 @@ deploy:
     tags: true
     repo: rwl/PYPOWER
     branch: master
-    python: '3.9'
+    python: '3.11'

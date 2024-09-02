@@ -5,12 +5,12 @@ full Newton method with selected parameterization scheme.
 from numpy import r_, angle, conj, linalg, inf, array, exp
 
 from scipy.sparse import vstack, hstack
-from scipy.sparse.linalg import spsolve
 
 from pypower.ppoption import ppoption
 from pypower.cpf_p import cpf_p
 from pypower.dSbus_dV import dSbus_dV
 from pypower.cpf_p_jac import cpf_p_jac
+from pypower.pplinsolve import pplinsolve
 
 def cpf_corrector(Ybus, Sbus, V0, ref, pv, pq,
                   lam0, Sxfr, Vprv, lamprv, z, step, parameterization, ppopt):
@@ -96,7 +96,7 @@ def cpf_corrector(Ybus, Sbus, V0, ref, pv, pq,
         ], format="csr")
 
         # compute update step
-        dx = -1 * spsolve(J, F)
+        dx = -1 * pplinsolve(J, F)
 
         # update voltage
         if npv:

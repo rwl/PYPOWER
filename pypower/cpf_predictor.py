@@ -4,10 +4,10 @@
 from numpy import r_, array, angle, zeros, linalg, exp
 
 from scipy.sparse import hstack, vstack
-from scipy.sparse.linalg import spsolve
 
 from pypower.dSbus_dV import dSbus_dV
 from pypower.cpf_p_jac import cpf_p_jac
+from pypower.pplinsolve import pplinsolve
 
 
 def cpf_predictor(V, lam, Ybus, Sxfr, pv, pq,
@@ -46,7 +46,7 @@ def cpf_predictor(V, lam, Ybus, Sxfr, pv, pq,
     # compute normalized tangent predictor
     s = zeros(npv+2*npq+1)
     s[-1] = 1
-    z[r_[pvpq, nb+pq, 2*nb]] = spsolve(J, s)
+    z[r_[pvpq, nb+pq, 2*nb]] = pplinsolve(J, s)
     z = z / linalg.norm(z)
 
     Va0 = Vaprv
