@@ -7,7 +7,7 @@
 
 from sys import stderr
 from math import inf
-from numpy import ones, zeros, shape, finfo, abs
+from numpy import ones, zeros, shape, finfo, abs, nan
 from numpy import flatnonzero as find
 
 from scipy.sparse import issparse, csr_matrix as sparse
@@ -245,18 +245,18 @@ def qps_gurobi(H, c, A, l, u, xmin, xmax, x0, opt):
     ## check for empty results (in case optimization failed)
     lam = {}
     if len(x) == 0:
-        x = NaN(nx, 1);
-        lam['lower']   = NaN(nx)
-        lam['upper']   = NaN(nx)
+        x = nan(nx, 1);
+        lam['lower']   = nan(nx)
+        lam['upper']   = nan(nx)
     else:
         lam['lower']   = zeros(nx)
         lam['upper']   = zeros(nx)
 
     if len(f) == 0:
-        f = NaN
+        f = nan
 
     if len(pi) == 0:
-        pi  = NaN(len(bb))
+        pi  = nan(len(bb))
 
     kl = find(rc > 0);   ## lower bound binding
     ku = find(rc < 0);   ## upper bound binding

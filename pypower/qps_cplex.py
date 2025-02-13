@@ -8,8 +8,8 @@
 import re
 
 from sys import stdout, stderr
-from math import inf
-from numpy import array, NaN, ones, zeros, shape, finfo, arange, r_
+from math import inf, nan
+from numpy import array, ones, zeros, shape, finfo, arange, r_
 from numpy import flatnonzero as find
 
 from scipy.sparse import csr_matrix as sparse
@@ -231,18 +231,18 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
 
     ## check for empty results (in case optimization failed)
     if len(x) == 0:
-        x = NaN * zeros(nx)
+        x = nan * zeros(nx)
 
     if len(f) == 0:
-        f = NaN
+        f = nan
 
     if len(lam) == 0:
-        lam['ineqlin'] = NaN * zeros(len(bi))
-        lam['eqlin']   = NaN * zeros(len(be))
-        lam['lower']   = NaN * zeros(nx)
-        lam['upper']   = NaN * zeros(nx)
-        mu_l        = NaN * zeros(nA)
-        mu_u        = NaN * zeros(nA)
+        lam['ineqlin'] = nan * zeros(len(bi))
+        lam['eqlin']   = nan * zeros(len(be))
+        lam['lower']   = nan * zeros(nx)
+        lam['upper']   = nan * zeros(nx)
+        mu_l        = nan * zeros(nA)
+        mu_u        = nan * zeros(nA)
     else:
         mu_l        = zeros(nA)
         mu_u        = zeros(nA)
