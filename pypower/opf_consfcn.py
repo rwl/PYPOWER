@@ -4,8 +4,13 @@
 
 """Evaluates nonlinear constraints and their Jacobian for OPF.
 """
+try:
+    from math import inf
+except ImportError:
+    # in python < 3.5, inf is not defined in math
+    from numpy import inf
 
-from numpy import zeros, ones, conj, exp, r_, Inf, arange
+from numpy import zeros, ones, conj, exp, r_, arange
 
 from scipy.sparse import lil_matrix, vstack, hstack, csr_matrix as sparse
 
@@ -96,7 +101,7 @@ def opf_consfcn(x, om, Ybus, Yf, Yt, ppopt, il=None, *args):
     ## then, the inequality constraints (branch flow limits)
     if nl2 > 0:
         flow_max = (branch[il, RATE_A] / baseMVA)**2
-        flow_max[flow_max == 0] = Inf
+        flow_max[flow_max == 0] = inf
         if ppopt['OPF_FLOW_LIM'] == 2:       ## current magnitude limit, |I|
             If = Yf * V
             It = Yt * V

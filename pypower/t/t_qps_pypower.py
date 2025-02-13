@@ -4,8 +4,8 @@
 
 """Tests of C{qps_pypower} QP solvers.
 """
-
-from numpy import array, zeros, shape, Inf
+from math import inf
+from numpy import array, zeros, shape
 
 from scipy.sparse import csr_matrix as sparse
 
@@ -124,7 +124,7 @@ def t_qps_pypower(quiet=False):
             A = sparse([[   1,       1,       1,       1],
                         [0.17,    0.11,    0.10,    0.18]])
             l = array([1, 0.10])
-            u = array([1, Inf])
+            u = array([1, inf])
             xmin = zeros(4)
             x0 = array([1, 0, 0, 1], float)
             x, f, s, _, lam = qps_pypower(H, c, A, l, u, xmin, None, x0, opt)

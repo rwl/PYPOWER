@@ -7,7 +7,7 @@
 
 from os.path import dirname, join
 
-from numpy import array, ones, zeros, Inf, r_, ix_, argsort, arange
+from numpy import array, r_, arange
 from numpy import flatnonzero as find
 
 from pypower.ppoption import ppoption

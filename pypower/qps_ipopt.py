@@ -4,13 +4,12 @@
 
 """Quadratic Program Solver based on IPOPT.
 """
-
-from sys import stderr
-
-from numpy import Inf, ones, zeros, shape, tril
+from math import inf
+from numpy import ones, zeros, shape, tril
 from numpy import flatnonzero as find
 
 from scipy.sparse import issparse, csr_matrix as sparse
+from sys import stderr
 
 try:
     import pyipopt
@@ -161,17 +160,17 @@ def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
     if len(c) == 0:
         c = zeros(nx)
 
-    if  len(A) > 0 and (len(l) == 0 or all(l == -Inf)) and \
-                       (len(u) == 0 or all(u ==  Inf)):
+    if  len(A) > 0 and (len(l) == 0 or all(l == -inf)) and \
+                       (len(u) == 0 or all(u ==  inf)):
         A = None                    ## no limits => no linear constraints
 
     nA = shape(A)[0]                ## number of original linear constraints
     if nA:
         if len(u) == 0:             ## By default, linear inequalities are ...
-            u = Inf * ones(nA)      ## ... unbounded above and ...
+            u = inf * ones(nA)      ## ... unbounded above and ...
 
         if len(l) == 0:
-            l = -Inf * ones(nA)     ## ... unbounded below.
+            l = -inf * ones(nA)     ## ... unbounded below.
 
     if len(x0) == 0:
         x0 = zeros(nx)

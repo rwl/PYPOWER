@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-from warnings import warn
+from math import inf
 
-from numpy import array, ones, zeros, Inf, r_, c_, concatenate, shape
+from numpy import array, ones, zeros, r_, c_, concatenate, shape
 from numpy import flatnonzero as find
 
 from scipy.sparse import spdiags, hstack, vstack, csr_matrix as sparse
 from scipy.sparse import eye as speye
+from warnings import warn
 
 from pypower import idx_dcline
 from pypower.add_userfcn import add_userfcn
@@ -141,8 +142,8 @@ def userfcn_dcline_ext2int(ppc, args):
     fg = zeros((ndc, ppc['gen'].shape[1]))
     fg[:, MBASE]        = 100
     fg[:, GEN_STATUS]   =  dc[:, c['BR_STATUS']]   ## status (should be all 1's)
-    fg[:, PMIN]         = -Inf
-    fg[:, PMAX]         =  Inf
+    fg[:, PMIN]         = -inf
+    fg[:, PMAX]         =  inf
     tg = fg.copy()
     fg[:, GEN_BUS]      =  dc[:, c['F_BUS']]       ## from bus
     tg[:, GEN_BUS]      =  dc[:, c['T_BUS']]       ## to bus

@@ -5,7 +5,8 @@
 """Solves AC optimal power flow using PIPS.
 """
 
-from numpy import ones, zeros, Inf, pi, exp, conj, r_
+from math import inf
+from numpy import ones, zeros, pi, exp, conj, r_
 from numpy import flatnonzero as find
 
 from pypower.idx_bus import BUS_TYPE, REF, VM, VA, MU_VMAX, MU_VMIN, LAM_P, LAM_Q
@@ -108,8 +109,8 @@ def pipsopf_solver(om, ppopt, out_opt=None):
 
     ## try to select an interior initial point
     ll, uu = xmin.copy(), xmax.copy()
-    ll[xmin == -Inf] = -1e10   ## replace Inf with numerical proxies
-    uu[xmax ==  Inf] =  1e10
+    ll[xmin == -inf] = -1e10   ## replace inf with numerical proxies
+    uu[xmax ==  inf] =  1e10
     x0 = (ll + uu) / 2
     Varefs = bus[bus[:, BUS_TYPE] == REF, VA] * (pi / 180)
     ## angles set to first reference angle

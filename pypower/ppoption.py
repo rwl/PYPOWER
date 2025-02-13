@@ -5,9 +5,6 @@
 """Used to set and retrieve a PYPOWER options vector.
 """
 
-from numpy import Inf
-
-
 PF_OPTIONS = [
     ('pf_alg', 1, '''power flow algorithm:
 1 - Newton's method,
@@ -184,7 +181,7 @@ GUROBI_OPTIONS = [
 3 - concurrent (LP only)
 4 - deterministic concurrent (LP only)
 '''),
-    ('grb_timelimit', Inf, 'maximum time allowed for solver (TimeLimit)'),
+    ('grb_timelimit', float('inf'), 'maximum time allowed for solver (TimeLimit)'),
 ('grb_threads', 0, '(auto) maximum number of threads to use (Threads)'),
 ('grb_opt', 0, 'See gurobi_options() for details')
 ]

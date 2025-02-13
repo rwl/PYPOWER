@@ -6,8 +6,8 @@
 """
 
 from os.path import dirname, join
-
-from numpy import array, ones, zeros, Inf, r_, ix_, argsort, arange
+from math import inf
+from numpy import array, ones, zeros, r_, ix_, argsort, arange
 
 from scipy.io import loadmat
 from scipy.sparse import spdiags, csr_matrix as sparse
@@ -204,7 +204,7 @@ def t_opf_pips(quiet=False):
     row = [0, 0, 1, 1]
     col = [9, 24, 9, 24]
     A = sparse(([-1, 1, 1, 1], (row, col)), (2, 25))
-    u = array([Inf, Inf])
+    u = array([inf, inf])
     l = array([-1, 1])
 
     N = sparse(([1], ([0], [24])), (1, 25))    ## new z variable only

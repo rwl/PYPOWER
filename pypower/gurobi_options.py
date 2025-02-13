@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-from numpy import Inf
+from math import inf
+
 from pypower._compat import PY2
 from pypower.util import feval
 
@@ -100,7 +101,7 @@ def gurobi_options(overrides=None, ppopt=None):
     if verbose:
         opt['DisplayInterval'] = 1
     else:
-        opt['DisplayInterval'] = Inf
+        opt['DisplayInterval'] = inf
 
     ##-----  call user function to modify defaults  -----
     if len(fname) > 0:

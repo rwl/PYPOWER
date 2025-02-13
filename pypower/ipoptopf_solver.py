@@ -5,7 +5,8 @@
 """Solves AC optimal power flow using IPOPT.
 """
 
-from numpy import ones, zeros, shape, Inf, pi, exp, conj, r_, arange
+from math import inf
+from numpy import ones, zeros, shape, pi, exp, conj, r_, arange
 from numpy import flatnonzero as find
 
 from scipy.sparse import issparse, tril, vstack, hstack, csr_matrix as sparse
@@ -87,8 +88,8 @@ def ipoptopf_solver(om, ppopt):
 
     ## try to select an interior initial point
     ll = xmin.copy(); uu = xmax.copy()
-    ll[xmin == -Inf] = -2e19   ## replace Inf with numerical proxies
-    uu[xmax ==  Inf] =  2e19
+    ll[xmin == -inf] = -2e19   ## replace inf with numerical proxies
+    uu[xmax ==  inf] =  2e19
     x0 = (ll + uu) / 2
     Varefs = bus[bus[:, BUS_TYPE] == REF, VA] * (pi / 180)
     x0[vv['i1']['Va']:vv['iN']['Va']] = Varefs[0]  ## angles set to first reference angle
@@ -196,7 +197,7 @@ def ipoptopf_solver(om, ppopt):
     # number of constraints
     m = neqnln + niqnln + nA
     # lower bound of constraint
-    gl = r_[zeros(neqnln), -Inf * ones(niqnln), l]
+    gl = r_[zeros(neqnln), -inf * ones(niqnln), l]
     # upper bound of constraints
     gu = r_[zeros(neqnln),       zeros(niqnln), u]
 

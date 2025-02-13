@@ -4,8 +4,8 @@
 
 """Python Interior Point Solver (PIPS).
 """
-
-from numpy import array, Inf, any, isnan, ones, r_, finfo, \
+from math import inf
+from numpy import array, any, isnan, ones, r_, finfo, \
     zeros, dot, absolute, log, flatnonzero as find
 
 from numpy.linalg import norm
@@ -186,10 +186,10 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     nA = A.shape[0] if A is not None else 0 # number of original linear constr
 
     # default argument values
-    if l is None or len(l) == 0: l = -Inf * ones(nA)
-    if u is None or len(u) == 0: u =  Inf * ones(nA)
-    if xmin is None or len(xmin) == 0: xmin = -Inf * ones(x0.shape[0])
-    if xmax is None or len(xmax) == 0: xmax =  Inf * ones(x0.shape[0])
+    if l is None or len(l) == 0: l = -inf * ones(nA)
+    if u is None or len(u) == 0: u =  inf * ones(nA)
+    if xmin is None or len(xmin) == 0: xmin = -inf * ones(x0.shape[0])
+    if xmax is None or len(xmax) == 0: xmax =  inf * ones(x0.shape[0])
     if gh_fcn is None:
         nonlinear = False
         gn = array([])
@@ -320,15 +320,15 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
 
     maxh = zeros(1) if len(h) == 0 else max(h)
 
-    gnorm = norm(g, Inf) if len(g) else 0.0
-    lam_norm = norm(lam, Inf) if len(lam) else 0.0
-    mu_norm = norm(mu, Inf) if len(mu) else 0.0
-    znorm = norm(z, Inf) if len(z) else 0.0
+    gnorm = norm(g, inf) if len(g) else 0.0
+    lam_norm = norm(lam, inf) if len(lam) else 0.0
+    mu_norm = norm(mu, inf) if len(mu) else 0.0
+    znorm = norm(z, inf) if len(z) else 0.0
     feascond = \
-        max([gnorm, maxh]) / (1 + max([norm(x, Inf), znorm]))
+        max([gnorm, maxh]) / (1 + max([norm(x, inf), znorm]))
     gradcond = \
-        norm(Lx, Inf) / (1 + max([lam_norm, mu_norm]))
-    compcond = dot(z, mu) / (1 + norm(x, Inf))
+        norm(Lx, inf) / (1 + max([lam_norm, mu_norm]))
+    compcond = dot(z, mu) / (1 + norm(x, inf))
     costcond = absolute(f - f0) / (1 + absolute(f0))
 
     # save history
@@ -448,14 +448,14 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
 
             maxh1 = zeros(1) if len(h1) == 0 else max(h1)
 
-            g1norm = norm(g1, Inf) if len(g1) else 0.0
-            lam1_norm = norm(lam, Inf) if len(lam) else 0.0
-            mu1_norm = norm(mu, Inf) if len(mu) else 0.0
-            z1norm = norm(z, Inf) if len(z) else 0.0
+            g1norm = norm(g1, inf) if len(g1) else 0.0
+            lam1_norm = norm(lam, inf) if len(lam) else 0.0
+            mu1_norm = norm(mu, inf) if len(mu) else 0.0
+            z1norm = norm(z, inf) if len(z) else 0.0
 
             feascond1 = max([ g1norm, maxh1 ]) / \
-                (1 + max([ norm(x1, Inf), z1norm ]))
-            gradcond1 = norm(Lx1, Inf) / (1 + max([ lam1_norm, mu1_norm ]))
+                (1 + max([ norm(x1, inf), z1norm ]))
+            gradcond1 = norm(Lx1, inf) / (1 + max([ lam1_norm, mu1_norm ]))
 
             if (feascond1 > feascond) and (gradcond1 > gradcond):
                 sc = True
@@ -544,15 +544,15 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
         else:
             maxh = max(h)
 
-        gnorm = norm(g, Inf) if len(g) else 0.0
-        lam_norm = norm(lam, Inf) if len(lam) else 0.0
-        mu_norm = norm(mu, Inf) if len(mu) else 0.0
-        znorm = norm(z, Inf) if len(z) else 0.0
+        gnorm = norm(g, inf) if len(g) else 0.0
+        lam_norm = norm(lam, inf) if len(lam) else 0.0
+        mu_norm = norm(mu, inf) if len(mu) else 0.0
+        znorm = norm(z, inf) if len(z) else 0.0
         feascond = \
-            max([gnorm, maxh]) / (1 + max([norm(x, Inf), znorm]))
+            max([gnorm, maxh]) / (1 + max([norm(x, inf), znorm]))
         gradcond = \
-            norm(Lx, Inf) / (1 + max([lam_norm, mu_norm]))
-        compcond = dot(z, mu) / (1 + norm(x, Inf))
+            norm(Lx, inf) / (1 + max([lam_norm, mu_norm]))
+        compcond = dot(z, mu) / (1 + norm(x, inf))
         costcond = float(absolute(f - f0) / (1 + absolute(f0)))
 
         hist.append({'feascond': feascond, 'gradcond': gradcond,

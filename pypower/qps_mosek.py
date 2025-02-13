@@ -5,12 +5,11 @@
 """Quadratic Program Solver based on MOSEK.
 """
 
-import re
-
-from sys import stdout, stderr
-
-from numpy import array, Inf, zeros, shape, tril, any
+from math import inf
+from numpy import array, zeros, shape, tril, any
 from numpy import flatnonzero as find
+import re
+from sys import stdout, stderr
 
 from scipy.sparse import csr_matrix as sparse
 
@@ -170,8 +169,8 @@ def qps_mosek(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
     if 'a' not in prob | len(prob['a']) == 0:
         unconstrained = True
         prob['a'] = sparse((1, (1, 1)), (1, nx))
-        prob.blc = -Inf
-        prob.buc =  Inf
+        prob.blc = -inf
+        prob.buc =  inf
     else:
         unconstrained = False
 

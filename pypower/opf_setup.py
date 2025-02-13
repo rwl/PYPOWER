@@ -6,9 +6,9 @@
 """
 
 from sys import stdout, stderr
-
+from math import inf
 from numpy import array, any, delete, unique, arange, nonzero, pi, \
-    r_, ones, Inf
+    r_, ones
 from numpy import flatnonzero as find
 
 from scipy.sparse import hstack, csr_matrix as sparse
@@ -144,7 +144,7 @@ def opf_setup(ppc, ppopt):
         ## branch flow constraints
         il = find((branch[:, RATE_A] != 0) & (branch[:, RATE_A] < 1e10))
         nl2 = len(il)         ## number of constrained lines
-        lpf = -Inf * ones(nl2)
+        lpf = -inf * ones(nl2)
         upf = branch[il, RATE_A] / baseMVA - Pfinj[il]
         upt = branch[il, RATE_A] / baseMVA + Pfinj[il]
 
@@ -166,7 +166,7 @@ def opf_setup(ppc, ppopt):
         ycon_vars = ['Pg', 'Qg', 'y']
 
     ## voltage angle reference constraints
-    Vau = Inf * ones(nb)
+    Vau = inf * ones(nb)
     Val = -Vau
     Vau[refs] = Va[refs]
     Val[refs] = Va[refs]

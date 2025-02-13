@@ -6,8 +6,8 @@
 """
 
 from os.path import dirname, join
-
-from numpy import array, ones, Inf, arange, r_
+from math import inf
+from numpy import array, ones, arange, r_
 
 from scipy.io import loadmat
 from scipy.sparse import csr_matrix as sparse
@@ -98,7 +98,7 @@ def t_opf_dc_pips(quiet=False):
     col = [9, 10, 12, 10, 11, 13]
     ppc['A'] = sparse(([-1, 1, -1, 1, -1, -1], (row, col)), (2, 14))
     ppc['u'] = array([0, 0])
-    ppc['l'] = array([-Inf, -Inf])
+    ppc['l'] = array([-inf, -inf])
     ppc['zl'] = array([0, 0])
 
     ppc['N'] = sparse(([1, 1], ([0, 1], [12, 13])), (2, 14))   ## new z variables only
@@ -120,7 +120,7 @@ def t_opf_dc_pips(quiet=False):
     col = [18, 19, 24, 19, 20, 25]
     ppc['A'] = sparse(([-1, 1, -1, 1, -1, -1], (row, col)), (2, 26))
     ppc['u'] = array([0, 0])
-    ppc['l'] = array([-Inf, -Inf])
+    ppc['l'] = array([-inf, -inf])
     ppc['zl'] = array([0, 0])
 
     ppc['N'] = sparse(([1, 1], ([0, 1], [24, 25])), (2, 26))   ## new z variables only
@@ -140,7 +140,7 @@ def t_opf_dc_pips(quiet=False):
     ## with A and N sized for DC opf
     ppc = loadcase(casefile)
     ppc['A'] = sparse(([1, 1], ([0, 0], [9, 10])), (1, 14))   ## Pg1 + Pg2
-    ppc['u'] = array([Inf])
+    ppc['u'] = array([inf])
     ppc['l'] = array([600])
     r = rundcopf(ppc, ppopt)
     t_ok(not r['success'], [t, 'no success'])

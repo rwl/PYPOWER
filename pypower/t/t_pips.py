@@ -5,9 +5,9 @@
 """Tests of PIPS NLP solver.
 """
 
-from math import sqrt
+from math import inf, sqrt
 
-from numpy import zeros, ones, array, eye, prod, dot, ndarray, Inf
+from numpy import zeros, ones, array, eye, prod, dot, ndarray
 
 from scipy.sparse import csr_matrix as sparse
 from scipy.sparse import eye as speye
@@ -225,7 +225,7 @@ def t_pips(quiet=False):
         [0.17, 0.11, 0.10, 0.18]
     ])
     l = array([1,  0.10])
-    u = array([1.0, Inf])
+    u = array([1.0, inf])
     xmin = zeros(4)
     # solution = pips(f_fcn, x0, A, l, u, xmin, opt={'verbose': 2})
     solution = pips(f_fcn, x0, A, l, u, xmin)
