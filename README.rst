@@ -31,17 +31,12 @@ Status
 .. |pypi_version| image:: https://badge.fury.io/py/PYPOWER.svg
 .. _pypi_version: https://badge.fury.io/py/PYPOWER
 
-PYPOWER is no longer actively maintained. However, should improvements
-to PYPOWER be required then the `original author <https://github.com/rwl>`_
-may be available on contract. Please do not hesitate to get in
-`contact <mailto:r.w.lincoln@gmail.com>`_ directly.
-
 Prerequisites
 =============
 
 PYPOWER depends upon these prerequisites on the level of the operating system:
 
-* Python_ 2.7 - 3.9
+* Python_ >= 3.5
 
 Virtual Environment
 ===================
@@ -118,7 +113,7 @@ License & Copyright
 ===================
 
 Copyright (c) 1996-2015, Power System Engineering Research Center (PSERC)  
-Copyright (c) 2010-2021 Richard Lincoln  
+Copyright (c) 2010-2025 Richard Lincoln
 
 The code in PYPOWER is distributed under the 3-clause BSD license
 below. The PYPOWER case files distributed with PYPOWER are not covered

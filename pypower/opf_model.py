@@ -257,7 +257,7 @@ class opf_model(object):
 
 
     def add_costs(self, name, cp, varsets):
-        """Adds a set of user costs to the model.
+        r"""Adds a set of user costs to the model.
 
         Adds a named block of user-defined costs to the model. Each set is
         defined by the C{cp} dict described below. All user-defined sets of
@@ -490,7 +490,7 @@ class opf_model(object):
 
 
     def compute_cost(self, x, name=None):
-        """ Computes a user-defined cost.
+        r""" Computes a user-defined cost.
 
         Computes the value of a user defined cost, either for all user
         defined costs or for a named set of costs. Requires calling
