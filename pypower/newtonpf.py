@@ -45,6 +45,7 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
     tol     = ppopt['PF_TOL']
     max_it  = ppopt['PF_MAX_IT']
     verbose = ppopt['VERBOSE']
+    lin_solver = ppopt['PF_LIN_SOLVER_NR']
 
     ## initialize
     converged = 0
@@ -97,7 +98,7 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
             ], format="csr")
 
         ## compute update step
-        dx = -1 * pplinsolve(J, F)
+        dx = -1 * pplinsolve(J, F, lin_solver)
 
         ## update voltage
         if npv:

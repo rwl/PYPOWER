@@ -27,7 +27,9 @@ PF_OPTIONS = [
 
     ('pf_dc', False, '''use DC power flow formulation, for power flow and OPF:
 False - use AC formulation & corresponding algorithm opts,
-True  - use DC formulation, ignore AC algorithm options''')
+True  - use DC formulation, ignore AC algorithm options'''),
+
+    ('pf_lin_solver_nr', '', 'linear solver for Newton update step')
 ]
 
 CPF_OPTIONS = [
