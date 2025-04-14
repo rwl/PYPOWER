@@ -60,11 +60,11 @@ def makeBdc(baseMVA, bus, branch):
     t = branch[:, T_BUS]                           ## list of "to" buses
     i = r_[range(nl), range(nl)]                   ## double set of row indices
     ## connection matrix
-    Cft = sparse((r_[ones(nl), -ones(nl)], (i, r_[f, t])), (nl, nb))
+    Cft = sparse((r_[ones(nl), -ones(nl)], (i, r_[f, t]-1)), (nl, nb))
 
     ## build Bf such that Bf * Va is the vector of real branch powers injected
     ## at each branch's "from" bus
-    Bf = sparse((r_[b, -b], (i, r_[f, t])), shape = (nl, nb))## = spdiags(b, 0, nl, nl) * Cft
+    Bf = sparse((r_[b, -b], (i, r_[f, t]-1)), shape = (nl, nb))## = spdiags(b, 0, nl, nl) * Cft
 
     ## build Bbus
     Bbus = Cft.T * Bf
