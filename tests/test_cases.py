@@ -30,14 +30,22 @@ for case in os.listdir("../pypower"):
             if hasattr(module,name):
                 tested += 1
                 print(f"Running {case} pf and opf",end="...",flush=True,file=sys.stdout)
-                model = getattr(module,name)
-                casedata = model()
+                
+                casedata = getattr(module,name)()
                 json.dump(casedata,open(f"{name}.json","w"),
                     cls=NumpyEncoder,
                     indent=4)
+                
                 ppopt = ppoption(VERBOSE=0,OUT_ALL=0)
-                assert runpf(casedata,ppopt)[1] == 1, "runpf failed"
-                assert runopf(casedata,ppopt)["success"], "runopf failed"
+
+                result = runpf(casedata,ppopt)
+                print(result,file=open(f"{name}_pf.out","w"))
+                assert result[1] == 1, "runpf failed"
+                
+                result = runopf(casedata,ppopt)
+                print(result,file=open(f"{name}_opf.out","w"))
+                assert result["success"], "runopf failed"
+
                 print("ok",file=sys.stdout)
         except Exception as err:
             print(f"ERROR [{name}]: {err}",file=sys.stderr)
