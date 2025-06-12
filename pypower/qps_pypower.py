@@ -35,10 +35,10 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         - C{H} : matrix (possibly sparse) of quadratic cost coefficients
         - C{c} : vector of linear cost coefficients
         - C{A, l, u} : define the optional linear constraints. Default
-        values for the elements of C{l} and C{u} are -Inf and Inf,
+        values for the elements of C{l} and C{u} are -inf and inf,
         respectively.
         - C{xmin}, C{xmax} : optional lower and upper bounds on the
-        C{x} variables, defaults are -Inf and Inf, respectively.
+        C{x} variables, defaults are -inf and inf, respectively.
         - C{x0} : optional starting value of optimization vector C{x}
         - C{opt} : optional options structure with the following fields,
         all of which are also optional (default values shown in parentheses)
@@ -91,7 +91,7 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
 
     Example from U{http://www.uc.edu/sashtml/iml/chap8/sect12.htm}:
 
-        >>> from numpy import array, zeros, Inf
+        >>> from numpy import array, zeros, inf
         >>> from scipy.sparse import csr_matrix
         >>> H = csr_matrix(array([[1003.1,  4.3,     6.3,     5.9],
         ...                       [4.3,     2.2,     2.1,     3.9],
@@ -101,7 +101,7 @@ def qps_pypower(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         >>> A = csr_matrix(array([[1,       1,       1,       1   ],
         ...                       [0.17,    0.11,    0.10,    0.18]]))
         >>> l = array([1, 0.10])
-        >>> u = array([1, Inf])
+        >>> u = array([1, inf])
         >>> xmin = zeros(4)
         >>> xmax = None
         >>> x0 = array([1, 0, 0, 1])
