@@ -45,9 +45,9 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
         - C{H} : matrix (possibly sparse) of quadratic cost coefficients
         - C{c} : vector of linear cost coefficients
         - C{A, l, u} : define the optional linear constraints. Default
-        values for the elements of L and U are -Inf and Inf, respectively.
+        values for the elements of L and U are -inf and inf, respectively.
         - C{xmin, xmax} : optional lower and upper bounds on the
-        C{x} variables, defaults are -Inf and Inf, respectively.
+        C{x} variables, defaults are -inf and inf, respectively.
         - C{x0} : optional starting value of optimization vector C{x}
         - C{opt} : optional options structure with the following fields,
         all of which are also optional (default values shown in parentheses)

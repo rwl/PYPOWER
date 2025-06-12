@@ -133,7 +133,7 @@ def mosek_options(overrides=None, ppopt=None):
     # opt['MSK_DPAR_INTPNT_TOL_REL_GAP'] = 1e-8     ## relative gap termination tol
     # opt['MSK_IPAR_INTPNT_MAX_ITERATIONS'] = 400   ## max iterations for int point
     # opt['MSK_IPAR_SIM_MAX_ITERATIONS'] = 10000000 ## max iterations for simplex
-    # opt['MSK_DPAR_OPTIMIZER_MAX_TIME'] = -1       ## max time allowed (< 0 --> Inf)
+    # opt['MSK_DPAR_OPTIMIZER_MAX_TIME'] = -1       ## max time allowed (< 0 --> inf)
     # opt['MSK_IPAR_INTPNT_NUM_THREADS'] = 1        ## number of threads
     # opt['MSK_IPAR_PRESOLVE_USE'] = sc['MSK_PRESOLVE_MODE_OFF']
 
