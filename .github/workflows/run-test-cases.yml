@@ -1,0 +1,25 @@
+# This workflow run all the cases found in the pypower folder
+
+name: Run test cases
+
+on:
+  pull:
+    - "*"
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: python3 -m pip install --upgrade pip -r requirements.txt
+    - name: Run test cases
+      run: |
+        cd tests
+        python3 test_cases.py
