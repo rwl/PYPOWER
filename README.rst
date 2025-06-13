@@ -36,7 +36,7 @@ Prerequisites
 
 PYPOWER depends upon these prerequisites on the level of the operating system:
 
-* Python_ >= 3.5
+* Python_ >= 3.10
 
 Virtual Environment
 ===================
@@ -75,8 +75,7 @@ PYPOWER can be tested locally using the same tooling as on Travis CI::
 Case Testing
 ============
 
-The cases in the `pypower` folder can also be tested locally using the command:
-
+The cases in the `pypower` folder can also be tested locally using the command::
 
   python3.x -m venv .venv
   . .venv/bin/activate
@@ -85,7 +84,7 @@ The cases in the `pypower` folder can also be tested locally using the command:
 
 where `x` is one of the supported python minor version numbers.
 
-See the [tests/test_cases.py] script for additional information on the output files.
+See the `tests/test_cases.py <https://github.com/rwl/PYPOWER/blob/master/test/test_cases.py>`_ script for additional information on the output files.
 
 **Note**: this test first runs the `tox` tests in the current environment.
 
