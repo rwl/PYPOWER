@@ -5,7 +5,7 @@ chardet==5.2.0
 colorama==0.4.6
 distlib==0.3.9
 filelock==3.18.0
-numpy==2.3.0
+numpy==2.2.6
 packaging==25.0
 platformdirs==4.3.8
 pluggy==1.6.0
