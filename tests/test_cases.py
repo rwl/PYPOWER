@@ -18,6 +18,7 @@ MODULEDIR = ".."
 CASEDIR = "../pypower"
 
 sys.path.extend([MODULEDIR,CASEDIR])
+import pkg_resources
 from pypower.api import runpf, runopf, ppoption
 
 tested = 0
@@ -29,12 +30,27 @@ class NumpyEncoder(json.JSONEncoder):
             return obj.tolist()
         return super().default(obj)
 
-print(f"Testing all cases in {CASEDIR}...")
-for case in os.listdir("../pypower"):
+def delete(files):
+    for file in files:
+        try:
+            os.remove(file)
+        except:
+            pass
+
+version = pkg_resources.require('pypower')[0].version
+
+# first run tox testing of pypower
+os.system(f"{os.environ['_']} {CASEDIR}/t/test_pypower.py")
+
+# now run pypower cases
+print(f"Testing all pypower v{version} cases in {CASEDIR}...")
+for case in os.listdir(CASEDIR):
     if case.startswith("case") and case.endswith(".py"):
         name = os.path.splitext(case)[0]
         module = importlib.__import__(name)
         try:
+
+            delete([f"{name}_pf.out",f"{name}_opf.out",f"{name}.err"])
             if hasattr(module,name):
                 tested += 1
                 print(f"Running {case} pf and opf",end="... ",flush=True,file=sys.stdout)
@@ -58,12 +74,14 @@ for case in os.listdir("../pypower"):
                 print("ok.",file=sys.stdout)
 
         except Exception as err:
+
             print(f"ERROR [{name}]: {err}",file=sys.stderr)
             e_type,e_value,e_trace = sys.exc_info()
             with open(f"{name}.err","w") as fh:
                 trace = '\n'.join(traceback.format_tb(e_trace))
                 print(f"EXCEPTION [{e_type.__name__}]: {e_value}\n\n{trace}",file=fh)
             failed += 1
+
 print(f"Testing completed: {tested=}, {failed=}")
 
 exit(1 if failed > 0 else 0)
