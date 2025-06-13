@@ -13,52 +13,99 @@ import importlib
 import json
 import numpy as np
 import traceback
+import pkg_resources
+import types
+
+version = pkg_resources.require('pypower')[0].version
 
 MODULEDIR = ".."
-CASEDIR = "../pypower"
+TESTDIR = f"{MODULEDIR}/pypower/t"
+CASEDIR = f"{MODULEDIR}/pypower"
+IGNORE = [ # module that should be ignored by modules()
+    "appdirs",
+    "cachetools",
+    "chardet",
+    "colorama",
+    "distlib",
+    "filelock",
+    "packaging",
+    "platformdirs",
+    "pluggy",
+    "py",
+    "pyparsing",
+    "pyproject-api",
+    "setuptools",
+    "six",
+    "toml",
+    "tox",
+    "virtualenv",
+]
 
 sys.path.extend([MODULEDIR,CASEDIR])
-import pkg_resources
 from pypower.api import runpf, runopf, ppoption
 
 tested = 0
 failed = 0
 
+def modules():
+    """Get pypower runtime required modules in appjson format"""
+    with open(f"{MODULEDIR}/requirements.txt","r") as fh:
+        reqs = dict([x.strip().split("==",1) for x in fh.readlines() 
+            if not x.strip().startswith("#")])
+    return {x:{"version":y} for x,y in reqs.items() if x not in IGNORE}
+
 class NumpyEncoder(json.JSONEncoder):
+    """JSON encoder for numpy arrays"""
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return super().default(obj)
 
 def delete(files):
+    """Delete files if found"""
     for file in files:
         try:
             os.remove(file)
         except:
             pass
 
-version = pkg_resources.require('pypower')[0].version
+def savejson(casedata,fh,**kwargs):
+    """Save casedata as a JSON application file"""
+    if "indent" not in kwargs:
+        kwargs["indent"] = 4
+    json.dump({
+        "application": "pypower",
+        "version": version,
+        "modules" : modules(),
+        "casedata" : casedata,
+        },fh,cls=NumpyEncoder,**kwargs)
 
 # first run tox testing of pypower
-os.system(f"{os.environ['_']} {CASEDIR}/t/test_pypower.py")
+print(f"Testing all pypower v{version} tests in {TESTDIR}...")
+os.system(f"{os.environ['_']} {TESTDIR}/test_pypower.py")
 
 # now run pypower cases
 print(f"Testing all pypower v{version} cases in {CASEDIR}...")
 for case in os.listdir(CASEDIR):
+
+    # only test files that start with "case" and end in ".py"
     if case.startswith("case") and case.endswith(".py"):
         name = os.path.splitext(case)[0]
         module = importlib.__import__(name)
         try:
 
+            # clean-up any old output files
             delete([f"{name}_pf.out",f"{name}_opf.out",f"{name}.err"])
+
+            # only test modules that contain a function by the same name per convention
             if hasattr(module,name):
+
                 tested += 1
                 print(f"Running {case} pf and opf",end="... ",flush=True,file=sys.stdout)
                 
+                # get case data from file
                 casedata = getattr(module,name)()
-                json.dump(casedata,open(f"{name}.json","w"),
-                    cls=NumpyEncoder,
-                    indent=4)
+                savejson(casedata,open(f"{name}.json","w"))
                 
                 ppopt = ppoption(VERBOSE=0,OUT_ALL=0)
 
