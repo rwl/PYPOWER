@@ -37,10 +37,10 @@ def qps_gurobi(H, c, A, l, u, xmin, xmax, x0, opt):
         H : matrix (possibly sparse) of quadratic cost coefficients
         c : vector of linear cost coefficients
         A, l, u : define the optional linear constraints. Default
-            values for the elements of l and u are -Inf and Inf,
+            values for the elements of l and u are -inf and inf,
             respectively.
         xmin, xmax : optional lower and upper bounds on the
-            C{x} variables, defaults are -Inf and Inf, respectively.
+            C{x} variables, defaults are -inf and inf, respectively.
         x0 : optional starting value of optimization vector C{x}
         opt : optional options structure with the following fields,
             all of which are also optional (default values shown in
@@ -97,7 +97,7 @@ def qps_gurobi(H, c, A, l, u, xmin, xmax, x0, opt):
         A = [   [1       1       1       1]
                 [0.17    0.11    0.10    0.18]    ]
         l = [1; 0.10]
-        u = [1; Inf]
+        u = [1; inf]
         xmin = zeros((4, 1))
         x0 = [1; 0; 0; 1]
         opt = {'verbose': 2}

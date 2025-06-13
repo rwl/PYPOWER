@@ -1,7 +1,7 @@
 '''Computes partial derivatives of CPF parameterization function.
 '''
 
-from numpy import r_, zeros, angle
+from numpy import r_, zeros, angle, array
 
 
 def cpf_p_jac(parameterization, z, V, lam, Vprv, lamprv, pv, pq):
@@ -33,4 +33,4 @@ def cpf_p_jac(parameterization, z, V, lam, Vprv, lamprv, pv, pq):
         dP_dV = z[r_[pv, pq, nb+pq]]
         dP_dlam = z[2 * nb]
 
-    return dP_dV, dP_dlam
+    return dP_dV, array([dP_dlam])
