@@ -6,7 +6,8 @@
 *~
 build/
 dist/
-PYPOWER.egg-info/
+*.egg-info/
 doc/api/
 doc/.build/*
 *venv/
+__pycache__/
