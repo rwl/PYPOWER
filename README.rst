@@ -43,50 +43,49 @@ Virtual Environment
 
 PYPOWER is recommended to be installed into a virtual environment::
 
-  $ python3.12 -m venv venv  # Or any supported Python version
+  python3.12 -m venv venv  # Or any supported Python version
 
 Dependencies
 ============
 
 PYPOWER depends upon NumPy, SciPy and PyRLU which can be installed as follows::
 
-  $ venv/bin/python -m pip install -r requirements.txt
+  venv/bin/python -m pip install -r requirements.txt
 
 Installation
 ============
 
 The recommended way of installing PYPOWER is using pip_::
 
-  $ venv/bin/python -m pip install PYPOWER
+  venv/bin/python -m pip install PYPOWER
 
 Alternatively, `download <http://pypi.python.org/pypi/PYPOWER#downloads>`_ and
 unpack the tarball and install::
 
-  $ tar zxf PYPOWER-5.x.y.tar.gz
-  $ venv/bin/python setup.py install
+  tar zxf PYPOWER-5.x.y.tar.gz
+  venv/bin/python setup.py install
 
 Testing
 =======
 
 PYPOWER can be tested locally using the same tooling as on Travis CI::
 
-  $ venv/bin/python -m tox -e 3.10,3.11,3.12  # Or any supported Python version
+  venv/bin/python -m tox -e 3.10,3.11,3.12  # Or any supported Python version
 
 Case Testing
 ============
 
 The cases in the `pypower` folder can also be tested locally using the command:
 
-~~~
-python3.x -m venv .venv
-. .venv/bin/activate
-python3 -m pip install -m pip --upgrade -r requirements.txt
-python3 tests/test_cases.py
-~~~
+
+  python3.x -m venv .venv
+  . .venv/bin/activate
+  python3 -m pip install -m pip --upgrade -r requirements.txt
+  python3 tests/test_cases.py
 
 where `x` is one of the supported python minor version numbers.
 
-See the `tests/test_cases.py` script for additional information on the output files.
+See the [tests/test_cases.py] script for additional information on the output files.
 
 **Note**: this test first runs the `tox` tests in the current environment.
 
@@ -96,25 +95,25 @@ Using PYPOWER
 Installing PYPOWER creates ``pf`` and ``opf`` commands. To list the command
 options::
 
-  $ venv/bin/pf -h
+  venv/bin/pf -h
 
 or::
 
-  $ venv/bin/opf -h
+  venv/bin/opf -h
 
 PYPOWER includes a selection of test cases. For example, to run a power flow
 on the IEEE 14 bus test case::
 
-  $ venv/bin/pf -c case14
+  venv/bin/pf -c case14
 
 Alternatively, the path to a PYPOWER case data file can be specified::
 
-  $ venv/bin/pf /path/to/case14.py
+  venv/bin/pf /path/to/case14.py
 
 The ``opf`` command has the same calling syntax. For example, to solve an OPF
 for the IEEE Reliability Test System and write the solved case to file::
 
-  $ venv/bin/opf -c case24_ieee_rts --solvedcase=rtsout.py
+  venv/bin/opf -c case24_ieee_rts --solvedcase=rtsout.py
 
 For further information please refer to https://rwl.github.io/PYPOWER/ and the
 `API documentation`_.
