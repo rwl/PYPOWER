@@ -88,7 +88,7 @@ where `x` is one of the supported python minor version numbers.
 
 See the `tests/test_cases.py` script for additional information on the output files.
 
-**Note**: this test first runs the tox tests in the current environment.
+**Note**: this test first runs the `tox` tests in the current environment.
 
 Using PYPOWER
 =============
