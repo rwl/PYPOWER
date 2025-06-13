@@ -158,7 +158,7 @@ Links
 * PSAT_ by Federico Milano
 * OpenDSS_ from EPRI
 * GridLAB-D_ from PNNL
-* Arras-Energy_ from LF Energy
+* Arras-Energy_ from `LF Energy <https://lfenergy.org/>`_
 * PyCIM_
 
 .. _Python: http://www.python.org
