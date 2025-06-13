@@ -21,7 +21,7 @@ version = pkg_resources.require('pypower')[0].version
 MODULEDIR = ".."
 TESTDIR = f"{MODULEDIR}/pypower/t"
 CASEDIR = f"{MODULEDIR}/pypower"
-IGNORE = [ # module that should be ignored by modules()
+IGNORE = [ # modules that should be ignored by modules()
     "appdirs",
     "cachetools",
     "chardet",
