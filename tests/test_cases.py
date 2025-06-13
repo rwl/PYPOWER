@@ -42,6 +42,7 @@ os.chdir(EXEDIR if EXEDIR else ".")
 
 version = pkg_resources.require('pypower')[0].version
 
+
 MODULEDIR = ".."
 TESTDIR = f"{MODULEDIR}/pypower/t"
 CASEDIR = f"{MODULEDIR}/pypower"
@@ -110,8 +111,12 @@ def savejson(casedata,fh,result=None,**kwargs):
         },fh,cls=NumpyEncoder,**kwargs)
 
 # first run tox testing of pypower
-print(f"Testing all pypower v{version} tests in {TESTDIR}...")
-if os.system(f"{os.environ['_']} {TESTDIR}/test_pypower.py") != 0:
+import configparser
+config = configparser.ConfigParser()
+config.read(os.path.join(MODULEDIR,"tox.ini"))
+envlist = config["tox"]["env_list"].strip().split("\n")
+print(f"Testing all pypower v{version} tests in {TESTDIR} using python environment {envlist}...")
+if os.system(f"{os.environ['_']} -m tox -e {','.join(envlist)}") != 0:
 
     print(f"ERROR [{EXENAME}]: pypower unit tests failed--case testing cannot continue",file= sys.stderr)
     exit(2)
