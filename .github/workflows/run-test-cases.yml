@@ -28,3 +28,11 @@ jobs:
       run: |
         cd tests
         python3 test_cases.py
+
+    - name: Upload artifacts on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: test-results
+        path: |
+          tests/
