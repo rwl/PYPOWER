@@ -86,7 +86,9 @@ python3 tests/test_cases.py
 
 where `x` is one of the supported python minor version numbers.
 
-**Note**: this test first runs the tox tests in all the supported environment.
+See the `tests/test_cases.py` script for additional information on the output files.
+
+**Note**: this test first runs the tox tests in the current environment.
 
 Using PYPOWER
 =============
