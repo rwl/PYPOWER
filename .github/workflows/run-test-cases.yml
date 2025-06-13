@@ -9,9 +9,15 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
 
-    runs-on: ubuntu-latest
+  ubuntu-matrix:
+
+    strategy:
+      matrix:
+        # See https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
+        version: [22.04,24.04,latest]
+
+    runs-on: ubuntu-${{matrix.version}}
 
     steps:
     - uses: actions/checkout@v3
@@ -19,7 +25,38 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.x'
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: python3 -m pip install --upgrade pip -r requirements.txt
+      
+    - name: Run test cases
+      run: python3 tests/test_cases.py
+
+    - name: Upload artifacts on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: test-results
+        path: |
+          tests/
+
+  macos-matrix:
+
+    strategy:
+      matrix:
+        # See https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
+        version: [13,14,15,latest]
+
+    runs-on: macos-${{matrix.version}}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.12'
 
     - name: Install dependencies
       run: python3 -m pip install --upgrade pip -r requirements.txt
