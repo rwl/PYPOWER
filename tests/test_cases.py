@@ -128,13 +128,13 @@ for case in os.listdir(CASEDIR):
                     print(result,file=open(f"{name}_pf.out","w"))
                     assert result[1] == 1, "runpf failed"
 
-                if "gencost" in casedata and "target" not in name:
+                    if "gencost" in casedata:
 
-                    print("OPF",end="... ",flush=True,file=sys.stdout)
-                    result = runopf(casedata,ppopt)
-                    savejson(casedata,open(f"{name}.json","w"),result)
-                    print(result,file=open(f"{name}_opf.out","w"))
-                    assert result["success"], "runopf failed"
+                        print("OPF",end="... ",flush=True,file=sys.stdout)
+                        result = runopf(casedata,ppopt)
+                        savejson(casedata,open(f"{name}.json","w"),result)
+                        print(result,file=open(f"{name}_opf.out","w"))
+                        assert result["success"], "runopf failed"
 
                 print("ok.",file=sys.stdout)
 
