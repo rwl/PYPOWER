@@ -43,7 +43,7 @@ Virtual Environment
 
 PYPOWER is recommended to be installed into a virtual environment::
 
-  $ python3.8 -m venv venv  # Or any supported Python version
+  $ python3.12 -m venv venv  # Or any supported Python version
 
 Dependencies
 ============
@@ -70,7 +70,23 @@ Testing
 
 PYPOWER can be tested locally using the same tooling as on Travis CI::
 
-  $ venv/bin/python -m tox -e py27,py38  # Or any supported Python version
+  $ venv/bin/python -m tox -e 3.10,3.11,3.12  # Or any supported Python version
+
+Case Testing
+============
+
+The cases in the `pypower` folder can also be tested locally using the command:
+
+~~~
+python3.x -m venv .venv
+. .venv/bin/activate
+python3 -m pip install -m pip --upgrade -r requirements.txt
+python3 tests/test_cases.py
+~~~
+
+where `x` is one of the supported python minor version numbers.
+
+**Note**: this test first runs the tox tests in all the supported environment.
 
 Using PYPOWER
 =============
