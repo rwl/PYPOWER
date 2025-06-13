@@ -37,7 +37,8 @@ import traceback
 import pkg_resources
 import types
 
-os.chdir(os.path.split(sys.argv[0])[0])
+EXEDIR,EXENAME = os.path.split(sys.argv[0])
+os.chdir(EXEDIR if EXEDIR else ".")
 
 version = pkg_resources.require('pypower')[0].version
 
@@ -112,7 +113,7 @@ def savejson(casedata,fh,result=None,**kwargs):
 print(f"Testing all pypower v{version} tests in {TESTDIR}...")
 if os.system(f"{os.environ['_']} {TESTDIR}/test_pypower.py") != 0:
 
-    print(f"ERROR [{os.path.basename(sys.argv[0])}]: pypower unit tests failed--case testing cannot continue",file= sys.stderr)
+    print(f"ERROR [{EXENAME}]: pypower unit tests failed--case testing cannot continue",file= sys.stderr)
     exit(2)
 
 # now run pypower cases
@@ -166,7 +167,7 @@ for case in os.listdir(CASEDIR):
 
         except Exception as err:
 
-            print(f"ERROR [{name}]: {err}",file=sys.stderr)
+            print(f"ERROR [{EXENAME}]: {name} -- {err}",file=sys.stderr)
             e_type,e_value,e_trace = sys.exc_info()
             e_file = f"{name}.err"
             savejson(casedata,open(f"{name}.json","w"),
@@ -177,7 +178,7 @@ for case in os.listdir(CASEDIR):
                     })
             with open(e_file,"w") as fh:
                 trace = '\n'.join(traceback.format_tb(e_trace))
-                print(f"EXCEPTION [{e_type.__name__}]: {e_value}\n\n{trace}",file=fh)
+                print(f"EXCEPTION [{name}]: {e_type.__name__} -- {e_value}\n\n{trace}",file=fh)
             failed += 1
 
 print(f"Testing completed: {tested=}, {failed=}")

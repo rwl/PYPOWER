@@ -25,9 +25,7 @@ jobs:
       run: python3 -m pip install --upgrade pip -r requirements.txt
       
     - name: Run test cases
-      run: |
-        cd tests
-        python3 test_cases.py
+      run: python3 tests/test_cases.py
 
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
