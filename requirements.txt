@@ -1,3 +1,4 @@
+# only exact versions allowed (<, >, <=, >= not supported by testing)
 appdirs==1.4.4
 cachetools==6.0.0
 chardet==5.2.0
@@ -13,7 +14,7 @@ pyparsing==3.2.3
 pyproject-api==1.9.1
 pyrlu==0.2.1
 scipy==1.15.3
-setuptools<81
+setuptools==80.9.0
 six==1.17.0
 toml==0.10.2
 tox==4.26.0
