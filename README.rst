@@ -84,7 +84,7 @@ The cases in the `pypower` folder can also be tested locally using the command::
 
 where `x` is one of the supported python minor version numbers.
 
-See the `tests/test_cases.py <https://github.com/rwl/PYPOWER/blob/master/test/test_cases.py>`_ script for additional information on the output files.
+See the `tests/test_cases.py <https://github.com/rwl/PYPOWER/blob/master/tests/test_cases.py>`_ script for additional information on the output files.
 
 **Note**: this test first runs the `tox` tests in the current environment.
 
@@ -158,6 +158,7 @@ Links
 * PSAT_ by Federico Milano
 * OpenDSS_ from EPRI
 * GridLAB-D_ from PNNL
+* Arras-Energy_ from LF Energy
 * PyCIM_
 
 .. _Python: http://www.python.org
@@ -176,3 +177,5 @@ Links
 .. _TESP: https://tesp.readthedocs.io
 .. _Oct2PYPOWER: https://github.com/rwl/oct2pypower
 .. _matpower.app: https://matpower.app
+.. _Arras-Energy: https://arras.energy/
+
