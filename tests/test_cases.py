@@ -42,7 +42,7 @@ IGNORE = [ # modules that should be ignored by modules()
 ]
 
 sys.path.extend([MODULEDIR,CASEDIR])
-from pypower.api import runpf, runopf, ppoption
+from pypower.api import runpf, runcpf, runopf, ppoption, opf_model
 
 tested = 0
 failed = 0
@@ -59,6 +59,10 @@ class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
+        if isinstance(obj, opf_model):
+            return {x:(y.tolist() if hasattr(y,"tolist") else y) for x,y in obj.user_data.items()}
+        if isinstance(obj, complex):
+            return f"{obj.real:g}{obj.imag:+g}j"
         return super().default(obj)
 
 def delete(files):
@@ -69,7 +73,7 @@ def delete(files):
         except:
             pass
 
-def savejson(casedata,fh,**kwargs):
+def savejson(casedata,fh,result=None,**kwargs):
     """Save casedata as a JSON application file"""
     if "indent" not in kwargs:
         kwargs["indent"] = 4
@@ -77,7 +81,8 @@ def savejson(casedata,fh,**kwargs):
         "application": "pypower",
         "version": version,
         "modules" : modules(),
-        "casedata" : casedata,
+        "problem" : casedata,
+        "solution" : result,
         },fh,cls=NumpyEncoder,**kwargs)
 
 # first run tox testing of pypower
@@ -101,20 +106,33 @@ for case in os.listdir(CASEDIR):
             if hasattr(module,name):
 
                 tested += 1
-                print(f"Running {case} pf and opf",end="... ",flush=True,file=sys.stdout)
+                print(f"Solving {case} problems",end="... ",flush=True,file=sys.stdout)
                 
                 # get case data from file
-                casedata = getattr(module,name)()
-                savejson(casedata,open(f"{name}.json","w"))
-                
+                casedata = getattr(module,name)()                
                 ppopt = ppoption(VERBOSE=0,OUT_ALL=0)
 
-                result = runpf(casedata,ppopt)
-                print(result,file=open(f"{name}_pf.out","w"))
-                assert result[1] == 1, "runpf failed"
+                if "target" in name:
 
-                if 'gencost' in casedata:
+                    print("CPF",end="... ",flush=True,file=sys.stdout)
+                    result = runcpf(f"{CASEDIR}/{name}.py".replace("target",""),casedata,ppopt)
+                    savejson({"basecase":result,"target":casedata},open(f"{name}.json","w"),result)
+                    print(result,file=open(f"{name}_cpf.out","w"))
+                    assert result[1] == 1, "runcpf failed"
+
+                else:
+
+                    print("PF",end="... ",flush=True,file=sys.stdout)
+                    result = runpf(casedata,ppopt)
+                    savejson(casedata,open(f"{name}.json","w"),result)
+                    print(result,file=open(f"{name}_pf.out","w"))
+                    assert result[1] == 1, "runpf failed"
+
+                if "gencost" in casedata and "target" not in name:
+
+                    print("OPF",end="... ",flush=True,file=sys.stdout)
                     result = runopf(casedata,ppopt)
+                    savejson(casedata,open(f"{name}.json","w"),result)
                     print(result,file=open(f"{name}_opf.out","w"))
                     assert result["success"], "runopf failed"
 
@@ -124,7 +142,14 @@ for case in os.listdir(CASEDIR):
 
             print(f"ERROR [{name}]: {err}",file=sys.stderr)
             e_type,e_value,e_trace = sys.exc_info()
-            with open(f"{name}.err","w") as fh:
+            e_file = f"{name}.err"
+            savejson(casedata,open(f"{name}.json","w"),
+                result={
+                    "exception":e_type.__name__,
+                    "value":str(e_value),
+                    "traceback":e_file
+                    })
+            with open(e_file,"w") as fh:
                 trace = '\n'.join(traceback.format_tb(e_trace))
                 print(f"EXCEPTION [{e_type.__name__}]: {e_value}\n\n{trace}",file=fh)
             failed += 1
