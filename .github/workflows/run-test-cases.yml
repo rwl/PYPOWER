@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  ubuntu-matrix:
+  ubuntu-test-matrix:
 
     strategy:
       matrix:
@@ -41,7 +41,7 @@ jobs:
         path: |
           tests/
 
-  macos-matrix:
+  macos-test-matrix:
 
     strategy:
       matrix:
