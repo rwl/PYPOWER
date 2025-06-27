@@ -471,14 +471,14 @@ def ipopt_options(overrides=None, ppopt=None):
 #     - yes                     [Project final point back into original bounds]
 #
 # check_derivatives_for_naninf  ("no")
-#    Indicates whether it is desired to check for Nan/Inf in derivative matrices
+#    Indicates whether it is desired to check for nan/inf in derivative matrices
 #      Activating this option will cause an error if an invalid number is
 #      detected in the constraint Jacobians or the Lagrangian Hessian.  If this
 #      is not activated, the test is skipped, and the algorithm might proceed
 #      with invalid numbers and fail.
 #    Possible values:
 #     - no                      [Don't check (faster).]
-#     - yes                     [Check Jacobians and Hessian for Nan and Inf.]
+#     - yes                     [Check Jacobians and Hessian for nan and inf.]
 #
 # jac_c_constant                ("no")
 #    Indicates whether all equality constraints are linear

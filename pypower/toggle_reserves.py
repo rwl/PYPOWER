@@ -12,7 +12,7 @@ from sys import stderr
 
 from pprint import pprint
 
-from numpy import zeros, ones, arange, Inf, any, flatnonzero as find
+from numpy import zeros, ones, arange, inf, any, flatnonzero as find
 
 from scipy.sparse import eye as speye
 from scipy.sparse import csr_matrix as sparse
@@ -173,7 +173,7 @@ def userfcn_reserves_formulation(om, *args):
 
     ## variable bounds
     Rmin = zeros(ngr)               ## bound below by 0
-    Rmax = Inf * ones(ngr)          ## bound above by ...
+    Rmax = inf * ones(ngr)          ## bound above by ...
     k = find(ppc['gen'][igr, RAMP_10])
     Rmax[k] = ppc['gen'][igr[k], RAMP_10] ## ... ramp rate and ...
     if 'qty' in r:

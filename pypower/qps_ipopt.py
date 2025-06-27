@@ -37,10 +37,10 @@ def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
         - C{H} : matrix (possibly sparse) of quadratic cost coefficients
         - C{C} : vector of linear cost coefficients
         - C{A, l, u} : define the optional linear constraints. Default
-        values for the elements of C{l} and C{u} are -Inf and Inf,
+        values for the elements of C{l} and C{u} are -inf and inf,
         respectively.
         - C{xmin, xmax} : optional lower and upper bounds on the
-        C{x} variables, defaults are -Inf and Inf, respectively.
+        C{x} variables, defaults are -inf and inf, respectively.
         - C{x0} : optional starting value of optimization vector C{x}
         - C{opt} : optional options structure with the following fields,
         all of which are also optional (default values shown in parentheses)
@@ -102,7 +102,7 @@ def qps_ipopt(H, c, A, l, u, xmin, xmax, x0, opt):
         A = [   1       1       1       1
                 0.17    0.11    0.10    0.18    ]
         l = [1, 0.10]
-        u = [1, Inf]
+        u = [1, inf]
         xmin = zeros((4, 1))
         x0 = [1, 0, 0, 1]
         opt = {'verbose': 2)
