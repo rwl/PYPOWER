@@ -99,15 +99,15 @@ def pips(f_fcn, x0=None, A=None, l=None, u=None, xmin=None, xmax=None,
     @type x0: array
     @param A: Optional linear constraints.
     @type A: csr_matrix
-    @param l: Optional linear constraints. Default values are M{-Inf}.
+    @param l: Optional linear constraints. Default values are M{-inf}.
     @type l: array
-    @param u: Optional linear constraints. Default values are M{Inf}.
+    @param u: Optional linear constraints. Default values are M{inf}.
     @type u: array
     @param xmin: Optional lower bounds on the M{x} variables, defaults are
-                 M{-Inf}.
+                 M{-inf}.
     @type xmin: array
     @param xmax: Optional upper bounds on the M{x} variables, defaults are
-                 M{Inf}.
+                 M{inf}.
     @type xmax: array
     @param gh_fcn: Function that evaluates the optional nonlinear constraints
                    and their gradients for a given value of M{x}.

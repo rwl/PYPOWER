@@ -185,7 +185,7 @@ class opf_model(object):
         create a lot of zero columns. If C{varsets} is empty, C{x} is taken
         to be the full vector of all optimization variables. If C{l} or
         C{u} are empty, they are assumed to be appropriately sized vectors
-        of C{-Inf} and C{Inf}, respectively.
+        of C{-inf} and C{inf}, respectively.
 
         For nonlinear constraints, the 3rd argument, C{N}, is the number
         of constraints in the set. Currently, this is used internally
@@ -385,7 +385,7 @@ class opf_model(object):
         and C{vl} and C{vu} are the lower and upper bounds on the variables.
         The defaults for the last three arguments, which are optional,
         are for all values to be initialized to zero (C{v0 = 0}) and unbounded
-        (C{VL = -Inf, VU = Inf}).
+        (C{VL = -inf, VU = inf}).
         """
         ## prevent duplicate named var sets
         if name in self.var["idx"]["N"]:
