@@ -30,7 +30,7 @@ def polycost(gencost, Pg, der=0):
     """
     if gencost.size == 0:
         #User has a purely linear piecewise problem, exit early with empty array
-        return []
+        return zeros(0)
 
     if any(gencost[:, MODEL] == PW_LINEAR):
         sys.stderr.write('polycost: all costs must be polynomial\n')
