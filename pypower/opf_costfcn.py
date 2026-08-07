@@ -102,7 +102,8 @@ def opf_costfcn(x, om, return_hessian=False):
 
     ## polynomial cost of P and Q
     df_dPgQg = zeros(2 * ng)        ## w.r.t p.u. Pg and Qg
-    df_dPgQg[ipol] = baseMVA * polycost(gencost[ipol, :], xx[ipol], 1)
+    if len(ipol):
+        df_dPgQg[ipol] = baseMVA * polycost(gencost[ipol, :], xx[ipol], 1)
     df = zeros(nxyz)
     df[iPg] = df_dPgQg[:ng]
     df[iQg] = df_dPgQg[ng:ng + ng]
