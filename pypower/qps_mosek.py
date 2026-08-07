@@ -198,7 +198,7 @@ def qps_mosek(H, c=None, A=None, l=None, u=None, xmin=None, xmax=None,
         # MOSEK Version 6.0.0.93 (Build date: 2010-10-26 13:03:27)
         # MOSEK Version 6.0.0.106 (Build date: 2011-3-17 10:46:54)
 #        pat = 'Version (\.*\d)+.*Build date: (\d\d\d\d-\d\d-\d\d)';
-        pat = 'Version (\.*\d)+.*Build date: (\d+-\d+-\d+)'
+        pat = r'Version (\.*\d)+.*Build date: (\d+-\d+-\d+)'
         s, e, tE, m, t = re.compile(eval('mosekopt'), pat)
         if len(t) == 0:
             vn = '<unknown>'

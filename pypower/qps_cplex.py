@@ -177,7 +177,7 @@ def qps_cplex(H, c, A, l, u, xmin, xmax, x0, opt):
 
     cplex = Cplex('null')
     vstr = cplex.getVersion
-    s, e, tE, m, t = re.compile(vstr, '(\d+\.\d+)\.')
+    s, e, tE, m, t = re.compile(vstr, r'(\d+\.\d+)\.')
     vnum = int(t[0][0])
     vrb = max([0, verbose - 1])
     cplex_opt['barrier']['display']   = vrb
